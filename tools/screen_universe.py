@@ -99,11 +99,15 @@ def load_windows(path=DATA):
         total_lines += 1
         snap = json.loads(line)
         w = int(snap["epoch"]) // 3600
-        if snap.get("schema") != 2:
+        schema = snap.get("schema")
+        if not schema:                    # skema 1: baris paling awal, tanpa penanda
             legacy += 1
-            if w not in by_window:      # window lama tetap dihitung, ditandai di laporan
+            if w not in by_window:        # window lama tetap dihitung, ditandai di laporan
                 by_window[w] = (snap, False)
             continue
+        # "modern" = PUNYA skema berapa pun (2, 3, ...), BUKAN "skema == 2".
+        # Menulis `!= 2` membuat tiap kenaikan skema otomatis terbuang sebagai legacy -
+        # persis kelas bug "data dianggap tidak ada lalu diperlakukan sebagai bukan masalah".
         if w not in by_window or (by_window[w][1] is False):
             by_window[w] = (snap, True)
     windows = [by_window[w] for w in sorted(by_window)]
@@ -321,7 +325,7 @@ def main():
     if show_windows:
         print("\nwindow per window:")
         for snap, modern in windows:
-            print(f"  {snap['snapshot_utc']}  schema2={'ya' if modern else 'TIDAK  '}  "
+            print(f"  {snap['snapshot_utc']}  modern={'ya' if modern else 'TIDAK (semantik lama)'}  "
                   f"universe={snap.get('universe_size')}  lolos={snap.get('survivable_count')}  "
                   f"dinilai_penuh={snap.get('fully_evaluated_count', '-')}")
 
