@@ -236,18 +236,20 @@ def main():
     survived = [m for m in moves if m["survived"]]
     refused = [m for m in moves if not m["survived"]]
 
-    # Keluarga multipel GLOBAL: satu tes = (token, horizon) yang benar-benar diuji.
-    # Ini yang tidak ada padanan kodenya di metodologi rujukan.
-    pvals = {}
-    buckets = defaultdict(list)
+    # Keluarga multipel GLOBAL: satu tes = SATU TOKEN, bukan (token x horizon).
+    # Versi sebelumnya memakai kunci (addr, gap), sehingga satu token menyumbang beberapa anggota
+    # keluarga dan m membengkak tanpa menambah bukti independen - gelembung n yang persis sama yang
+    # kutolak saat dilakukan pihak lain. Sekarang: satu return agregat, satu p-value, per token.
+    per_token_ret = defaultdict(list)
+    per_token_surv = {}
     for m in moves:
-        key = f"{m['addr'][:12]}@{m['gap_windows']}"
-        buckets[key].append(m["ret"])
-    for key, rets in buckets.items():
-        if len(rets) >= 2:
-            pvals[key] = pval_mean_positive(rets)
+        per_token_ret[m["addr"]].append(m["ret"])
+        per_token_surv[m["addr"]] = per_token_surv.get(m["addr"], False) or m["survived"]
+    pvals = {a: pval_mean_positive(v) for a, v in per_token_ret.items() if len(v) >= 2}
     passed, m_family = benjamini_hochberg(pvals)
     n_signif = sum(1 for v in passed.values() if v)
+    tested_tokens = len(pvals)
+    signif_surv = sum(1 for a, ok in passed.items() if ok and per_token_surv.get(a))
 
     print("=" * 78)
     print("BSC memecoin screener — apa yang kami TOLAK, dan apa yang terjadi selanjutnya")
@@ -287,12 +289,12 @@ def main():
                   f"punya harga pada window berikutnya")
 
     print()
-    print(f"FDR global (Benjamini-Hochberg, alpha={BH_ALPHA}): keluarga {m_family} tes, "
-          f"{n_signif} lolos")
-    print("  KERANGKANYA benar, angkanya BELUM boleh dikutip: satu tes di sini masih per "
-          "(token x horizon), dan token yang sama menyumbang beberapa horizon -> keluarga "
-          "p-value-nya berkerumun. Perbaiki unitnya dulu (satu tes per token) sebelum menyebut "
-          "angka ini di depan siapa pun.")
+    print(f"FDR GLOBAL (Benjamini-Hochberg, alpha={BH_ALPHA}): {m_family} token diuji, "
+          f"{n_signif} lolos; {signif_surv} di antaranya dari kohort yang LOLOS veto")
+    print("  Unit keluarga sudah benar (satu token = satu tes). Yang masih membuat angka ini "
+          "TIDAK boleh dikutip: p-value memakai aproksimasi normal pada rata-rata return per "
+          f"token, dan token paling banyak baru punya beberapa observasi - ambang MIN_SAMPLES="
+          f"{MIN_SAMPLES} per kohort belum tercapai untuk kohort survived.")
     enough = tok_ref.get("tokens", 0) >= MIN_SAMPLES and tok_surv.get("tokens", 0) >= MIN_SAMPLES
     print(f"  floor sampel {MIN_SAMPLES} per kohort: refused={tok_ref.get('tokens', 0)} "
           f"survived={tok_surv.get('tokens', 0)} -> "
