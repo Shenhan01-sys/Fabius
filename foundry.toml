@@ -3,10 +3,11 @@ src = "contracts"
 out = "out"
 test = "test"
 script = "script"
-# `lib/` dan `node_modules/` di folder ini adalah JUNCTION ke milik app/, bukan salinan.
-# Alasannya sama seperti yang dipakai AgenticTrack untuk mengimpor app/signer: satu resep, nol
-# kesempatan drifting. Lihat README bagian "Kenapa lib-nya junction".
-libs = ["node_modules", "lib"]
+# Dependensi lewat SUBMODULE di `vendor/`, bukan junction: repo harus bisa di-clone dan
+# `forge test`-nya jalan di mesin orang lain. Junction `lib/` + `node_modules/` yang lama cuma
+# hidup di mesin ini dan di-`gitignore` - itulah sebabnya clone pertama dulu sama sekali tidak bisa
+# build. Setelah clone: `git submodule update --init --depth 1`.
+libs = ["vendor", "lib"]
 solc_version = "0.8.26"
 # Kontrak ini tidak memakai opcode Cancun; target lebih rendah = bytecode jalan di lebih banyak
 # chain. FORK TEST tetap wajib pakai profile.fork — pelajaran yang sudah dibayar di
@@ -21,7 +22,7 @@ src = "contracts"
 out = "out"
 test = "test"
 script = "script"
-libs = ["node_modules", "lib"]
+libs = ["vendor", "lib"]
 solc_version = "0.8.26"
 evm_version = "cancun"
 optimizer = true
