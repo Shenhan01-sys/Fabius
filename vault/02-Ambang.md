@@ -26,7 +26,8 @@ Terukur 23 Sep pada jendela 03:00Z, dari 90 baris: **37** tidak punya field peri
 (`top10`/`lock`/`bundler`/`holders_unmeasured`), dan **13** di antaranya gugur *tanpa satu pun
 alasan risiko*. Kalau kelompok ini dihitung sebagai "penolakan yang benar", kita sedang
 mengkalibrasi ambang risiko di atas angka yang sebenarnya mengukur **kegagalan penggabungan
-GeckoTerminal ↔ GMGN** — terukur cuma **5 dari 40** baris pool yang ketemu baris GMGN. Karena itu
+GeckoTerminal ↔ GMGN** — terukur cuma **3 dari 40** baris pool yang ketemu baris GMGN, dan
+memperlebar `market/rank` (limit 100/200/500) **tidak** mengubah angka itu. Karena itu
 `decide.py` memulangkan dua daftar (`risk_vetoes` vs `data_gaps`) dan `ENTER` mensyaratkan
 keduanya kosong; `05-Belum-Terbukti.md` baris 12 adalah lubang yang harus ditutup lebih dulu.
 

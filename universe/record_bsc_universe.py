@@ -149,10 +149,14 @@ def parse_ts(s):
 def gmgn_rank():
     """Baris trending GMGN. Satu-satunya sumber yang terbukti mengembalikan field perilaku
     (bundler/sniper/degen/rug), jadi ia jadi tulang punggung lapisan seleksi."""
-    st, d = get(gmgn_url("/v1/market/rank", chain="bsc", limit=50), {"X-APIKEY": GMGN_KEY})
+    st, d = get(gmgn_url("/v1/market/rank", chain="bsc", limit=100), {"X-APIKEY": GMGN_KEY})
     if st != 200:
         return {"source": "gmgn/market/rank", "status": st, "error": str(d)[:180], "rows": []}
-    rows = ((d.get("data") or {}).get("data") or {}).get("list") if isinstance(d.get("data"), dict) else None
+    # Kunci nyata = data.data.rank (diukur 23 Sep). limit=100 adalah langit-langit server:
+    # 150/200/300/500 semuanya membalas tepat 100 baris. `.list` ditinggalkan sebagai
+    # kecocokan mundur belaka, BUKAN jalur utama.
+    _inner = (d.get("data") or {}).get("data") or {}
+    rows = _inner.get("rank") or _inner.get("list") if isinstance(_inner, dict) else None
     if rows is None:
         # bentuk bersarang ganda sudah dicatat vault untuk /v1/market/rank (data.data.rank);
         # kalau strukturnya bergeser, catat mentahnya, jangan diam-diam jadi list kosong.
