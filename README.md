@@ -46,7 +46,7 @@ tidak tersedia di chain ini, dan kami menulis batas itu daripada menyembunyikann
 | Bagian | Status |
 |---|---|
 | `contracts/DecisionAnchor.sol` + test | ✅ ada; **21 test lulus** (`forge test`) di mesin ini |
-| Perekam universe point-in-time | ✅ jalan; 34 snapshot / 20 jendela jam; universe **140 baris** (GMGN rank 100 — langit-langit server — + 40 pool GT); sha256 per snapshot diverifikasi ulang, dirantai lewat `universe/manifest.txt` |
+| Perekam universe point-in-time | ✅ jalan; 34 snapshot / **19 jendela jam** (34 baris ≠ 34 jam: ada pengulangan dari masa dua loop menulis bersamaan — n yang sah adalah jumlah jendela); universe **140 baris** sejak 04:58Z (GMGN rank 100 = langit-langit server, + 40 pool GT); sha256 per snapshot diverifikasi ulang, dirantai lewat `universe/manifest.txt` |
 | Penyaring + hasil penolakan | 🟡 berjalan; **136 token** punya hasil forward, **kohort "lolos" masih 0** (harga pool baru tercatat sejak 22 Sep 08:00Z) |
 | Lapisan keputusan deterministik | 🟡 `tools/decide.py`: snapshot → `decisionHash` + `gatesHash` + `snapshotHash`, calldata terverifikasi (`cast sig` = `0xdc6a1ac2`). **Memisahkan "ditolak karena risiko terukur" dari "tidak dinilai karena data tidak ada"** (terukur: 37 dan 13 dari 90) |
 | Lapisan desk + PM (multi-aset, model) | ⬜ spesifikasi ditulis (`vault/06-Keputusan.md` F-D04), kode belum |
