@@ -95,3 +95,38 @@ jendela data.
 catatan vault induk. Angka yang dipakai kode punya asal `file:line` di `02-Ambang.md`; vault
 hanya menjelaskan *mengapa*. Alasannya sama dengan F-D01: repo publik yang tercampur membuat
 riwayat commit tidak terbaca sebagai bukti orisinalitas.
+
+## F-D11 — Penilai model itu OPSIONAL, vianya satu arah, dan defaultnya mati · 23 Sep 2026
+
+Builder: *"untuk Jev mungkin bisa km buat optional ya, takutnya kalau berbayar ya mau gamau kita
+pakai LLM lain."* Bentuk yang dipasang di `tools/judge.py` + `tools/decide.py --judge`:
+
+- **`--judge none` adalah default.** Tidak ada satu pun panggilan berbayar yang terjadi tanpa
+  diminta. `auto` = Jev dulu (kunci `~/.config/typesafe/.env`), lalu LLM OpenAI-compatible mana pun
+  lewat `HQ_BASE_URL`/`HQ_API_KEY`/`HQ_MODEL` — jadi "LLM lain" itu **satu perubahan env, bukan
+  perubahan kode**.
+- **Arah satu jalan.** Penilai hanya boleh **membatalkan** `ENTER` menjadi `ABSTAIN`. Tidak ada
+  jalur yang mengubah `ABSTAIN` menjadi `ENTER`. Ini "repair-never-up" + "spend limits are
+  enforced independently from model output" (skill `llm-trading-agent-security`).
+- **Hasilnya ikut di-hash.** `judge` (provider, model, veto_prob, dominant_risk, confidence,
+  probabilities) masuk `decisionHash`/`gatesHash` → kalau nanti di-anchor, penolakan model ikut
+  terbukti, bukan hilang di log mesin kita.
+- **Kegagalan penilai = tidak naik kelas**, bukan = lolos. JSON tak terparse / HTTP gagal →
+  kandidat tetap `ABSTAIN` dan alasannya tercatat.
+- **Biaya ikut di artefak** (`cost_usd`), supaya klaim murah bisa diperiksa.
+
+Terukur 23 Sep pada jendela 140 kandidat: **1 panggilan Jev = $0,00002407, 0,43 detik**,
+`jev-1.13.0`, dan hasilnya **veto** dengan dasar yang bisa dibaca:
+`dominant_risk=bundled_volume`, `probabilities={bundled_volume 0.63, illiquidity_exit 0.14,
+lp_pull 0.12, none 0.11, young_history 0.0}`, `confidence 0.54`. Efeknya pada kita:
+`ENTER 1 → 0`. Yang **belum** terbukti: apakah veto model lebih baik dari diam — itu pertanyaan
+kalibrasi (F-D12), bukan klaim.
+
+## F-D12 — Kalibrasi diukur dengan data kita sendiri, bukan dengan demo · 23 Sep 2026
+
+Satu-satunya alasan memakai model adalah kalau `confidence`-nya **berarti**. Yang akan diuji, dan
+sudah punya bahan: keputusan (dengan `confidence`/`veto_prob`) di satu sisi, hasil forward token
+yang sama di sisi lain. Kalau `confidence` tinggi tidak membedakan hasil dari `confidence`
+rendah, Jev **dicabut** dan kita kembali ke gerbang deterministik — dan keputusan itu yang dicatat,
+bukan cuma angkanya. Batas yang harus ikut tertulis: `max gain sejak trigger` semacam itu
+dipilih setelah sinyal terbit, jadi tanpa catatan point-in-time ia survivorship, bukan edge.

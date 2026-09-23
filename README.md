@@ -49,7 +49,8 @@ tidak tersedia di chain ini, dan kami menulis batas itu daripada menyembunyikann
 | Perekam universe point-in-time | ✅ jalan; 34 snapshot / **19 jendela jam** (34 baris ≠ 34 jam: ada pengulangan dari masa dua loop menulis bersamaan — n yang sah adalah jumlah jendela); universe **140 baris** sejak 04:58Z (GMGN rank 100 = langit-langit server, + 40 pool GT); sha256 per snapshot diverifikasi ulang, dirantai lewat `universe/manifest.txt` |
 | Penyaring + hasil penolakan | 🟡 berjalan; **136 token** punya hasil forward, **kohort "lolos" masih 0** (harga pool baru tercatat sejak 22 Sep 08:00Z) |
 | Lapisan keputusan deterministik | 🟡 `tools/decide.py`: snapshot → `decisionHash` + `gatesHash` + `snapshotHash`, calldata terverifikasi (`cast sig` = `0xdc6a1ac2`). **Memisahkan "ditolak karena risiko terukur" dari "tidak dinilai karena data tidak ada"** (terukur: 37 dan 13 dari 90) |
-| Lapisan desk + PM (multi-aset, model) | ⬜ spesifikasi ditulis (`vault/06-Keputusan.md` F-D04), kode belum |
+| Lapisan penilai (model) | 🟡 **opsional dan bisa dicabut** (`--judge none|auto|jev|openai`, default `none`). Terukur 23 Sep: 1 panggilan = $0,00002407, 0,43s, `jev-1.13.0`; veto **satu arah** (hanya boleh membatalkan ENTER) dan hasilnya masuk `decisionHash` |
+| Lapisan desk penuh (debat antar-desk) | ⬜ spesifikasi ditulis (`vault/06-Keputusan.md` F-D04), kode belum |
 | Eksekusi | ⬜ **paper on purpose** — tidak ada dana pengguna, tidak ada order, tidak ada yang bisa rugi |
 | Deploy ke chain 97 | ⬜ skrip ada, **belum pernah dijalankan**, belum ada address publik |
 | Fasilitator x402 sendiri | ⬜ settlement-nya terbukti di fork (31 test, chain 97 & 56); jalur HTTP `402` belum pernah dieksekusi |

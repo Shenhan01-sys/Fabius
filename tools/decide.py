@@ -29,6 +29,11 @@ import json
 import os
 import time
 
+try:
+    from judge import judge          # jalan sebagai `python tools/decide.py`
+except ImportError:                   # jalan dari dalam tools/ atau sebagai modul
+    from .judge import judge
+
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(HERE)
 DATA = os.path.join(ROOT, "universe", "bsc-universe.jsonl")
@@ -133,10 +138,33 @@ def calldata_for(rec) -> str:
     return "0x" + selector.hex() + body.hex()
 
 
+def build_judge_state(row, snap):
+    """State untuk penilai: fakta yang ADA di snapshot, bukan karangan.
+
+    Sengaja pendek dan berisi angka - penilai boleh menurunkan ENTER jadi ABSTAIN, dan kita mau
+    bisa menunjuk angka mana yang ia pakai saat menurunkannya.
+    """
+    def f(x):
+        return "unknown" if x is None else f"{x:,.4g}"
+    return (
+        f"Snapshot {snap['snapshot_utc']} chain BSC. Candidate {row.get('symbol') or row.get('name')}. "
+        f"Liquidity ${f(row.get('liquidity'))}. Age_hours {f((row.get('age_sec') or 0) / 3600)}. "
+        f"Vol24 ${f(row.get('volume_24h'))}. "
+        f"Top10_holder_share {f(row.get('top_10_holder_rate'))}. Lock {f(row.get('lock_percent'))}. "
+        f"Bundler_rate {f(row.get('bundler_rate'))}. Holders {f(row.get('holder_count'))}. "
+        f"Honeypot {row.get('is_honeypot')}. Cannot_sell {row.get('can_not_sell')}. "
+        f"All deterministic gates passed. Decide only whether to REFUSE this candidate for a risk "
+        f"the numeric gates did not express."
+    )
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--emit", action="store_true")
     ap.add_argument("--calldata", action="store_true")
+    ap.add_argument("--judge", default="none", choices=("none", "auto", "jev", "openai"),
+                    help="penilai opsional. DEFAULT=none supaya tidak ada biaya tak terduga. "
+                         "Penilai HANYA boleh menurunkan ENTER->ABSTAIN, tidak pernah sebaliknya.")
     args = ap.parse_args()
 
     snap = latest_window()
@@ -153,6 +181,7 @@ def main():
         raise SystemExit("snapshot tidak punya sha256 kanonik — jangan lanjut")
 
     decisions, enters, unassessed = [], 0, 0
+    judge_notes, judge_cost, downgraded = [], 0.0, 0
     for row in snap["rows"]:
         asset = str(row.get("symbol") or row.get("name") or "")[:48]
         addr = (row.get("address") or row.get("base_token") or "")
@@ -162,15 +191,38 @@ def main():
         if not assessable:
             unassessed += 1
         verdict = "ENTER" if (assessable and not vetoes) else "ABSTAIN"
+        judged = None
+
+        if verdict == "ENTER" and args.judge != "none":
+            # Arahnya satu jalan: penilai boleh MEMBATALKAN keputusan, tidak pernah membuka.
+            # Ini "repair-never-up" dan "spend limits are enforced independently from model output".
+            judged, note = judge(args.judge, build_judge_state(row, snap), asset)
+            judge_notes.append(note)
+            if judged and judged.get("cost_usd"):
+                judge_cost += float(judged["cost_usd"])
+            if judged and judged.get("veto"):
+                verdict = "ABSTAIN"
+                vetoes = vetoes + [f"judge_veto:{judged.get('dominant_risk') or 'unspecified'}"]
+                downgraded += 1
+
         if verdict == "ENTER":
             enters += 1
         reasons = vetoes + [f"gap:{g}" for g in gaps]
-        gates_hash = "0x" + sha256_canon({"risk": vetoes, "gaps": gaps, "thresholds": th}).hex()
+        gates_hash = "0x" + sha256_canon({"risk": vetoes, "gaps": gaps, "thresholds": th,
+                                           "judge": None if not judged else
+                                           {k: judged.get(k) for k in
+                                            ("provider", "model", "veto", "veto_prob",
+                                             "dominant_risk", "confidence")}}).hex()
         record = {
             "asset": asset, "addr": addr, "verdict": verdict, "assessable": assessable,
             "risk_vetoes": vetoes, "data_gaps": gaps,
             "snapshot_utc": snap["snapshot_utc"],
-            "engine": "deterministic-veto-v2", "model": None,
+            "engine": "deterministic-veto-v2",
+            "model": None if not judged else judged.get("model"),
+            "judge": None if not judged else {k: judged.get(k) for k in
+                                              ("provider", "veto", "veto_prob", "dominant_risk",
+                                               "confidence", "probabilities", "cost_usd",
+                                               "tokens_in", "latency_s")},
         }
         decisions.append({**record, "reasons": reasons,
                           "decisionHash": "0x" + sha256_canon(record).hex(),
@@ -180,6 +232,18 @@ def main():
     print(f"hash      : {snap_hash[:22]}…")
     print(f"keputusan : {len(decisions)}   ENTER={enters}   ABSTAIN={len(decisions) - enters}"
           f"   (dari yang ABSTAIN: {unassessed} sebenarnya TIDAK DINILAI - datanya tidak ada)")
+    if args.judge != "none":
+        providers = {}
+        for n in judge_notes:
+            providers.setdefault(n.get("judge", "?"), 0)
+            providers[n.get("judge", "?")] += 1
+        print(f"penilai   : mode={args.judge}  dipakai={json.dumps(providers)}  "
+              f"dibatalkan-oleh-penilai={downgraded}  biaya=~${judge_cost:.6f}")
+        for n in judge_notes:
+            if n.get("note") != "ok":
+                print(f"  catatan: {json.dumps(n, ensure_ascii=False)[:220]}")
+    else:
+        print("penilai   : none (hanya gerbang deterministik; aktifkan dengan --judge auto)")
 
     risk, gap = {}, {}
     for d in decisions:
