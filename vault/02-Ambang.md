@@ -18,8 +18,17 @@ dugaan, dan jangan dipakai di kode atau di submission.
 
 Empat angka pertama **masih perlu diuji terhadap hasil**, bukan dipertahankan karena sudah ditulis.
 Cara mengujinya sudah ada: bandingkan outcome token yang kena tiap veto vs yang lolos
-(`tools/screen_universe.py`). Kalau sebuah veto ternyata tidak memprediksi hasil yang lebih buruk,
-ia harus dicabut dan itu dicatat di sini.
+(`tools/screen_universe.py`, dan keputusan per-jendela di `tools/decide.py`). Kalau sebuah veto
+ternyata tidak memprediksi hasil yang lebih buruk, ia harus dicabut dan itu dicatat di sini.
+
+**Syarat sebelum kalibrasi itu boleh dijalankan: pisahkan "ditolak" dari "tidak bisa dinilai".**
+Terukur 23 Sep pada jendela 03:00Z, dari 90 baris: **37** tidak punya field perilaku sama sekali
+(`top10`/`lock`/`bundler`/`holders_unmeasured`), dan **13** di antaranya gugur *tanpa satu pun
+alasan risiko*. Kalau kelompok ini dihitung sebagai "penolakan yang benar", kita sedang
+mengkalibrasi ambang risiko di atas angka yang sebenarnya mengukur **kegagalan penggabungan
+GeckoTerminal ↔ GMGN** — terukur cuma **5 dari 40** baris pool yang ketemu baris GMGN. Karena itu
+`decide.py` memulangkan dua daftar (`risk_vetoes` vs `data_gaps`) dan `ENTER` mensyaratkan
+keduanya kosong; `05-Belum-Terbukti.md` baris 12 adalah lubang yang harus ditutup lebih dulu.
 
 ## Model biaya — dirujuk dari kode, bukan dari prosa
 

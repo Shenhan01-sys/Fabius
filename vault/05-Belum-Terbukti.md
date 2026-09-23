@@ -16,6 +16,8 @@ paling memblokir.
 | 9 | **Ambang veto belum diuji terhadap hasil** | 50k / 24 jam / 45% / 30% itu keputusan kami, bukan temuan | `screen_universe.py` sudah membandingkan outcome per alasan; kalau sebuah veto tidak memprediksi hasil lebih buruk, **cabut dan catat di `02-Ambang.md`** | ❌ belum ada cukup jendela |
 | 10 | **Regulasi Indonesia untuk aset spekulatif** | juri & submission; framing kami "tidak menahan dana, tidak mengeksekusi order, paper-only, disclaimer" sudah mengurangi tapi tidak menghapus | satu paragraf dengan rujukan OJK/Bappebti yang dibaca langsung, bukan disimpulkan | ❌ nol bukti primer |
 | 11 | **Venue eksekusi on-chain BSC** | masih jadi blocking gap sejak awal riset; dan **sengaja tidak kami janjikan** | putuskan: tetap paper (default sekarang) atau verifikasi 1 venue + testnet + likuiditas nyata | ❌ nol bukti |
+| 12 | **Cakupan gabungan GT ↔ GMGN = 5/40 baris pool** | 37/90 kandidat sebenarnya TIDAK DINILAI, dan 13 di antaranya tanpa satu pun alasan risiko; ini membusukkan kalibrasi ambang (lihat `02-Ambang.md`) | (a) panggil GMGN `token/info` + `token/security` per alamat pool, atau (b) jadikan GMGN `market/rank` kerangka utama dan GT hanya untuk umur/likuiditas | ❌ terukur 23 Sep |
+| 13 | **Lapisan model belum ada** | `decide.py` murni gerbang deterministik: nol pertanyaan bertipe, nol probabilitas, nol `confidence` | spesifikasi di `06-Keputusan.md` F-D04; jalankan begitu API key ada, lalu ukur kalibrasi sebelum bayar PAYG | ⬜ belum dimulai |
 
 ## Yang TIDAK akan kami kejar, dan alasannya tertulis di sini
 

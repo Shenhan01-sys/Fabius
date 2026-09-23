@@ -10,3 +10,5 @@ lib/
 # (sha256 per snapshot) + perkakasnya, bukan baris kasarnya.
 universe/bsc-universe.jsonl
 universe/runner.log
+# Keputusan turunan: bisa dibangun ulang dari snapshot, membesar tiap jam.
+decisions/*.jsonl
