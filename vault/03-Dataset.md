@@ -3,11 +3,12 @@
 Sumber kehidupan klaim "kami tidak hindsight". Berkas & kode:
 
 ```
-_research/record_bsc_universe.py     perekam (dijalankan sebagai loop jam)
-_research/universe/bsc-universe.jsonl  append-only, 1 baris = 1 snapshot
-_research/universe/manifest.txt      regenerasi: 1 baris per snapshot + sha256-nya
-_research/write_universe_manifest.py pembuat manifest, sekaligus VERIFIKATOR hash
-TradingAgent/tools/screen_universe.py  corong penolakan (kini Fabius/tools/)
+universe/record_bsc_universe.py      perekam (loop jam, atau dipanggil per jam oleh task)
+universe/bsc-universe.jsonl          append-only, 1 baris = 1 snapshot (TIDAK di-commit)
+universe/manifest.txt                regenerasi: 1 baris per snapshot + sha256-nya (di-commit)
+universe/write_universe_manifest.py  pembuat manifest, sekaligus VERIFIKATOR hash
+universe/snapshot_universe.bat       satu panggilan per jam, untuk penjadwal sistem
+tools/screen_universe.py             corong penolakan: hasil vs alasan penolakan
 ```
 
 Dataset mentah (`.jsonl`) **tidak** di-commit: berulang dan membesar tiap jam. Yang di-commit

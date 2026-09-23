@@ -76,7 +76,7 @@ impor: yang dieksekusi adalah salinan di memori, bukan yang ada di disk.
 
 ## Menjalankan ulang
 
-    cd _research
+    cd universe        # dari dalam repo Fabius
     python record_bsc_universe.py            # satu snapshot
     python record_bsc_universe.py --loop     # tiap jam, rata ke batas jam
     BSC_UNIVERSE_INTERVAL_MIN=15 python record_bsc_universe.py --loop

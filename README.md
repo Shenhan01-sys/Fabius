@@ -46,8 +46,8 @@ tidak tersedia di chain ini, dan kami menulis batas itu daripada menyembunyikann
 | Bagian | Status |
 |---|---|
 | `contracts/DecisionAnchor.sol` + test | ✅ ada; **21 test lulus** (`forge test`) di mesin ini |
-| Perekam universe point-in-time | ✅ jalan; 23 snapshot / 13 jendela jam; sha256 per snapshot, diverifikasi ulang, dirantai lewat `_research/universe/manifest.txt` |
-| Penyaring + hasil penolakan | 🟡 berjalan; **99 token** punya hasil forward, **kohort "lolos" belum terukur** (baru sejak jendela 08:00Z) |
+| Perekam universe point-in-time | ✅ jalan; 32 snapshot / 18 jendela jam; sha256 per snapshot diverifikasi ulang, dirantai lewat `universe/manifest.txt` |
+| Penyaring + hasil penolakan | 🟡 berjalan; **136 token** punya hasil forward, **kohort "lolos" masih 0** (harga pool baru tercatat sejak 22 Sep 08:00Z) |
 | Lapisan desk + PM (multi-aset) | ⬜ spesifikasi ditulis, kode belum |
 | Eksekusi | ⬜ **paper on purpose** — tidak ada dana pengguna, tidak ada order, tidak ada yang bisa rugi |
 | Deploy ke chain 97 | ⬜ skrip ada, **belum pernah dijalankan**, belum ada address publik |

@@ -10,8 +10,8 @@ tidak bisa ditunjuk artefaknya.
 | "Setiap keputusan agen di-anchor sebagai hash di BNB Chain, dengan event yang bisa di-indeks" | `contracts/DecisionAnchor.sol` + 21 test `forge test` | dihitung/diuji lokal |
 | "Penolakan dicatat sebagai hasil: ABSTAIN wajib membawa hash log gerbang" | ditegakkan kontrak (`AbstainWithoutReason`), ada test-nya | diuji |
 | "Kewenangan agen bisa dicabut on-chain dan setelah itu panggilannya revert" | `setAgentActive` + test `test_agen_yang_dicabut_tidak_lagi_bisa_mencatat` | diuji |
-| "Universe BSC direkam point-in-time, tiap snapshot di-hash, hash-nya dirantai lewat manifest git" | `_research/universe/bsc-universe.jsonl` + `write_universe_manifest.py` (23/23 sha256 cocok) | terukur |
-| "Mayoritas kandidat hot di BSC tidak bisa diperdagangkan secara jujur" | screener: umur/likuiditas/bundler/top-10; **99 token** punya hasil forward | dihitung dari dataset sendiri |
+| "Universe BSC direkam point-in-time, tiap snapshot di-hash, hash-nya dirantai lewat manifest git" | `universe/bsc-universe.jsonl` + `universe/write_universe_manifest.py` (32/32 sha256 cocok) | terukur |
+| "Mayoritas kandidat hot di BSC tidak bisa diperdagangkan secara jujur" | screener: umur/likuiditas/bundler/top-10; **136 token** punya hasil forward | dihitung dari dataset sendiri |
 | "Jalur settlement x402 berfungsi di chain 97 dan 56, termasuk pembayaran tanpa gas oleh klien" | `_research/x402-bnb-poc/` — 31 test (15 unit + 8 fork 97 + 8 fork 56) vs Permit2 & proxy yang nyata ter-deploy | fork test |
 | "Registry ERC-8004 (Identity, Reputation) hidup di 97 dan 56" | `verify_erc8004.py` — `eth_chainId` + `eth_getCode` + `eth_call` | probe chain |
 | "Funding rate & open interest BNB tersedia tanpa API key" | Hyperliquid `metaAndAssetCtxs`: 234 perp, BNB OI 65.047, funding 0,004781%/jam | probe HTTP |
