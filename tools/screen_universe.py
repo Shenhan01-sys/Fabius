@@ -35,9 +35,9 @@ import os
 import sys
 from collections import defaultdict
 
-HERE = os.path.dirname(os.path.abspath(__file__))          # .../TradingAgent/tools
-PROJECT = os.path.dirname(os.path.dirname(HERE))           # .../Bnb-Indonesia-Hackathon
-DATA = os.path.join(PROJECT, "_research", "universe", "bsc-universe.jsonl")
+HERE = os.path.dirname(os.path.abspath(__file__))          # .../Fabius/tools
+ROOT = os.path.dirname(HERE)                               # .../Fabius
+DATA = os.path.join(ROOT, "universe", "bsc-universe.jsonl")
 OUT_DIR = os.path.join(HERE, "out")
 
 # ---- konstanta biaya, diekstrak dari kode rujukan (lihat docstring) ----

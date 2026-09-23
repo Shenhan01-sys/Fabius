@@ -5,3 +5,8 @@ node_modules/
 lib/
 .env
 *.bak
+
+# Dataset mentah: berulang tiap jam dan terus membesar. Yang ikut ke repo adalah manifest.txt
+# (sha256 per snapshot) + perkakasnya, bukan baris kasarnya.
+universe/bsc-universe.jsonl
+universe/runner.log
