@@ -19,8 +19,17 @@ universe/__pycache__/
 # (24 Sep) dan tiap siklus Actions membuat diff biner yang tidak bisa dibaca orang.
 __pycache__/
 
-# Keputusan turunan: bisa dibangun ulang dari snapshot, jangan menggandakan riwayat.
-decisions/*.jsonl
+# Rekaman SCREEN (enter/abstain dari decide.py): benar-benar turunan. `recompute(row, th)` dari
+# baris universe yang di-commit + ambang di vault/02 menghasilkan angka yang sama, jadi
+# menyimpannya cuma menggandakan riwayat (~300 KB/hari).
+decisions/decisions-*.jsonl
+
+# Rekaman ARAH (direction-*.jsonl) DI-COMMIT - dan ini koreksi atas alasanku sendiri.
+# Kalimat "keputusan turunan bisa dibangun ulang" gugur untuk arah: deret harganya datang dari
+# `data/klines/` (Aster, di-ignore, dan tidak dapat direproduksi - dijalankan besok jendela barnya
+# bergeser), jadi `decisionHash` hasil rebuild TIDAK SAMA dengan yang sudah masuk chain 97.
+# Tanpa file ini, orang yang meng-clone repo cuma melihat 32 byte di explorer dan tidak bisa
+# membaca apa yang diputuskan serta mengapa. Ukurannya ~4,5 KB per siklus.
 .jev.env
 
 # Cache deret harga dari LUAR (Aster/Hyperliquid): boleh dibangun ulang kapan saja, jadi bukan

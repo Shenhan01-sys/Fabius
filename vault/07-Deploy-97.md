@@ -72,7 +72,8 @@ tidak ada order, tidak ada dana sungguhan.
 ## 25 Sep — keputusan SUNGGUHAN masuk chain (bukan hash uji)
 
 `tools/anchor.py` (baru) membaca `decisions/direction-*.jsonl` dan mengirim apa adanya, lalu
-membaca ulang `getAnchor(id)` dan membandingkan word per word. Hasil siklus 19:06Z:
+membaca ulang `getAnchor(id)` dan membandingkan word per word. **Batch pertama** (7 baris, di atas
+snapshot universe `2026-09-24T14:10:36Z`; dikirim 19:03–19:05Z):
 
 | | |
 |---|---|
@@ -82,8 +83,24 @@ membaca ulang `getAnchor(id)` dan membandingkan word per word. Hasil siklus 19:0
 | gas per anchor | 247.987 – 250.795 (semua di bawah plafon 1.000.000 → bukan out-of-gas) |
 | biaya batch | ≈ 0,0018 tBNB @1 gwei; saldo agen 0,001085 → **0,013085** setelah transfer testnet 0,012 dari tower (`_research/topup_agent.py`, tx `0xc759fa66…` status=1) |
 
-Yang membuat halaman ini bukan sekadar angka: empat dari tujuh baris adalah **penolakan**
-(`flat`/`unassessable`) dan tetap di-anchor. Jejak yang hanya berisi keputusan berani bisa
+**Batch kedua** (4 baris, di atas snapshot segar `2026-09-24T19:06:58Z`; dikirim 19:07–19:09Z):
+
+| aset | verdict | side | gas | blok |
+|---|---|---|---|---|
+| MARSCOINUSDT@perp | **ENTER** | short | 230.899 | 132955788 |
+| GENIUSUSDT@perp | ABSTAIN | flat | 250.783 | 132955797 |
+| TACUSDT@perp | ABSTAIN | flat | 250.759 | 132955805 |
+| ASTEROIDUSDT@perp | ABSTAIN | flat | 250.807 | 132955813 |
+
+Keadaan chain sesudah dua batch: **13 anchor = `Enter=2` / `Abstain=11`**, saldo agen
+0,013085 → **0,011333 tBNB**. `MARSCOINUSDT` dua kali bukan duplikat yang lolos guard, melainkan
+dua keputusan pada dua snapshot berbeda (14:10Z dan 19:06Z) — `_decisionSeen` justru menjamin satu
+`decisionHash` tidak dihitung dua kali.
+
+Yang membuat halaman ini bukan sekadar angka: **9 dari 11 keputusan arah** adalah **penolakan**
+(`flat`/`unassessable`) dan tetap dikirim. (Di chain totalnya 13 anchor / 11 `Abstain` — sisanya 2
+anchor dari `verify_deploy.py`, yang itu memang hash uji, dan tidak dicampur di sini.) Jejak yang
+hanya berisi keputusan berani bisa
 ditulis setelah hasilnya diketahui; jejak yang menyimpan `ABSTAIN` dengan alasan yang di-hash
 (`gatesHash`) tidak bisa.
 
