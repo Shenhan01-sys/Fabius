@@ -31,6 +31,7 @@ Pakai:
 import hashlib
 import json
 import os
+import re
 import sys
 import time
 import urllib.error
@@ -285,8 +286,97 @@ def blind_spots(rec):
     return [k for k in keys if rec.get(k) is None]
 
 
+GDELT_LAST = "https://data.gdeltproject.org/gdeltv2/lastupdate.txt"
+# GDELT bukan model, jadi tidak ada yang di-"fine-tune": yang kita setel adalah KOLOM & LEXICON.
+# Terukur 24 Sep pada irisan 463 baris: semua baris punya 27 kolom, [7]=THEMES, [15]=blok TONE,
+# [3]=domain sumber, [4]=URL. Karena itu pencarian dipegang ke TEMAT (kolom 7), bukan ke substring
+# seluruh baris - substring "ojk"/"indonesia" nyaris nol, padahal temanya ada.
+GDELT_THEME_KEYS = ("CRYPTOCURRENCY", "BLOCKCHAIN", "BANK", "GOVERNMENT", "REGULAT", "SANCTION",
+                    "TAX_FINANCE", "TAX_CONFLICT", "PROTEST", "ECONOMIC", "TRADE")
+GDELT_WATCH_PHRASES = ("crypto", "blockchain", "binance", "stablecoin", "digital asset",
+                       "otoritas jasa keuangan", "bappebti", "bank indonesia", "indonesia")
+
+
+def gdelt_slice():
+    """Satu irisan 15 menit GKG -> ringkasan numerik (nol API key, nol teks mentah disimpan).
+
+    Kenapa file mentah, bukan DOC API: API-nya 429 bahkan dengan jeda 6 detik (terukur), jalur
+    `data.gdeltproject.org` -> 200 dengan TLS SAH.
+
+    Yang dicatat, dan alasannya:
+      - `themes`  : hitung per tema (kolom 7) -> ini sinyal regulasi/makro yang sebenarnya dicari.
+      - `tone_*`  : rata-rata + median kolom 15 subskrip 0, dan HANYA untuk baris yang kena tema
+                    watchers -> nada berita, bukan arah harga. Ini batas yang ditulis, bukan diam.
+      - `watch`   : frasa kripto/Indonesia, biar kelihatan kalau sinyalnya memang terlalu jarang.
+      - `cols_seen`: kalau GDELT ganti versi (27 kolom hari ini), kita tahu sebelum salah baca.
+    """
+    out = {"source": "gdelt/gkg", "status": None, "slice": None, "lines": 0, "bytes": 0,
+           "themes": {}, "watch": {}, "cols_seen": {}, "tone": None, "url_count": 0, "sha256": None}
+    try:
+        with urllib.request.urlopen(urllib.request.Request(GDELT_LAST, headers=UA), timeout=25) as r:
+            listing = r.read().decode("utf-8", "replace")
+        out["status"] = 200
+        m = re.search(r"(https?://\S+?gkg\.csv\.zip)", listing)
+        if not m:
+            out["error"] = "tidak ada url gkg di lastupdate.txt"
+            return out
+        url = m.group(1)
+        out["slice"] = url.rsplit("/", 1)[-1]
+        with urllib.request.urlopen(urllib.request.Request(url, headers=UA), timeout=90) as r:
+            zb = r.read()
+        out["bytes"] = len(zb)
+        import io
+        import zipfile
+        with zipfile.ZipFile(io.BytesIO(zb)) as z:
+            with z.open(z.namelist()[0]) as fh:
+                head = fh.read(8_000_000).decode("utf-8", "replace")
+        lines = [l for l in head.splitlines() if l.strip()]
+        out["lines"] = len(lines)
+        th, watch, cols, urls = {}, {}, {}, set()
+        tones_matched, tone_all = [], []
+        for l in lines:
+            c = l.split("\t")
+            n = len(c)
+            cols[n] = cols.get(n, 0) + 1
+            if n < 16:
+                continue
+            themes_raw = c[7] or ""
+            hit = False
+            up = themes_raw.upper()
+            for k in GDELT_THEME_KEYS:
+                if k in up:
+                    th[k] = th.get(k, 0) + 1
+                    hit = True
+            low_all = (themes_raw + " " + (c[11] or "") + " " + (c[13] or "")).lower()
+            for p in GDELT_WATCH_PHRASES:
+                if p in low_all:
+                    watch[p] = watch.get(p, 0) + 1
+                    hit = True
+            try:
+                t0 = float((c[15] or "").split(",")[0])
+                tone_all.append(t0)
+                if hit:
+                    tones_matched.append(t0)
+            except (ValueError, IndexError):
+                pass
+            urls.update(re.findall(r"https?://[^\t\" ]{12,160}", (c[4] or "").lower()))
+        out["themes"] = dict(sorted(th.items(), key=lambda kv: -kv[1]))
+        out["watch"] = dict(sorted(watch.items(), key=lambda kv: -kv[1]))
+        out["cols_seen"] = dict(sorted(cols.items()))
+        out["url_count"] = len(urls)
+        out["tone"] = {"n_all": len(tone_all), "n_matched": len(tones_matched),
+                       "mean_all": round(sum(tone_all) / len(tone_all), 3) if tone_all else None,
+                       "mean_matched": round(sum(tones_matched) / len(tones_matched), 3)
+                       if tones_matched else None}
+        out["sha256"] = "0x" + hashlib.sha256("\n".join(sorted(urls)).encode()).hexdigest()
+    except Exception as e:  # noqa: BLE001 - narasi tidak boleh menjatuhkan snapshot
+        out["error"] = f"{type(e).__name__}: {str(e)[:150]}"
+    return out
+
+
 def build_snapshot():
     parts = [gmgn_rank(), gt_pools("trending"), gt_pools("new")]
+    gd = gdelt_slice()
     now = int(time.time())
     # Gabungkan: baris pool GT ditempelkan ke field perilaku GMGN lewat alamat token.
     # Kedua sisi dinormalkan ke lowercase: alamat EVM boleh checksum (0xAb...) atau lowercase, dan
@@ -325,7 +415,9 @@ def build_snapshot():
         #   3 = veto baru `not_a_choosable_asset` membuang base stablecoin/major (USDT, BTCB, WBNB…)
         #     yang sebelumnya bisa masuk kohort "lolos" dengan return ~0%. Jumlah `survivable_count`
         #     di baris skema 2 TIDAK sebanding dengan skema 3 -> jangan dicampur dalam satu deret.
-        "schema": 3,
+        #   4 = tambahan blok `gdelt` (narasi/tema global per irisan 15 menit). Baris skema 3 tidak
+        #     punya field itu sama sekali -> jangan hitung deret narasi lintas skema.
+        "schema": 4,
         "snapshot_utc": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
         "epoch": now,
         "chain": "bsc",
@@ -334,6 +426,8 @@ def build_snapshot():
                        "MIN_VOL_OVER_LIQ": MIN_VOL_OVER_LIQ},
         "sources": [{"source": p["source"], "status": p["status"], "rows": len(p["rows"]),
                      **({"error": p.get("error")} if p.get("error") else {})} for p in parts],
+        "gdelt": {k: gd.get(k) for k in ("status", "slice", "lines", "themes", "watch", "tone",
+                                          "url_count", "cols_seen", "sha256")},
         "universe_size": len(merged),
         "survivable_count": sum(1 for r in merged if r["survivable"]),
         "fully_evaluated_count": sum(1 for r in merged if r["fully_evaluated"]),
