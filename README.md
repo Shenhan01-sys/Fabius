@@ -72,6 +72,8 @@ python -u tools/screen_universe.py --windows     # corong penolakan dari dataset
 python -u tools/bars.py BNBUSDT --days 400       # seberapa dalam deret harga yang benar2 kita punya
 python -u tools/direction.py --top 5 --emit      # arah + entry/stop/ukuran/horizon (butuh kunci Jev utk model; --no-model utk deterministik)
 python -u tools/anchor.py --dry-run              # apa yang AKAN dikirim ke chain 97 (nol transaksi)
+python -u tools/anchor.py --verify               # BACA ULANG 11 anchor dari chain: tanpa kunci, tanpa gas
+python -u tools/test_decode_anchor.py            # 13 uji offline parser retur (tanpa network)
 python -u tools/verify_deploy.py                 # baca ulang keadaan chain, bukan keluaran forge
 ```
 

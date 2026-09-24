@@ -104,6 +104,19 @@ hanya berisi keputusan berani bisa
 ditulis setelah hasilnya diketahui; jejak yang menyimpan `ABSTAIN` dengan alasan yang di-hash
 (`gatesHash`) tidak bisa.
 
+**Koreksi yang dicatat karena mahal:** kedua batch di atas mencetak `chain==lokal: YA` sambil
+field `asset` terbaca **sampah** oleh parser kita — offset string pada retur dinamis dihitung
+relatif ke AWAL STRUCT, bukan ke awal retur. Tiga hash memang cocok, jadi tidak ada klaim yang
+salah arah; tapi kalimat "chain == lokal" lebih luas dari yang dibandingkan. Ketahuan oleh
+`tools/test_decode_anchor.py` (13/13 setelah perbaikan), bukan oleh layar.
+
+Sejak itu `anchor.py --verify` membandingkan **agen + asset + verdict + tiga hash**, dan caranya
+tidak butuh kunci maupun gas: `id` anchor dihitung ulang dari hash di file
+(`keccak256(abi.encode(agen, decisionHash, snapshotHash, chainid))`), lalu `getAnchor(id)` dibaca.
+Hasil 25 Sep: **11/11 cocok**, `anchorCount()` chain = 13 (11 keputusan + 2 hash uji
+`verify_deploy.py`). Efek samping yang berguna: rumus `id` kontrak terkonfirmasi oleh PERILAKU
+(bacaan salah akan mengembalikan nol), bukan oleh tebakan.
+
 Dua guard yang dipasang karena kegagalannya sudah pernah terjadi di repo ini:
 - **saldo diperiksa sebelum tx pertama**, dihitung pada PLAFON gas × jumlah baris (bukan rata-rata)
   → siklus yang kurang dana berhenti tanpa mengirim apa pun, jadi tidak pernah ada jejak setengah;

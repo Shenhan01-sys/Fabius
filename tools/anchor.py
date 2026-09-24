@@ -62,8 +62,7 @@ def chain_check():
     return vd.RPC
 
 
-def agent_creds():
-    """Kunci agen dari .agent.env (bukan .env). Kalau tidak ada, berhenti dengan alasan."""
+def _agent_env():
     k = {}
     for path in (os.path.join(ROOT, ".agent.env"), os.path.expanduser("~/.config/fabius/agent.env")):
         try:
@@ -72,10 +71,34 @@ def agent_creds():
                 if ln and not ln.startswith("#") and "=" in ln:
                     a, b = ln.split("=", 1)
                     k.setdefault(a.strip(), b.strip())
-            if k.get("AGENT_PRIVATE_KEY"):
-                return k["AGENT_PRIVATE_KEY"], k.get("AGENT_ADDRESS", "?"), path
+            if k.get("AGENT_ADDRESS") or k.get("AGENT_PRIVATE_KEY"):
+                return k, path
         except OSError:
             continue
+    return {}, None
+
+
+def agent_address():
+    """Hanya ALAMAT agen - cukup untuk membaca, tidak pernah untuk menandatangani."""
+    k, _ = _agent_env()
+    a = (k.get("AGENT_ADDRESS") or os.environ.get("AGENT_ADDRESS") or "").strip()
+    if not a and k.get("AGENT_PRIVATE_KEY"):
+        # Alamat boleh DERIVASI dari kunci: .agent.env bisa saja cuma menyimpan kunci, dan
+        # meminta orang menulis ulang alamatnya hanya membuka peluang salah ketik pada sesuatu
+        # yang bisa dihitung mesin.
+        from eth_account import Account
+        a = Account.from_key(k["AGENT_PRIVATE_KEY"]).address
+    if not a:
+        raise SystemExit("AGENT_ADDRESS tidak diketahui -> tidak bisa menghitung ulang id anchor. "
+                         "Isi Fabius/.agent.env atau set AGENT_ADDRESS di environment.")
+    return a
+
+
+def agent_creds():
+    """Kunci agen dari .agent.env (bukan .env). Kalau tidak ada, berhenti dengan alasan."""
+    k, path = _agent_env()
+    if k.get("AGENT_PRIVATE_KEY"):
+        return k["AGENT_PRIVATE_KEY"], k.get("AGENT_ADDRESS", "?"), path or "?"
     raise SystemExit("tidak ada AGENT_PRIVATE_KEY di .agent.env - anchor tidak bisa ditandatangani. "
                      "Kontrak tetap sah, tapi jejak keputusannya berhenti di file lokal.")
 
@@ -129,9 +152,16 @@ def decode_anchor(ret):
     w = [b[i:i + 32] for i in range(0, len(b) // 32 * 32, 32)]
     if len(w) < 8:
         return {"_short": len(w)}
-    # w[0]=offset head (0x20), w[1]=agent, w[2]=offset string asset, w[3]=verdict,
-    # w[4]=decisionHash, w[5]=gatesHash, w[6]=snapshotHash, w[7]=anchoredAt
-    off = int.from_bytes(w[2], "big")
+    # Layout retur getAnchor (satu struct dinamis): w[0]=offset ke struct (=32), lalu head struct
+    # w[1]=agent w[2]=offset string w[3]=verdict w[4]=decisionHash w[5]=gatesHash
+    # w[6]=snapshotHash w[7]=anchoredAt, dan tail string mulai di w[0]+w[2].
+    # BUG YANG DITANGKAP test_decode_anchor.py 25 Sep: offset string itu RELATIF KE AWAL STRUCT,
+    # bukan ke awal retur. Versi pertama memakai `w[2]` mentah (=224) sebagai posisi absolut,
+    # jadi panjang string dibaca dari word `anchoredAt` -> `asset` keluar jadi sampah. Tiga hash
+    # tetap cocok, jadi `chain==lokal: YA` tetap tercetak. Itu tipe kegagalan yang paling mahal:
+    # yang salah adalah field yang tidak dibandingkan.
+    base = int.from_bytes(w[0], "big")
+    off = base + int.from_bytes(w[2], "big")
     asset_len = int.from_bytes(b[off:off + 32], "big") if off + 32 <= len(b) else 0
     asset = b[off + 32:off + 32 + asset_len].decode("utf-8", "replace") if asset_len else ""
     return {"agent": "0x" + w[1].hex()[-40:], "verdict": int.from_bytes(w[3], "big"),
@@ -140,12 +170,81 @@ def decode_anchor(ret):
             "asset": asset, "_words": len(w)}
 
 
+def expected_id(agent, decision_hash, snapshot_hash, chain=97):
+    """id = keccak256(abi.encode(msg.sender, decisionHash, snapshotHash, chainid)) - sesuai kontrak.
+
+    Ini yang membuat `--verify` mungkin: kita bisa menghitung ULANG alamat penyimpanan sebuah
+    anchor tanpa mengirim transaksi dan tanpa kunci. Jadi jejak yang sudah masuk chain bisa
+    diperiksa ulang kapan pun (gratis, tanpa gas), bukan hanya pada saat ia dikirim.
+    """
+    from eth_abi import encode as _enc
+    from eth_utils import keccak as _k
+    return "0x" + _k(_enc(["address", "bytes32", "bytes32", "uint256"],
+                          [bytes.fromhex(agent[2:]), bytes.fromhex(decision_hash[2:]),
+                           bytes.fromhex(snapshot_hash[2:]), chain])).hex()
+
+
+def verify(rows, addr, agent_addr):
+    """Baca ulang SEMUA baris dari chain dan bandingkan word per word. Nol transaksi, nol kunci."""
+    fields = ("agent", "asset", "verdict", "decisionHash", "gatesHash", "snapshotHash")
+    bad = 0
+    for r in rows:
+        q = as_anchor_row(r)
+        # chain mengembalikan hex huruf-kecil untuk address; env menyimpan checksum-capmixed.
+        # Compared lowercase, atau tiap verifikasi akan terlihat "BEDA" tanpa ada yang salah.
+        q["agent"] = agent_addr.lower()
+        iid = expected_id(agent_addr, q["decisionHash"], q["snapshotHash"])
+        try:
+            got = vd.call(addr, GET_ANCHOR, ("bytes32",), (bytes.fromhex(iid[2:]),))
+        except Exception as e:  # noqa: BLE001
+            print(f"  {q['asset']:22} TIDAK DIBACA  {str(e)[:80]}")
+            bad += 1
+            continue
+        d = decode_anchor(got)
+        diffs = [f for f in fields if d.get(f) != q[f]]
+        if diffs:
+            bad += 1
+            print(f"  {q['asset']:22} BEDA di {diffs}: chain={json.dumps({f: str(d.get(f))[:26] for f in diffs})[:150]}")
+        else:
+            print(f"  {q['asset']:22} cocok  blok_waktu={d.get('anchoredAt')} verdict={d.get('verdict')} "
+                  f"id={iid[:18]}…")
+    return bad
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--file", default=None, help="rekaman keputusan (default: terbaru di decisions/)")
     ap.add_argument("--only", default=None, help="satu simbol saja")
     ap.add_argument("--dry-run", action="store_true")
+    ap.add_argument("--verify", action="store_true",
+                    help="baca ulang dari chain dan bandingkan word per word; TIDAK mengirim apa pun")
     a = ap.parse_args()
+
+    if a.verify:
+        # `--verify` sengaja TIDAK butuh kunci: ia hanya membaca. Kalau ia minta kunci, orang luar
+        # yang ingin memeriksa klaim kita tidak bisa melakukannya - padahal itulah gunanya anchor.
+        vfiles = sorted(glob.glob(os.path.join(ROOT, "decisions", "direction-*.jsonl")))
+        if a.file:
+            vfiles = [a.file]
+        # Dedupe HARUS sama dengan jalur kirim (terakhir-menang per simbol PER BERKAS). Versi
+        # pertama mengumpulkan semua baris mentah lalu melaporkan 1 "BEDA" untuk baris yang memang
+        # tidak pernah dikirim - MARSCOIN ditulis dua kali dalam sehari dan yang masuk chain hanya
+        # yang terakhir. Uji yang lebih longgar dari perbuatannya sendiri menghasilkan temuan palsu.
+        vrows = []
+        for f in vfiles:
+            vrows.extend(pick_rows(load_rows(f), a.only))
+        addr = vd.resolve_anchor()
+        agent_addr = agent_address()
+        rpc = chain_check()
+        n = vd.num(vd.call(addr, "anchorCount()"))
+        print(f"verify : {len(vrows)} keputusan dari {len(vfiles)} berkas | agen {agent_addr}")
+        print(f"kontrak: {addr} | anchorCount() di chain = {n} | rpc {rpc}\n")
+        bad = verify(vrows, addr, agent_addr)
+        print(f"\n{len(vrows) - bad}/{len(vrows)} cocok word-per-word (agen, asset, verdict, 3 hash)"
+              f" | {bad} tidak cocok")
+        print("Yang dibandingkan sekarang TERMASUK `asset` - field yang persis membuat bug offset"
+              "\n25 Sep ketahuan. Nol transaksi dikirim.")
+        return
 
     cands = ([a.file] if a.file else
              sorted(glob.glob(os.path.join(ROOT, "decisions", "*.jsonl")), key=os.path.getmtime))
@@ -211,7 +310,11 @@ def main():
         ida = logs[0]["topics"][1] if logs and len(logs[0]["topics"]) > 1 else None
         got = vd.call(addr, GET_ANCHOR, ("bytes32",), (bytes.fromhex(ida[2:]),)) if ida else "0x"
         d = decode_anchor(got)
-        match = all(d.get(k) == q[k] for k in ("decisionHash", "gatesHash", "snapshotHash", "verdict"))
+        # `asset` ikut: itu field yang membuat bug offset string ketahuan (test_decode_anchor.py),
+        # dan membandingkan hanya 3 hash = mengklaim lebih dari yang diperiksa.
+        match = all(d.get(k) == q[k] for k in
+                    ("decisionHash", "gatesHash", "snapshotHash", "verdict", "asset")) and \
+            str(d.get("agent", "")).lower() == agent_addr.lower()
         ok += 1 if match else 0
         print(f"{q['asset']:22}{'ENTER' if q['verdict'] == 0 else 'ABSTAIN':>9}{str(q['side']):>7}"
               f"{'TERANCHOR':>11}{gu:>9}  blok={blk} id={ida[:16] if ida else '-'}…  "
