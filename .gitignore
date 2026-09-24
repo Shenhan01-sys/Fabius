@@ -4,6 +4,8 @@ broadcast/
 node_modules/
 lib/
 .env
+.deployer.env
+.agent.env
 *.bak
 
 # Dataset mentah DI-COMMIT sejak 24 Sep (dulu dikecualikan). Alasannya: perekam bisa jalan di

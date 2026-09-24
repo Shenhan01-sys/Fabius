@@ -52,7 +52,7 @@ tidak tersedia di chain ini, dan kami menulis batas itu daripada menyembunyikann
 | Lapisan penilai (model) | 🟡 **opsional dan bisa dicabut** (`--judge none|auto|jev|openai`, default `none`). Terukur 23 Sep: 1 panggilan = $0,00002407, 0,43s, `jev-1.13.0`; veto **satu arah** (hanya boleh membatalkan ENTER) dan hasilnya masuk `decisionHash` |
 | Lapisan desk penuh (debat antar-desk) | ⬜ spesifikasi ditulis (`vault/06-Keputusan.md` F-D04), kode belum |
 | Eksekusi | ⬜ **paper on purpose** — tidak ada dana pengguna, tidak ada order, tidak ada yang bisa rugi |
-| Deploy ke chain 97 | ⬜ skrip ada, **belum pernah dijalankan**, belum ada address publik |
+| Deploy ke chain 97 | ✅ **terverifikasi dari chain 24 Sep** — `0xdd162afb5f5f92d5092f845A93660e3B38259330`; bytecode 4748 B identik dengan build lokal; `anchor()` dari agen terpisah sukses (gas 302.011); event `Anchored` ter-indeks dengan topic2 = alamat agen; **rem on-chain terbukti** (setelah revoke → revert, setelah relist → pulih). Detail + cara mengulang: `vault/07-Deploy-97.md` |
 | Fasilitator x402 sendiri | ⬜ settlement-nya terbukti di fork (31 test, chain 97 & 56); jalur HTTP `402` belum pernah dieksekusi |
 
 Lihat `vault/05-Belum-Terbukti.md` untuk daftar lubang yang masih menganga dan cara menutupnya.
