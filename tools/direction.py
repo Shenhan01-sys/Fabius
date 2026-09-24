@@ -49,6 +49,12 @@ _spec = importlib.util.spec_from_file_location("judge", os.path.join(HERE, "judg
 judge = importlib.util.module_from_spec(_spec)
 _spec.loader.exec_module(judge)
 
+# security_gate mengimpor modul ini lewat path yang sama; diimpor sebagai modul file supaya tidak
+# ada dua salinan aturan ④ (yang satu di CLI, yang satu lagi "kira-kira sama" di agen).
+_sspec = importlib.util.spec_from_file_location("security_gate", os.path.join(HERE, "security_gate.py"))
+sec_mod = importlib.util.module_from_spec(_sspec)
+_sspec.loader.exec_module(sec_mod)
+
 DATA_DIR = os.path.join(ROOT, "data")
 PERP_CACHE = os.path.join(DATA_DIR, "aster_symbols.json")
 BASE = "https://fapi.asterdex.com/fapi/v1"
@@ -61,6 +67,7 @@ ACF_STRUCTURED = 0.10       # >= ini = pola terukur; di antaranya = belum tahu
 FUNDING_EXTREME = 0.0005    # 0,05% per 4 jam = biaya carry/teknik terlalu mahal
 RISK_SAFE = 0.005            # 0,5% ekuitas per posisi saat tidak yakin
 RISK_WARM = 0.010            # 1% (korpus lama: BASE_RISK 1%, CONVICTION 0,5-1,5%)
+LIQ_MIN_USD = 50_000        # vault/08 §3 (syarat kursi ⑥) <- vault/02-Ambang.md
 TIME_STOP_H = 24            # hard time-stop utk rezim "tidak yakin"
 ATR_MULT_STOP = 1.5
 ATR_MULT_TP = 3.0
@@ -179,7 +186,11 @@ def build_state_table(rows):
 
 
 def decide_one(f, fund, liq, model_ans):
-    """Gabungan deterministik + model. Model hanya boleh MENGECILKAN atau MEMVETO."""
+    """Gabungan deterministik + model. Model hanya boleh MENGECILKAN atau MEMVETO.
+
+    Gerbang ④ TIDAK diterapkan di sini - lihat `apply_security()` yang satu tempat, supaya tidak
+    ada dua jalur kode yang boleh mengubah `side` dan keduanya mengira dirinya yang paling akhir.
+    """
     why, side, conf = [], "flat", None
     if not f.get("ok"):
         return {"side": "flat", "why": ["deret terlalu pendek"], "regime": "unassessable"}
@@ -237,6 +248,39 @@ def decide_one(f, fund, liq, model_ans):
     return out
 
 
+def apply_gates(d, sec, bars, liq):
+    """Gerbang kursi sungguhan: ① riwayat + ④ keamanan + ⑥ kapasitas keluar (vault/08 §3).
+
+    Versi pertama fungsi ini bernama `apply_security` dan menetapkan `seat_eligible = (④ OK)`.
+    Itu salah klaim: kolom "kursi" jadi bernilai YA untuk kandidat yang bahkan tidak punya
+    likuiditas, hanya karena satu dari tiga syaratnya terpenuhi. Nama kolom menciptakan makna,
+    jadi syaratnya yang disamakan ke kolomnya - bukan sebaliknya.
+
+    ④ sendiri tetap satu-satunya yang boleh MEMATIKAN arah (BLOCKED -> flat). Yang lain hanya
+    mencabut hak kursi. Dan "belum diukur" TIDAK diperlakukan seperti "bersih": kalau iya, gerbang
+    ④ bisa dibypass cukup dengan membuat panggilannya gagal, tanpa meninggalkan bekas di data.
+    """
+    status = (sec or {}).get("status") or "UNMEASURED"
+    d["sellability"] = status
+    miss = []
+    if (bars or 0) < MIN_BARS_TINY:
+        miss.append(f"①bar={bars}<{MIN_BARS_TINY}")
+    if status != "OK":
+        miss.append(f"④{status}")
+    if liq is None:
+        miss.append("⑥liq=TIDAK DIUKUR")
+    elif liq < LIQ_MIN_USD:
+        miss.append(f"⑥liq=${liq:,.0f}<{LIQ_MIN_USD:,.0f}")
+    d["seat_eligible"] = not miss
+    d["seat_blockers"] = miss
+    if status == "BLOCKED" and d.get("side") != "flat":
+        d["why"].append("④ honeypot/can_not_sell TERUKUR -> arah dibatalkan")
+        d["side"], d["regime"] = "flat", "blocked-4"
+    elif miss:
+        d["why"].append("kursi ditolak: " + " ".join(miss))
+    return d
+
+
 def snap_hash_for(symbol, f, fund):
     """snapshotHash utk keputusan arah = ikatan ke data yang benar-benar dipakai saat itu."""
     # Fitur yang BENAR-BENAR dipakai keputusan ikut di-hash, bukan hanya harga mentahnya.
@@ -256,6 +300,8 @@ def main():
     ap.add_argument("--emit", action="store_true")
     ap.add_argument("--top", type=int, default=5)
     ap.add_argument("--no-model", action="store_true")
+    ap.add_argument("--no-security", action="store_true",
+                    help="lewati gerbang ④ (dipakai hanya untuk uji offline; kandidat jadi UNMEASURED dan kursi ditolak)")
     a = ap.parse_args()
 
     ps = perp_symbols()
@@ -305,7 +351,8 @@ def main():
         fund = funding_and_oi(psym)
         liq = r.get("liquidity")
         rows.append({"symbol": psym, "base": sym, "tags": (by_base[sym][0],), "liq_usd": liq,
-                     "bundler_rate": r.get("bundler_rate"), "bars": f.get("n"),
+                     "address": r.get("address"), "bundler_rate": r.get("bundler_rate"),
+                     "bars": f.get("n"),
                      "ret24_pct": round((f.get("ret24") or 0) * 100, 3) if f.get("ok") else None,
                      "atr_pct": round(f["atr_pct"] * 100, 3) if f.get("ok") and f.get("atr_pct") else None,
                      "acf_abs": f.get("acf_abs"),
@@ -322,6 +369,25 @@ def main():
     print(f"tertangkap {len(rows)} kandidat yang punya kontrak perp; dinilai {len(judged)}; "
           f"layak kursi {len(scored)} (buang {thin} karena bar<{MIN_BARS_TINY}); "
           f"dipilih {len(pick)} (urut |acf| terbesar)\n")
+
+    # Bidang ④: keamanan kontrak TOKEN DASAR, diukur sebelum keputusan apa pun dibuat.
+    # Ini bukan hiasan: `exit-cap <= 1% likuiditas` mengasumsikan jualan DITERIMA. Untuk C1
+    # (meme ber-perp) yang tidak bisa dijual adalah token spotnya - dan harga referensi perp
+    # datang dari pasar spot itu. Lihat tools/security_gate.py.
+    sec_by_base = {}
+    if pick and not a.no_security:
+        pairs = [(str(r.get("base") or ""), r.get("address")) for r in pick if r.get("address")]
+        if pairs:
+            try:
+                for x in sec_mod.gate_rows(pairs, snap_sha=snap["sha256"]):
+                    sec_by_base[str(x["symbol"]).upper()] = x
+                print("gerbang ④ (keamanan token dasar):")
+                sec_mod.table(list(sec_by_base.values()))
+                print()
+            except Exception as e:  # noqa: BLE001
+                # Kalau ④ tidak bisa diukur, kandidat TIDAK lolos sebagai "bersih": statusnya
+                # jadi UNMEASURED dan kursi ditolak. Kegagalan pengukur = kegagalan gerbang.
+                print(f"gerbang ④ GAGAL diukur: {type(e).__name__}: {str(e)[:120]}\n")
 
     model_out = {}
     if pick and not a.no_model:
@@ -352,17 +418,29 @@ def main():
                  "veto": bool((veto_a.get("noul") or 0) >= 0.5),
                  "veto_prob": veto_a.get("noul")}
         d = decide_one(r["_f"], r["_fund"], r.get("liq_usd"), m)
+        sec = sec_by_base.get(str(r.get("base") or "").upper())
+        d = apply_gates(d, sec, r.get("bars"), r.get("liq_usd"))   # gerbang hanya mengurangi
         sh, meta = snap_hash_for(r["symbol"], r["_f"], r["_fund"])
+        # Ringkasan ④ yang SESUNGGUHNYA dipakai ikut masuk rekaman (dan jadi decisionHash): tanpa
+        # ini, "kami memeriksa honeypot" hanya bisa dipercaya dari log teks.
+        sec_rec = None
+        if sec:
+            sec_rec = {"status": sec.get("status"), "address": sec.get("address"),
+                       "gmgn_sha": (sec.get("gmgn") or {}).get("_sha"),
+                       "goplus_sha": (sec.get("goplus") or {}).get("_sha"),
+                       "tax_sell": (sec.get("tax") or {}).get("tax_sell")}
         rec = {"kind": "direction", "symbol": r["symbol"], "universe_snapshot": snap["sha256"],
-              "data": meta, "decision": d, "model": m}
+               "data": meta, "decision": d, "model": m, "security": sec_rec}
         dh = "0x" + hashlib.sha256(json.dumps(rec, sort_keys=True, separators=(",", ":")).encode()).hexdigest()
-        gh = "0x" + hashlib.sha256(json.dumps({"why": d["why"], "regime": d["regime"]},
+        gh = "0x" + hashlib.sha256(json.dumps({"why": d["why"], "regime": d["regime"],
+                                               "sellability": d.get("sellability"),
+                                               "seat_eligible": d.get("seat_eligible")},
                                               sort_keys=True, separators=(",", ":")).encode()).hexdigest()
         out_rows.append({**rec, "decisionHash": dh, "gatesHash": gh, "snapshotHash": sh})
 
-    print(f"{'simbol':14}{'bar':>6}{'|acf|':>8}{'fund4j%':>10}{'model':>9}{'veto':>7}{'side':>7}"
-          f"{'rezim':>13}{'risk':>7}  alasan")
-    print("-" * 126)
+    print(f"{'simbol':14}{'bar':>6}{'|acf|':>8}{'fund4j%':>10}{'model':>9}{'veto':>7}{'4':>11}"
+          f"{'side':>7}{'rezim':>13}{'kursi':>7}{'risk':>7}  alasan")
+    print("-" * 140)
     for o in out_rows:
         d, m, dt = o["decision"], (o.get("model") or {}), o["data"]
         acf = dt.get("acf_abs")
@@ -370,7 +448,9 @@ def main():
         print(f"{o['symbol']:14}{dt['bars']:>6}{(f'{acf:.3f}' if acf is not None else '-'):>8}"
               f"{(dt['funding_4h'] * 100 if dt.get('funding_4h') is not None else 0):>10.4f}"
               f"{str(m.get('side') or '-'):>9}{('-' if vp is None else f'{vp:.2f}'):>7}"
+              f"{str(d.get('sellability') or '-'):>11}"
               f"{d['side']:>7}{d['regime']:>13}"
+              f"{('YA' if d.get('seat_eligible') else 'TIDAK'):>7}"
               f"{d.get('risk_pct', 0) * 100:>6.1f}%  {'; '.join(d['why'])[:96]}")
         if d["side"] != "flat":
             print(f"{'':14}  entry={d.get('entry_ref')} stop={d.get('stop')} target={d.get('target')} "

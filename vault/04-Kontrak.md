@@ -30,6 +30,21 @@ lupa besok:
 - Keadilan/koreksian: tidak ada challenge window, tidak ada arbiter, tidak ada stake. Bukan
   `ValidationRegistry` (yang memang tidak ada di chain mana pun), dan jangan disebut begitu.
 
+## Sifat baca yang terukur (bukan yang diasumsikan)
+
+`getAnchor(bytes32)` **tidak menjaga id tak dikenal**: pembacaan `mapping` biasa mengembalikan
+struct NOL, bukan `revert`. Terukur 25 Sep lewat `tools/anchor.py --verify` — 4 keputusan yang
+belum pernah dikirim ke chain terbaca sebagai `{agent: 0x0…0, asset: "", hashes: 0x0…0,
+anchoredAt: 0}`.
+
+Kenapa ini dicatat, karena ini jenis detail yang membuat verifier salah menyimpulkan: kalau alat
+pemeriksaannya mencari *exception* untuk tahu "belum ada di chain", ia tidak akan pernah menemukannya,
+dan setiap siklus baru akan terlihat seperti **bukti yang rusak** (BEDA) alih-alih **belum dikirim**.
+Aturan yang dipakai sekarang: tiga keadaan — `cocok` / `BEDA` / `BELUM DI-ANCHOR` — dengan
+"BELUM DI-ANCHOR" dikenali dari rantai yang seluruhnya nol. Bandingkan dengan `getAgent()` yang
+**memang** punya guard (`UnknownAgent`), jadi asumsi "pembacaan kita revert" tidak bisa dipindah
+dari satu view ke view lain.
+
 ## Versi kita vs praktik yang sudah ada
 
 Praktik yang dipakai HeliQuant (`onchain_recorder.py:110-118`) meng-anchor hash sebagai

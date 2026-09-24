@@ -157,3 +157,33 @@ Keputusan yang diambil dari angka itu, dan alasannya:
 4. **Yang dianggap utang, bukan hasil**: funding historis belum ikut diuji (gerbang carry absen di
    backtest), bidang ④ `can_not_sell`/honeypot belum diukur sama sekali, dan 12 simbol ini bergerak
    dengan satu pasar yang sama — jadi "0 dari 12" bukan 12 percobaan bebas.
+
+## F-D14 — "Belum diukur" bukan "bersih", dan satu kolom tidak boleh mengklaim tiga syarat · 25 Sep
+
+Bidang ④ akhirnya diukur (`tools/security_gate.py`) karena skala jalur arah memungkinkannya:
+`vault/05` #12 sudah membuktikan rute security GMGN tidak menerima daftar alamat, jadi 40
+alamat/snapshot di jalur screen tak terbayar — tapi kandidat arah tinggal ≤5, yaitu 10 panggilan
+(GMGN + GoPlus) per siklus. Terukur 5/5 kandidat membalas 200; `is_honeypot` benar-benar boolean
+(bukan string), dan GoPlus TIDAK punya `can_not_sell` sama sekali.
+
+Tiga aturan yang diputuskan di sini, bukan sekadar diprogram:
+
+1. **Empat status, bukan dua.** `OK` / `BLOCKED` / `DISAGREE` / `UNMEASURED`. Yang terakhir
+   terpicu nyata pada pPOLY (`is_honeypot=None` dari GMGN): kalau "tidak ada angka" disamakan
+   dengan "bersih", gerbang ④ bisa dibypass cukup dengan membuat panggilannya gagal — dan
+   kegagalan itu tidak meninggalkan bekas di data. Sekarang dia meninggalkan bekas:
+   `sellability` ikut masuk `gatesHash`.
+2. **④ hanya boleh mengurangi.** Satu-satunya jalan ④ mengubah `side` adalah `BLOCKED → flat`.
+   Tidak ada jalur di mana kontrak yang "bersih" membuka posisi yang gerbang lain tolak — sama
+   seperti doktrin satu-arah `judge.py` (F-D11).
+3. **Kolom `kursi` harus berisi semua syarat kursi.** Versi pertama (`apply_security`) menetapkan
+   `seat_eligible = (④ OK)` dan mencetak YA untuk kandidat yang tak punya likuiditas. Itu bukan bug
+   kecil: nama kolom dibaca orang sebagai kesimpulan. `apply_gates()` sekarang menegakkan ①+④+⑥
+   (vault/08 §3) dan menyimpan `seat_blockers` — dan langsung terbukti menggigit: `GENIUSUSDT`
+   bersih di ④ dengan 3.940 bar di ①, tapi kursinya ditolak karena `⑥liq=$19.388 < $50.000`.
+
+Batas yang harus ikut tercatat: yang diukur adalah honeypot **token spot**, jadi ini membuktikan
+dasar harga perp tidak bisa disandera oleh kontrak yang menolak penjualan — BUKAN membuktikan
+posisi perp bisa ditutup di venue-nya. Dan dua sumber tidak sepakat soal pajak jual (GMGN 3 % vs
+GoPlus 0 % pada MARSCOIN/ASTEROID); ambang `DISAGREE` dipasang di ≥5 % sehingga kasus 3 % ini tetap
+`OK` — itu pilihan kami, dan karena itu dituliskan, bukan dibenamkan.

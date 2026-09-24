@@ -21,7 +21,7 @@ besar akan tetap kosong; itu hasil, bukan kegagalan.
 | ① deret harga | **Aster `fapi/v1/klines` (BNB-native, tanpa API key): 9.599 bar / 400 hari** di 7 halaman (`tools/bars.py`); Hyperliquid `candleSnapshot` 5.001 bar/208 hari sekali tarik; GMGN `token_kline` mentok **1.000 bar = 41,6 hari**, dan **0 bar untuk token gas**; GeckoTerminal **1.000 bar**, pool baru **30 bar** | ✅ 25 Sep: `tools/bars.py` menarik & men-cache BNB/ETH/**1000PEPE** |
 | ② perilaku pembeli | GMGN `market/rank`: `bundler_rate`, `sniper_count`, `smart_degen_count`, `rug_ratio`, `top_10_holder_rate`, `lock_percent` (100 kandidat/jendela) | ✅ wired di perekam |
 | ③ derivatif | **Aster `premiumIndex` + `openInterest`** (608 kontrak, `Meme` 61, `AI` 42; funding per **4 jam**: BNB +0,0000% mark 778,45 OI 7.832 · ETH +0,0100% · SOL −0,0020% · HYPE −0,0018% · DOGE +0,0044%) · Hyperliquid `metaAndAssetCtxs` 234 perp sebagai pembanding | ✅ wired di `tools/direction.py`: funding ekstrem (>0,05%/4j) = tolak posisi, karena biayanya lebih besar dari edge yang kita klaim |
-| ④ keamanan kontrak | GMGN `token/security` (34 field, `is_honeypot`, `can_not_sell`); GoPlus `token_security/56` | ⬜ **belum wired** → hari ini `honeypot=0` artinya **tidak diukur**, bukan bersih |
+| ④ keamanan kontrak | GMGN `token/security` (terukur **28 field**, `is_honeypot` boolean, `can_not_sell`, `can_sell`, `buy_tax`, `sell_tax`); GoPlus `token_security/56` (TIDAK punya `can_not_sell`) | ✅ 25 Sep wired di **jalur arah** lewat `tools/security_gate.py` — 5/5 kandidat membalas GMGN 200 dan 5/5 GoPlus 200. Catatan yang membuat ini berguna: `vault/05` #12 (jalur SCREEN) tetap mati karena beban 40 alamat/snapshot; jalur arah cuma **≤5 kandidat** jadi 10 panggilan/siklus. Dua sumber **tidak sepakat** soal pajak jual (MARSCOIN & ASTEROID: GMGN 3 % vs GoPlus 0 %) — aturannya selisih ≥5 % menurunkan status ke `DISAGREE`, jadi 3 % ini tetap `OK` TAPI tercatat sebagai perbedaan sumber, bukan kesepakatan. Kandidat dengan field kunci null jadi `UNMEASURED` (contoh terukur: pPOLY `is_honeypot=None`) dan **tidak** dihitung bersih |
 | ⑤ perhatian/narasi | GDELT `gkg` tema + nada (602 artikel; `GOVERNMENT 203`, `REGULAT 45`, `SANCTION 17`, nada −1,005); CoinGecko trending; CoinDesk RSS | ✅ wired (skema 4) |
 | ⑥ kapasitas keluar | likuiditas pool + volume: **80 dari 140** kandidat < $50.000 | ✅ terukur |
 | ⑦ arus smart money (BARU) | GMGN `user/kol` & `user/smartmoney`: **100 transaksi/panggilan**, `maker`+`side`+`buy_cost_usd`+`is_open_or_close`+`timestamp` | ⬜ baru ditemukan 25 Sep, belum wired |
@@ -51,7 +51,14 @@ DRAFT harian (maks 5)
   keluaran       : 5 kursi + alasan tiap kursi -> anchor("DRAFT")
 ```
 
-Status kursi (kita pakai ambang **korpus HeliQuant**, disebut per file - Fabius belum punya kode ini):
+Gerbang di atas **sudah jadi kode** sejak 25 Sep: `direction.apply_gates()` menegakkan ①+④+⑥ dan
+menulis hasilnya ke `seat_eligible` + `seat_blockers`, yang ikut masuk `gatesHash`. Contoh nyata
+dari siklus 19:06:58Z: `GENIUSUSDT` ④ bersih dan ① 3.940 bar, tapi kursinya **ditolak** karena
+`⑥liq=$19.388 < $50.000` — persis alasan kolom ini tidak boleh disamakan dengan "honeypot-nya
+bersih". (Versi pertama fungsi ini bernama `apply_security` dan menetapkan `seat_eligible` dari ④
+saja; itu salah klaim, jadi syaratnya yang disamakan ke namanya, bukan sebaliknya.)
+
+Status kursi (kita pakai ambang **korpus HeliQuant**, disebut per file - Fabius belum punya kode rotasinya, `seats.py` masih kosong):
 
 | Peristiwa | Tindakan | Ambang & asal |
 |---|---|---|

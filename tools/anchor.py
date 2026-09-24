@@ -188,6 +188,7 @@ def verify(rows, addr, agent_addr):
     """Baca ulang SEMUA baris dari chain dan bandingkan word per word. Nol transaksi, nol kunci."""
     fields = ("agent", "asset", "verdict", "decisionHash", "gatesHash", "snapshotHash")
     bad = 0
+    miss = 0        # sah, tapi belum dikirim ke chain - bukan kegagalan
     for r in rows:
         q = as_anchor_row(r)
         # chain mengembalikan hex huruf-kecil untuk address; env menyimpan checksum-capmixed.
@@ -197,18 +198,40 @@ def verify(rows, addr, agent_addr):
         try:
             got = vd.call(addr, GET_ANCHOR, ("bytes32",), (bytes.fromhex(iid[2:]),))
         except Exception as e:  # noqa: BLE001
-            print(f"  {q['asset']:22} TIDAK DIBACA  {str(e)[:80]}")
-            bad += 1
+            # Bedakan TIGA keadaan, bukan dua. `decisions/direction-*.jsonl` menampung BEBERAPA
+            # siklus sementara hanya sebagian yang sudah di-anchor; kalau kegagalan baca dilaporkan
+            # sebagai "BEDA", setiap siklus baru otomatis terlihat seperti bukti yang rusak -
+            # dan itu persis jenis kebisingan yang membuat orang berhenti membaca jejak.
+            msg = str(e)
+            not_found = ("reverted" in msg.lower()) or ("not found" in msg.lower())
+            label = "BELUM DI-ANCHOR" if not_found else "GAGAL DIBACA"
+            print(f"  {q['asset']:22} {label:16} id={iid[:18]}…  {msg[:70]}")
+            if not not_found:
+                bad += 1
+            else:
+                miss += 1
             continue
         d = decode_anchor(got)
         diffs = [f for f in fields if d.get(f) != q[f]]
         if diffs:
+            # KOREKSI ASUMSI (25 Sep). Versi pertama menggolongkan "belum di-anchor" dari munculnya
+            # kata "reverted" di exception — aku mengira `getAnchor(id)` menjaga id tak dikenal.
+            # Ternyata kontrak mengembalikan STRUCT NOL (pembacaan mapping, tanpa guard), jadi cabang
+            # itu tidak pernah jalan dan 4 keputusan terbaru tercetak "BEDA" seolah buktinya rusak.
+            # Yang menandai "belum ada di chain" adalah rantai yang seluruhnya nol, bukan error.
+            zeroish = (str(d.get("agent", "")).lower().endswith("0" * 40) and not d.get("asset")
+                       and int(str(d.get("decisionHash", "0x00")), 16) == 0
+                       and int(str(d.get("snapshotHash", "0x00")), 16) == 0)
+            if zeroish:
+                miss += 1
+                print(f"  {q['asset']:22} BELUM DI-ANCHOR  id={iid[:18]}… (pembacaan rantai = struct nol)")
+                continue
             bad += 1
             print(f"  {q['asset']:22} BEDA di {diffs}: chain={json.dumps({f: str(d.get(f))[:26] for f in diffs})[:150]}")
         else:
             print(f"  {q['asset']:22} cocok  blok_waktu={d.get('anchoredAt')} verdict={d.get('verdict')} "
                   f"id={iid[:18]}…")
-    return bad
+    return bad, miss
 
 
 def main():
@@ -239,11 +262,13 @@ def main():
         n = vd.num(vd.call(addr, "anchorCount()"))
         print(f"verify : {len(vrows)} keputusan dari {len(vfiles)} berkas | agen {agent_addr}")
         print(f"kontrak: {addr} | anchorCount() di chain = {n} | rpc {rpc}\n")
-        bad = verify(vrows, addr, agent_addr)
-        print(f"\n{len(vrows) - bad}/{len(vrows)} cocok word-per-word (agen, asset, verdict, 3 hash)"
-              f" | {bad} tidak cocok")
-        print("Yang dibandingkan sekarang TERMASUK `asset` - field yang persis membuat bug offset"
-              "\n25 Sep ketahuan. Nol transaksi dikirim.")
+        bad, miss = verify(vrows, addr, agent_addr)
+        onchain = len(vrows) - miss
+        print(f"\n{onchain - bad}/{onchain} yang ADA di chain cocok word-per-word "
+              f"(agen, asset, verdict, 3 hash) | {bad} tidak cocok | {miss} belum di-anchor")
+        print("Tiga keadaan itu sengaja dipisah: 'belum dikirim' bukan 'beda'. Yang dibandingkan"
+              "\nsekarang TERMASUK `asset` - field yang persis membuat bug offset string 25 Sep"
+              "\nketahuan. Nol transaksi dikirim, nol kunci dipakai.")
         return
 
     cands = ([a.file] if a.file else
