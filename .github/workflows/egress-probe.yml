@@ -28,5 +28,3 @@ jobs:
           python-version: "3.12"
       - name: Uji keterjangkauan sumber dari jaringan runner
         run: python -u tools/probe_egress.py
-      - name: Salin hasilnya ke log job (bukan artefak, supaya bisa dibaca dari CLI)
-        run: python -u tools/probe_egress.py | tee /dev/stderr | tail -n 20
