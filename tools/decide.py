@@ -101,21 +101,27 @@ def recompute(row, th):
 
 
 def latest_window():
-    """Ambil SATU baris per jendela jam (yang pertama). Aturan baca dataset, lihat universe/README.md."""
-    seen, out = {}, []
+    """Snapshot TERAKHIR yang berskema - bukan "baris pertama di jendela terakhir".
+
+    Dua aturan, dua tujuan, jangan ditukar:
+      * `screen_universe.py` pakai SATU baris per jendela jam (yang paling awal). Tujuannya
+        analisis deret: memilih baris "yang paling lengkap" = selection bias.
+      * yang ini butuh snapshot paling baru, karena keputusan dibuat SEKARANG dari data paling
+        baru. Mengambil "yang pertama di jendela" membuat satu baris catch-up skema-lama
+        membayangi baris skema-baru di jam yang sama - bug nyata 24 Sep: `gdelt` jadi null di
+        140/140 keputusan padahal tiga snapshot terbaru sudah membawanya.
+    Yang membuat kedua aturan tetap jujur: `snapshotHash` ikut di-hash ke setiap keputusan, jadi
+    snapshot mana yang dipakai selalu bisa dibaca orang dari artefaknya, tidak diasumsikan.
+    """
+    last = None
     for line in open(DATA, encoding="utf-8"):
         line = line.strip()
         if not line:
             continue
         d = json.loads(line)
-        if not d.get("schema"):
-            continue                     # semantik lama: veto volume tidak jalan -> jangan dipakai
-        w = d["epoch"] // 3600
-        if w in seen:
-            continue
-        seen[w] = True
-        out.append(d)
-    return out[-1] if out else None
+        if d.get("schema"):
+            last = d
+    return last
 
 
 def calldata_for(rec) -> str:
@@ -138,15 +144,42 @@ def calldata_for(rec) -> str:
     return "0x" + selector.hex() + body.hex()
 
 
+def gdelt_context(snap):
+    """Ringkasan narasi yang ikut disimpan di SETIAP keputusan, supaya `decisionHash` benar-benar
+    mengikat konteksnya - bukan cuma angka kandidat. Baris berskema <4 tidak punya ini, dan itu
+    harus muncul sebagai `None`, bukan sebagai nol."""
+    g = snap.get("gdelt")
+    if not g:
+        return None
+    th = g.get("themes") or {}
+    tone = g.get("tone") or {}
+    return {
+        "slice": g.get("slice"),
+        "status": g.get("status"),
+        "lines": g.get("lines"),
+        "themes": {k: th.get(k, 0) for k in ("REGULAT", "SANCTION", "BANK", "GOVERNMENT",
+                                              "TRADE", "ECONOMIC", "PROTEST")},
+        "tone_overall": tone.get("mean_all"),
+        "tone_matched": tone.get("mean_matched"),
+        "watch": g.get("watch") or {},
+        "url_sha256": g.get("sha256"),
+    }
+
+
 def build_judge_state(row, snap):
     """State untuk penilai: fakta yang ADA di snapshot, bukan karangan.
 
     Sengaja pendek dan berisi angka - penilai boleh menurunkan ENTER jadi ABSTAIN, dan kita mau
     bisa menunjuk angka mana yang ia pakai saat menurunkannya.
+
+    Blok `gdelt` (skema >=4) ikut dibawa karena itu satu-satunya konteks di luar angka harga:
+    jumlah artikel bertema regulasi/sanksi/perbankan pada irisan 15 menit terakhir + nada
+    rata-ratanya. Ini BUKAN prediksi arah - nada berita, dan kalimat itu ikut dikirim supaya
+    model tidak memperlakukannya sebagai ramalan.
     """
     def f(x):
         return "unknown" if x is None else f"{x:,.4g}"
-    return (
+    state = (
         f"Snapshot {snap['snapshot_utc']} chain BSC. Candidate {row.get('symbol') or row.get('name')}. "
         f"Liquidity ${f(row.get('liquidity'))}. Age_hours {f((row.get('age_sec') or 0) / 3600)}. "
         f"Vol24 ${f(row.get('volume_24h'))}. "
@@ -156,6 +189,15 @@ def build_judge_state(row, snap):
         f"All deterministic gates passed. Decide only whether to REFUSE this candidate for a risk "
         f"the numeric gates did not express."
     )
+    gc = gdelt_context(snap)
+    if gc:
+        state += (
+            f"\nNews context (GDELT slice {gc['slice']}, {gc['lines']} articles): "
+            f"themes={json.dumps(gc['themes'])} tone_overall={gc['tone_overall']} "
+            f"tone_on_matched={gc['tone_matched']} watch={json.dumps(gc['watch'], ensure_ascii=False)}. "
+            f"News sentiment only - not a price prediction."
+        )
+    return state
 
 
 def main():
@@ -216,6 +258,9 @@ def main():
         record = {
             "asset": asset, "addr": addr, "verdict": verdict, "assessable": assessable,
             "risk_vetoes": vetoes, "data_gaps": gaps,
+            # keputusan terikat pada konteksnya: jika nanti ada yang mengubah deret narasi,
+            # decisionHash ikut berubah - jadi tidak bisa ditulis ulang tanpa ketahuan.
+            "gdelt": gdelt_context(snap),
             "snapshot_utc": snap["snapshot_utc"],
             "engine": "deterministic-veto-v2",
             "model": None if not judged else judged.get("model"),

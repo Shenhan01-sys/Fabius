@@ -1,0 +1,32 @@
+name: egress-probe
+
+# Alat bukti, bukan produk. Dijalankan manual (workflow_dispatch) kapan pun kita perlu
+# membedakan "sumbernya mati" dari "jaringan laptop memotong TLS".
+#
+# Dari laptop builder: api.binance.com / web3.binance.com / OKX / Bybit / Bitget semuanya
+# membalas CERTIFICATE_VERIFY_FAILED: Hostname mismatch -> itu intersepsi jaringan lokal,
+# bukan bukti ketiadaan layanan. Runner GitHub punya egress bersih, jadi dialah yang bisa
+# menjawab pertanyaan "apakah sinyal smart-money Binance itu nyata?" secara jujur.
+#
+# Tidak ada rahasia yang dipakai di sini: tidak ada GMGN key, tidak ada kunci wallet.
+# Yang ada di log hanyalah status HTTP + potongan respons publik.
+
+on:
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Uji keterjangkauan sumber dari jaringan runner
+        run: python -u tools/probe_egress.py
+      - name: Salin hasilnya ke log job (bukan artefak, supaya bisa dibaca dari CLI)
+        run: python -u tools/probe_egress.py | tee /dev/stderr | tail -n 20
