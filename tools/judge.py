@@ -29,8 +29,17 @@ import time
 import urllib.error
 import urllib.request
 
-JEV_URL_DEFAULT = "https://api.typesafe.ai/v1/systemone"
-JEV_PRICE_IN_PER_MTOK = 0.042   # dari blog resmi, dikutip di vault/02-Ambang.md
+# Base URL boleh diarahkan ke router pihak ketiga yang memproxy System-One.
+# Terukur 24 Sep: `https://router.bynara.id/v1/systemone` dengan model `jev` -> 200,
+# jawaban bertipe sama (`choice` + `probabilities` + `confidence`, `noul`, `score`).
+# Catatan yang mahal: `jev-latest` di sana 404 "The requested model does not exist" -
+# nama model TIDAK sama dengan milik Typesafe, jadi JEV_MODEL wajib ikut dikonfigurasi.
+JEV_URL_DEFAULT = (os.environ.get("JEV_BASE_URL") or "https://api.typesafe.ai").rstrip("/") + "/v1/systemone"
+JEV_MODEL_DEFAULT = os.environ.get("JEV_MODEL") or "jev-latest"
+# Harga hanya boleh diklaim untuk jalur yang kita tahu tagihannya. Router gratisan = 0,
+# tapi itu promo pihak ketiga: jangan ditulis di submission sebagai "Jev murah", tulis
+# "jalur terukur lewat router X pada tanggal Y".
+JEV_PRICE_IN_PER_MTOK = 0.0 if "typesafe.ai" not in JEV_URL_DEFAULT else 0.042
 JEV_PRICE_OUT_PER_MTOK = 0.0    # "Output tokens: FREE (too cheap to meter)"
 
 STATE_SYSTEM = (
@@ -56,11 +65,21 @@ def _read_env_file(paths, name):
 
 
 def _key():
-    k = (os.environ.get("TYPESAFE_API_KEY") or "").strip()
-    if k:
-        return k, "env"
-    return _read_env_file([os.path.join(os.path.expanduser("~"), ".config", "typesafe", ".env")],
-                          "TYPESAFE_API_KEY")
+    # Nama variabelnya dua karena jalurnya dua: TYPESAFE_API_KEY = API resmi Typesafe,
+    # JEV_API_KEY = router pihak ketiga yang memproxy System-One (kuncinya beda, `sk-nry-…`).
+    # Urutan ini dipilih supaya satu provider bisa dipakai tanpa mengubah kode.
+    for name in ("JEV_API_KEY", "TYPESAFE_API_KEY"):
+        k = (os.environ.get(name) or "").strip()
+        if k:
+            return k, f"env:{name}"
+    home = os.path.expanduser("~")
+    for name, path in (("JEV_API_KEY", os.path.join(ROOT, ".jev.env")),
+                       ("TYPESAFE_API_KEY", os.path.join(home, ".config", "typesafe", ".env"))):
+        v, src = _read_env_file([path], name)
+        if v:
+            return v, src
+    return "", None
+
 
 
 def _post(url, payload, headers, timeout=60):
@@ -83,7 +102,7 @@ def judge_jev(state, risk_label):
     if not key:
         return {"provider": "jev", "available": False, "why": "tidak ada TYPESAFE_API_KEY"}
     body = {
-        "model": (os.environ.get("JEV_MODEL") or "jev-latest").strip(),
+        "model": JEV_MODEL_DEFAULT,
         "state": state,
         "questions": {
             "veto": {"type": "noul",

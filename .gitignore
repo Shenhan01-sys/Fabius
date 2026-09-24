@@ -17,3 +17,4 @@ universe/__pycache__/
 
 # Keputusan turunan: bisa dibangun ulang dari snapshot, jangan menggandakan riwayat.
 decisions/*.jsonl
+.jev.env 
