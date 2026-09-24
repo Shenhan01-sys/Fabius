@@ -6,9 +6,12 @@ lib/
 .env
 *.bak
 
-# Dataset mentah: berulang tiap jam dan terus membesar. Yang ikut ke repo adalah manifest.txt
-# (sha256 per snapshot) + perkakasnya, bukan baris kasarnya.
-universe/bsc-universe.jsonl
+# Dataset mentah DI-COMMIT sejak 24 Sep (dulu dikecualikan). Alasannya: perekam bisa jalan di
+# GitHub Actions, dan file inilah bukti "direkam sebelum hasilnya diketahui" - tiap commit diberi
+# timestamp oleh server pihak ketiga, bukan oleh jam laptop kita. Ukuran terkendali:
+# ~60 KB/snapshot -> 1,4 MB/hari -> proyeksi ~8,5 MB sampai tenggat 30 Sep.
 universe/runner.log
-# Keputusan turunan: bisa dibangun ulang dari snapshot, membesar tiap jam.
+universe/__pycache__/
+
+# Keputusan turunan: bisa dibangun ulang dari snapshot, jangan menggandakan riwayat.
 decisions/*.jsonl

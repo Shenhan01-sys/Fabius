@@ -1,0 +1,70 @@
+name: universe-hourly
+
+# Kenapa rekaman dipindah ke sini dan bukan ke Hugging Face Space (keputusan 24 Sep 2026):
+#
+# 1. Space CPU gratis TIDUR saat idle - README TimesFM sendiri menulis "Free Spaces sleep when
+#    idle -> wake on next call". Perekam tidak punya "next call": ia harus bangun sendiri tiap
+#    jam. Menaruhnya di Space = menukar kegagalan "laptop tidur" dengan kegagalan "Space tidur".
+# 2. `schedule:` adalah primitif penjadwal yang sebenarnya, dan ini gratis untuk repo private
+#    (2.000 menit/bulan). Proyeksi kita: ~30 detik x 24 jam x 30 hari = ±360 menit/bulan.
+# 3. Yang paling penting untuk klaim kita: commit ini dibuat oleh MESIN ORANG LAIN dengan
+#    timestamp server GitHub. Sekarang, "kami merekam sebelum tahu hasilnya" dibuktikan oleh jam
+#    laptop sendiri - lemah. Tiap jam tercatat oleh pihak ketiga, klaim itu jadi bisa diperiksa
+#    orang, bukan dipercaya.
+# 4. Egress runner bersih dari intersepsi jaringan kita: endpoint yang dari sini tidak pernah bisa
+#    diuji (web3.binance.com, api.binance.com, OKX, Bybit, Bitget) akhirnya bisa diukur.
+#
+# Batas yang jujur: cron GitHub bisa TERLAMBAT beberapa menit (kadang lebih) saat beban tinggi,
+# dan workflow yang tidak dipakai 60 hari di-repo bisa dijeda. Keduanya terlihat di manifest lewat
+# kolom `gap_since_prev_h`, jadi tidak ada yang diam-diam.
+#
+# Kunci: hanya GMGN_API_KEY (repository secret). Tidak ada kunci wallet, tidak ada seed, tidak ada
+# yang dicetak ke log. Commit memakai GITHUB_TOKEN bawaan (contents: write), bukan personal token.
+
+on:
+  schedule:
+    - cron: "9 * * * *"
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+concurrency:
+  group: universe-hourly
+  cancel-in-progress: false
+
+jobs:
+  snapshot:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Ambil satu snapshot point-in-time
+        env:
+          # dibaca perekam lewat os.environ (record_bsc_universe.py:50) - nilai tidak dicetak
+          GMGN_API_KEY: ${{ secrets.GMGN_API_KEY }}
+        run: |
+          python -u universe/record_bsc_universe.py
+          python -u universe/write_universe_manifest.py
+
+      - name: Commit & push (tanpa memicu workflow lanjutan)
+        run: |
+          git config user.name "universe-recorder"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add universe/bsc-universe.jsonl universe/manifest.txt
+          if git diff --cached --quiet; then
+            echo "tidak ada perubahan - tetap dicatat, jangan diam"
+            exit 0
+          fi
+          git commit -m "snapshot universe $(date -u +%Y-%m-%dT%H:%M:%SZ) [skip ci]"
+          git push
+
+      - name: Laporkan kesehatan rekaman
+        run: |
+          python -u universe/write_universe_manifest.py | tail -n 4
+          echo "baris dataset: $(wc -l < universe/bsc-universe.jsonl)"
