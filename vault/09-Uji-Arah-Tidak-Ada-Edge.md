@@ -1,0 +1,114 @@
+---
+type: hasil-ukur
+status: final-untuk-siklus-ini
+diukur: 2026-09-24 (19:2x-19:5x UTC) / 25 Sep WIB
+alat: Fabius/tools/backtest.py (ambang DIIMPOR dari direction.py, tidak di-fit di sini)
+ artefak: decisions/backtest-20260924Z-h4.json, -h4-momonly.json, -h4-momonly-flip.json, -h24-momonly.json
+---
+
+# 09 — Uji arah: aturan kita TIDAK punya edge setelah ongkos, di horizon mana pun
+
+Pertanyaan yang dijawab halaman ini adalah pertanyaan yang paling mungkin membuat kami terlihat
+bohong: kalau agen sudah bisa bilang "short, masuk di sini, stop di sini, 24 jam" — apakah itu
+lebih baik daripada lemparan koin? Jawabannya, seperti terukur di bawah: **tidak, belum.**
+
+Angka di bawah bukan hiasan. Semuanya dari **deret harga yang benar-benar ada di repo**
+(Aster 1h, 400 hari, non-overlap) dan aturan yang **sama** dengan yang dipakai live.
+
+## 1. Aturan live apa adanya (gerbang |acf| >= 0,05 + momentum SMA24/ret24)
+
+| simbol | bar | trade | keputusan |
+|---|---|---|---|
+| BNB ETH SOL DOGE WIF FLNC | 2.908–9.599 | **0** | momentum menyala 240–1.068 titik, **100 % dipadamkan gerbang `\|acf\|`** |
+| XRP | 9.599 | 1 | di bawah MIN_TRADES |
+| TAC | 3.701 | 8 | di bawah MIN_TRADES |
+| HYPE | 8.814 | 30 | net **−16,0** bps · WR 46,7 % · drop-best-fold **−38,7** |
+| CAKE | 9.599 | 42 | net **−18,5** · WR 42,9 % · drop-best **−45,7** |
+| SUI | 9.599 | 105 | net **−29,2** · WR 41,9 % · drop-best **−35,9** |
+| 1000PEPE | 9.599 | 111 | net **−16,4** · WR 44,1 % · drop-best **−19,8** |
+| MARSCOIN | 1.225 | — | `bar < 2.400`, tidak dinilai |
+
+**0 dari 4** simbol yang bisa dinilai lolos; keempat-empatnya rugi **setelah** ongkos walaupun
+gross-nya masih positif kecil (+1,5 … +4,0 bps). Persis kegagalan yang ambang "gross > 40 bps"
+(vault/08 §3) dirancang untuk tangkap — bedanya, kali ini ambangnya yang menangkap, bukan kami.
+
+## 2. Gerbang dimatikan (`--mom-only`) — siapa yang memproduksi nol?
+
+Semua 9.599-bar titik keputusan (240–1.216 trade per simbol) dijalankan tanpa gerbang |acf|:
+
+| | rentang di 12 simbol |
+|---|---|
+| trade | 240 – 1.216 |
+| win-rate | 19,2 % – 47,4 % (mayoritas 37–45 %) |
+| gross bps/trade | **−7,9 … +19,2** |
+| net bps/trade (sesudah 20 bps RT) | **−27,9 … −0,8** |
+| t-stat | −4,84 … −0,02 (tidak satu pun positif) |
+| drop-best-fold | **negatif di 12 dari 12** (−34,8 … −17,3) |
+| net bps | **negatif di 12 dari 12**, tanpa pengecualian |
+
+Jadi gerbang |acf| bukan penyebabnya: dia **menolak 100 % sinyal** pada aset yang paling dalam
+history-nya (BNB/ETH/SOL/DOGE), dan ketika penolakan itu dicabut, hasilnya rugi di semua simbol
+yang diukur. Yang salah adalah **isinya**, bukan pagar-pagarnya.
+
+## 3. Kebalikannya juga kalah (`--mom-only --flip`)
+
+Kalau momentum rugi, masuk akal mengira ini pasar yang sebenarnya mean-reverting. Diuji, bukan
+dinarasikan: arah aturan yang sama dibalik.
+
+| horizon 4 bar | momentum (bagian 2) | dibalik (bagian 3) |
+|---|---|---|
+| net bps/trade, rentang 12 simbol | −27,9 … −0,8 | **−39,2 … −12,1** |
+| BNB | −13,3 | **−26,7** |
+| 1000PEPE | −13,4 | **−26,6** |
+| SUI | −18,4 | **−21,6** |
+
+Membalikkan sinyal tidak menyelamatkan apa pun — malah lebih dalam minusnya. Artinya
+pasang-aturan `gap SMA24 ± 1%` + `ret24` **tidak mengandung informasi arah** di horison ini;
+ia hanya menghasilkan perputaran yang membayar 20 bps tiap round-trip.
+
+## 4. Horizon 24 jam (`--mom-only --horizon 24`) — satu-satunya tempat gross positif muncul
+
+| simbol | trade | gross | net | t | drop-best | folds |
+|---|---|---|---|---|---|---|
+| BNB | 143 | +34,9 | **+14,9** | 0,61 | **−8,7** | +110 −99 +24 +41 +0 |
+| WIF | 47 | +46,9 | +26,9 | 0,34 | −20,9 | −62 +69 +223 −130 +40 |
+| TAC | 82 | +111,3 | **+91,3** | 0,31 | +15,3 | +114 +298 −197 +381 −153 |
+| sisanya (ETH SOL XRP DOGE HYPE CAKE SUI 1000PEPE FLNC) | 37–214 | −57 … +11 | **negatif semua** | < 0 | negatif | — |
+
+**0 dari 12 lolos** (syaratnya: n≥20, net>0, drop-best-fold>0, p lolos BH α=0,10).
+
+Yang harus dibaca dari tabel ini, karena ini bagian yang paling mudah dijual salah:
+satu-satunya `net` positif yang bertahan setelah fold terbaik dibuang adalah **TAC**, dengan
+`t = 0,31` dan lima fold `+114 +298 −197 +381 −153`. Itu **bukan** edge — itu distribusi yang
+didorong beberapa peristiwa besar, dan statistik mana pun yang jujur akan bilang "belum tahu".
+BNB +14,9 bps juga mati di drop-best-fold (−8,7): satu segmen waktu baik menyamar sebagai aturan
+yang baik. Persis penyakit yang lab lama sudah namai (HYPE +92 % OOS yang ternyata 65 % dari satu
+fold, `edge_lab.py` temuan #20).
+
+## 5. Apa yang berubah di produk setelah halaman ini
+
+1. **Registry tetap kosong, dan sekarang ada alasannya.** Bukan "belum sempat dites": aturan arah
+   sudah dites di 400 hari × 12 aset × 3 varian, dan kalah ongkos di semuanya.
+2. **`Enter` yang sudah di-anchor TETAP dibiarkan hidup** (MARSCOIN short, blok 132955030/132955788).
+   Menariknya kembali anchor = menghancurkan nilai buktinya. Yang kita lakukan: prediksi itu
+   dibiarkan jatuh tempo dan dinilai nanti oleh `ledger.py`, dengan halaman ini sebagai konteks
+   bahwa kami **tahu** aturannya belum terbukti sebelum prediksi itu dibuat.
+3. **Klaim yang boleh ditulis di README/submission**: "agen menyimpan keputusan yang bisa dibuktikan
+   salah, dan menolak 100 % sinyal arah pada aset dalam karena derivatifnya mendekati jalan acak" —
+   BUKAN "agen memperdagangkan meme dengan edge".
+4. **Jangan panggil ini walk-forward fitted.** Tidak ada satu parameter pun yang dipilih dengan
+   melihat hasil di atas; jadi yang dilakukan adalah tes bersegmen + sensitivitas. Menyebutnya
+   walk-forward akan menjual sesuatu yang tidak kita beli.
+
+## 6. Batas yang masih tersisa (jangan dibaca sebagai "sudah selesai")
+
+- **Funding historis belum ikut** — aturan live punya gerbang funding ekstrem yang di sini absen.
+  Arah kesalahannya tidak netral: aset yang kami tolak karena carry mungkin justru satu-satunya
+  yang punya sesuatu untuk diukur. Perlu jalur data funding 4-jam yang bisa ditarik mundur.
+- **Bidang ④ (honeypot / `can_not_sell`) tetap tidak diukur** di jalur arah — jadi semua angka di
+  atas mengasumsikan kita bisa keluar, yang justru belum dibuktikan untuk memecoin.
+- **Korelasi silang antar-simbol tidak dibetulkan.** BH diterapkan per token; 12 token ini bergerak
+  dengan satu pasar yang sama, jadi "0 dari 12" tidak boleh dibaca sebagai 12 percobaan bebas.
+- **Satu siklus live = satu titik waktu.** Hasil di atas adalah deret 400 hari, tapi keputusan
+  yang benar-benar kami anchor lahir dari satu snapshot; kualitas snapshot (5 gap > 2 jam) ikut
+  membatasi apa yang bisa disimpulkan dari 11 anchor itu.

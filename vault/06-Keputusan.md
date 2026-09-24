@@ -130,3 +130,30 @@ yang sama di sisi lain. Kalau `confidence` tinggi tidak membedakan hasil dari `c
 rendah, Jev **dicabut** dan kita kembali ke gerbang deterministik — dan keputusan itu yang dicatat,
 bukan cuma angkanya. Batas yang harus ikut tertulis: `max gain sejak trigger` semacam itu
 dipilih setelah sinyal terbit, jadi tanpa catatan point-in-time ia survivorship, bukan edge.
+
+## F-D13 — Lapisan arah diuji lebih dulu, kalah, dan TETAP di-anchor · 25 Sep 2026
+
+Urutan kerjanya sengaja dibalik dari kebiasaan demo: lapisan arah (`direction.py`) dibangun,
+lalu **langsung diuji** terhadap 400 hari deret Aster yang sama yang dipakai agen live
+(`tools/backtest.py`, ambang diimpor dari kode, tidak di-fit), bukan sesudah submit. Hasilnya ada
+di `09-Uji-Arah-Tidak-Ada-Edge.md`: net **negatif di 12/12** simbol saat gerbang |acf| dicabut,
+gross hanya +1,5…+4,0 bps pada empat simbol yang lolos gerbang (vs ongkos 20 bps RT), arah
+dibalik pun tetap kalah (−39,2…−12,1), dan di horizon 24 j hanya TAC yang positif setelah
+fold terbaik dibuang — dengan `t = 0,31` dan lima fold `+114 +298 −197 +381 −153`, yang bukan edge
+melainkan skew.
+
+Keputusan yang diambil dari angka itu, dan alasannya:
+
+1. **`Enter` yang sudah masuk chain TIDAK ditarik dan tidak disembunyikan.** Dua anchor MARSCOIN
+   short (blok 132955030 dan 132955788) dibiarkan jatuh tempo. Menghapus prediksi yang kita tahu
+   lemah akan menghancurkan satu-satunya nilai artefak ini: bahwa jejak itu dibuat **sebelum**
+   hasilnya ada. Yang kami tambahkan justru kebalikannya — halaman uji ini, yang menuliskan
+   kelemahannya sebelum ada yang membacanya sebagai klaim untung.
+2. **README/submission hanya boleh memakai kalimat yang terbukti.** Yang boleh: agen menyimpan
+   keputusan yang bisa dibuktikan salah, dan menolak 100 % sinyal arah pada aset terdalam karena
+   derivatifnya mendekati jalan acak. Yang **tidak** boleh: "memperdagangkan meme dengan edge".
+3. **Gerbang |acf| dipertahankan** meski dia "membuang" peluang. Setelah diukur, penolakannya
+   justru tepat: sinyal yang dia padamkan rugi di semua simbol. Pagarnya bekerja; isinya yang belum.
+4. **Yang dianggap utang, bukan hasil**: funding historis belum ikut diuji (gerbang carry absen di
+   backtest), bidang ④ `can_not_sell`/honeypot belum diukur sama sekali, dan 12 simbol ini bergerak
+   dengan satu pasar yang sama — jadi "0 dari 12" bukan 12 percobaan bebas.

@@ -107,6 +107,25 @@ def fetch(symbol: str, interval: str = "1h", days: int = 300, verbose: bool = Tr
 
 
 def save(symbol: str, interval: str, bars, meta):
+    """Tulis cache dengan meta yang DIPAKSA lengkap dan DIPERIKSA sendiri.
+
+    Kenapa bukan sekadar `json.dump`: terukur 25 Sep, `direction.py` menulis cache dengan meta
+    karangannya sendiri (`{"source":"aster","pages":1}`) sambil membuang meta asli dari `fetch()`.
+    Akibatnya (a) `--list` crash di 9 berkas karena `interval` tidak ada, dan (b) yang lebih
+    berbahaya: berkas mengklaim 1 halaman untuk deret yang butuh 7 halaman. Metadata provenance
+    yang salah lebih buruk daripada kosong - ia dibaca orang sebagai jejak.
+    """
+    meta = dict(meta or {})
+    meta.setdefault("source", "aster")
+    meta.setdefault("symbol", symbol)
+    meta.setdefault("interval", interval)
+    meta.setdefault("endpoint", f"{BASE}/klines")
+    if bars:
+        need = max(1, -(-len(bars) // PAGE_CAP))
+        claimed = meta.get("pages") or 0
+        if 0 < claimed < need:
+            meta["meta_warning"] = f"pages={claimed} tapi {len(bars)} bar butuh >= {need} halaman (cap {PAGE_CAP})"
+            meta["pages_min_needed"] = need
     os.makedirs(CACHE, exist_ok=True)
     blob = json.dumps(bars, separators=(",", ":")).encode()
     out = {"meta": {**meta, "fetched_utc": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
@@ -164,8 +183,17 @@ def main():
             try:
                 d = json.load(open(os.path.join(CACHE, f), encoding="utf-8"))
                 m = d["meta"]
-                print(f"  {f:26} {m['count']:>6} bar  {m['interval']}  diambil {m['fetched_utc']}"
-                      f"  sha={m['sha256'][2:10]}")
+                # .get, bukan [ ]: berkas yang ditulis dengan meta separuh harus TERBACA sebagai
+                # separuh, bukan membuat daftar isinya crash (`rusak: 'interval'` - itu yang
+                # terjadi 25 Sep pada 9 berkas, dan yang bikin bug meta jadi kelihatan cuma sebagai
+                # "alatnya rusak").
+                iv = m.get("interval", "?TIDAK-DICATAT")
+                pg = m.get("pages", "?")
+                line = (f"  {f:26} {m.get('count', len(d.get('bars') or [])):>6} bar  {iv:5} "
+                        f"hal={pg:>3} diambil {m.get('fetched_utc', '?')}  sha={str(m.get('sha256'))[2:10]}")
+                if m.get("meta_warning"):
+                    line += f"  WARNING: {m['meta_warning']}"
+                print(line)
             except Exception as e:  # noqa: BLE001
                 print(f"  {f:26} rusak: {e}")
         return

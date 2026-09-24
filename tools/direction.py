@@ -288,9 +288,12 @@ def main():
         cached = bars.load(psym, "1h")
         data = (cached or {}).get("bars") or []
         if not data:
-            data, _meta = bars.fetch(psym, "1h", 400, verbose=False)
+            data, meta_fetch = bars.fetch(psym, "1h", 400, verbose=False)
             if data:
-                bars.save(psym, "1h", data, {"source": "aster", "pages": 1, "http_problems": []})
+                # Meta dari fetch() diteruskan APA ADANYA - jumlah halaman, endpoint, masalah HTTP.
+                # Baris ini sebelumnya mengarang {"pages": 1} untuk deret 400 hari yang butuh 7
+                # halaman DAN membuang meta aslinya, jadi cache menyimpan provenance palsu.
+                bars.save(psym, "1h", data, meta_fetch)
         if not data:
             rows.append({"symbol": psym, "base": sym, "bars": 0, "ok": False})
             continue

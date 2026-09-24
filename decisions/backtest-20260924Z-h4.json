@@ -1,0 +1,222 @@
+{
+ "acf_gate": 0.05,
+ "bars_min_required": 2400,
+ "bh_alpha": 0.1,
+ "bh_passed": [],
+ "cost_bps_rt": 20.0,
+ "generated_utc": "2026-09-24T19:34:13Z",
+ "horizon_bars": 4,
+ "mom_only": false,
+ "non_overlap": true,
+ "rows": [
+  {
+   "acf_killed": 747,
+   "mom_mean_net_bps": -13.3,
+   "mom_n": 747,
+   "n": 0,
+   "note": "momentum menyala 747/2219 titik, SEMUANYA dipadamkan gerbang |acf| (killed=747)",
+   "points": 2219,
+   "symbol": "BNBUSDT"
+  },
+  {
+   "acf_killed": 908,
+   "mom_mean_net_bps": -21.7,
+   "mom_n": 908,
+   "n": 0,
+   "note": "momentum menyala 908/2219 titik, SEMUANYA dipadamkan gerbang |acf| (killed=908)",
+   "points": 2219,
+   "symbol": "ETHUSDT"
+  },
+  {
+   "acf_killed": 1068,
+   "mom_mean_net_bps": -14.4,
+   "mom_n": 1068,
+   "n": 0,
+   "note": "momentum menyala 1068/2219 titik, SEMUANYA dipadamkan gerbang |acf| (killed=1068)",
+   "points": 2219,
+   "symbol": "SOLUSDT"
+  },
+  {
+   "acf_killed": 949,
+   "drop_best_fold_net": null,
+   "flat_abs_move_bps": 92.17052673087824,
+   "flat_n": 2218,
+   "folds": [
+    -257.8,
+    null,
+    null,
+    null,
+    null
+   ],
+   "grey_share": 1.0,
+   "mean_gross_bps": -237.80564526275862,
+   "mean_net_bps": -257.8056452627586,
+   "mom_mean_net_bps": -14.0,
+   "mom_n": 950,
+   "n": 1,
+   "p_sign": 1.0,
+   "points": 2219,
+   "symbol": "XRPUSDT",
+   "t": 0.0,
+   "wr": 0.0
+  },
+  {
+   "acf_killed": 1010,
+   "mom_mean_net_bps": -14.6,
+   "mom_n": 1010,
+   "n": 0,
+   "note": "momentum menyala 1010/2219 titik, SEMUANYA dipadamkan gerbang |acf| (killed=1010)",
+   "points": 2219,
+   "symbol": "DOGEUSDT"
+  },
+  {
+   "acf_killed": 1186,
+   "drop_best_fold_net": -38.7,
+   "flat_abs_move_bps": 137.1324517064254,
+   "flat_n": 1993,
+   "folds": [
+    71.3,
+    74.4,
+    -57.1,
+    6.2,
+    -175.0
+   ],
+   "grey_share": 1.0,
+   "mean_gross_bps": 3.9640694108165104,
+   "mean_net_bps": -16.035930589183486,
+   "mom_mean_net_bps": -14.1,
+   "mom_n": 1216,
+   "n": 30,
+   "p_sign": 0.707667644135654,
+   "points": 2023,
+   "symbol": "HYPEUSDT",
+   "t": -0.2805677570423362,
+   "wr": 0.4666666666666667
+  },
+  {
+   "acf_killed": 1024,
+   "drop_best_fold_net": -45.7,
+   "flat_abs_move_bps": 105.89435700927233,
+   "flat_n": 2177,
+   "folds": [
+    14.0,
+    10.1,
+    82.4,
+    -32.9,
+    -173.9
+   ],
+   "grey_share": 1.0,
+   "mean_gross_bps": 1.48914495499785,
+   "mean_net_bps": -18.510855045002156,
+   "mom_mean_net_bps": -17.1,
+   "mom_n": 1066,
+   "n": 42,
+   "p_sign": 0.8600218807355304,
+   "points": 2219,
+   "symbol": "CAKEUSDT",
+   "t": -0.33776248114109975,
+   "wr": 0.42857142857142855
+  },
+  {
+   "acf_killed": 1040,
+   "drop_best_fold_net": -35.9,
+   "flat_abs_move_bps": 121.9970425569306,
+   "flat_n": 2114,
+   "folds": [
+    -5.9,
+    -26.5,
+    -2.7,
+    -72.0,
+    -39.1
+   ],
+   "grey_share": 1.0,
+   "mean_gross_bps": -9.24026266863471,
+   "mean_net_bps": -29.240262668634717,
+   "mom_mean_net_bps": -18.4,
+   "mom_n": 1145,
+   "n": 105,
+   "p_sign": 0.9607574863304911,
+   "points": 2219,
+   "symbol": "SUIUSDT",
+   "t": -1.312174161569546,
+   "wr": 0.41904761904761906
+  },
+  {
+   "acf_killed": 316,
+   "mom_mean_net_bps": -12.0,
+   "mom_n": 316,
+   "n": 0,
+   "note": "momentum menyala 316/631 titik, SEMUANYA dipadamkan gerbang |acf| (killed=316)",
+   "points": 631,
+   "symbol": "WIFUSDT"
+  },
+  {
+   "acf_killed": 1087,
+   "drop_best_fold_net": -19.8,
+   "flat_abs_move_bps": 131.1088045230832,
+   "flat_n": 2108,
+   "folds": [
+    -14.4,
+    -2.9,
+    -21.0,
+    -36.5,
+    -7.5
+   ],
+   "grey_share": 1.0,
+   "mean_gross_bps": 3.577980620641713,
+   "mean_net_bps": -16.422019379358282,
+   "mom_mean_net_bps": -13.4,
+   "mom_n": 1198,
+   "n": 111,
+   "p_sign": 0.9081714140491126,
+   "points": 2219,
+   "symbol": "1000PEPEUSDT",
+   "t": -0.8572062395081556,
+   "wr": 0.44144144144144143
+  },
+  {
+   "acf_killed": 476,
+   "drop_best_fold_net": 328.5,
+   "flat_abs_move_bps": 311.7867721996086,
+   "flat_n": 737,
+   "folds": [
+    814.6,
+    28.3,
+    574.7,
+    -103.6,
+    1039.4
+   ],
+   "grey_share": 1.0,
+   "mean_gross_bps": 491.3595713850557,
+   "mean_net_bps": 471.3595713850557,
+   "mom_mean_net_bps": -0.8,
+   "mom_n": 484,
+   "n": 8,
+   "p_sign": 0.14453125,
+   "points": 745,
+   "symbol": "TACUSDT",
+   "t": 2.3067870446764576,
+   "wr": 0.75
+  },
+  {
+   "acf_killed": 240,
+   "mom_mean_net_bps": -27.9,
+   "mom_n": 240,
+   "n": 0,
+   "note": "momentum menyala 240/547 titik, SEMUANYA dipadamkan gerbang |acf| (killed=240)",
+   "points": 547,
+   "symbol": "FLNCUSDT"
+  },
+  {
+   "n": 0,
+   "note": "bar=1225 < 2400",
+   "symbol": "MARSCOINUSDT"
+  }
+ ],
+ "thresholds": {
+  "acf_efficient": 0.05,
+  "acf_structured": 0.1,
+  "min_bars": 720,
+  "sma_gap": 0.01
+ }
+}
