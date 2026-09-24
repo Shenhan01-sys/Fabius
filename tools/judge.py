@@ -141,6 +141,40 @@ def judge_jev(state, risk_label):
     }
 
 
+def ask_jev(state, questions):
+    """System-One dengan pertanyaan DARI PEMANGGIL, bukan pertanyaan baku satu-kandidat di atas.
+
+    Kenapa perlu: lapisan arah (`tools/direction.py`) menanyakan `side_<SIMBOL>` untuk 5 kandidat
+    dalam SATU panggilan. `judge_jev()` dikunci ke satu kandidat dengan pertanyaan
+    `veto`/`dominant_risk`, jadi kalau dipakai untuk arah, jawabannya tidak pernah cocok dengan
+    kunci yang dicari - kolom model akan kosong sambil terlihat "sudah memanggil model". Itu bug
+    yang terukur 25 Sep, dan bentuk perbaikannya: fungsi generik yang mengembalikan `answers` mentah.
+
+    Doktrin tetap sama seperti di modul ini: pemanggil tidak boleh memakai hasil ini untuk
+    MEMBUKA posisi yang gerbang tolak - hanya untuk memveto/mengecilkan.
+    """
+    key, src = _key()
+    if not key:
+        return {"provider": "jev", "available": False, "ok": False, "answers": {},
+                "why": "tidak ada JEV_API_KEY/TYPESAFE_API_KEY"}
+    st, d, lat, err = _post(JEV_URL_DEFAULT,
+                            {"model": JEV_MODEL_DEFAULT, "state": state, "questions": questions},
+                            {"Authorization": f"Bearer {key}", "Content-Type": "application/json",
+                             "Accept": "application/json", "User-Agent": "lencana-judge/1.0"})
+    if st != 200 or not isinstance(d, dict):
+        return {"provider": "jev", "available": True, "ok": False, "answers": {},
+                "why": err or f"HTTP {st}", "latency_s": lat}
+    usage = d.get("usage") or {}
+    tin = int(usage.get("input_tokens") or 0)
+    tout = int(usage.get("output_tokens") or 0)
+    ans = d.get("answers") or {}
+    return {"provider": "jev", "available": True, "ok": True, "model": d.get("model"),
+            "latency_s": lat, "answers": ans, "asked": len(questions), "answered": len(ans),
+            "tokens_in": tin, "tokens_out": tout,
+            "cost_usd": round(tin / 1e6 * JEV_PRICE_IN_PER_MTOK + tout / 1e6 * JEV_PRICE_OUT_PER_MTOK, 8),
+            "key_source": src}
+
+
 # ------------------------------------------------------------- cadangan: LLM OpenAI-compatible
 
 def judge_openai_compat(state, risk_label):

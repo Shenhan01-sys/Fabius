@@ -69,6 +69,52 @@ python tools\verify_deploy.py                       # baca ulang dari chain 97
 `broadcast/`. Skrip ini mengirim tx testnet nyata dan memindahkan tBNB; tidak ada mainnet,
 tidak ada order, tidak ada dana sungguhan.
 
+## 25 Sep — keputusan SUNGGUHAN masuk chain (bukan hash uji)
+
+`tools/anchor.py` (baru) membaca `decisions/direction-*.jsonl` dan mengirim apa adanya, lalu
+membaca ulang `getAnchor(id)` dan membandingkan word per word. Hasil siklus 19:06Z:
+
+| | |
+|---|---|
+| `anchorCount()` | **2 → 9** (7 dikirim, 7 cocok word-per-word dengan file lokal) |
+| komposisi | `Enter=1` (MARSCOINUSDT short) · `Abstain=8` |
+| blok | 132955005, 132955013, 132955022, 132955030, 132955038, 132955046, 132955056 |
+| gas per anchor | 247.987 – 250.795 (semua di bawah plafon 1.000.000 → bukan out-of-gas) |
+| biaya batch | ≈ 0,0018 tBNB @1 gwei; saldo agen 0,001085 → **0,013085** setelah transfer testnet 0,012 dari tower (`_research/topup_agent.py`, tx `0xc759fa66…` status=1) |
+
+Yang membuat halaman ini bukan sekadar angka: empat dari tujuh baris adalah **penolakan**
+(`flat`/`unassessable`) dan tetap di-anchor. Jejak yang hanya berisi keputusan berani bisa
+ditulis setelah hasilnya diketahui; jejak yang menyimpan `ABSTAIN` dengan alasan yang di-hash
+(`gatesHash`) tidak bisa.
+
+Dua guard yang dipasang karena kegagalannya sudah pernah terjadi di repo ini:
+- **saldo diperiksa sebelum tx pertama**, dihitung pada PLAFON gas × jumlah baris (bukan rata-rata)
+  → siklus yang kurang dana berhenti tanpa mengirim apa pun, jadi tidak pernah ada jejak setengah;
+- **`chainId` dibaca ulang dan dibandingkan dengan config sebelum menandatangani** → kegagalan
+  yang dicegah adalah menandatangani tx untuk chain yang tidak kita baca.
+
+## RPC: dua hal yang kelihatan sama tapi berbeda (terukur 25 Sep)
+
+Alat verifikasi kita sempat "membalas lambat/mati" dan penyebabnya DUA cacat terpisah, keduanya
+di sisi kita, bukan di chain:
+
+1. **Cloudflare error 1010 = klien diblokir berdasarkan signature-nya.** `urllib` default
+   (`Python-urllib/3.x`) mendapat **403** dari `bsc-testnet.drpc.org` dan kedua endpoint
+   publicnode; dengan `User-Agent` apa pun (browser ATAU `curl/8.4.0`) responsnya **200**. Jadi
+   "RPC mati" yang kami lihat sebenarnya permintaan tanpa UA. Diukur oleh
+   `_research/probe_rpc_reject.py` / `probe_rpc_methods.py`.
+2. **`Fabius/.env` masih memaku `RPC_URL` ke `data-seed-prebsc-1-s2.binance.org:8545/` yang sudah
+   pensiun** (timeout 24 s di SEMUA metode). Setelah rotasi endpoint dipasang, satu
+   `eth_getBalance` masih makan **22,93 s**: rotasi buta mulai dari indeks 0 = mulai dari yang
+   mati, SELAPAS kali. Perbaikannya bukan cuma ganti endpoint (kini `https://bsc-testnet.drpc.org`),
+   tapi membuat rotasinya **beringatan**: endpoint yang gagal masuk `_BAD` dan tidak dicoba lagi
+   di proses itu, dan panggilan berikutnya mulai dari yang terakhir berhasil.
+
+Dua pelajaran yang lebih umum dari RPC: (a) jangan menyimpulkan "server mati" dari status 403 —
+baca kode dan body-nya; (b) error JSON-RPC (`execution reverted`, hash tak dikenal) adalah
+**jawaban**, bukan kegagalan jaringan, jadi tidak boleh menurunkan endpoint ke daftar mati —
+kalau dicampur, satu `getAnchor` salah alamat membuat RPC kita terlihat mati.
+
 ## Batas yang tetap berlaku setelah deploy ini
 
 Yang terbukti: keberadaan, keutuhan, penanda tangan, urutan waktu, dan bahwa rem on-chain bekerja.

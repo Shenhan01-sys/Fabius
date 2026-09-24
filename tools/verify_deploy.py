@@ -43,7 +43,19 @@ for _p in (ENV,):
     except OSError:
         pass
 
-RPC = env.get("RPC_URL") or "https://data-seed-prebsc-1-s2.binance.org:8545/"
+# Dua cacat yang diukur 25 Sep, dan keduanya tampak sebagai "RPC mati":
+#   1. `data-seed-prebsc-1-s2.binance.org:8545` timeout total (URLError) - endpoint lama itu sudah
+#      pensiun; memakainya sebagai default membuat alat verifikasi kita tidak pernah jalan.
+#   2. drpc/publicnode membalas **403 Cloudflare error 1010** kalau request tidak membawa
+#      User-Agent. 1010 = "diblokir berdasarkan signature klien", jadi urllib default
+#      (`Python-urllib/3.x`) ditolak padahal servernya hidup 100%. Dengan UA browser ATAU
+#      `curl/8.4.0` sama-sama 200 (probe_rpc_reject.py, 25 Sep).
+RPCS = [u for u in [(env.get("RPC_URL") or "").strip(),
+                    "https://bsc-testnet.drpc.org", "https://bsc-testnet.publicnode.com",
+                    "https://bsc-testnet-rpc.publicnode.com"] if u]
+RPC = RPCS[0]
+HEADERS = {"Content-Type": "application/json", "Accept": "application/json",
+           "User-Agent": "Mozilla/5.0 (compatible; fabius-verify/1.0)"}
 CHAIN = int(env.get("CHAIN_ID") or 97)
 AGENT_GAS = 1_000_000   # catatan: 300000 HABIS TERPAKAI persis (out-of-gas), bukan revert logika.
                         # anchor() menulis string + push array + event 2 topic pada storage dingin.
@@ -54,22 +66,47 @@ from eth_account import Account                    # noqa: E402
 from eth_utils import keccak                       # noqa: E402
 
 
+_BAD: set = set()      # endpoint yang terbukti mati di proses ini -> jangan dicoba lagi
+_CURSOR = [0]          # mulai dari yang TERAKHIR berhasil, bukan selalu dari indeks 0
+
+
 def rpc(method, params):
-    req = urllib.request.Request(RPC, data=json.dumps(
-        {"jsonrpc": "2.0", "id": 1, "method": method, "params": params}).encode(),
-        headers={"Content-Type": "application/json"})
+    """SATU metode JSON-RPC dengan rotasi endpoint yang INGATAN.
+
+    Kenapa "ingatan" penting (terukur 25 Sep, 22,9 detik untuk satu eth_getBalance yang seharusnya
+    0,6 detik): `Fabius/.env` dulu mem-paku RPC_URL ke `data-seed-prebsc-1-s2.binance.org` yang
+    sudah pensiun. Rotasi buta mulai dari indeks 0 = SELAPAS panggilan itu = satu RPC mati
+    mengubah seluruh alat verifikasi jadi 40x lebih lambat, tanpa pesan error - persis tipe
+    kegagalan yang terlihat seperti "chain-nya sibuk".
+
+    Aturan: mulai dari endpoint yang terakhir berhasil; yang gagal sekali diturunkan ke _BAD dan
+    dilewati sisa proses; daftar tunggu hanya habis kalau SEMUA mati.
+    """
+    body = json.dumps({"jsonrpc": "2.0", "id": 1, "method": method, "params": params}).encode()
+    order = [RPCS[_CURSOR[0] % len(RPCS)]] + [u for i, u in enumerate(RPCS)
+                                             if i != _CURSOR[0] % len(RPCS)]
+    order = [u for u in order if u not in _BAD] or [u for u in RPCS if u in _BAD]
     last = None
-    for _ in range(3):
+    for u in order:
+        global RPC
+        RPC = u
+        req = urllib.request.Request(u, data=body, headers=HEADERS)
         try:
-            with urllib.request.urlopen(req, timeout=25) as r:
+            with urllib.request.urlopen(req, timeout=10) as r:
                 d = json.loads(r.read().decode())
             if "error" in d:
+                # error JSON-RPC = server MENJAWAB dengan benar (revert, hash tak dikenal).
+                # Itu jawaban, bukan kegagalan jaringan -> JANGAN turunkan endpoint ke _BAD,
+                # kalau tidak satu `getAnchor` salah alamat membuat RPC kita "mati".
                 raise RuntimeError(str(d["error"])[:220])
+            _CURSOR[0] = RPCS.index(u)
             return d["result"]
+        except RuntimeError:
+            raise
         except Exception as e:  # noqa: BLE001
             last = e
-            time.sleep(3)
-    raise RuntimeError(f"RPC {method} gagal 3x: {last}")
+            _BAD.add(u)
+    raise RuntimeError(f"RPC {method} gagal di {len(RPCS)} endpoint: {last}")
 
 
 def sel(sig):

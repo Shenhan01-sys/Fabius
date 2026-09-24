@@ -15,6 +15,15 @@ lib/
 universe/runner.log
 universe/__pycache__/
 
+# Byte-code Python: artefak mesin, bukan bukti. Tiga file .pyc sempat ter-track oleh commit lama
+# (24 Sep) dan tiap siklus Actions membuat diff biner yang tidak bisa dibaca orang.
+__pycache__/
+
 # Keputusan turunan: bisa dibangun ulang dari snapshot, jangan menggandakan riwayat.
 decisions/*.jsonl
-.jev.env 
+.jev.env
+
+# Cache deret harga dari LUAR (Aster/Hyperliquid): boleh dibangun ulang kapan saja, jadi bukan
+# bukti point-in-time kita. Beda dengan universe/bsc-universe.jsonl, yang justru bukti "kami
+# merekam sebelum tahu hasilnya" dan karena itu di-commit. Lihat tools/bars.py.
+data/
