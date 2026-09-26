@@ -150,6 +150,23 @@ Dua hal yang menahan kegagalannya sekarang, bukan niat:
    tanpa `--loop`) untuk menutup lubang. Itulah yang mengubah siklus 14:10:36Z (9 kandidat
    ber-perp, 3 kursi) jadi 19:06:58Z (12 kandidat, 4 kursi) — buktinya bukan kode yang berubah.
 
+**Eskalasi 26 Sep 09:06Z — untuk jendela 8 menit, "tidak bisa dijamin" berarti tidak berguna.**
+`wallet-flow` dipasang dengan cron `*/10 * * * *`. Dalam 36 menit sejak terdaftar: **nol** jalanan
+`schedule` (satu-satunya jalanan adalah `workflow_dispatch` yang kukirim manual). Sebagai pembanding,
+`universe-hourly` menembak 01:29Z lalu 07:35Z — bolong enam jam untuk cron per-jam. Untuk universe,
+lubang sebesar itu masih bisa hidup dengannya (kita catat `gap_since_prev_h` dan tetap punya 54
+snapshot). Untuk aliran wallet yang hanya menutup 8–13 menit dan **tidak bisa ditarik mundur**,
+satu jam yang bolong = ±6.000 transaksi yang hilang permanen.
+
+Perbaikannya bukan mengganti angkanya: **`schedule` diturunkan jadi penyelamat** (`17 * * * *`), dan
+penggeraknya jadi **rantai yang menghidupi dirinya sendiri** — satu job loop ±4,6 jam (tarik +
+commit + push tiap ±4 menit) yang di akhir men-dispatch dirinya lagi. Dua pagar supaya tidak lari:
+**anti-tumpang-tindih** (kalau sudah ada jalanan `in_progress`, yang baru berhenti di langkah
+pertama — tanpa ini, cron per-jam + dispatch-diri = beberapa rantai berebut push) dan **batas umur
+40 jam** (`chain_started` dibawa antar-jalanan; setelah itu rantai berhenti dan menyerah ke cron,
+sehingga tidak ada loop yang hidup abadi tanpa ada orang memutuskan ulang). Commit tiap siklus,
+bukan satu commit di akhir: kalau runner mati di menit 200, ±50 siklus data tetap tersimpan.
+
 Yang masih terbuka dan harus ditulis apa adanya: penulis jam ini tetap **satu-satunya** (Actions
 atau laptop, jangan keduanya — dua penulis di satu JSONL sudah dua kali memicu konflik union),
 dan sampai ada pemicu yang bisa dijamin, dataset kita akan terus punya lubang yang tercatat di

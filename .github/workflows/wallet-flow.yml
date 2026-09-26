@@ -1,48 +1,62 @@
 name: wallet-flow
 
-# Perekam BIDANG ⑦ (aliran wallet) - dipasang 25 Sep, dan alasannya murni karena waktu.
+# Perekam BIDANG ⑦ (aliran wallet) - dipasang 25 Sep, POLANYA diganti 26 Sep pagi.
 #
-# Kenapa harus berdetak, bukan jalan sekali: `user/smartmoney` cuma menutup 8-13 MENIT ke
-# belakang, dan SEMUA parameter pagingnya (`offset`, `page`, `page_no`, `end_ts`) diabaikan
-# server - terukur 25 Sep (`_research/probe_gmgn_wallet_stream.py`: balasannya head yang sama,
-# overlap 98/100, baris baru 1). Jadi tiap menit yang tidak kita rekam adalah transaksi yang
-# hilang permanen. Kline Aster masih bisa ditarik mundur 400 hari; ini tidak.
+# ===== KENAPA DIGANTI (terukur 26 Sep 09:06Z) =====
+# Versi pertama: cron `*/10 * * * *`. Dalam 36 menit sejak workflow ini terdaftar, cron TIDAK
+# PERNAH menembak - satu-satunya jalanan adalah `workflow_dispatch` yang kukirim manual (08:29).
+# Pembandingnya `universe-hourly`: cron per-jam, tapi menembak 01:29 lalu 07:35 (bolong 6 JAM).
+# Untuk data yang jendela lihatnya 8-13 menit DAN tidak bisa ditarik mundur (semua parameter
+# paging diabaikan server), scheduler yang suka melewatkan jam bukan pengganggu kecil: tiap jam
+# yang bolong = ribuan transaksi yang hilang permanen.
 #
-# Kenapa cadencenya per-10-menit dengan 2 tarikan berjarak 5 menit: jendela lihat 8-13 menit,
-# jadi satu tarikan per 10 menit meninggalkan lubang 2 menit di tiap sisi. Dua tarikan menutup
-# rentang itu tanpa lubang (dedupe by transaction_hash mengurus tumpang tindihnya - terukur:
-# tarikan kedua dari jalanan yang sama menambah 15/100 dan 3/100 baris baru).
+# ===== POLA BARU: RANTAI YANG MENGHIDUPI DIRINYA SENDIRI =====
+# Satu job loop ~4,6 jam (tarik + commit + push tiap ~4 menit), lalu di akhir men-dispatch
+# dirinya sendiri untuk tahap berikutnya. `schedule:` tetap ada tapi TURUN PANGKAT jadi penyelamat:
+# kalau rantai mati, cron jam-an menyambung ulang.
 #
-# Kenapa TIDAK butuh repository secret: percobaan 25 Sep menunjukkan demo key publik
-# (`gmgn_solbscbaseethmonadtron`) sudah membalas HTTP 200 berisi data untuk rute ini, identik
-# dengan kunci privat. `GMGN_API_KEY` tetap diteruskan kalau suatu saat diisi, dan kalau kosong
-# perekam jatuh ke demo key dengan sendirinya - tanpa 401 diam-diam.
+# Dua pagar supaya rantai tidak bisa lari sendiri:
+#   1. ANTI-TUMPANG-TINDIH - kalau sudah ada jalanan `in_progress` untuk workflow ini, jalanan
+#      baru berhenti di langkah pertama. Tanpa ini, cron per-jam + dispatch-diri = beberapa rantai
+#      paralel yang saling merebut push.
+#   2. BATAS UMUR 40 JAM - `chain_started` ikut dibawa antar-jalanan; lewat itu, rantai berhenti
+#      dan menyerah ke cron. Jadi tidak ada loop yang hidup abadi tanpa pernah ada orang
+#      memutuskan ulang.
+#
+# Kenapa commit tiap siklus (bukan satu commit di akhir): kalau runner mati di menit 200, kita
+# tetap punya ~50 siklus data. Onggannya cuma sejarah git yang ramai; ongkos sebaliknya = data
+# yang tidak akan pernah ada.
+#
+# Kenapa TIDAK butuh repository secret: terukur bahwa demo key publik membalas HTTP 200 dengan
+# isi identik untuk rute ini. `GMGN_API_KEY` tetap diteruskan kalau diisi; kalau kosong, perekam
+# jatuh ke demo key dengan sendirinya - tanpa 401 diam-diam.
 #
 # Kenapa tetap di GitHub Actions: commit-nya dibuat mesin pihak ketiga dengan timestamp server
-# GitHub. Untuk dataset yang klaimnya "direkam sebelum hasilnya diketahui", jam kita sendiri
-# tidak punya nilai bukti. (Repo sudah PUBLIC, jadi menit runner tidak lagi jadi anggaran.)
-#
-# Batas yang jujur: cron GitHub bisa terlambat/melewati jam (terukur di `universe/manifest.txt`:
-# 5 gap > 2 jam, terbesar 16,31 jam). Untuk aliran ini, satu jam yang terlewat = ±6.000 transaksi
-# yang tidak akan pernah kita punya. Itu bukan alasan untuk tidak memasangnya - itu alasan
-# untuk mencatat `usia_aliran_jam` di manifest supaya lubangnya kelihatan, bukan dikira nol.
+# GitHub. Untuk dataset yang klaimnya "direkam sebelum hasilnya diketahui", jam laptop sendiri
+# tidak punya nilai bukti. (Repo sudah PUBLIC, jadi menit runner bukan anggaran lagi.)
 
 on:
   schedule:
-    - cron: "*/10 * * * *"
-  workflow_dispatch: {}
+    - cron: "17 * * * *"          # penyelamat, bukan penggerak
+  workflow_dispatch:
+    inputs:
+      chain_started:
+        description: "UTC ISO dari rantai aktif (kosongkan untuk memulai rantai baru)"
+        required: false
+        default: ""
 
 permissions:
   contents: write
+  actions: read
 
 concurrency:
-  group: wallet-flow
+  group: wallet-flow-chain
   cancel-in-progress: false
 
 jobs:
-  rekam:
+  rantai:
     runs-on: ubuntu-latest
-    timeout-minutes: 9
+    timeout-minutes: 330
     steps:
       - uses: actions/checkout@v4
 
@@ -50,31 +64,73 @@ jobs:
         with:
           python-version: "3.12"
 
-      - name: Tarik aliran wallet 2x berjarak 5 menit
+      - name: Berhenti kalau sudah ada rantai yang jalan (anti-tumpang-tindih)
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          RUN_ID: ${{ github.run_id }}
+        run: |
+          sleep 5
+          N=$(gh api "repos/$GITHUB_REPOSITORY/actions/runs?status=in_progress&per_page=50" \
+              --jq "[.workflow_runs[] | select(.name==\"wallet-flow\" and (.run_id|tostring)!=\"$RUN_ID\")] | length")
+          echo "rantai lain yang in_progress: $N"
+          if [ "$N" != "0" ]; then
+            echo "sudah ada rantai aktif -> keluar tanpa merekam (ini bukan kegagalan)"
+            echo "RANTAI_ADA=1" >> "$GITHUB_ENV"
+          else
+            echo "RANTAI_ADA=0" >> "$GITHUB_ENV"
+          fi
+
+      - name: Loop ~4,6 jam - tarik, commit, push tiap ~4 menit
+        if: env.RANTAI_ADA == '0'
         env:
           GMGN_API_KEY: ${{ secrets.GMGN_API_KEY }}
         run: |
-          python -u universe/record_wallet_flow.py --pulls 2 --gap 300
-
-      - name: Commit & push (tahan terhadap tabrakan dengan universe-hourly)
-        run: |
           git config user.name "wallet-flow-recorder"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add universe/wallet-flow.jsonl universe/wallet-flow-manifest.txt
-          if git diff --cached --quiet; then
-            echo "TIDAK ADA BARIS BARU - itu bukan 'nol aktivitas'; periksa HTTP status di langkah tadi"
+          END=$(( $(date +%s) + 275*60 ))
+          K=0
+          while [ "$(date +%s)" -lt "$END" ]; do
+            K=$((K+1))
+            echo "=== siklus $K $(date -u +%H:%M:%SZ) ==="
+            python -u universe/record_wallet_flow.py --pulls 1 --gap 0 \
+              || echo "rekam gagal di siklus $K - lanjut; satu HTTP jangan mematikan rantai"
+            git add universe/wallet-flow.jsonl universe/wallet-flow-manifest.txt
+            if git diff --cached --quiet; then
+              echo "tidak ada baris baru di siklus $K"
+            else
+              git commit -q -m "wallet flow $(date -u +%Y-%m-%dT%H:%M:%SZ) [skip ci]" || true
+              for t in 1 2 3; do
+                if git -c pull.rebase=true pull --rebase -q origin "$GITHUB_REF_NAME" && git push -q; then
+                  echo "push OK (percobaan $t)"; break
+                fi
+                echo "push gagal, retry $t"; sleep 15
+              done
+            fi
+            sleep 200
+          done
+          echo "siklus selesai: $K"
+
+      - name: Sambung rantai (batas umur 40 jam)
+        if: env.RANTAI_ADA == '0'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          CHAIN_IN: ${{ github.event.inputs.chain_started }}
+        run: |
+          START="$CHAIN_IN"
+          if [ -z "$START" ]; then START=$(date -u +%Y-%m-%dT%H:%M:%SZ); fi
+          AGE_H=$(( ( $(date +%s) - $(date -u -d "$START" +%s) ) / 3600 ))
+          echo "umur rantai: ${AGE_H} jam (mulai $START)"
+          if [ "$AGE_H" -gt 40 ]; then
+            echo "BATAS UMUR TERSENTUH -> rantai berhenti; cron per-jam akan memulai rantai baru."
             exit 0
           fi
-          git commit -m "wallet flow $(date -u +%Y-%m-%dT%H:%M:%SZ) [skip ci]"
-          # Berkas ini berbeda dari milik universe-hourly, jadi rebase-nya bersih; tapi kalau dua
-          # perekam push di detik yang sama, yang kalah kehilangan data yang TIDAK BISA disusulkan.
-          # Karena itu push diulang, bukan cukup sekali.
-          for i in 1 2 3; do
-            git pull --rebase origin "$GITHUB_REF_NAME" && git push && echo "PUSH OK (percobaan $i)" && break
-            echo "push gagal, percobaan $i - retry"; sleep 20
-          done
+          WID=$(gh api "repos/$GITHUB_REPOSITORY/actions/workflows" \
+                --jq ".workflows[] | select(.name==\"wallet-flow\") | .id")
+          gh api -X POST "repos/$GITHUB_REPOSITORY/actions/workflows/$WID/dispatch" \
+             -f "inputs[chain_started]=$START" && echo "rantai disambung (workflow id $WID)"
 
-      - name: Laporkan kesehatan aliran
+      - name: Kesehatan aliran
+        if: always()
         run: |
-          python -u universe/record_wallet_flow.py --report
-          head -n 12 universe/wallet-flow-manifest.txt
+          python -u universe/record_wallet_flow.py --report || true
+          head -n 10 universe/wallet-flow-manifest.txt || true
