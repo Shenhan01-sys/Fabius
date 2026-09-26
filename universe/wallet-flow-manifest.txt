@@ -1,17 +1,25 @@
 # wallet-flow manifest - dihasilkan universe/record_wallet_flow.py
-generated_utc: 2026-09-26T08:36:17Z
+generated_utc: 2026-09-26T09:15:11Z
 schema: 1
-baris: 762
-baris_transaksi: 607
-maker_unik: 80
-token_unik: 63
+baris: 984
+baris_transaksi: 802
+maker_unik: 99
+token_unik: 74
 usia_aliran_jam: 0.00
-sha256_berkas: 0xb6608f7948fb762c34ea1eee64ccdfb05a4e79a8d37a959377ceed0874a69356
-hash_baris_terakhir: 0x300bf0e588c26c6502d2da8e3f6dcf027273d0df0f9ec8e35f54f7993fe0c63f
-mata_rantai_dipakai_run_ini: 0xd70750d2d448bac7417b89cf11eb4a996866ae1a1a1b1978837e768982571322
-rentang_event_utc: 2026-09-26T08:01:42Z -> 2026-09-26T08:36:17Z (0.58 jam)
+sha256_berkas: 0xe6983de8a7d35cb68b0d38f60e0a9019e6ec5d28c0f398e1640811867ffb6e7f
+hash_baris_terakhir: 0xe2a1b59b77039b6d9a00e032ca2a85adddd65939412a3b8b68ac073b2331822a
+mata_rantai_dipakai_run_ini: 0x300bf0e588c26c6502d2da8e3f6dcf027273d0df0f9ec8e35f54f7993fe0c63f
+rentang_event_utc: 2026-09-26T08:01:42Z -> 2026-09-26T09:15:11Z (1.22 jam)
 
 Batas yang wajib dibaca bersama berkas ini: keanggotaan panel `sm`/`kol` ADALAH pilihan
 GMGN (lihat field `g`/tags), jadi panel awal tidak netral. Yang kita ukur sendiri hanyalah
-HASILNYA, dari harga yang kita catat sendiri (baris `px`). Karena itu penilaian wallet
-harus selalu memakai kelompok kontrol, bukan sekadar membandingkan smart money vs nol.
+HASILNYA, dari harga yang kita catat sendiri (baris `px`).
+
+KONTROL TIDAK TERSEDIA - diukur, bukan diasumsikan. Pada 607 transaksi pertama (26 Sep
+08:01-08:36Z): baris TANPA tag smart/kol/gmgn = 0 (0,0 %). Aliran ini memang didefinisikan
+sebagai 'dompet yang sudah dilabeli', jadi membandingkannya dengan dompet biasa dari sumber
+yang sama mustahil secara struktural, bukan kurang data. Pembanding yang sah (vault/08 §6):
+(a) arah acak pada token & jam yang sama -> selisih net_bps vs 0; (b) hold token 4 jam dari
+baris `px` kami sendiri; (c) pisahkan is_open_or_close=1 vs =0. Kalimat yang boleh diuji
+hanyalah 'lebih baik dari tidak memilih arah pada jam yang sama', BUKAN 'lebih baik dari
+trader biasa' - yang kedua tidak bisa diuji dengan berkas ini.
