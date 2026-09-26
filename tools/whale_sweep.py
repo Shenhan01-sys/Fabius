@@ -94,13 +94,19 @@ def run_sql(key, sql, wait=900):
     if "COMPLETED" not in state:
         raise SystemExit(f"kueri {state}: {str(st.get('error', {}).get('message'))[:200]}")
     out, cur, ok = [], None, True
+    # `limit=5000` adalah dugaan besarku kemarin, dan dugaan itu menghasilkan "0 baris" yang
+    # terbaca seperti "whale tidak trading apa pun". API ini membalas error untuk limit di atas
+    # 1000 TANPA mengangkat pengecualian - jadi nilainya kukunci ke 1000 dan setiap respons
+    # gagal DICETAK mentah-mentah. Kegagalan yang diam adalah kegagalan yang akan kuulang.
+    PAGE = 1000
     while True:
-        p = f"/api/v1/execution/{eid}/results?limit=5000" + (f"&offset={cur}" if cur else "")
+        p = f"/api/v1/execution/{eid}/results?limit={PAGE}" + (f"&offset={cur}" if cur else "")
         res = None
         for t in range(3):
             res = api(p, key, timeout=180)
             if isinstance(res, dict) and (res.get("result") or {}).get("rows") is not None:
                 break
+            print(f"  halaman {cur} percobaan {t + 1}: {json.dumps(res)[:220]}")
             time.sleep(4 + 4 * t)
         else:
             ok = False
@@ -115,11 +121,16 @@ def run_sql(key, sql, wait=900):
             break
         rows = res["result"]["rows"]
         out.extend(rows)
-        nxt = (res["result"].get("metadata") or {}).get("next_offset")
-        if not nxt or nxt == cur or not rows:
+        meta = (res["result"].get("metadata") or {})
+        total = meta.get("total_row_count")
+        # API ini TIDAK mengirim `next_offset` - key itu tidak ada, dan bergantung padanya
+        # membuat kita berhenti diam-diam di halaman pertama (terukur: cache hanya 1.000 baris
+        # padahal total_row_count memberi tahunya). Jadi geser offset sendiri dan berhenti hanya
+        # kalau (a) sudah terkumpul total-nya, atau (b) halaman ini kosong.
+        cur = (cur or 0) + len(rows)
+        if len(rows) < PAGE or (total and len(out) >= int(total)):
             break
-        cur = nxt
-        print(f"  ... {len(out)} baris", flush=True)
+        print(f"  ... {len(out)}/{total} baris", flush=True)
     dur = (st.get("total_duration_ms") or 0) / 1000
     return out, f"durasi_dune={dur:.0f}s baris={len(out)}" + ("" if ok else " [TERPOTONG]"), ok
 
@@ -164,6 +175,20 @@ def perp_base_index():
     return out
 
 
+SKIP_BASES = {"USDT", "USDC", "USD1", "DAI", "WBNB", "WBTC", "BTCB", "BTC", "ETH", "SOL", "XRP",
+              "LTC", "BCH", "ADA", "DOT", "LINK", "AVAX", "TRX", "TON", "SUI", "APT", "NEAR"}
+
+
+def _kandidat_simbol():
+    """Simbol yang boleh masuk: base asset ber-kontrak perp, bukan stable/wrapped.
+
+    Satu fungsi untuk dua pemanggil (`fetch_entries` dan `--probe`): kalau daftarnya ditulis dua
+    kali, "probe" dan "produksi" bisa menguji query yang berbeda sambil terlihat sama - dan hasil
+    0 baris tidak akan pernah bisa diinterpretasi dengan jujur.
+    """
+    return sorted(b for b in perp_base_index() if 3 <= len(b) <= 12 and b not in SKIP_BASES)
+
+
 def fetch_entries(days, force=False):
     fp = os.path.join(CACHE, f"panel-entries-{days}d.json")
     if os.path.exists(fp) and not force:
@@ -174,11 +199,7 @@ def fetch_entries(days, force=False):
     if not key:
         raise SystemExit("tidak ada DUNE_API_KEY")
     wallets, thick_n = panel_wallets()
-    bases = sorted(perp_base_index().keys())
-    # simbol yang kami ijinkan masuk: 3-12 karakter, huruf/angka, bukan stable/wrapped
-    cand = [b for b in bases if 3 <= len(b) <= 12 and b not in
-            {"USDT", "USDC", "USD1", "DAI", "WBNB", "WBTC", "BTCB", "BTC", "ETH", "SOL", "XRP",
-             "LTC", "BCH", "ADA", "DOT", "LINK", "AVAX", "TRX", "TON", "SUI", "APT", "NEAR"}]
+    cand = _kandidat_simbol()
     print(f"panel: {len(wallets)} wallet (dari {thick_n} yang n>={MIN_N}) | "
           f"simbol kandidat: {len(cand)}")
     in_w = ", ".join(f"from_hex('{w}')" for w in wallets)
@@ -265,7 +286,45 @@ def main():
     ap.add_argument("--count-only", action="store_true",
                     help="cetak respons MENTAH untuk satu kueri count(*) - untuk bedakan "
                          "'filter tidak cocok' dari 'caraku membaca respons salah'")
+    ap.add_argument("--probe", action="store_true",
+                    help="kirim SQL besar yang SESUNGGUHNYA dipakai; cetak state, "
+                         "execution_cost_credits, dan hasil mentah - lalu berhenti")
+    ap.add_argument("--refetch", action="store_true", help="buang cache, kirim ulang kueri")
     a = ap.parse_args()
+
+    if a.probe:
+        key = dune_key()
+        wallets, thick_n = panel_wallets()
+        in_w = ", ".join("from_hex('%s')" % w for w in wallets)
+        in_s = ", ".join("'%s'" % s for s in _kandidat_simbol())
+        sql = ("SELECT date_trunc('day', d.block_time) AS hari, to_hex(d.taker) AS wallet, "
+               "to_hex(d.token_bought_address) AS token, upper(t.symbol) AS simbol, "
+               "min(d.block_time) AS masuk, count(*) AS beli, sum(d.amount_usd) AS usd "
+               "FROM dex.trades d JOIN tokens.erc20 t "
+               "  ON d.token_bought_address = t.contract_address AND t.blockchain = 'bnb' "
+               "WHERE d.blockchain = 'bnb' AND d.block_time > now() - INTERVAL '90' DAY "
+               "AND upper(t.symbol) IN (" + in_s + ") AND d.taker IN (" + in_w + ") "
+               "GROUP BY 1,2,3,4 ORDER BY 1")
+        print(f"SQL {len(sql)} char | wallet={len(wallets)} simbol={in_s.count(',') + 1}")
+        j = api("/api/v1/sql/execute", key, {"sql": sql, "performance": "medium"})
+        eid = j.get("execution_id")
+        if not eid:
+            print(f"execute ditolak: {json.dumps(j)[:400]}")
+            return
+        st = {}
+        for _ in range(140):
+            st = api(f"/api/v1/execution/{eid}/status", key)
+            if str(st.get("state", "")).endswith(("COMPLETED", "FAILED", "CANCELLED")):
+                break
+            time.sleep(5)
+        print(f"state={st.get('state')} credits={st.get('execution_cost_credits')} "
+              f"mulai={st.get('execution_started_at')} selesai={st.get('execution_ended_at')}")
+        if "FAILED" in str(st.get("state")):
+            print(f"error: {json.dumps(st.get('error'))[:500]}")
+            return
+        print("RAW:", json.dumps(api(f"/api/v1/execution/{eid}/results?limit=3", key))[:700])
+        return
+
     if a.count_only:
         key = dune_key()
         if not key:
@@ -294,7 +353,7 @@ def main():
             print(f"  RAW results : {json.dumps(rs)[:500]}")
         return
 
-    rows = fetch_entries(a.days, force=False)
+    rows = fetch_entries(a.days, force=a.refetch)
 
     idx = perp_base_index()
     kl_cache = {}
@@ -341,7 +400,15 @@ def main():
             for hname, hrs in HORIZONS.items():
                 v = (kl["c"][i + hrs] / kl["c"][i] - 1.0) * 1e4 if i + hrs < len(kl["c"]) else None
                 if v is not None:
-                    base[hname].append(v)
+                    # disimpan bersama tanggalnya: tanpa `day`, split-sample tidak bisa dibelah
+                    # menurut waktu dan kolom "AWAL/AKHIR" akan jadi hiasan.
+                    base[hname].append({"day": day, "v": v})
+
+    def base_vals(hname, lo="0000", hi="9999"):
+        return [x["v"] for x in base.get(hname, []) if lo <= x["day"] < hi]
+
+    def mean_diff(pv, bv):
+        return (statistics.fmean(pv) - statistics.fmean(bv)) if (pv and bv) else None
 
     print(f"\n{'horizon':10}{'n panel':>9}{'panel bps':>11}{'baseline':>10}{'selisih':>10}"
           f"{'p boot':>9}  split AWAL / AKHIR")
@@ -349,7 +416,7 @@ def main():
     out_rows = []
     for hname in HORIZONS:
         e = [x for x in entri if x["jam"] == hname]
-        b = base.get(hname) or []
+        b = base_vals(hname)
         if len(e) < 30 or len(b) < 30:
             print(f"{hname:10}{len(e):>9}{'-':>41}  (sampel kurang)")
             continue
@@ -359,13 +426,28 @@ def main():
         cut = half[len(half) // 2] if half else ""
         a1 = [x["bps"] for x in e if x["hari"] < cut]
         a2 = [x["bps"] for x in e if x["hari"] >= cut]
-        b1 = statistics.fmean(a1) - statistics.fmean(b[:max(1, len(b) // 2)]) if a1 else None
-        b2 = statistics.fmean(a2) - statistics.fmean(b[max(1, len(b) // 2):]) if a2 else None
+        # Baseline dibelah menurut WAKTU, bukan menurut indeks. Versi pertama memotong daftar lewat
+        # posisi (`b[:len//2]`) padahal daftar itu disusun per kontrak, bukan per tanggal - jadi
+        # "AWAL/AKHIR" panel dibandingkan dengan dua potong baseline yang bukan periode yang sama,
+        # dan kolom itu tidak mengukur apa yang dijanjikan vault/11.
+        b1 = mean_diff(a1, base_vals(hname, "0000", cut))
+        b2 = mean_diff(a2, base_vals(hname, cut, "9999"))
         def tanda(v):
             return "?" if v is None else ("+" if v > 0 else "-")
         print(f"{hname:10}{len(e):>9}{statistics.fmean(pv):>+11.1f}{statistics.fmean(b):>+10.1f}"
               f"{obs:>+10.1f}{pr:>9.4f}  {tanda(b1)}{abs(b1 or 0):>6.1f} {tanda(b2)}{abs(b2 or 0):>6.1f}")
+        # Rata-rata bisa dibajak ekor gemuk. Untuk hasil positif, yang menentukan bukan "mean-nya
+        # naik" tapi "medianya ikut naik dan bukan satu-dua lottery ticket yang mengangkatnya".
+        srt = sorted(pv)
+        med = statistics.median(pv)
+        share_big = sum(1 for x in pv if x > 1000.0) / len(pv)
+        top1 = statistics.fmean(srt[-max(1, len(srt) // 100):])
+        rest = statistics.fmean(srt[:-max(1, len(srt) // 100)] if len(srt) > 100 else srt[:-1])
+        print(f"{'':10}median {med:+.1f} bps | share entri > +1.000 bps {share_big*100:.1f}% | "
+              f"1% teratas {top1:+.0f} bps, sisanya {rest:+.1f} bps")
         out_rows.append({"horizon": hname, "n_panel": len(e), "panel_bps": statistics.fmean(pv),
+                         "panel_median_bps": med, "share_over_1000bps": round(share_big, 4),
+                         "top1pct_bps": round(top1, 1), "tanpa_top1pct_bps": round(rest, 1),
                          "base_bps": statistics.fmean(b), "diff_bps": obs, "p_boot": pr,
                          "split_awal": b1, "split_akhir": b2})
 
@@ -377,8 +459,9 @@ def main():
             by_w[x["w"]].append(x["bps"])
     thick = [(w, v) for w, v in by_w.items() if len(v) >= MIN_N]
     pvals = []
+    bmed = statistics.fmean(base_vals("7 hari")) if base_vals("7 hari") else 0.0
     for w, v in thick:
-        wins = sum(1 for y in v if y > statistics.fmean(base.get('7 hari') or [0]))
+        wins = sum(1 for y in v if y > bmed)
         pvals.append(_sign_p(wins, len(v)))
     oki = bh(pvals)
     print(f"  {len(thick)} wallet mencapai n>={MIN_N}; lolos BH vs baseline: "

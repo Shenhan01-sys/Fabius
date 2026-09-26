@@ -1,0 +1,71 @@
+{
+ "cost_bps_applied": 0.0,
+ "generated_utc": "2026-09-26T19:14:35Z",
+ "horizons": {
+  "24 jam": 24,
+  "30 hari": 720,
+  "48 jam": 48,
+  "7 hari": 168
+ },
+ "note_ongkos": "belum memasukkan ongkos - itu harus diukur per venue dulu",
+ "prereg": "vault/11-Pra-Registrasi-Uji-Horison-Whale.md",
+ "rows": [
+  {
+   "base_bps": 33.383270701957734,
+   "diff_bps": -301.19666152607533,
+   "horizon": "24 jam",
+   "n_panel": 6355,
+   "p_boot": 0.00024993751562109475,
+   "panel_bps": -267.8133908241176,
+   "panel_median_bps": -37.797863599015045,
+   "share_over_1000bps": 0.105,
+   "split_akhir": -307.1837495806643,
+   "split_awal": -353.8960211401154,
+   "tanpa_top1pct_bps": -384.2,
+   "top1pct_bps": 11351.5
+  },
+  {
+   "base_bps": 56.11111031458179,
+   "diff_bps": -420.0539570529005,
+   "horizon": "48 jam",
+   "n_panel": 6241,
+   "p_boot": 0.00024993751562109475,
+   "panel_bps": -363.9428467383187,
+   "panel_median_bps": -105.25885224220377,
+   "share_over_1000bps": 0.1158,
+   "split_akhir": -502.90598076128884,
+   "split_awal": -335.64254693002096,
+   "tanpa_top1pct_bps": -548.6,
+   "top1pct_bps": 18036.2
+  },
+  {
+   "base_bps": 164.22075548665256,
+   "diff_bps": -1582.5425829893886,
+   "horizon": "7 hari",
+   "n_panel": 5394,
+   "p_boot": 0.00024993751562109475,
+   "panel_bps": -1418.3218275027361,
+   "panel_median_bps": -451.1677282377924,
+   "share_over_1000bps": 0.1214,
+   "split_akhir": -2061.965151027477,
+   "split_awal": -1054.0582328024457,
+   "tanpa_top1pct_bps": -1608.8,
+   "top1pct_bps": 17781.3
+  },
+  {
+   "base_bps": 804.7582100814983,
+   "diff_bps": 1716.9963518656564,
+   "horizon": "30 hari",
+   "n_panel": 2287,
+   "p_boot": 0.00024993751562109475,
+   "panel_bps": 2521.754561947155,
+   "panel_median_bps": 1289.5701432855722,
+   "share_over_1000bps": 0.5894,
+   "split_akhir": 334.54042520245,
+   "split_awal": 1391.9037652702582,
+   "tanpa_top1pct_bps": 2163.8,
+   "top1pct_bps": 39372.7
+  }
+ ],
+ "wallets_n": 75
+}
