@@ -137,7 +137,13 @@ def main():
         raise SystemExit(f"pembeli punya {bal0} atomic < tagihan {amount} - jalankan tools/x402_deploy.py dulu")
 
     now = int(time.time())
-    valid_after, deadline = now, now + int(acc.get("maxTimeoutSeconds") or 60)
+    # validAfter sengaja DI BELAKANG jam mesin (default 15 detik, ubah dengan --skew).
+    # Alasannya, dan ini bukan kosmetik: test Solidity memakai `block.timestamp` sehingga
+    # tidak akan pernah kena `PaymentTooEarly`, sedangkan klien kami memakai jam laptop. Kalau
+    # jam laptop beberapa detik di depan kepala chain, proxy menolak - dan gejalanya persis
+    # "tanda tangan salah", padahal yang salah adalah asumsi bahwa dua jam itu sama.
+    skew = int(os.environ.get("X402_SKEW", "15"))
+    valid_after, deadline = now - skew, now + int(acc.get("maxTimeoutSeconds") or 60)
     p2_nonce = int(keccak(text=f"fabius-x402-{now}")[:16].hex(), 16)
     d_p2, _, _ = digest_p2(token, amount, p2_nonce, deadline, pay_to, valid_after, vd.CHAIN)
     # Digest kami SUDAH membawa prefix EIP-19 (`\x19\x01`), jadi yang dibutuhkan adalah tanda

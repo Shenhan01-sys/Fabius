@@ -123,6 +123,37 @@ Dua guard yang dipasang karena kegagalannya sudah pernah terjadi di repo ini:
 - **`chainId` dibaca ulang dan dibandingkan dengan config sebelum menandatangani** → kegagalan
   yang dicegah adalah menandatangani tx untuk chain yang tidak kita baca.
 
+## 26 Sep — pembayaran x402 yang PERTAMA kali terjadi, di chain 97 yang hidup
+
+Bukan fork test, bukan catatan di atas kertas: sebuah agen nyata meminta, menerima `402`,
+menandatangani, dan uangnya pindah di proxy kanonis.
+
+| | |
+|---|---|
+| token (demo, milik kami) | `0xB11D90214089684081F57A03d3300E20725297f8` · create `0x6c16ad8b…` · code 4.002 byte |
+| tx settlement | [`0xb6093e597530214e92b67d44a02f1aeb833bd7881e40eac5e64c5840347062d0`](https://testnet.bscscan.com/tx/0xb6093e597530214e92b67d44a02f1aeb833bd7881e40eac5e64c5840347062d0) — `status=1`, **gas 114.930**, blok 133.285.597, 3 log |
+| tagihan | 1.000 atomic (= 0,001) jaringan `eip155:97`, scheme `exact`, `payTo` = agen |
+| saldo pembeli | 5.000.000 → **4.999.000** atomic (hilang tepat seukuran tagihan) |
+| saldo `payTo` | 999.990,001 token = 1.000.000 − 10 (dua pendanaan 5-token, satu di antaranya salah alamat) **+ 0,001** ✓ rekonsiliasi |
+| gas | **ditanggung fasilitator (server)**; dompet klien berisi 0 BNB dan tidak pernah mengirim transaksi |
+| alat | `tools/x402_deploy.py`, `tools/x402_gate.py` (server = fasilitator), `tools/x402_client.py` (agen pembayar) |
+
+Yang membuat angka ini bukan klaim: `status`, gas, dan `balanceOf` dibaca ulang dari
+`eth_getTransactionReceipt` / `eth_call`, bukan dari log server kami. Server boleh bohong;
+rantai tidak.
+
+### Dan satu penyebab kegagalan yang tidak akan ketemu dari pesan error
+
+Setelah calldata benar, settlement tetap `revert` tanpa data. Yang salah: **`validAfter` memakai
+jam laptop**, sementara proxy menolak kalau `block.timestamp < validAfter` — jam mesin ini
+beberapa detik di depan kepala chain. Test Solidity kami **tidak mungkin** menangkap ini karena ia
+memakai `block.timestamp` sebagai sumber waktu, jadi keduanya "benar" di dunianya masing-masing
+sampai disatukan di jaringan sungguhan. Perbaikan: `validAfter = now - skew` (`X402_SKEW`, default
+15 detik) — dan itu bukan trik, itu konsekuensi logis dari memakai jam dua sistem yang berbeda.
+
+Cara mengulang (nol dana nyata): `python tools/x402_deploy.py` → `python tools/x402_gate.py
+--port 8046` → `python tools/x402_client.py --base http://127.0.0.1:8046`.
+
 ## RPC: dua hal yang kelihatan sama tapi berbeda (terukur 25 Sep)
 
 Alat verifikasi kita sempat "membalas lambat/mati" dan penyebabnya DUA cacat terpisah, keduanya

@@ -384,4 +384,38 @@ contract X402SettleOnBscForkTest is Test {
         vm.expectRevert(x402BasePermit2Proxy.PaymentTooEarly.selector);
         proxy.settle(permit, payer, w, sig);
     }
+
+    /// ==================================================================== digest untuk Python
+    /// Bukan uji perilaku: ini DUMP agar sisi Python (klien x402 kami) bisa dibandingkan byte-per-
+    /// byte terhadap sisi Solidity yang SUDAH terbukti lulus. Tanpa ini, kegagalan settlement di
+    /// mesin lain cuma bisa ditebak ("mungkin domain-nya, mungkin nonce-nya"); dengan ini, begitu
+    /// digestnya sama, sisanya tinggal tanda tangan - dan kalau BEDA, bugnya ketahuan di baris ke-
+    /// berapa, bukan di chain. Nilainya diambil dari keadaan run ini (token/payer adalah kontrak
+    /// uji), jadi pembandingnya harus memakai angka yang dicetak, bukan angka karangan.
+    function test_dump_DigestUntukPembandingPython() public onlyOnBsc {
+        uint256 amount = PRICE;
+        uint256 nonce = 1234567;
+        uint256 deadline = block.timestamp + 120;
+        x402ExactPermit2Proxy.Witness memory w =
+            x402ExactPermit2Proxy.Witness({to: payTo, validAfter: block.timestamp});
+
+        console.log("TOKEN", address(token));
+        console.log("PAYER", payer);
+        console.log("PAYTO", payTo);
+        console.log("PROXY", address(proxy));
+        console.log("PERMIT2", PERMIT2);
+        console.log("CHAIN", block.chainid);
+        console.log("AMOUNT", amount);
+        console.log("NONCE", nonce);
+        console.log("DEADLINE", deadline);
+        console.log("VALIDAFTER", w.validAfter);
+        console.logBytes32(_permit2DomainSeparator());
+        console.logBytes32(_witnessHash(w));
+        console.logBytes32(_permit2Digest(amount, nonce, deadline, w));
+        (uint8 v, bytes32 r, bytes32 s) = _signEip2612(PERMIT2, amount, deadline);
+        console.log("NONCE2612", token.nonces(payer));
+        console.log("VSIG", v);
+        console.logBytes32(r);
+        console.logBytes32(s);
+    }
 }
