@@ -27,9 +27,10 @@ yang ditulis adalah **fakta yang kita ukur sendiri** + tautan keluar, bukan sali
 | `04-Kontrak.md` | apa yang ditegakkan `DecisionAnchor`, apa yang tidak |
 | `05-Belum-Terbukti.md` | lubang yang masih menganga + cara menutupnya |
 | `06-Keputusan.md` | log keputusan jalur ini, penomoran `F-D##` sendiri |
-| `07-Deploy-97.md` | alamat & biaya nyata di chain 97 + koreksi tooling (RPC/UA) + 13 anchor keputusan |
-| `08-Kelas-Aset-dan-Kursi.md` | 8 bidang data, 8 kelas aset, aturan 5 kursi & ambang rotasinya (asal tiap angka disebut) |
-| `09-Uji-Arah-Tidak-Ada-Edge.md` | **hasil negatif** uji aturan arah di 400 hari × 12 aset: rugi setelah ongkos, di 3 varian |
+| `07-Deploy-97.md` | alamat & biaya nyata di chain 97 + koreksi tooling (RPC/User-Agent) + **17 anchor** keputusan (Enter=3 / Abstain=14) + `--verify` tanpa kunci |
+| `08-Kelas-Aset-dan-Kursi.md` | 7 bidang data, 8 kelas aset, aturan 5 kursi & ambang rotasinya (asal tiap angka disebut) + cara menilai ⑦ tanpa kontrol |
+| `09-Uji-Arah-Tidak-Ada-Edge.md` | **hasil negatif** uji aturan arah di 400 hari × 12 aset (3 varian) + hasil pertama 2 prediksi yang di-anchor + vonis ⑦ smart money vs kerumunan |
+| `10-Pra-Registrasi-Uji-Aliran.md` | hipotesis & ambang **dikunci SEBELUM hasil dilihat**, lalu vonisnya: aliran kerumunan gagal 3-3-nya — termasuk daftar penyimpangan kami sendiri saat menjalankan |
 
 ## Aturan penulisan
 
