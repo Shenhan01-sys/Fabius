@@ -35,6 +35,14 @@ import json
 import os
 import sys
 import time
+# Windows: cmd.exe default cp1252 dan glyph yang kami cetak (`①④⑥` di arah, `⚠` di laporan)
+# bukan bagian dari yang di-hash - jadi encoding stdout yang disetel, bukan stringnya.
+# Tanpa ini, `print` bisa pecah DI TENGAH tabel dan separuh hasilnya terbaca seperti laporan penuh.
+for _s in (sys.stdout, sys.stderr):
+    try:
+        _s.reconfigure(encoding="utf-8", errors="replace")
+    except Exception:
+        pass  # stdout tanpa reconfigure (mis. tertangkap harness) = biarkan apa adanya
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(HERE)
