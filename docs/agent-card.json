@@ -1,0 +1,40 @@
+{
+ "description": "Agent riset yang menerbitkan keputusan BNB Chain yang bisa dibuktikan salah: gerbang deterministik, penolakan di-anchor, hasil dinilai ledger.",
+ "endpoints": [
+  {
+   "description": "ringkasan vault + statistik (dibayar per permintaan)",
+   "method": "GET",
+   "paywall": "x402 exact eip155:97",
+   "protocol": "http",
+   "status": "TERBUKTI DIBAYAR di chain 97; masih LOCAL ONLY - belum di-host publik",
+   "url": "http://127.0.0.1:8046/vault/latest"
+  },
+  {
+   "description": "rekaman keputusan terbaru (terbaca publik, tanpa bayar)",
+   "method": "GET",
+   "paywall": null,
+   "protocol": "http",
+   "url": "https://raw.githubusercontent.com/Shenhan01-sys/Fabius/master/docs/decisions/direction-latest.json"
+  }
+ ],
+ "evidence": {
+  "anchor_contract": "0xdd162afb5f5f92d5092f845a93660e3b38259330",
+  "check_yourself": "python tools/anchor.py --verify   # tanpa kunci, tanpa gas",
+  "registered_tx": "0x33f47391c3a313b1d167e68a760e24746adac2d1aa39b44383b1f232ea2013dd"
+ },
+ "generated_utc": "2026-09-26T12:39:33Z",
+ "image": null,
+ "limits_stated_honestly": [
+  "semua settlement di BNB Chain TESTNET (97); tidak ada dana nyata",
+  "token pembayaran adalah koin demo milik kami sendiri",
+  "strategi arah kami kalah setelah ongkos 20 bps (vault/09) - yang dijual adalah bukti, bukan sinyal"
+ ],
+ "name": "Fabius",
+ "protocol": "x402/1 + erc-8004/1",
+ "registry": {
+  "chainId": 97,
+  "identityRegistry": "0x8004A818BFB912233c491871b3d84c89A494BD9e",
+  "tokenId": 2494
+ },
+ "wallet": "0x4bb30e3b3bc22082c1935fe3be7c07448e69c862"
+}

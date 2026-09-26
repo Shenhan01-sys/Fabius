@@ -1,0 +1,10 @@
+{
+ "commit": "b9e466c250744a7e06b13dff9d3c2844ed64f825",
+ "commit_date": "2026-08-15T16:26:49Z",
+ "files": {
+  "IdentityRegistry.json": "0xcdb8e30f41a56ed53421126dab87551ff2a178b8463646f69f75bc5dc9620564",
+  "ReputationRegistry.json": "0x867b7975a5f2f9fee38c4a148a84471b141f4de91409ccc0c6bebe3df4f04001"
+ },
+ "note": "ABI saja (untuk selector & bentuk fungsi). Kontrak yang kami panggil yang TER-DEPLOY di chain 97; kami tidak men-deploy ulang registry ini.",
+ "upstream": "github.com/erc-8004/erc-8004-contracts"
+}

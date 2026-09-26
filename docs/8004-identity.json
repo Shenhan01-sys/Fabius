@@ -1,0 +1,8 @@
+{
+ "block": 133286891,
+ "gas_used": 200844,
+ "registry": "0x8004A818BFB912233c491871b3d84c89A494BD9e",
+ "source": "eth_getTransactionReceipt + ABI vendor",
+ "tokenId": 2494,
+ "tx": "0x33f47391c3a313b1d167e68a760e24746adac2d1aa39b44383b1f232ea2013dd"
+}

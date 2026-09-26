@@ -7,6 +7,9 @@
 # mesin orang lain sementara lolos di mesin ini - kegagalan yang paling sulit dijelaskan.
 contracts/vendor/x402/** -text
 docs/upstream-x402/** -text
+# Vendor 8004 punya klaim sha256 yang sama; kalau git mengonversi LF->CRLF di jalur ini,
+# `VENDORED.json` tidak akan lagi cocok dengan byte-nya di mesin orang lain.
+docs/upstream-8004/** -text
 
 # Catatan penarikan (26 Sep): versi pertama berkas ini juga mengunci `universe/**` dan
 # `decisions/**`. Akibatnya `git add --renormalize` menulis ulang byte dataset (CRLF -> LF) dan
