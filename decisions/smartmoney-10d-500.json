@@ -1,0 +1,321 @@
+{
+ "cohort": {
+  "kontrol": {
+   "mean_net_bps": 336.4339299138164,
+   "median_net_bps": 122.18009478673022,
+   "n": 8324,
+   "wr": 0.5576645843344545
+  },
+  "panel": {
+   "mean_net_bps": 680.6978090898155,
+   "median_net_bps": 1015.5987055016192,
+   "n": 53,
+   "wr": 0.6981132075471698
+  }
+ },
+ "cost_bps_rt": 20.0,
+ "days": 10,
+ "dune_rows": 51863,
+ "dune_truncated": false,
+ "generated_utc": "2026-09-26T09:57:10Z",
+ "horizon_bars": 4,
+ "min_usd": 500.0,
+ "paired_test": {
+  "mean_diff_net_bps": -10.38,
+  "median_diff_net_bps": 0.0,
+  "p_sign_flip": 0.5679216039198041,
+  "permutations": 20000,
+  "seed": 0,
+  "windows_paired": 34
+ },
+ "panel_size": 128,
+ "query_rev": "r2 (ORDER BY block_time ASC, halaman diulang 3x)",
+ "samples": 8377,
+ "skip_reasons": {
+  "di luar jendela data": 1535,
+  "tidak ter-cache": 1902
+ },
+ "tokens_tested": [
+  "GSTOCK",
+  "BREW",
+  "4STOCK",
+  "\u725b\u6765",
+  "FLORK",
+  "STONKS",
+  "MARSCOIN",
+  "TAC",
+  "B-MONEY"
+ ],
+ "wallets": {
+  "0005ea70fa6dbd2efd17697d2351301adb6318b2": {
+   "mean_net_bps": 178.37,
+   "n": 28,
+   "panel": false
+  },
+  "039ac6fbcebf02b54259bc690e13540693d9eb8d": {
+   "mean_net_bps": 203.58,
+   "n": 46,
+   "panel": false
+  },
+  "039ec98a76f111092d4751365ff09dd2aec301e8": {
+   "mean_net_bps": 162.12,
+   "n": 213,
+   "panel": false
+  },
+  "055a3b37957bfbd3345bed9968e7e8dd56d67066": {
+   "mean_net_bps": 317.27,
+   "n": 50,
+   "panel": false
+  },
+  "09ad820aac5779683b481c4674208a4e1b024afa": {
+   "mean_net_bps": 91.8,
+   "n": 121,
+   "panel": false
+  },
+  "0ec4e45f9ce3020024c0418a74cd31fbc487038f": {
+   "mean_net_bps": 47.28,
+   "n": 56,
+   "panel": false
+  },
+  "0f0067cd819cb8f20bda62046daff7a2b5c88280": {
+   "mean_net_bps": 85.42,
+   "n": 26,
+   "panel": false
+  },
+  "111116053f09d34a7eae8102887004445176ca11": {
+   "mean_net_bps": 380.88,
+   "n": 27,
+   "panel": false
+  },
+  "12d2b8ac38c59758a062a9f757f2740461779439": {
+   "mean_net_bps": 155.69,
+   "n": 49,
+   "panel": false
+  },
+  "18dd3c14e34c1bc379f7538068c59160d9f68e25": {
+   "mean_net_bps": -42.94,
+   "n": 54,
+   "panel": false
+  },
+  "1de460f363af910f51726def188f9004276bf4bc": {
+   "mean_net_bps": 67.42,
+   "n": 41,
+   "panel": false
+  },
+  "25969b07deae51968ec46de173a51eedf1225032": {
+   "mean_net_bps": -5.69,
+   "n": 27,
+   "panel": false
+  },
+  "278d858f05b94576c1e6f73285886876ff6ef8d2": {
+   "mean_net_bps": 61.01,
+   "n": 53,
+   "panel": false
+  },
+  "28bf6006d87de7f44445905aa4f5cb8c0d8cba02": {
+   "mean_net_bps": 212.42,
+   "n": 43,
+   "panel": false
+  },
+  "2bb27b73c602643f42471d4751fe4fc4eebefbd1": {
+   "mean_net_bps": 240.19,
+   "n": 48,
+   "panel": false
+  },
+  "2d9d6e538bd3f22323932782aaf89446cacaf9d3": {
+   "mean_net_bps": 162.58,
+   "n": 281,
+   "panel": false
+  },
+  "331d9a049d496385998067abf6cbb6371c8d2466": {
+   "mean_net_bps": -47.96,
+   "n": 53,
+   "panel": false
+  },
+  "370a7e2d300c14d79d4a7ee07aaca46c4b3012cf": {
+   "mean_net_bps": 35.36,
+   "n": 47,
+   "panel": false
+  },
+  "39682fff3f81cdbed0cdf9356c633f24ca47269a": {
+   "mean_net_bps": 2.46,
+   "n": 26,
+   "panel": false
+  },
+  "3d90f66b534dd8482b181e24655a9e8265316be9": {
+   "mean_net_bps": 201.7,
+   "n": 60,
+   "panel": false
+  },
+  "3fbd89d8c57fced7bfccb20931de1e17e3750071": {
+   "mean_net_bps": 5.43,
+   "n": 55,
+   "panel": false
+  },
+  "438281cd888c44d2c3970ba178f0f8fac3fa6719": {
+   "mean_net_bps": 110.65,
+   "n": 22,
+   "panel": false
+  },
+  "4682c6bf5ac02d8ea553aa9d289bcecdc023fd07": {
+   "mean_net_bps": -24.21,
+   "n": 33,
+   "panel": false
+  },
+  "4e7ed91e702ef2ff0c58e251c6e20d1dc1e31a5f": {
+   "mean_net_bps": 134.06,
+   "n": 47,
+   "panel": false
+  },
+  "4ede629216256eace56b32c620261da2360313d9": {
+   "mean_net_bps": 78.43,
+   "n": 41,
+   "panel": false
+  },
+  "4ff1d40fb7b56665bf95d8d8e3a5320de46709a1": {
+   "mean_net_bps": 91.34,
+   "n": 24,
+   "panel": false
+  },
+  "537f572e9502bd2ec5d46c7ae917992cac96474f": {
+   "mean_net_bps": 78.14,
+   "n": 59,
+   "panel": false
+  },
+  "56c262027e0de4aea31d2489529cb25d23e58a8b": {
+   "mean_net_bps": 68.93,
+   "n": 53,
+   "panel": false
+  },
+  "5994814f2c4040b863a0125a45de152a8c2a4dec": {
+   "mean_net_bps": 228.65,
+   "n": 34,
+   "panel": false
+  },
+  "5f1c5951c5b1cc112ba9e89b9467edca33063453": {
+   "mean_net_bps": 424.2,
+   "n": 30,
+   "panel": false
+  },
+  "62d78934ee5589abed94d830df48fcbebd7cad50": {
+   "mean_net_bps": 92.56,
+   "n": 24,
+   "panel": false
+  },
+  "6aba0315493b7e6989041c91181337b662fb1b90": {
+   "mean_net_bps": 311.44,
+   "n": 39,
+   "panel": false
+  },
+  "7817dbf38e9d1c95671625f0052c147864692fe0": {
+   "mean_net_bps": -1.52,
+   "n": 49,
+   "panel": false
+  },
+  "7833341fff5bbbac5a0bd0ca28d6d9fa7d094601": {
+   "mean_net_bps": 18.56,
+   "n": 32,
+   "panel": false
+  },
+  "8f10b468b06c6fd214b65f87778827f7d113f996": {
+   "mean_net_bps": 192.35,
+   "n": 215,
+   "panel": false
+  },
+  "91295b09cbf98432678a23f97f037338806aec8d": {
+   "mean_net_bps": 248.81,
+   "n": 23,
+   "panel": false
+  },
+  "9999b0cdd35d7f3b281ba02efc0d228486940515": {
+   "mean_net_bps": 279.91,
+   "n": 141,
+   "panel": false
+  },
+  "9be344d84b656ab45436e3bb83fbfb0306410535": {
+   "mean_net_bps": -61.42,
+   "n": 30,
+   "panel": false
+  },
+  "9e229b12cc9081d6a510b29ccbd6311743e277ed": {
+   "mean_net_bps": 9.29,
+   "n": 47,
+   "panel": false
+  },
+  "a5a5491bca93dd4c076e4906e79e7673f4a5a142": {
+   "mean_net_bps": 30.2,
+   "n": 47,
+   "panel": false
+  },
+  "a67d7eb4dc68fa6ce8e34ef8cadaf075b9893fbb": {
+   "mean_net_bps": 97.75,
+   "n": 53,
+   "panel": false
+  },
+  "abb2acd3be814a80e502575d6c1dc5f789e9cd10": {
+   "mean_net_bps": 174.82,
+   "n": 52,
+   "panel": false
+  },
+  "ada5bb90d0de0bd1b6f3938708f49295a8d1f7cb": {
+   "mean_net_bps": 34.07,
+   "n": 58,
+   "panel": false
+  },
+  "b2e6cf3e1ff4ce3f4ecb0baebbc06e3f351f027e": {
+   "mean_net_bps": 338.3,
+   "n": 25,
+   "panel": false
+  },
+  "b300000b72deaeb607a12d5f54773d1c19c7028d": {
+   "mean_net_bps": 119.97,
+   "n": 222,
+   "panel": false
+  },
+  "b585639ff3d61de1187d960cc18924d033f2768f": {
+   "mean_net_bps": 252.07,
+   "n": 88,
+   "panel": false
+  },
+  "b92fe925dc43a0ecde6c8b1a2709c170ec4fff4f": {
+   "mean_net_bps": -203.13,
+   "n": 29,
+   "panel": false
+  },
+  "bf04a8e4b9b27915cb910f979e0558232ad522cc": {
+   "mean_net_bps": -4.16,
+   "n": 53,
+   "panel": false
+  },
+  "c10ee9031f2a0b84766a86b55a8d90f357910fb4": {
+   "mean_net_bps": 73.1,
+   "n": 20,
+   "panel": false
+  },
+  "ca7ded7e4f4ba8ab3b10009236ae6d1b95094589": {
+   "mean_net_bps": 243.87,
+   "n": 44,
+   "panel": false
+  },
+  "cc4bc7882d5ec4a3716e589ab3d816b61ae47a1a": {
+   "mean_net_bps": 92.48,
+   "n": 50,
+   "panel": false
+  },
+  "e3a9c2b0ec8757408f9ce45276194d5bac284241": {
+   "mean_net_bps": 373.23,
+   "n": 24,
+   "panel": false
+  },
+  "e40d548eb4fa4d9188fd21723f2fd377456c0876": {
+   "mean_net_bps": -30.41,
+   "n": 32,
+   "panel": false
+  },
+  "f09541b6bd516f3436291b399245e5e48cb14e9f": {
+   "mean_net_bps": 53.1,
+   "n": 23,
+   "panel": false
+  }
+ }
+}

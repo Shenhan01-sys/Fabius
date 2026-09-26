@@ -112,6 +112,48 @@ Tiga hal yang harus dibaca beserta angkanya, karena godaan memolesnya besar:
    tempo dan jejaknya masih ada untuk diperiksa.** Itu memang target sebenarnya dari anchor ini,
    bukan untung.
 
+## 4c. ⑦ juga mati: menyalin smart money TIDAK lebih baik daripada menyalin kerumunan · 26 Sep 09:4xZ
+
+Alat: `tools/smartmoney_score.py`. Entri dari **Dune** `dex.trades` (`blockchain='bnb'`, 10 hari,
+`amount_usd > 500`, `ORDER BY block_time ASC`, 51.863 baris, halaman lengkap tanpa yang hilang);
+harga forward dari **kline Aster yang kami tarik sendiri** (bukan dari Dune — barisnya punya
+`_updated_at`, jadi boleh jadi statistik tapi tidak boleh jadi saksi waktu). 9 token uji = yang
+punya alamat BSC di universe **dan** kontrak perp di Aster. 1 sampel per (wallet, token, jendela
+4 jam), ongkos 20 bps RT.
+
+Angka mentahnya, yang justru harus ditulis lebih dulu karena inilah yang bikin orang salah simpulkan:
+
+| kelompok | n | wallet | WR | net rata-rata | median |
+|---|---|---|---|---|---|
+| panel (berlabel GMGN) | 53 | 21 | 69,8 % | **+680,7 bps** | +1.015,6 |
+| kontrol (semua dompet lain) | 8.324 | 2.842 | 55,8 % | **+336,4 bps** | +122,2 |
+
+Dibaca setengah hati, ini "bukti whale 2x lebih jago". Salah, dan salahnya sistematis: baseline
+seorang pembeli bukan nol dan bukan rugi — baseline-nya **apa yang terjadi pada semua pembeli
+token itu di jam itu**. +336 bps pada 8.324 transaksi kerumunan berarti **tokennya sedang naik**,
+bukan rakyat jelata jago.
+
+Jadi ujiannya dibuat **berpasangan per (token, jendela 4 jam)**; drift token terbuang oleh konstruksi:
+
+```
+jendela terpasang (panel DAN kontrol terisi): 34   dari 355 jendela total
+selisih net panel - kontrol : -10,4 bps      median: 0,0 bps
+p (sign-flip permutation, 20.000, seed 0)   : 0,568      -> TIDAK berbeda dari kerumunan
+wallet dengan n>=20: 54 - LOLOS BH: 0       (panel: 0 wallet mencapai n>=20)
+```
+
+Ini jawaban **kedua dari arah yang berbeda** atas pertanyaan yang sama. Yang pertama aturan harga
+(`vault/09` §1-4: rugi setelah ongkos di 12/12). Yang kedua: ikut-ikutan dompet yang dilabeli
+pintar pun tidak menghasilkan apa-apa setelah biaya.
+
+**Dan -10,4 ini adalah batas ATAS yang ramah ke panel**, bukan angka jujur mentah. Keanggotaan
+panel kita datang dari label GMGN **hari ini**, sementara transaksinya diambil dari 10 hari ke
+belakang: sebuah dompet boleh jadi dilabeli "smart" justru karena sejarah yang mau kita uji.
+Itu lookahead label — persis penyakit yang bikin label sewaan terlihat hebat. Koreksi yang benar
+butuh keanggotaan yang dicatat SEBELUM entri, dan itu baru mungkin sejak `wallet-flow.jsonl`
+berdetak (26 Sep 08:15Z ke depan). Artinya: dengan bias yang membela panel sekalipun hasilnya nol,
+jadi versi bersihnya kecil kemungkinan berbalik menjadi "edge".
+
 ## 5. Apa yang berubah di produk setelah halaman ini
 
 1. **Registry tetap kosong, dan sekarang ada alasannya.** Bukan "belum sempat dites": aturan arah
