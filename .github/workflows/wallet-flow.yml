@@ -1,0 +1,80 @@
+name: wallet-flow
+
+# Perekam BIDANG ⑦ (aliran wallet) - dipasang 25 Sep, dan alasannya murni karena waktu.
+#
+# Kenapa harus berdetak, bukan jalan sekali: `user/smartmoney` cuma menutup 8-13 MENIT ke
+# belakang, dan SEMUA parameter pagingnya (`offset`, `page`, `page_no`, `end_ts`) diabaikan
+# server - terukur 25 Sep (`_research/probe_gmgn_wallet_stream.py`: balasannya head yang sama,
+# overlap 98/100, baris baru 1). Jadi tiap menit yang tidak kita rekam adalah transaksi yang
+# hilang permanen. Kline Aster masih bisa ditarik mundur 400 hari; ini tidak.
+#
+# Kenapa cadencenya per-10-menit dengan 2 tarikan berjarak 5 menit: jendela lihat 8-13 menit,
+# jadi satu tarikan per 10 menit meninggalkan lubang 2 menit di tiap sisi. Dua tarikan menutup
+# rentang itu tanpa lubang (dedupe by transaction_hash mengurus tumpang tindihnya - terukur:
+# tarikan kedua dari jalanan yang sama menambah 15/100 dan 3/100 baris baru).
+#
+# Kenapa TIDAK butuh repository secret: percobaan 25 Sep menunjukkan demo key publik
+# (`gmgn_solbscbaseethmonadtron`) sudah membalas HTTP 200 berisi data untuk rute ini, identik
+# dengan kunci privat. `GMGN_API_KEY` tetap diteruskan kalau suatu saat diisi, dan kalau kosong
+# perekam jatuh ke demo key dengan sendirinya - tanpa 401 diam-diam.
+#
+# Kenapa tetap di GitHub Actions: commit-nya dibuat mesin pihak ketiga dengan timestamp server
+# GitHub. Untuk dataset yang klaimnya "direkam sebelum hasilnya diketahui", jam kita sendiri
+# tidak punya nilai bukti. (Repo sudah PUBLIC, jadi menit runner tidak lagi jadi anggaran.)
+#
+# Batas yang jujur: cron GitHub bisa terlambat/melewati jam (terukur di `universe/manifest.txt`:
+# 5 gap > 2 jam, terbesar 16,31 jam). Untuk aliran ini, satu jam yang terlewat = ±6.000 transaksi
+# yang tidak akan pernah kita punya. Itu bukan alasan untuk tidak memasangnya - itu alasan
+# untuk mencatat `usia_aliran_jam` di manifest supaya lubangnya kelihatan, bukan dikira nol.
+
+on:
+  schedule:
+    - cron: "*/10 * * * *"
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+concurrency:
+  group: wallet-flow
+  cancel-in-progress: false
+
+jobs:
+  rekam:
+    runs-on: ubuntu-latest
+    timeout-minutes: 9
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Tarik aliran wallet 2x berjarak 5 menit
+        env:
+          GMGN_API_KEY: ${{ secrets.GMGN_API_KEY }}
+        run: |
+          python -u universe/record_wallet_flow.py --pulls 2 --gap 300
+
+      - name: Commit & push (tahan terhadap tabrakan dengan universe-hourly)
+        run: |
+          git config user.name "wallet-flow-recorder"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add universe/wallet-flow.jsonl universe/wallet-flow-manifest.txt
+          if git diff --cached --quiet; then
+            echo "TIDAK ADA BARIS BARU - itu bukan 'nol aktivitas'; periksa HTTP status di langkah tadi"
+            exit 0
+          fi
+          git commit -m "wallet flow $(date -u +%Y-%m-%dT%H:%M:%SZ) [skip ci]"
+          # Berkas ini berbeda dari milik universe-hourly, jadi rebase-nya bersih; tapi kalau dua
+          # perekam push di detik yang sama, yang kalah kehilangan data yang TIDAK BISA disusulkan.
+          # Karena itu push diulang, bukan cukup sekali.
+          for i in 1 2 3; do
+            git pull --rebase origin "$GITHUB_REF_NAME" && git push && echo "PUSH OK (percobaan $i)" && break
+            echo "push gagal, percobaan $i - retry"; sleep 20
+          done
+
+      - name: Laporkan kesehatan aliran
+        run: |
+          python -u universe/record_wallet_flow.py --report
+          head -n 12 universe/wallet-flow-manifest.txt

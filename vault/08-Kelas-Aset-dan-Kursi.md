@@ -14,7 +14,7 @@ Dua keputusan builder yang jadi dasar dokumen ini (24–25 Sep):
 Yang TIDAK ada di dokumen ini: angka win-rate atau janji profit. Registry boleh dan kemungkinan
 besar akan tetap kosong; itu hasil, bukan kegagalan.
 
-## 1. Enam bidang data (plane) dan apa yang benar-benar kita punya
+## 1. Tujuh bidang data (plane) dan apa yang benar-benar kita punya
 
 | Bidang | Sumber terukur | Status di Fabius |
 |---|---|---|
@@ -24,7 +24,7 @@ besar akan tetap kosong; itu hasil, bukan kegagalan.
 | ④ keamanan kontrak | GMGN `token/security` (terukur **28 field**, `is_honeypot` boolean, `can_not_sell`, `can_sell`, `buy_tax`, `sell_tax`); GoPlus `token_security/56` (TIDAK punya `can_not_sell`) | ✅ 25 Sep wired di **jalur arah** lewat `tools/security_gate.py` — 5/5 kandidat membalas GMGN 200 dan 5/5 GoPlus 200. Catatan yang membuat ini berguna: `vault/05` #12 (jalur SCREEN) tetap mati karena beban 40 alamat/snapshot; jalur arah cuma **≤5 kandidat** jadi 10 panggilan/siklus. Dua sumber **tidak sepakat** soal pajak jual (MARSCOIN & ASTEROID: GMGN 3 % vs GoPlus 0 %) — aturannya selisih ≥5 % menurunkan status ke `DISAGREE`, jadi 3 % ini tetap `OK` TAPI tercatat sebagai perbedaan sumber, bukan kesepakatan. Kandidat dengan field kunci null jadi `UNMEASURED` (contoh terukur: pPOLY `is_honeypot=None`) dan **tidak** dihitung bersih |
 | ⑤ perhatian/narasi | GDELT `gkg` tema + nada (602 artikel; `GOVERNMENT 203`, `REGULAT 45`, `SANCTION 17`, nada −1,005); CoinGecko trending; CoinDesk RSS | ✅ wired (skema 4) |
 | ⑥ kapasitas keluar | likuiditas pool + volume: **80 dari 140** kandidat < $50.000 | ✅ terukur |
-| ⑦ arus smart money (BARU) | GMGN `user/kol` & `user/smartmoney`: **100 transaksi/panggilan**, `maker`+`side`+`buy_cost_usd`+`is_open_or_close`+`timestamp` | ⬜ baru ditemukan 25 Sep, belum wired |
+| ⑦ arus smart money | GMGN `user/kol` & `user/smartmoney`: **100 transaksi/panggilan** dengan `maker`, `side`, `is_open_or_close`, `buy_cost_usd`, `price_usd`, `base_address`, `timestamp`, `maker_info.tags` | ✅ **25 Sep wired & berdetak**: `universe/record_wallet_flow.py` + `.github/workflows/wallet-flow.yml` (cron `*/10 * * * *`, 2 tarikan berjarak 5 menit per jalanan). Sifat aliran yang WAJIB dibaca sebelum siapa pun mengandalkan datanya: jendela lihatnya **8-13 menit** dan **semua parameter paging diabaikan server** (`offset`/`page`/`page_no`/`end_ts` → head yang sama, overlap 98/100, baris baru 1) — yang tidak terekam **hilang permanen**, berbeda total dari kline Aster yang bisa ditarik 400 hari. Demo key publik sudah melayani rute ini (200, isi identik dgn kunci privat) → Actions **tanpa secret**. Kelompok **kontrol TIDAK tersedia**: cuma **1 dari 199** baris tanpa tag `smart_degen`/`launchpad_smart`/`kol`, jadi pembandingnya diganti lewat desain (§7), bukan dengan menambah data |
 
 ## 2. Delapan kelas aset
 
@@ -91,7 +91,9 @@ saling cocok tanpa penyesuaian.
 
 ## 5. Yang belum ada di kode (jangan dibaca sebagai kemampuan)
 
-Belum ada: `security_gate.py` (④), `smartmoney_flow.py` (⑦), `seats.py` (draft+rotasi+skor), `ledger.py` (penutupan & expectancy bps bersih).
+Belum ada (per 25 Sep, 20:30Z): `seats.py` (draft + rotasi + skor), `smartmoney_score.py` (penilai ⑦ — datanya sudah mulai direkam, alat penilainya belum), `gateway/` x402 (jualan keluaran), `verify_8004.py` (baca ulang identitas agen dari registry resmi).
+
+SUDAH ada sejak dicoret di baris ini: `security_gate.py` (④, 25 Sep), `ledger.py` (penutupan & expectancy bps bersih, 25 Sep), `universe/record_wallet_flow.py` + `.github/workflows/wallet-flow.yml` (⑦, 25 Sep).
 
 **Sudah ada per 25 Sep:** `bars.py` (①), `direction.py` (①③ + arah via Jev), `decide.py` (veto + hash), `judge.py` (penilai, veto satu arah, + `ask_jev()` utk pertanyaan per-kandidat), `DecisionAnchor` + 21 test + verifikasi chain 97, perekam universe.
 
@@ -152,3 +154,39 @@ Yang masih terbuka dan harus ditulis apa adanya: penulis jam ini tetap **satu-sa
 atau laptop, jangan keduanya — dua penulis di satu JSONL sudah dua kali memicu konflik union),
 dan sampai ada pemicu yang bisa dijamin, dataset kita akan terus punya lubang yang tercatat di
 `manifest.txt`.
+
+## 6. Cara menilai ⑦: kontrol tidak tersedia, jadi pembandingnya yang diganti
+
+Rencana awalnya: bandingkan hasil wallet `smart_degen` dengan wallet biasa dari aliran yang sama,
+sebagai kontrol. **Terukur 25 Sep: kontrol itu tidak ada.** Dari 199 transaksi pertama, hanya
+**1** baris yang tidak membawa tag `smart_degen`/`launchpad_smart`/`kol`. Aliran ini memang
+didefinisikan sebagai "dompet yang sudah dilabeli pintar oleh GMGN" — jadi membandingkannya dengan
+"dompet biasa dari sumber yang sama" mustahil secara struktural, bukan soal kurang data.
+
+Kalau begitu jangan dilepas tanpa pembanding, dan jangan dicari-cari. Pembanding yang sah dan bisa
+dihitung dari data yang SUDAH kita rekam:
+
+| pembanding | definisinya di alat nanti | apa yang boleh disimpulkan |
+|---|---|---|
+| **waktu yang sama, token yang sama, arah acak** | harapan arah acak = 0, jadi selisih rata-rata `net_bps` sebuah wallet vs 0 adalah pertanyaan "arahnya lebih baik dari lemparan koin *pada saat dia masuk*?" | ini satu-satunya kontrol yang benar-benar bebas dari label pihak ketiga |
+| **hold token 4 jam** | `price_usd` kita sendiri di `t` dan di `t+4h` (baris `px`), TANPA memilih arah | memisahkan "pintar milih arah" dari "token lagi naik" |
+| **`is_open_or_close=1` vs `=0`** | kelompok di dalam aliran yang sama | apakah yang dia lakukan itu membuka posisi atau menutup — dua hal berbeda yang jangan dicampur rata-ratanya |
+
+Yang **tidak** akan kita klaim, dan ini bagian yang paling goda: "smart money menang" hanya karena
+rata-ratanya positif. Dengan ±217 transaksi unik setelah dua tarikan, satu wallet paling sering cuma
+muncul belasan kali, dan `MIN_TRADES=20` per wallet akan lolos untuk **sebagian kecil** dompet.
+Karena itu:
+
+1. **SATU tes per wallet**, lalu **Benjamini–Hochberg α=0,10 lintas wallet** (aturan `vault/02`;
+   tanpa ini, dari 500 wallet selalu ada ~25 yang "signifikan" karena nasib).
+2. **Ongkos 20 bps RT** dipakai sejak awal — `vault/09` sudah menunjukkan gross kecil mati oleh ongkos.
+3. **Hasil negatif ditampilkan**, bukan dibuang. Kalau panel smart money juga tidak mengalahkan
+   lemparan koin setelah ongkos, itu Temuan #1 untuk Fabius dan justru membuat x402 feed kita
+   berharga: orang membayar untuk *mengetahui*, bukan untuk *dijanjikan*.
+4. **Anggota panel dicatat dengan timestamp.** Keanggotaan hari ini tidak boleh dipakai menilai
+   transaksi minggu lalu — itu lookahead yang sama yang membuat label sewaan terlihat hebat.
+   Beruntungnya, untuk aliran ini memang mustahil menarik mundur, jadi kelicikan itu tertutup
+   oleh fisika datanya, bukan oleh kesadaran kami. Ini harus ditulis begitu di submission.
+
+Ambang klaim yang diizinkan: `n>=20` per wallet **dan** `net>0` **dan** lolos BH **dan** stabil
+setelah fold terbaik dibuang — persis ambang yang membuat registry kita kosong (`vault/09`).
