@@ -55,11 +55,17 @@ permissions:
 
 concurrency:
   group: wallet-flow-chain
-  # Dibalik jadi `true` (27 Sep, dan ini karena kerugian nyata): dengan `false`, SATU jalanan yang
-  # menggantung akan mengantrikan semua berikutnya selamanya - persis yang membungkam perekam dari
-  # 18:04Z 26 Sep, menghapus ±24 jam aliran yang tidak bisa ditarik mundur (jendela 8-13 menit,
-  # tanpa paging). Dengan `true`, cron berikutnya MENGGANTIKAN yang macet: kadang kehilangan satu
-  # siklus, tapi tidak pernah kehilangan harinya.
+  # `true`, bukan `false`. KOREKSI ATAS DIRIKU SENDIRI (27 Sep): commit sebelumnya menulis bahwa
+  # `false` "membungkam perekam selama 24 jam". Itu SALAH. Sebabnya layak dicatat: aku membaca
+  # salinan LAPTOP-ku (5.676 baris, terakhir 11:38Z) sebagai keadaan sistem, padahal working
+  # copy-ku yang 78 commit tertinggal. Di origin perekam terus mengirim commit
+  # (17:51 -> 17:54 -> 17:57 -> 18:01 -> 18:04Z) dan setelah dijalankan ulang commit berikutnya
+  # lahir 18:10Z. Lubang nyatanya ±6 MENIT, bukan 24 jam.
+  #
+  # Yang tetap benar dari perubahan ini: dengan `false`, SATU jalanan yang menggantung akan
+  # mengantrikan semua berikutnya dan satu-satunya jalan keluar adalah tangan manusia membatalkan
+  # manual. Dengan `true`, cron berikutnya mengganti yang macet sendiri. Alasannya berubah dari
+  # "kita kehilangan sehari" jadi "kita tidak mau butuh tangan manusia" - dan itu tetap cukup kuat.
   cancel-in-progress: true
 
 jobs:
