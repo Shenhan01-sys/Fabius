@@ -19,7 +19,7 @@ python -X utf8 _research/check_garbled.py
 ## Keluaran
 
 ```text
-berkas .md: 74 · target unik: 74
+berkas .md: 77 · target unik: 77
 Broken: 0
 Tanpa penunjuk (orphan): 0
 Folder tanpa hub: 0
@@ -35,13 +35,19 @@ upstream github.com/coinbase/x402 @ dd927a26cfefc98c24b3ec38b3a8f204dad0c60d
 4/4 identik dengan yang dicatat manifest
 ```
 
-Angka 74 itu **setelah** 12 penunjuk lama digulung ke `_archive/` (tidak dihitung, tidak ditaut).
-Sebelumnya 86 — dan kalau kamu melihat halaman lain menulis jumlah berkas, yang berlaku adalah
-keluaran run terakhir, bukan angka yang pernah dikatakanku.
+```text
+total halaman: 90 · tanpa YAML: 0 · YAML tanpa `tags:`: 0
+```
 
-`record_wallet_flow.py --report` → jumlah baris unik, rentang jam, maker & token (angka hari ini di
-[[03-Data/D2 - Wallet Flow]] — **7.137 tx / 322 maker / 604 token / 10,14 jam**, dan itu dari
-`origin/main`, bukan dari salinan lokal).
+Dua angka berkas yang berbeda itu **bukan pertentangan**: `check_links` menghitung 77 (isi `_archive/`,
+`Templates/`, `Sessions/` memang dikecualikan dari graf), `structure_report` menghitung 90 karena ia
+melihat semua berkas `.md` di disk. Yang boleh dikutip sebagai "vault terhubung" hanya yang pertama.
+Menyebut salah satu tanpa menyebut definisinya adalah cara tercepat membuat dua halaman tidak pernah
+lagi cocok.
+
+`record_wallet_flow.py --report` + `_research/panel_stats.py` *(workspace)* → angka panel hari ini di
+[[03-Data/D2 - Wallet Flow]] — **8.053 tx / 348 maker / 643 token / 11,82 jam**, dan itu dibaca dari
+`origin/main`, bukan dari salinan lokal.
 
 ## Yang dibuktikannya — dan yang tidak
 
