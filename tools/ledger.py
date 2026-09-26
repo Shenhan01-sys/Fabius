@@ -86,10 +86,10 @@ def score_one(rec, now_ms):
     if side not in ("long", "short"):
         return {"symbol": rec.get("symbol"), "status": "BUKAN POSISI", "side": side,
                 "regime": d.get("regime"), "sellability": d.get("sellability"),
-                # Catatan pendek dan utuh: versi lama memuat frasa panjang yang terpotong di
-                # tengah kata ("... -> tid") saat dicetak, dan kalimat terpotong dibaca sebagai
-                # alat yang rusak, bukan sebagai informasi.
-                "note": "flat/unassessable: tidak ada posisi yang bisa dinilai",
+                # Isinya yang dipendekkan, bukan pengharapan kita terhadap layar: versi lama
+                # menaruh frasa 52 karakter yang terpotong jadi "...yang bis" saat dicetak, dan
+                # kalimat terpotong dibaca orang sebagai alat yang rusak, bukan sebagai informasi.
+                "note": "tidak ada posisi (flat/unassessable)",
                 "seat_eligible": d.get("seat_eligible")}
     entry = d.get("entry_ref")
     t_entry_ms = int(dt.get("last_bar_t") or 0)

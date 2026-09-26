@@ -85,6 +85,33 @@ BNB +14,9 bps juga mati di drop-best-fold (−8,7): satu segmen waktu baik menya
 yang baik. Persis penyakit yang lab lama sudah namai (HYPE +92 % OOS yang ternyata 65 % dari satu
 fold, `edge_lab.py` temuan #20).
 
+## 4b. Hasil PERTAMA dari prediksi yang di-anchor — 26 Sep 08:23Z
+
+Dua posisi MARSCOIN short yang kami anchor pada 24 Sep (blok 132955030 dan 132955788) sudah lewat
+horizon 24 jam. `tools/ledger.py` membacanya dari **rekaman** (`entry_ref` ikut `decisionHash`),
+bukan dari ingatan, lalu menutupnya dengan ongkos 20 bps RT:
+
+| masuk dari bar | entry | jatuh tempo | keluar | gross | **NET** | hasil |
+|---|---|---|---|---|---|---|
+| 24 Sep 16:00Z | 0,11605 | 25 Sep 17:00Z | exit di horizon (time-stop) | **+21,5** | **+1,5 bps** | **MENANG** |
+| 24 Sep 17:00Z | 0,11564 | 25 Sep 18:00Z | exit di horizon (time-stop) | −126,3 | **−146,3 bps** | **RUGI** |
+
+`WR 50 % · net rata-rata −72,4 bps · total −144,8 bps · rugi bersih 1`
+Artefak: `decisions/ledger-20260926Z.jsonl`.
+
+Tiga hal yang harus dibaca beserta angkanya, karena godaan memolesnya besar:
+
+1. **Dua menit berbeda, hasilnya berlawanan 148 bps.** Ini bukan "sekali benar, sekali salah";
+   ini konfirmasi langsung dari bagian 1 halaman ini: sinyal yang kita pakai tidak membedakan dua
+   jam berturut-turut pada aset yang sama. Membuang yang rugi dengan alasan "noise" adalah cara
+   paling umum membuat laporan terlihat bagus.
+2. **Yang menang pun tidak menutupi ongkosnya.** +1,5 bps net = arah kami benar dan pasar membayar
+   biaya nyaris persis nol. Contoh terukur dari "gross kecil mati oleh 20 bps".
+3. **n = 2.** Tidak ada uji statistik yang boleh dijalankan, tidak ada klaim win-rate, tidak ada
+   `MIN_TRADES=20` yang terpenuhi. Yang boleh dikatakan hanyalah: **prediksi kami sudah jatuh
+   tempo dan jejaknya masih ada untuk diperiksa.** Itu memang target sebenarnya dari anchor ini,
+   bukan untung.
+
 ## 5. Apa yang berubah di produk setelah halaman ini
 
 1. **Registry tetap kosong, dan sekarang ada alasannya.** Bukan "belum sempat dites": aturan arah
