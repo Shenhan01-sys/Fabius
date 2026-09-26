@@ -1,0 +1,19 @@
+# Vendored sumber = byte yang punya hash tercatat. Git tidak boleh menyentuh akhirannya.
+#
+# Kenapa perlu berkas ini: di checkout Windows dengan `core.autocrlf=true`, git senyap-senyap
+# menulis ulang LF jadi CRLF. Untuk kode kita sendiri itu tidak apa-apa. Untuk salinan yang
+# klaimnya "VERBATIM dari upstream commit X, sha256 = Y" itu merusak dua hal sekaligus:
+# byte-nya bukan lagi punya upstream, dan `python _research/vendored_x402.py verify` gagal di
+# mesin orang lain sementara lolos di mesin ini - kegagalan yang paling sulit dijelaskan.
+contracts/vendor/x402/** -text
+docs/upstream-x402/** -text
+
+# Dataset point-in-time juga byte-berhash (manifest menyimpan sha256 isi berkas), jadi akhirannya
+# ikut dikunci; kalau tidak, `write_universe_manifest.py` akan melaporkan hash berbeda tergantung
+# mesin tempat repo di-clone.
+universe/*.jsonl -text
+universe/manifest.txt -text
+universe/wallet-flow*.jsonl -text
+universe/wallet-flow-manifest.txt -text
+decisions/*.jsonl -text
+decisions/*.json -text
