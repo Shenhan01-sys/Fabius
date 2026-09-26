@@ -24,7 +24,7 @@ besar akan tetap kosong; itu hasil, bukan kegagalan.
 | ④ keamanan kontrak | GMGN `token/security` (terukur **28 field**, `is_honeypot` boolean, `can_not_sell`, `can_sell`, `buy_tax`, `sell_tax`); GoPlus `token_security/56` (TIDAK punya `can_not_sell`) | ✅ 25 Sep wired di **jalur arah** lewat `tools/security_gate.py` — 5/5 kandidat membalas GMGN 200 dan 5/5 GoPlus 200. Catatan yang membuat ini berguna: `vault/05` #12 (jalur SCREEN) tetap mati karena beban 40 alamat/snapshot; jalur arah cuma **≤5 kandidat** jadi 10 panggilan/siklus. Dua sumber **tidak sepakat** soal pajak jual (MARSCOIN & ASTEROID: GMGN 3 % vs GoPlus 0 %) — aturannya selisih ≥5 % menurunkan status ke `DISAGREE`, jadi 3 % ini tetap `OK` TAPI tercatat sebagai perbedaan sumber, bukan kesepakatan. Kandidat dengan field kunci null jadi `UNMEASURED` (contoh terukur: pPOLY `is_honeypot=None`) dan **tidak** dihitung bersih |
 | ⑤ perhatian/narasi | GDELT `gkg` tema + nada (602 artikel; `GOVERNMENT 203`, `REGULAT 45`, `SANCTION 17`, nada −1,005); CoinGecko trending; CoinDesk RSS | ✅ wired (skema 4) |
 | ⑥ kapasitas keluar | likuiditas pool + volume: **80 dari 140** kandidat < $50.000 | ✅ terukur |
-| ⑦ arus smart money | GMGN `user/kol` & `user/smartmoney`: **100 transaksi/panggilan** dengan `maker`, `side`, `is_open_or_close`, `buy_cost_usd`, `price_usd`, `base_address`, `timestamp`, `maker_info.tags` | ✅ **25 Sep wired & berdetak**: `universe/record_wallet_flow.py` + `.github/workflows/wallet-flow.yml` (cron `*/10 * * * *`, 2 tarikan berjarak 5 menit per jalanan). Sifat aliran yang WAJIB dibaca sebelum siapa pun mengandalkan datanya: jendela lihatnya **8-13 menit** dan **semua parameter paging diabaikan server** (`offset`/`page`/`page_no`/`end_ts` → head yang sama, overlap 98/100, baris baru 1) — yang tidak terekam **hilang permanen**, berbeda total dari kline Aster yang bisa ditarik 400 hari. Demo key publik sudah melayani rute ini (200, isi identik dgn kunci privat) → Actions **tanpa secret**. Kelompok **kontrol TIDAK tersedia**: cuma **1 dari 199** baris tanpa tag `smart_degen`/`launchpad_smart`/`kol`, jadi pembandingnya diganti lewat desain (§7), bukan dengan menambah data |
+| ⑦ arus smart money | GMGN `user/kol` & `user/smartmoney`: **100 transaksi/panggilan** dengan `maker`, `side`, `is_open_or_close`, `buy_cost_usd`, `price_usd`, `base_address`, `timestamp`, `maker_info.tags` | ✅ **25 Sep wired & berdetak**: `universe/record_wallet_flow.py` + `.github/workflows/wallet-flow.yml` (cron `*/10 * * * *`, 2 tarikan berjarak 5 menit per jalanan). Sifat aliran yang WAJIB dibaca sebelum siapa pun mengandalkan datanya: jendela lihatnya **8-13 menit** dan **semua parameter paging diabaikan server** (`offset`/`page`/`page_no`/`end_ts` → head yang sama, overlap 98/100, baris baru 1) — yang tidak terekam **hilang permanen**, berbeda total dari kline Aster yang bisa ditarik 400 hari. Demo key publik sudah melayani rute ini (200, isi identik dgn kunci privat) → Actions **tanpa secret**. Kelompok **kontrol TIDAK tersedia**: **0 dari 607** transaksi pertama tidak membawa tag panel GMGN (`gmgn_go` 418 · `gmgn` 408 · `smart_degen` 336 · `kol` 295 · `fomo` 130 · `top_followed` 66). Angka "1 dari 199" pada pengukuran pertama memakai definisi tag yang lebih sempit (3 tag) — bedanya murni definisi, dan itu sebabnya definisinya ditulis. Jadi pembandingnya diganti lewat desain (§6), bukan dengan menambah data. Sudah terbukti berdetak sendiri di runner orang lain: commit `64234bd` = `wallet flow 2026-09-26T08:36:17Z`, 607 transaksi / 80 maker / 63 token dalam 35 menit |
 
 ## 2. Delapan kelas aset
 
@@ -158,8 +158,11 @@ dan sampai ada pemicu yang bisa dijamin, dataset kita akan terus punya lubang ya
 ## 6. Cara menilai ⑦: kontrol tidak tersedia, jadi pembandingnya yang diganti
 
 Rencana awalnya: bandingkan hasil wallet `smart_degen` dengan wallet biasa dari aliran yang sama,
-sebagai kontrol. **Terukur 25 Sep: kontrol itu tidak ada.** Dari 199 transaksi pertama, hanya
-**1** baris yang tidak membawa tag `smart_degen`/`launchpad_smart`/`kol`. Aliran ini memang
+sebagai kontrol. **Terukur: kontrol itu tidak ada.** Pada 607 transaksi pertama (26 Sep
+08:01–08:36Z, hasil satu jalanan Actions) **0 baris** tidak membawa tag panel GMGN; sebarannya
+`gmgn_go` 418 · `gmgn` 408 · `smart_degen` 336 · `kol` 295 · `fomo` 130 · `top_followed` 66.
+(Pengukuran pertama, 199 transaksi, melaporkan "1 baris" karena hanya memeriksa 3 tag — bedanya
+definisi, bukan data; karena itu definisi tag yang dipakai ikut ditulis.) Aliran ini memang
 didefinisikan sebagai "dompet yang sudah dilabeli pintar oleh GMGN" — jadi membandingkannya dengan
 "dompet biasa dari sumber yang sama" mustahil secara struktural, bukan soal kurang data.
 
@@ -190,3 +193,10 @@ Karena itu:
 
 Ambang klaim yang diizinkan: `n>=20` per wallet **dan** `net>0` **dan** lolos BH **dan** stabil
 setelah fold terbaik dibuang — persis ambang yang membuat registry kita kosong (`vault/09`).
+
+5. **Sampel ternyata bukan penghalang — dan itu justru yang harus dijaga.** Dari 80 maker dalam 35
+   menit, **8** sudah punya ≥20 transaksi. Gampang tergoda menyebut itu "cukup n". Tapi 20 transaksi
+   dari satu dompet panas kemungkinan besar adalah 20 order pada segelintir token yang sama dalam
+   rentang menit — bukan 20 **pertaruhan bebas**. Sebelum angka itu dipakai, satu wallet hanya boleh
+   menyumbang **satu sampel per (token, horizon yang tidak tumpang tindih)**; kalau tidak, `p`-nya
+   palsu kecil dan kita mengulang persis kesalahan yang `vault/09` tangkap lewat `drop-best-fold`.
