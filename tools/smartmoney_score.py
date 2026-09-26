@@ -4,7 +4,7 @@ Pertanyaan yang dijawab alat ini bukan "apakah whale untung", tapi satu pertanya
 dibantah: **"kalau kami menyalin arah dompet yang dilabeli pintar oleh GMGN, apakah hasilnya
 lebih baik daripada menyalin arah DOMPET-DOMPET BIASA pada token dan jam yang sama - setelah
 ongkos 20 bps round-trip?"** Kalau jawabannya tidak, maka ⑦ mati dengan cara yang sama matinya
-aturan harga di `vault/09`: diukur, bukan diramalkan.
+aturan harga di `vault/06-Results/04 - Negative Results.md`: diukur, bukan diramalkan.
 
 Kenapa sekarang bisa, padahal kemarin tidak:
   - GMGN `user/smartmoney` cuma menutup 8-13 MENIT dan semua parameter pagingnya diabaikan
@@ -27,7 +27,7 @@ PEMBAGIAN TUGAS YANG SENGAJA, dan ini bagian penting dari metodenya:
 Dua pagar statistik yang dipasang supaya hasilnya tidak enak-diBaca-saja:
   1. SATU sampel per (wallet, token, jendela 4 jam). Satu dompet panas yang mengirim 20 order
      pada token yang sama dalam 3 menit bukan 20 pertaruhan bebas - tanpa pagar ini `p` palsu
-     kecil dan itulah persis penyakit yang `vault/09` tangkap lewat drop-best-fold.
+     kecil dan itulah persis penyakit yang `vault/06-Results/04 - Negative Results.md` tangkap lewat drop-best-fold.
   2. Benjamini-Hochberg lintas wallet (α=0,10) + ambang n>=20, dan angka dilaporkan TERPISAH
      untuk panel vs kontrol. Selisih rata-rata yang tidak lolos BH hanyalah cerita, bukan hasil.
 
@@ -57,9 +57,9 @@ sys.path.insert(0, HERE)
 import bars  # noqa: E402  (tools/bars.py - Aster 1h, cache + sha256)
 
 DUNE = "https://api.dune.com"
-RT_COST_BPS = 20.0        # vault/08 §3 (5,5 + 4,5 per sisi) - sama dengan backtest & live
+RT_COST_BPS = 20.0        # vault/01-Agent/01 - Asset Classes and Seats.md §3 (5,5 + 4,5 per sisi) - sama dengan backtest & live
 HORIZON_BARS = 4          # 4 jam = horizon keputusan kita
-MIN_TRADES = 20           # vault/02: jangan simpulkan apa pun dari < 20 sampel independen
+MIN_TRADES = 20           # vault/06-Results/02 - Thresholds.md: jangan simpulkan apa pun dari < 20 sampel independen
 BH_ALPHA = 0.10
 FLOW = os.path.join(ROOT, "universe", "wallet-flow.jsonl")
 CACHE = os.path.join(ROOT, "data", "smartmoney")

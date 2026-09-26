@@ -40,7 +40,7 @@ ANCHOR = "anchor(string,uint8,bytes32,bytes32,bytes32)"
 GET_ANCHOR = "getAnchor(bytes32)"
 # Word0 retur = offset string (struct mengandung dynamic type), JADI indeks field = word+1.
 # Salah geser satu word = membaca offset sebagai `agent` (kesalahan yang sudah terjadi di
-# `getAgent` - lihat vault/06).
+# `getAgent` - lihat vault/00-Overview/03 - Decisions.md).
 FIELD_WORDS = ["agent", "verdict", "decisionHash", "gatesHash", "snapshotHash", "anchoredAt"]
 
 
@@ -291,7 +291,7 @@ def main():
     head0 = vd.num(vd.call(addr, "anchorCount()"))
     print(f"anchorCount() sebelum: {head0}")
 
-    # Gas per anchor terukur 250.639-302.011 (vault/07); plafon per tx = AGENT_GAS. Yang dicek
+    # Gas per anchor terukur 250.639-302.011 (vault/02-Contracts/02 - Deployed on 97.md); plafon per tx = AGENT_GAS. Yang dicek
     # di sini adalah BIAYA TERBURUK, bukan rata-rata: kalau saldo cukup untuk plafon semua baris,
     # tidak ada satupun baris yang mati di tengah siklus meninggalkan jejak setengah.
     if not a.dry_run:

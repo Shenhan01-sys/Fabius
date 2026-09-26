@@ -3,7 +3,7 @@
 Kenapa file ini ada: `Anchor` adalah struct yang mengandung `string`, jadi retur
 `getAnchor(bytes32)` berupa dinamic struct: head-nya (offset 0x20, agent, offset-string, ...) lalu
 tail-nya. Satu word salah geser menghasilkan alamat agen yang terlihat valid tapi salah — persis
-kesalahan yang sudah terjadi di `getAgent()` (vault/06 mencatatnya sebagai bug "byte offset vs
+kesalahan yang sudah terjadi di `getAgent()` (vault/00-Overview/03 - Decisions.md mencatatnya sebagai bug "byte offset vs
 word index"). Tipe kesalahan seperti ini tidak kelihatan di layar; yang kelihatan cuma angka yang
 tidak masuk akal sesudahnya. Dan memang itu yang terjadi: versi pertama uji ini menangkap offset
 string yang dihitung dari awal retur, bukan dari awal struct.

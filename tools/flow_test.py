@@ -1,4 +1,4 @@
-"""Uji H1/H2/H3 yang TERKUNCI di `vault/10-Pra-Registrasi-Uji-Aliran.md` - bukan varian darinya.
+"""Uji H1/H2/H3 yang TERKUNCI di `vault/06-Results/05 - Pre-registration Flow.md` - bukan varian darinya.
 
 Alat ini sengaja sempit. Ia membaca cache aliran Dune, menghitung hasil forward dari kline Aster
 kami sendiri, lalu melaporkan tiga angka sesuai hipotesis yang sudah tertulis sebelum hasil pertama
@@ -10,7 +10,7 @@ Peta ke hipotesis:
   H2  r_wallets= (pembeli - penjual)/(pembeli + penjual)
   H3  kuil tertinggi net_usd -> hasilnya negatif (kerumunan panik = pucuk)
 
-Semua aturan keputusan ada di vault/10: horizon 4 bar, ongkos 20 bps RT, 1 sampel per (token,jam),
+Semua aturan keputusan ada di vault/06-Results/05 - Pre-registration Flow.md: horizon 4 bar, ongkos 20 bps RT, 1 sampel per (token,jam),
 n>=20 per token, BH alpha=0,10 lintas token, drop-best-fold 5 segmen, laporan hanya kuintil ekstrem.
 """
 from __future__ import annotations
@@ -300,7 +300,7 @@ def main():
     print("\nBatas: entri datang dari Dune yang bisa di-update retro -> ini statistik, bukan bukti")
     print("point-in-time (saksi waktu tetap wallet-flow.jsonl + anchor chain 97). Kerumunan juga")
     print("tidak bisa short token spot, jadi H1/H2 diam-diam sisi long. Dan kalau ada yang lolos,")
-    print("kalimat yang diizinkan vault/10 §4 adalah 'lolos pada 14 hari x 86 token x ongkos 20 bps',")
+    print("kalimat yang diizinkan vault/06-Results/05 - Pre-registration Flow.md §4 adalah 'lolos pada 14 hari x 86 token x ongkos 20 bps',")
     print("bukan 'ada edge' - itu butuh jendela baru setelah 30 Sep.")
 
 

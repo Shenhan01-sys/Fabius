@@ -9,8 +9,8 @@ kredit menyusul, dan analisis kita TIDAK berubah sedikit pun.
 Kenapa ini worth dibayar sekarang: ini SATU-SATUNYA bidang yang tidak bisa kami dapat dari tempat
 lain. GMGN memberi kami arus 8 menit tanpa paging (jadi tidak punya masa lalu), Aster memberi
 harga tapi tidak memberi siapa yang beli/jual. Dune memberi kedua-duanya sekaligus untuk 90 hari
-ke belakang. Setelah ini ada TIGA jalur yang diuji terhadap hasil: aturan harga (mati, vault/09),
-label smart money (mati, vault/09 4c), dan ALIRAN KERUMUNAN - satu-satunya yang belum pernah
+ke belakang. Setelah ini ada TIGA jalur yang diuji terhadap hasil: aturan harga (mati, vault/06-Results/04 - Negative Results.md),
+label smart money (mati, vault/06-Results/04 - Negative Results.md 4c), dan ALIRAN KERUMUNAN - satu-satunya yang belum pernah
 dipegang sama sekali.
 
 Peta biaya yang dipakai supaya kredit tidak habis tanpa jejak:

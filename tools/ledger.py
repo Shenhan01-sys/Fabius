@@ -17,7 +17,7 @@ Yang membuatnya tidak bisa dipakai curang, dan ini isi sebenarnya dari file ini:
 3. **Urutan sentuh diperiksa, bukan diandaikan.** Untuk rezim stop-loss, mana yang lebih dulu
    kena (stop atau target) menentukan hasilnya; kalau keduanya tersentuh di bar yang SAMA,
    hasilnya ditulis AMBIGU - bukan dipilih yang lebih enak.
-4. **Ongkos nyata dipakai sejak awal** (20 bps RT, vault/08 §3), dan yang dilaporkan adalah NET.
+4. **Ongkos nyata dipakai sejak awal** (20 bps RT, vault/01-Agent/01 - Asset Classes and Seats.md §3), dan yang dilaporkan adalah NET.
 
 Rezimu ikut dibaca dari rekaman: `time-stop` = keluar di horizon (atau di stop/target kalau
 tersentuh, karena time-stop adalah plafon waktu, bukan larangan keluar), `stop-loss` = stop aktif.
@@ -43,7 +43,7 @@ sys.path.insert(0, HERE)
 import bars as barsmod  # noqa: E402
 import direction as D   # noqa: E402  (ongkos & ambang satu sumber; tidak ada angka kedua)
 
-RT_COST_BPS = 20.0          # vault/08 §3 (5,5 + 4,5 per sisi) - sama dengan yang dipakai backtest
+RT_COST_BPS = 20.0          # vault/01-Agent/01 - Asset Classes and Seats.md §3 (5,5 + 4,5 per sisi) - sama dengan yang dipakai backtest
 BARS_DIR = os.path.join(ROOT, "decisions")
 
 

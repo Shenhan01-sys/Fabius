@@ -41,7 +41,7 @@ CAKE = "0x0e09fabb73bd3ade0a17ecc321fd13a19e81ce82"
 WBNB = "0xbb4cdb9cbd36b01bd1cbaebf2b11df8f8e6e2b34"
 HL_INFO = "https://api.hyperliquid.xyz/info"
 
-# ambang yang kita pakai sendiri (lihat vault/02-Ambang.md)
+# ambang yang kita pakai sendiri (lihat vault/06-Results/02 - Thresholds.md)
 NEED_HOURLY_FOR_20_TRADES = 20 * 24 * 2 + 24 * 60   # trade 24 jam non-overlap + seed 60 hari
 
 

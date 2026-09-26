@@ -36,3 +36,7 @@ decisions/decisions-*.jsonl
 # bukti point-in-time kita. Beda dengan universe/bsc-universe.jsonl, yang justru bukti "kami
 # merekam sebelum tahu hasilnya" dan karena itu di-commit. Lihat tools/bars.py.
 data/
+# Ekspor sesi Qwen Code disimpan builder DI DALAM folder repo. Isinya teks terang: private key agen,
+# Dune key, GMGN key, Jev key. Repo ini publik. Baris ini ada supaya satu `git add -A` yang tidak
+# sengaja tidak pernah mengubah berkas itu menjadi commit yang tidak bisa ditarik kembali.
+qwen-code-export-*.md

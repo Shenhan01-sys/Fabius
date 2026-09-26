@@ -60,14 +60,14 @@ PERP_CACHE = os.path.join(DATA_DIR, "aster_symbols.json")
 BASE = "https://fapi.asterdex.com/fapi/v1"
 
 # ---- ambang. Semua punya asal; jangan ada angka tanpa tempat.
-NEED_BARS = 2400            # 5-fold walk-forward (vault/02-Ambang.md, edge_lab.py:30,126)
+NEED_BARS = 2400            # 5-fold walk-forward (vault/06-Results/02 - Thresholds.md, edge_lab.py:30,126)
 MIN_BARS_TINY = 720         # 30 hari: cukup utk fitur, TIDAK cukup utk klaim edge
 ACF_EFFICIENT = 0.05        # |acf| di bawah ini = mendekati jalan acak (asset_efficiency.py:29)
 ACF_STRUCTURED = 0.10       # >= ini = pola terukur; di antaranya = belum tahu
 FUNDING_EXTREME = 0.0005    # 0,05% per 4 jam = biaya carry/teknik terlalu mahal
 RISK_SAFE = 0.005            # 0,5% ekuitas per posisi saat tidak yakin
 RISK_WARM = 0.010            # 1% (korpus lama: BASE_RISK 1%, CONVICTION 0,5-1,5%)
-LIQ_MIN_USD = 50_000        # vault/08 §3 (syarat kursi ⑥) <- vault/02-Ambang.md
+LIQ_MIN_USD = 50_000        # vault/01-Agent/01 - Asset Classes and Seats.md §3 (syarat kursi ⑥) <- vault/06-Results/02 - Thresholds.md
 TIME_STOP_H = 24            # hard time-stop utk rezim "tidak yakin"
 ATR_MULT_STOP = 1.5
 ATR_MULT_TP = 3.0
@@ -249,7 +249,7 @@ def decide_one(f, fund, liq, model_ans):
 
 
 def apply_gates(d, sec, bars, liq):
-    """Gerbang kursi sungguhan: ① riwayat + ④ keamanan + ⑥ kapasitas keluar (vault/08 §3).
+    """Gerbang kursi sungguhan: ① riwayat + ④ keamanan + ⑥ kapasitas keluar (vault/01-Agent/01 - Asset Classes and Seats.md §3).
 
     Versi pertama fungsi ini bernama `apply_security` dan menetapkan `seat_eligible = (④ OK)`.
     Itu salah klaim: kolom "kursi" jadi bernilai YA untuk kandidat yang bahkan tidak punya
@@ -471,7 +471,7 @@ def main():
         print(f"\ntertulis: {p}")
     print("\nBatas: `side` di sini adalah keputusan yang bisa DIPERIKSA, bukan yang sudah terbukti "
           "untung. Registry tetap kosong sampai sebuah aset lolos n>=20 cost-aware + 2 konfirmasi "
-          "data baru beruntun (vault/08 §3).")
+          "data baru beruntun (vault/01-Agent/01 - Asset Classes and Seats.md §3).")
 
 
 if __name__ == "__main__":

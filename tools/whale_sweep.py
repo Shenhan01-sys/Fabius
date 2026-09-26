@@ -1,4 +1,4 @@
-"""Uji B (batas atas) sesuai `vault/11`: apakah pilihan token/jam whale lebih baik dari acak, di horizon panjang?
+"""Uji B (batas atas) sesuai `vault/06-Results/06 - Pre-registration Horizon.md`: apakah pilihan token/jam whale lebih baik dari acak, di horizon panjang?
 
 Satu kueri Dune saja. Alasannya uang: baseline "token & hari acak" TIDAK perlu dari Dune - dia bisa
 dihitung dari kline Aster yang sudah kami unduh untuk menilai whale juga. Kueri kedua cuma akan
@@ -8,7 +8,7 @@ Hasil kueri di-cache (`data/whale/panel-entries-*.json`), jadi iterasi analisis 
 kredit - dan itu penting, karena kemarin kita lihat kueri yang MENGIRIM BARIS adalah konsumer
 terbesar (503 detik), bukan yang berpikir.
 
-Cara membacanya: lihat `vault/11` §"Konsekuensi". Ringkasnya - angka positif di sini BELUM berarti
+Cara membacanya: lihat `vault/06-Results/06 - Pre-registration Horizon.md` §"Konsekuensi". Ringkasnya - angka positif di sini BELUM berarti
 apa-apa sampai Uji A (prospektif, tanpa lookahead) ikut searah.
 
 Pakai:  python tools/whale_sweep.py --days 90
@@ -483,7 +483,7 @@ def main():
     os.makedirs(os.path.join(ROOT, "decisions"), exist_ok=True)
     p = os.path.join(ROOT, "decisions", f"whale-sweep-{a.days}d.json")
     json.dump({"generated_utc": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
-               "prereg": "vault/11-Pra-Registrasi-Uji-Horison-Whale.md",
+               "prereg": "vault/06-Results/06 - Pre-registration Horizon.md",
                "horizons": HORIZONS, "cost_bps_applied": 0.0,
                "note_ongkos": "belum memasukkan ongkos - itu harus diukur per venue dulu",
                "rows": out_rows, "wallets_n": len(thick)},

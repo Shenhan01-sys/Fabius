@@ -10,7 +10,7 @@ Yang diulang dari live, sengaja tidak "diperbaiki" demi hasil (semua angka diuji
   - arah:   sma_gap > +1% dan ret24 > 0 -> LONG ; sma_gap < -1% dan ret24 < 0 -> SHORT ; selain itu FLAT
   - horizon: HORIZON_BARS bar ke depan (= 4 jam, sama dengan horizon keputusan live)
   - ongkos:  20 bps round-trip = 5,5 bps taker + 4,5 bps spread/slippage PER SISI
-             (asal: korpus HeliQuant `edge_lab.py:23,24,28` lewat vault/08 §3)
+             (asal: korpus HeliQuant `edge_lab.py:23,24,28` lewat vault/01-Agent/01 - Asset Classes and Seats.md §3)
 
 Yang TIDAK bisa diulang, dan itu membatasi kesimpulannya (dibuat eksplisit, bukan disembunyikan):
   1. **Funding historic tidak ada** di jalur ini -> gerbang "funding ekstrem" live tidak ikut diuji.
@@ -25,7 +25,7 @@ Yang TIDAK bisa diulang, dan itu membatasi kesimpulannya (dibuat eksplisit, buka
 
 Keputusan dianggap layak-klaim hanya kalau: n >= MIN_TRADES, MEAN NET > 0 (bukan gross),
 drop-best-fold masih > 0, dan p lolos BH. Kalau tidak: registry tetap kosong dan itu hasil,
-bukan kegagalan (vault/08 §3).
+bukan kegagalan (vault/01-Agent/01 - Asset Classes and Seats.md §3).
 
 Pakai:  python tools/backtest.py                      # semua simbol yang ter-cache cukup dalam
          python tools/backtest.py --fetch 400          # isi/perbaiki cache dulu (meta benar)
@@ -51,8 +51,8 @@ import bars as barsmod  # noqa: E402
 # ---- ambang: DIIMPOR dari direction.py supaya tidak ada dua kebenaran.
 import direction as D  # noqa: E402
 
-RT_COST_BPS = 20.0          # vault/08 §3 (5,5 + 4,5 per sisi)
-MIN_TRADES = 20             # vault/02-Ambang.md: jangan simpulkan apa pun dari < 20 trade
+RT_COST_BPS = 20.0          # vault/01-Agent/01 - Asset Classes and Seats.md §3 (5,5 + 4,5 per sisi)
+MIN_TRADES = 20             # vault/06-Results/02 - Thresholds.md: jangan simpulkan apa pun dari < 20 trade
 FOLDS = 5
 BH_ALPHA = 0.10
 DEFAULT_SYMBOLS = ["BNBUSDT", "ETHUSDT", "SOLUSDT", "XRPUSDT", "DOGEUSDT", "HYPEUSDT",

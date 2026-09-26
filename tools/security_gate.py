@@ -1,11 +1,11 @@
 """Bidang ④ (keamanan kontrak) untuk KANDIDAT ARAH: ukur, jangan asumsikan.
 
-Kenapa file ini ada: `vault/08` §3 menjadikan "④ terukur (`honeypot`/`can_not_sell` TIDAK null)"
+Kenapa file ini ada: `vault/01-Agent/01 - Asset Classes and Seats.md` §3 menjadikan "④ terukur (`honeypot`/`can_not_sell` TIDAK null)"
 salah satu syarat kursi, tapi sampai 25 Sep jalur arah tidak memanggil satu pun endpoint
 keamanan - jadi angka `honeypot=0` di manapun sebenarnya berarti **tidak diukur**, bukan bersih.
 Eksit yang dijamin oleh `exit-size <= 1% likuiditas` mengasumsikan jualan DITERIMA kontrak.
 
-Kenapa di jalur arah baru sekarang layak: `vault/05` #12 sudah mengukur tiga jalur ④ mati untuk
+Kenapa di jalur arah baru sekarang layak: `vault/06-Results/03 - Not Yet Proven.md` #12 sudah mengukur tiga jalur ④ mati untuk
 jalur SCREEN (40 alamat/snapshot melampaui kuota), tapi kandidatnya arah hanyalah **<= 5** setelah
 gerbang arah - dan itu 5 panggilan per siklus. Skala mengubah kesimpulan, jadi yang lama tidak
 diulang, hanya dibatasi.
@@ -43,7 +43,7 @@ ROOT = os.path.dirname(HERE)
 sys.path.insert(0, HERE)
 
 # SATU sumber bentuk permintaan: perekam punya gmgn_url() yang menambahkan timestamp+client_id
-# (kunci PRIVAT menagihnya; demo key tidak - lihat vault/06). Mengimpor fungsi itu lebih baik
+# (kunci PRIVAT menagihnya; demo key tidak - lihat vault/00-Overview/03 - Decisions.md). Mengimpor fungsi itu lebih baik
 # daripada menyalin query string, karena salinan adalah cara bug kembali masuk tanpa terlihat.
 _SPEC = importlib.util.spec_from_file_location(
     "rec", os.path.join(ROOT, "universe", "record_bsc_universe.py"))
@@ -227,7 +227,7 @@ def main():
     print(f"\nOK={n_ok}  UNMEASURED/DISAGREE={n_un}  BLOCKED={n_bl}  "
           f"panggilan={len(rows) * 2} (GMGN + GoPlus per kandidat)")
     print("Aturan yang ditegakkan di sini: UNMEASURED TIDAK dihitung sebagai bersih - lihat "
-          "vault/08 §3 (syarat kursi) dan judge.py §1 (satu arah).")
+          "vault/01-Agent/01 - Asset Classes and Seats.md §3 (syarat kursi) dan judge.py §1 (satu arah).")
 
     if a.emit:
         os.makedirs(os.path.join(ROOT, "decisions"), exist_ok=True)

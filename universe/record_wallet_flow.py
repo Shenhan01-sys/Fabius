@@ -189,7 +189,7 @@ def write_manifest(prev_sha):
         "KONTROL TIDAK TERSEDIA - diukur, bukan diasumsikan. Pada 607 transaksi pertama (26 Sep",
         "08:01-08:36Z): baris TANPA tag smart/kol/gmgn = 0 (0,0 %). Aliran ini memang didefinisikan",
         "sebagai 'dompet yang sudah dilabeli', jadi membandingkannya dengan dompet biasa dari sumber",
-        "yang sama mustahil secara struktural, bukan kurang data. Pembanding yang sah (vault/08 §6):",
+        "yang sama mustahil secara struktural, bukan kurang data. Pembanding yang sah (vault/01-Agent/01 - Asset Classes and Seats.md §6):",
         "(a) arah acak pada token & jam yang sama -> selisih net_bps vs 0; (b) hold token 4 jam dari",
         "baris `px` kami sendiri; (c) pisahkan is_open_or_close=1 vs =0. Kalimat yang boleh diuji",
         "hanyalah 'lebih baik dari tidak memilih arah pada jam yang sama', BUKAN 'lebih baik dari",

@@ -318,7 +318,7 @@ def main():
     print(f"  anchor setelah relist: status={st} gas={gu}  -> {'pulih' if st == 1 else 'MASIH MATI'}")
     print(f"\nexplorer : https://testnet.bscscan.com/address/{addr}")
     print(f"tx anchor: https://testnet.bscscan.com/tx/{h}")
-    print(f"ANCHOR_ADDRESS={addr}  (salin ke vault/04-Kontrak.md & README)")
+    print(f"ANCHOR_ADDRESS={addr}  (salin ke vault/02-Contracts/01 - DecisionAnchor.md & README)")
     return 0
 
 

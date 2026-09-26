@@ -154,7 +154,7 @@ def report(symbol, interval, bars, meta, path=None):
         return
     step = INTERVAL_MS[interval]
     span_days = (bars[-1]["t"] - bars[0]["t"]) / 86_400_000
-    # ambang kita (vault/02-Ambang.md): 480 bar utk 20 trade non-overlap 24 jam;
+    # ambang kita (vault/06-Results/02 - Thresholds.md): 480 bar utk 20 trade non-overlap 24 jam;
     # horizon 4 jam menuntut 20 * 4 = 80 bar trading, jadi batas nyata adalah jumlah BAR.
     print(f"  {symbol} {interval}: {len(bars):>6} bar / {span_days:>6.1f} hari "
           f"({meta['pages']} halaman)  rentang {time.strftime('%Y-%m-%d', time.gmtime(bars[0]['t']/1000))}"

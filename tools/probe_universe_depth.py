@@ -28,7 +28,7 @@ UA = {"User-Agent": "Mozilla/5.0 (compatible; lencana-depth/1.0)", "Content-Type
 # sample yang mewakili kelas berbeda, bukan yang paling enak dilihat
 DEFAULT = ["BTC", "ETH", "SOL", "HYPE", "SUI", "DOGE", "WIF", "BNB", "CAKE", "LTC"]
 
-# kebutuhan aturan validasi kita (lihat vault/02-Ambang.md): >=20 trade OOS non-overlap 24 jam
+# kebutuhan aturan validasi kita (lihat vault/06-Results/02 - Thresholds.md): >=20 trade OOS non-overlap 24 jam
 NEED_20 = 20 * 24            # 480 bar hourly untuk 20 trade saja
 NEED_WF5 = 5 * 20 * 24       # 2.400 bar untuk 5-fold walk-forward dengan 20 trade/fold
 

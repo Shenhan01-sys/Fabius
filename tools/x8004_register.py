@@ -160,7 +160,7 @@ def build_card(token_hint=None):
         "limits_stated_honestly": [
             "semua settlement di BNB Chain TESTNET (97); tidak ada dana nyata",
             "token pembayaran adalah koin demo milik kami sendiri",
-            "strategi arah kami kalah setelah ongkos 20 bps (vault/09) - yang dijual adalah bukti, bukan sinyal",
+            "strategi arah kami kalah setelah ongkos 20 bps (vault/06-Results/04 - Negative Results.md) - yang dijual adalah bukti, bukan sinyal",
         ],
         "generated_utc": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
     }
