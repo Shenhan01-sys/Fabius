@@ -95,11 +95,11 @@ def main():
         print(f"gap terbesar antar-snapshot: {max(gaps):.2f} jam | "
               f"gap >2 jam: {sum(1 for g in gaps if g > 2)} | usia snapshot terakhir: {now_h:.2f} jam")
         if now_h > 2.0:
-            print("⚠️  REKAMAN MENGENDAP: task belum menulis berjam-jam. Cek "
+            print("!!  REKAMAN MENGENDAP: task belum menulis berjam-jam. Cek "
                   "`schtasks /query /tn FabiusUniverse /fo LIST /v` → kolom \"Last Result\" "
                   "dan pengaturan baterai (No Start On Batteries).")
     if mismatched:
-        print(f"⚠️  {mismatched} snapshot TIDAK cocok dengan sha256 yang tersimpan "
+        print(f"!!  {mismatched} snapshot TIDAK cocok dengan sha256 yang tersimpan "
               f"-> datanya berubah setelah ditulis. Jangan percaya isinya, laporkan.")
     else:
         print("semua sha256 cocok dengan isi barisnya (integritas file utuh)")

@@ -210,7 +210,7 @@ def main():
 
     snap, cands = candidates(a.symbols, a.address)
     cands = cands[:a.limit]
-    print(f"universe {snap['snapshot_utc']} | kandidat ④ yang akan diukur: {len(cands)} "
+    print(f"universe {snap['snapshot_utc']} | kandidat [4] yang akan diukur: {len(cands)} "
           f"(bukan {snap['universe_size']} - itu beban jalur screen yang sudah terbukti tak terbayar)\n")
     if not cands:
         print("Tidak ada kandidat dengan alamat. Periksa --symbols / isi universe.")

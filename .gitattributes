@@ -8,12 +8,9 @@
 contracts/vendor/x402/** -text
 docs/upstream-x402/** -text
 
-# Dataset point-in-time juga byte-berhash (manifest menyimpan sha256 isi berkas), jadi akhirannya
-# ikut dikunci; kalau tidak, `write_universe_manifest.py` akan melaporkan hash berbeda tergantung
-# mesin tempat repo di-clone.
-universe/*.jsonl -text
-universe/manifest.txt -text
-universe/wallet-flow*.jsonl -text
-universe/wallet-flow-manifest.txt -text
-decisions/*.jsonl -text
-decisions/*.json -text
+# Catatan penarikan (26 Sep): versi pertama berkas ini juga mengunci `universe/**` dan
+# `decisions/**`. Akibatnya `git add --renormalize` menulis ulang byte dataset (CRLF -> LF) dan
+# `write_universe_manifest.py` langsung melaporkan **2 snapshot TIDAK cocok dengan sha256
+# tersimpan** - klaim point-in-time yang kupatahkan sendiri, di sisi yang seharusnya paling aman.
+# Dataset tidak punya klaim "verbatim terhadap upstream", jadi tidak ada yang perlu dikunci di
+# sini; yang punya klaim itu cuma vendor x402.

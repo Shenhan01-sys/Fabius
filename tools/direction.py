@@ -381,13 +381,13 @@ def main():
             try:
                 for x in sec_mod.gate_rows(pairs, snap_sha=snap["sha256"]):
                     sec_by_base[str(x["symbol"]).upper()] = x
-                print("gerbang ④ (keamanan token dasar):")
+                print("gerbang [4] (keamanan token dasar):")
                 sec_mod.table(list(sec_by_base.values()))
                 print()
             except Exception as e:  # noqa: BLE001
                 # Kalau ④ tidak bisa diukur, kandidat TIDAK lolos sebagai "bersih": statusnya
                 # jadi UNMEASURED dan kursi ditolak. Kegagalan pengukur = kegagalan gerbang.
-                print(f"gerbang ④ GAGAL diukur: {type(e).__name__}: {str(e)[:120]}\n")
+                print(f"gerbang [4] GAGAL diukur: {type(e).__name__}: {str(e)[:120]}\n")
 
     model_out = {}
     if pick and not a.no_model:
