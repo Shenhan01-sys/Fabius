@@ -61,7 +61,7 @@ tidak tersedia di chain ini, dan kami menulis batas itu daripada menyembunyikann
 | Lapisan desk penuh (debat antar-desk) | ⬜ spesifikasi ditulis (`vault/06-Keputusan.md` F-D04), kode belum |
 | Eksekusi | ⬜ **paper on purpose** — tidak ada dana pengguna, tidak ada order, tidak ada yang bisa rugi |
 | Deploy ke chain 97 | ✅ **terverifikasi dari chain 24 Sep** — `0xdd162afb5f5f92d5092f845A93660e3B38259330`; bytecode 4748 B identik dengan build lokal; `anchor()` dari agen terpisah sukses (gas 302.011); event `Anchored` ter-indeks dengan topic2 = alamat agen; **rem on-chain terbukti** (setelah revoke → revert, setelah relist → pulih). Detail + cara mengulang: `vault/07-Deploy-97.md` |
-| Fasilitator x402 sendiri | ⬜ settlement-nya terbukti di fork (31 test, chain 97 & 56); jalur HTTP `402` belum pernah dieksekusi |
+| Fasilitator x402 sendiri | 🟡 **buktinya sekarang ada di repo ini, bukan di laci riset.** `FOUNDRY_PROFILE=fork forge test --fork-url bscTestnet` = **44 lulus**: 21 `DecisionAnchor` + 15 `X402DemoToken` + **8 test settlement terhadap proxy kanonis yang sudah ter-deploy di chain 97 yang hidup** — termasuk tiga penolakan yang membuat jalur ini layak disebut fasilitator: **pemanggil `settle()` tidak bisa memindahkan dana ke alamat lain** (witness terikat EIP-712), **tidak bisa melebihkan jumlah**, dan **nonce tidak bisa dipakai ulang**. Sumber upstream di-vendor **verbatim dengan sha256 tercatat** (`contracts/vendor/x402/VENDORED.json`; baca-saja di `docs/upstream-x402/`, sengaja tidak dikompilasi: `coinbase/x402` @ `dd927a26`). **Yang masih belum: jalur HTTP `402` belum pernah dieksekusi** — dan itu bukan hal yang sama dengan settlement yang sudah lulus |
 
 Lihat `vault/05-Belum-Terbukti.md` untuk daftar lubang yang masih menganga dan cara menutupnya.
 
@@ -73,7 +73,9 @@ e-course, atau jalur lain di sini — aturan dan alasannya ada di `vault/README.
 ## Cara menjalankan
 
 ```
-forge test -vv                                    # 21 test
+forge test -vv                                    # 21 test (profil default: target shanghai)
+FOUNDRY_PROFILE=fork forge test --fork-url bscTestnet -vv   # 44 test, termasuk 8 settlement x402 di chain 97 hidup
+#   (di cmd.exe Windows: `set FOUNDRY_PROFILE=fork&& forge test --fork-url bscTestnet -vv`)
 python -u tools/screen_universe.py --windows     # corong penolakan dari dataset
 python -u tools/bars.py BNBUSDT --days 400       # seberapa dalam deret harga yang benar2 kita punya
 python -u tools/direction.py --top 5 --emit      # arah + ④ + entry/stop/ukuran/horizon (butuh kunci Jev utk model; --no-model utk deterministik, --no-security utk offline)

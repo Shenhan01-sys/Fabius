@@ -17,6 +17,17 @@ optimizer = true
 optimizer_runs = 200
 verbosity = 2
 
+# Berkas x402 TIDAK dikompilasi di profil default, dan alasannya spesifik: `X402DemoToken` memakai
+# ERC20Permit (EIP-2612) yang di OpenZeppelin 5 menyeret `utils/Bytes.sol`, dan Bytes.sol memakai
+# opcode `mcopy` (Cancun). Terukur 26 Sep: tanpa baris ini `forge build` gagal 4x di
+# vendor/openzeppelin/contracts/utils/Bytes.sol while compiling for "shanghai".
+# Kenapa tidak sekalian Cancun di sini: `DecisionAnchor` sengaja ditarget shanghai (lihat atas) dan
+# klaim "bytecode 4748 B identik dengan build lokal" (vault/07) terikat ke target itu.
+# Kenapa tidak proyek bersarang: sudah dicoba dan mati di `allow_paths` (butuh pola, bukan boolean;
+# dan tetap menolak resolve lintas root) - satu proyek + `skip` justru tidak perlu mengajari
+# Foundry cara membaca direktori orang.
+skip = ["X402DemoToken", "X402SettleOnBsc"]
+
 [profile.fork]
 src = "contracts"
 out = "out"
@@ -25,6 +36,10 @@ script = "script"
 libs = ["vendor", "lib"]
 solc_version = "0.8.26"
 evm_version = "cancun"
+# Profil fork MEMBANGUN kembali berkas x402 (kosongkan skip) - di sinilah test settlement
+# (`Settled()` / `SettledWithPermit()` pada proxy kanonis yang sudah ter-deploy) dijalankan:
+#   set FOUNDRY_PROFILE=fork && forge test --fork-url bscTestnet
+skip = []
 optimizer = true
 optimizer_runs = 200
 verbosity = 2
