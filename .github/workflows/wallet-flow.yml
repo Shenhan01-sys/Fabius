@@ -47,11 +47,20 @@ on:
 
 permissions:
   contents: write
-  actions: read
+  # `actions: write` WAJIB ada di sini. Tanpanya langkah "sambung rantai" cuma bisa membaca dan
+  # dispatch-diri gagal - terukur 26 Sep: run 09:15Z `conclusion=failure` tepat di langkah itu.
+  # Rantai yang tidak bisa menyambung dirinya sendiri itu janji kosong, dan tidak ada yang sadar
+  # sampai seseorang melihat jam terakhir commit.
+  actions: write
 
 concurrency:
   group: wallet-flow-chain
-  cancel-in-progress: false
+  # Dibalik jadi `true` (27 Sep, dan ini karena kerugian nyata): dengan `false`, SATU jalanan yang
+  # menggantung akan mengantrikan semua berikutnya selamanya - persis yang membungkam perekam dari
+  # 18:04Z 26 Sep, menghapus ±24 jam aliran yang tidak bisa ditarik mundur (jendela 8-13 menit,
+  # tanpa paging). Dengan `true`, cron berikutnya MENGGANTIKAN yang macet: kadang kehilangan satu
+  # siklus, tapi tidak pernah kehilangan harinya.
+  cancel-in-progress: true
 
 jobs:
   rantai:
