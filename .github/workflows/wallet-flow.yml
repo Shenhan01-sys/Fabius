@@ -70,10 +70,19 @@ jobs:
           RUN_ID: ${{ github.run_id }}
         run: |
           sleep 5
+          # `.id`, BUKAN `.run_id`: di daftar run fieldnya `id`. Pakai `.run_id` menghasilkan
+          # null -> "(null) != <id kita>" selalu benar -> penjaga ini MENGHITUNG DIRINYA SENDIRI.
+          # Terukur 26 Sep 09:11Z: jalanan pertama rantai berhenti dalam 7 detik dengan
+          # "rantai lain yang in_progress: 1", tanpa satu commit pun - yang 1 itu adalah dia.
           N=$(gh api "repos/$GITHUB_REPOSITORY/actions/runs?status=in_progress&per_page=50" \
-              --jq "[.workflow_runs[] | select(.name==\"wallet-flow\" and (.run_id|tostring)!=\"$RUN_ID\")] | length")
-          echo "rantai lain yang in_progress: $N"
-          if [ "$N" != "0" ]; then
+              --jq "[.workflow_runs[] | select(.name==\"wallet-flow\" and (.id|tostring)!=\"$RUN_ID\")] | length")
+          echo "rantai lain yang in_progress: [$N]"
+          case "$N" in
+            ''|*[!0-9]*) echo "hitungannya bukan angka -> LANJUT merekam (fail-open). " \
+                          "Dedupe by transaction_hash membuat rantai paralel tidak berbahaya; " \
+                          "menghentikan perekaman karena bug sendiri justru berbahaya." ;;
+          esac
+          if [ "$N" != "0" ] && [ -z "${N//[0-9]/}" ]; then
             echo "sudah ada rantai aktif -> keluar tanpa merekam (ini bukan kegagalan)"
             echo "RANTAI_ADA=1" >> "$GITHUB_ENV"
           else
