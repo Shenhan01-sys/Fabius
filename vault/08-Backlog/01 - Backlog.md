@@ -1,0 +1,23 @@
+---
+tags: [backlog, hub]
+---
+
+# Backlog
+
+**Sumber:** keluaran perintah di `07-Testing/`, bukan perasaan. Tenggat: **30 Sep 23:59 WIB**.
+
+| # | pekerjaan | status | yang menahan / bukti selesai |
+|---|---|---|---|
+| P1 | **Eksekusi nyata pertama di 97** (deploy `DemoAsset`+`DemoPair`+`ExecutionVault`, buka & tutup 1 posisi) | 🟡 alatnya ada, **terhenti oleh guard sendiri** | saldo agen 0,0079 tBNB < taksiran 0,018 → top-up lewat tower (skripnya `_research/topup_agent.py`, di luar repo produk), lalu `python -X utf8 -u tools/exec_deploy.py`. Selesai = ada tx `status=1` + `openPositionOf` terbaca |
+| P2 | **Host gateway x402** supaya URL kartu agen bukan `127.0.0.1` | ⬜ | `agent-card.json` menunjuk URL tetap; kartu tidak lagi ditulis "LOCAL ONLY" |
+| P3 | **FE dua pintu** (Vercel, oleh builder) — orang awam lihat rekaman; agen baca kartu + bayar | ⬜ | halaman + data dari chain; `--verify` dijalankan orang lain dari browser |
+| P4 | `seats.py` — 5 kursi + rotasi memakai `seat_eligible` | ⬜ | aturannya sudah tertulis di [[01-Agent/01 - Asset Classes and Seats]] §3, belum jadi kode |
+| P5 | Uji A (prospektif, tanpa lookahead) pada horison 24/48 jam | ⏳ butuh waktu, bukan kerja | entri setelah 26 Sep 08:01Z dinilai 27–28 Sep |
+| P6 | Investigasi 2 snapshot universe yang sha-nya tidak bisa dihitung ulang | ⬜ 2 hipotesis sudah digugurkan | [[06-Results/03 - Not Yet Proven]] #21 |
+| P6b | Rantai 6 entri anchor yang tidak punya baris sumber di repo (termasuk 1 `Enter`) | ⬜ baru terlihat 27 Sep | `python -X utf8 tools/verdict_counts.py` vs `python -X utf8 tools/anchor.py --verify`; selesai = kedua angka terjelaskan baris per baris |
+| P7 | Putuskan: 30 hari jadi fitur (butuh dana & waktu) atau tetap hipotesis terbuka | ⬜ keputusan builder | kalimat publik sudah dikunci di [[10-Submissions/01 - Claims Cheat Sheet]] |
+| P8 | **Bukti clone bersih** — `git clone` ke direktori kosong, lalu jalankan baris 1–6 registry [[07-Testing/01 - Test Commands]] | ⬜ | tangkapan keluarannya ditempel di halaman itu. Ini yang membuat "verifiable tanpa kami" berdiri: sampai sekarang belum pernah kujalankan dari clone, hanya dari working copy ini |
+
+## Terkait
+
+- [[00-Overview/06 - Roadmap]] · [[Index]]
