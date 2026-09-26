@@ -1,15 +1,15 @@
 # wallet-flow manifest - dihasilkan universe/record_wallet_flow.py
-generated_utc: 2026-09-26T21:38:05Z
+generated_utc: 2026-09-26T21:41:28Z
 schema: 1
-baris: 18291
-baris_transaksi: 8564
+baris: 18343
+baris_transaksi: 8565
 maker_unik: 354
 token_unik: 665
 usia_aliran_jam: 0.00
-sha256_berkas: 0x2629a27e66c34f7ca222d5f861151895d3e82d5216f771281fc1ef3cc769d03e
-hash_baris_terakhir: 0x1088a096108d79481b2ead44c0bb8a7168fb8f2282ed8a153a09fdacdef7d3f2
-mata_rantai_dipakai_run_ini: 0x212311e05ca567077730ef55954efc42264b2100dadea0e51ba9a3286d5ddb7c
-rentang_event_utc: 2026-09-26T08:01:42Z -> 2026-09-26T21:38:05Z (13.61 jam)
+sha256_berkas: 0x700d9bd9c7c535a22d9981d343fa691b24226c76cc825c33b334672f7173b383
+hash_baris_terakhir: 0x59507c78f246100ed772c13e47e257ce5233815b7349cbd4c80f03ffef8c7478
+mata_rantai_dipakai_run_ini: 0x1088a096108d79481b2ead44c0bb8a7168fb8f2282ed8a153a09fdacdef7d3f2
+rentang_event_utc: 2026-09-26T08:01:42Z -> 2026-09-26T21:41:27Z (13.66 jam)
 
 Batas yang wajib dibaca bersama berkas ini: keanggotaan panel `sm`/`kol` ADALAH pilihan
 GMGN (lihat field `g`/tags), jadi panel awal tidak netral. Yang kita ukur sendiri hanyalah
@@ -18,7 +18,7 @@ HASILNYA, dari harga yang kita catat sendiri (baris `px`).
 KONTROL TIDAK TERSEDIA - diukur, bukan diasumsikan. Pada 607 transaksi pertama (26 Sep
 08:01-08:36Z): baris TANPA tag smart/kol/gmgn = 0 (0,0 %). Aliran ini memang didefinisikan
 sebagai 'dompet yang sudah dilabeli', jadi membandingkannya dengan dompet biasa dari sumber
-yang sama mustahil secara struktural, bukan kurang data. Pembanding yang sah (vault/08 §6):
+yang sama mustahil secara struktural, bukan kurang data. Pembanding yang sah (vault/01-Agent/01 - Asset Classes and Seats.md §6):
 (a) arah acak pada token & jam yang sama -> selisih net_bps vs 0; (b) hold token 4 jam dari
 baris `px` kami sendiri; (c) pisahkan is_open_or_close=1 vs =0. Kalimat yang boleh diuji
 hanyalah 'lebih baik dari tidak memilih arah pada jam yang sama', BUKAN 'lebih baik dari
