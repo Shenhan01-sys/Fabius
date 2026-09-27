@@ -14,7 +14,6 @@ jangan gandakan kalimatnya.
 
 - [[Session-2026-09-26-27]] — eksekusi, Dune, whale horison, dua koreksi diri
 - [[Session-2026-09-27-siang]] — P1 dieksekusi nyata (2 round-trip, −59 bps), P8 4/4 dari clone,
-  dan satu klaim "nol kunci" dipatahkan oleh tes sendiri
 
 <!-- di atas: append-only oleh scripts/sync_vault.py; gloss tulisan tangan utuh -->
 ```dataview

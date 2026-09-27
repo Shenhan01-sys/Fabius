@@ -29,6 +29,13 @@ import time
 import urllib.error
 import urllib.request
 
+# `ROOT` dirujuk `_key()` pada cabang fallback (baca berkas env dari akar repo) tapi tidak pernah
+# didefinisikan - bug asli sejak d79a499 yang tidak pernah kena karena selama ini kuncinya ada di
+# environment pemanggil. Nama ini HARUS turunan dari __file__, bukan cwd: alat lain dipanggil dari
+# direktori apa pun dan tidak boleh ikut menebak.
+HERE = os.path.dirname(os.path.abspath(__file__))
+ROOT = os.path.dirname(HERE)
+
 # Base URL boleh diarahkan ke router pihak ketiga yang memproxy System-One.
 # Terukur 24 Sep: `https://router.bynara.id/v1/systemone` dengan model `jev` -> 200,
 # jawaban bertipe sama (`choice` + `probabilities` + `confidence`, `noul`, `score`).

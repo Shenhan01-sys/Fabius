@@ -22,7 +22,7 @@
   "check_yourself": "python tools/anchor.py --verify   # tanpa kunci, tanpa gas",
   "registered_tx": "0x33f47391c3a313b1d167e68a760e24746adac2d1aa39b44383b1f232ea2013dd"
  },
- "generated_utc": "2026-09-26T12:39:33Z",
+ "generated_utc": "2026-09-27T08:12:12Z",
  "image": null,
  "limits_stated_honestly": [
   "semua settlement di BNB Chain TESTNET (97); tidak ada dana nyata",

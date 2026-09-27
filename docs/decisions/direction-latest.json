@@ -1,9 +1,9 @@
 {
- "decisionHash": "0xe9eafba9713d7a788fa144d6d248abe8bb751983c191277e6621a3e75b08b528",
+ "decisionHash": "0x55f5089970439ae0d2c1ec7ae412f73c1155066381519c3895a7ab564dcdd194",
  "regime": "efficient",
- "seat_eligible": null,
- "sellability": null,
+ "seat_eligible": true,
+ "sellability": "OK",
  "side": "flat",
- "snapshotHash": "0xc391722d698f5b0285c99c525e5222ab4da70842b53c7cb02d5c180fad84e448",
- "symbol": "FLNCUSDT"
+ "snapshotHash": "0xb0517b6254fb083893b7b80fb29d2e6b75712d96f81fe05dcd50c065a75fb047",
+ "symbol": "TACUSDT"
 }

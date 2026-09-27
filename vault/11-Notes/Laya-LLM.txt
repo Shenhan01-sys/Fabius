@@ -1,0 +1,190 @@
+kamu tau Ai model laya? Yg digadang" jadi saingannya jev
+
+Pemikiran
+
+Ya, tau. Laya adalah model AI open-source (dari Convai Innovations) yang digadang-gadang sebagai saingan/alternatif open-source untuk Jev (dari TypeSafe AI). 
+
+pingax.com
+
+Ringkasan singkatJev: Model “System 1” milik TypeSafe AI (closed-source, API hosted). Dirancang untuk keputusan cepat bertipe tetap (bukan chat/generasi teks panjang), misalnya klasifikasi, routing tiket, triage email, skor urgensi, atau yes/no dengan probabilitas terkalibrasi.
+Laya: Jawaban open-source-nya. Dirilis sekitar 18 September 2026 di bawah lisensi Apache 2.0. Bisa dijalankan lokal (self-hosted), gratis per token, dan tersedia di Hugging Face + pip install laya.
+
+Keunggulan utama yang diklaim LayaKecepatan: Sekitar 33 ms (p50 ~32,8 ms) per pertanyaan di GPU T4 (bahkan lebih cepat kalau di-batch). Klaim sekitar 7–8× lebih cepat daripada Jev (yang biasanya 236–276 ms via API).
+Arsitektur: Encoder (berbasis ModernBERT-large ~421M parameter untuk versi English, atau mmBERT-base ~322M untuk multilingual yang support 100+ bahasa). Bukan decoder seperti ChatGPT/Claude/Grok yang generate token demi token. Hasilnya langsung berupa jawaban bertipe + probabilitas, jadi minim “hallucination” teks bebas.
+Tiga primitif keputusan:choice → pilih satu opsi dari daftar tetap + distribusi probabilitas.
+score → skor pada skala ordinal (misalnya tingkat urgensi).
+noul → probabilitas yes/no terkalibrasi.
+
+Akurasi (dari klaim resmi & perbandingan pihak ketiga): Di benchmark typed-decisions, Laya (versi fine-tuned) ~76,6% vs Jev ~72,7%. Lebih baik di beberapa task kecil (AG News, emotion), tapi kalah di task dengan banyak label (misalnya Banking77). Kalibrasi (ECE) juga diklaim lebih baik. Catatan penting: angka tinggi biasanya dari checkpoint yang di-fine-tune; zero-shot jauh lebih rendah (mendekati baseline random). 
+
+laya.convaiinnovations.com
+
+Singkatnya, Laya bukan chat LLM biasa — dia spesialis “keputusan cepat & terstruktur” yang ringan, lokal, dan open. Cocok buat agent, guardrail, triage, routing, dll., di mana kamu butuh jawaban bertipe + confidence score tanpa generate teks panjang.Kalau mau coba, cek Hugging Face (convaiinnovations/laya), situs resmi mereka, atau repo GitHub-nya. Ada juga versi multilingual dan yang khusus typed-decisions. Ada yang mau ditanyakan lebih detail (cara install, benchmark, dll.)?
+
+19 halaman web
+
+Bagaiamana cara saya bisa memakainya secara freemium?
+
+Pemikiran
+
+Cara memakai Laya secara freemium / gratis cukup mudah, karena modelnya sepenuhnya open-source (Apache 2.0). Berikut opsi dari yang paling gratis sampai yang ada free tier terbatas:1. Self-host (100% gratis & unlimited – cara terbaik)Ini cara “freemium” sejati: kamu bayar cuma listrik/komputer sendiri, tidak ada biaya per token.Langkah cepat:Install Python 3.10+ (disarankan pakai virtual environment).
+Jalankan:bash
+
+pip install laya
+
+Contoh pakai sederhana:python
+
+from laya import Router
+
+router = Router(preload=True)  # preload biar cepat
+
+state = {"body": "Saya ditagih dua kali. Tolong refund."}
+questions = {
+    "department": {
+        "type": "choice",
+        "instructions": "Departemen mana yang harus handle?",
+        "criteria": {
+            "billing": "tagihan, refund, pembayaran",
+            "technical": "bug, error sistem"
+        }
+    },
+    "is_urgent": {
+        "type": "noul",
+        "instructions": "Apakah ini urgent?"
+    }
+}
+
+result = router.predict(state, questions)
+print(result)
+
+Tips tambahan:Ada mode server HTTP (kompatibel dengan Jev):
+pip install "laya[serve]" lalu jalankan laya-serve
+Bisa pakai CPU saja (lambat tapi jalan), GPU NVIDIA, atau Apple Silicon.
+Model otomatis download dari Hugging Face saat pertama kali dipakai (~650–800 MB).
+Ada juga Docker, playground lokal, dan notebook Kaggle gratis untuk fine-tune.
+
+Link resmi:GitHub: github.com/NandhaKishorM/laya
+Hugging Face: huggingface.co/convaiinnovations/laya
+Docs/PyPI: cari “laya” di pypi.org
+
+2. Hosted freemium (tanpa install sendiri)Kalau tidak mau ribet self-host, ada layanan pihak ketiga yang menyediakan API:Layanan
+Free tier
+Harga setelah free
+Catatan
+Laya Studio
+5 run gratis saat daftar
+Mulai ~$0.0294 / 1M token
+Hosting Swiss, zero retention
+Impossibl
+Sering dicantumkan $0
+Tergantung provider
+Cek langsung di situsnya
+Opper / lainnya
+Free models + playground
+Premium model berbayar
+Ada yang gratis tanpa kartu
+
+Cara pakai Laya Studio (contoh paling jelas):Buka laya.studio
+Daftar → dapat 5 free runs
+Buat API key
+Panggil endpoint mereka (format mirip Jev)
+
+Ringkasan rekomendasiCuma coba-coba / develop → self-host dengan pip install laya (paling gratis & unlimited).
+Butuh API cepat tanpa setup → daftar Laya Studio (5 free runs dulu).
+Butuh fine-tune khusus → pakai notebook Kaggle gratis yang disediakan resmi.
+
+Mau saya kasih contoh kode lebih lengkap (misalnya untuk email triage, guardrail, atau cara jalankan server) atau panduan install di Windows/Mac/Linux? Bilang saja!
+
+26 halaman web
+
+Bisa di host lewat google notebooks ga? Pakai nvidia t4 gpu x2 gitu jd dapet ram 32gb ini
+
+Pemikiran
+
+Ya, bisa banget. Laya dirancang ringan (hanya ~322–421 juta parameter), jadi sangat cocok dijalankan di Google Colab atau Kaggle Notebook dengan GPU T4.Opsi yang tersediaPlatform
+GPU yang didukung
+Cocok untuk
+Catatan penting
+Kaggle
+T4 x2 (32 GB VRAM total)
+Fine-tuning + Inference
+Resmi didukung
+Google Colab
+T4 (16 GB) atau T4 x2 (Pro)
+Inference + Fine-tuning ringan
+Ada notebook resmi & komunitas
+
+1. Kaggle (paling recommended untuk T4 x2)Official notebook fine-tuning Laya memang dibuat khusus untuk Kaggle free 2x T4:File: laya_finetune_typed_decisions_2xT4_kaggle.ipynb
+Link resmi ada di GitHub Laya (folder notebooks/)
+Runtime sekitar 4–5 jam untuk 4 epoch (~30k questions)
+Sudah pakai gradient checkpointing supaya muat di T4
+
+Cara pakai:Buka Kaggle → New Notebook
+Settings → Accelerator → GPU T4 x2
+Internet → On
+Upload/import notebook resmi tersebut, atau copy-paste isinya
+Jalankan cell-cellnya
+
+2. Google ColabInference biasa (pakai model yang sudah jadi) → sangat nyaman di T4 gratis.
+Fine-tuning juga bisa (ada notebook Colab khusus single T4, VRAM peak cuma ~6.5 GB dengan FP16 + gradient checkpointing).
+Kalau kamu punya Colab Pro, bisa pilih T4 x2 juga.
+
+Contoh notebook yang sudah ada:Fine-tune di Colab: colab.research.google.com/drive/15d4Yv__KHeHjshVb-6PRTfqVllxih2S3
+Benchmark latency di T4 juga tersedia.
+
+Cara cepat mulai di Colab / Kagglepython
+
+# Install
+!pip install -U laya
+
+# Cek GPU
+!nvidia-smi
+
+from laya import Router
+router = Router(preload=True, device="cuda")   # otomatis pakai GPU
+
+state = {"body": "Saya ditagih dua kali, tolong refund segera"}
+questions = {
+    "dept": {
+        "type": "choice",
+        "instructions": "Departemen mana?",
+        "criteria": {"billing": "tagihan refund", "tech": "bug sistem"}
+    },
+    "urgent": {"type": "noul", "instructions": "Apakah urgent?"}
+}
+
+result = router.predict(state, questions)
+print(result)
+
+Tips pentingModel download otomatis dari Hugging Face (~650–800 MB).
+Untuk inference saja, T4 single sudah lebih dari cukup (latency ~33 ms).
+Untuk fine-tune, T4 x2 di Kaggle jauh lebih nyaman (lebih stabil, lebih lama session).
+Ingat: session Colab/Kaggle bisa putus. Kalau mau host terus-menerus, lebih baik self-host di VPS atau pakai layanan hosted seperti Laya Studio.
+
+Mau saya kasih langkah detail step-by-step untuk Kaggle T4 x2 (termasuk cara import notebook resmi) atau untuk Colab? Atau mau contoh kode fine-tune sederhana dulu?
+
+19 halaman web
+
+TOlong berikan url untuk laya ini
+
+Pemikiran
+
+Berikut URL resmi utama Laya yang paling penting:Link UtamaSitus Resmi / Research Page
+→ https://laya.convaiinnovations.com/
+GitHub (kode sumber + notebook)
+→ https://github.com/NandhaKishorM/laya
+Hugging Face (model weights)
+→ https://huggingface.co/convaiinnovations/laya
+PyPI (untuk pip install laya)
+→ https://pypi.org/project/laya/
+Live Demo (Hugging Face Space)
+→ https://huggingface.co/spaces/convaiinnovations/laya-demo
+Dokumentasi
+→ https://nandhakishorm.github.io/laya/
+
+Link Tambahan BergunaNotebook Fine-tune Kaggle (T4 x2):
+Ada di folder notebooks/ di GitHub di atas
+(laya_finetune_typed_decisions_2xT4_kaggle.ipynb)
+Colab Fine-tune:
+https://colab.research.google.com/drive/15d4Yv__KHeHjshVb-6PRTfqVllxih2S3
+

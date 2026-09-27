@@ -2,7 +2,7 @@
 tags: [generated]
 ---
 
-_Auto-Index — 6 halaman · 2026-09-27T07:50Z · dari `vault/scripts/sync_vault.py`_
+_Auto-Index — 6 halaman · 2026-09-27T08:13Z · dari `vault/scripts/sync_vault.py`_
 
 ### 00-Overview (8)
 - [[00-Overview/00 - Hub Overview]]
@@ -86,6 +86,10 @@ _Auto-Index — 6 halaman · 2026-09-27T07:50Z · dari `vault/scripts/sync_vault
 - [[10-Submissions/01 - Claims Cheat Sheet]]
 - [[10-Submissions/02 - Project Detail]]
 - [[10-Submissions/03 - Form Fields]]
+
+### 11-Notes (2)
+- [[11-Notes/00 - Hub Notes]]
+- [[11-Notes/Laya-LLM]]
 
 ### Concepts (8)
 - [[Concepts/00 - Hub Concepts]]
