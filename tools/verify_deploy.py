@@ -161,10 +161,32 @@ def send(pk, to, data, gas=AGENT_GAS, value=0):
     raise RuntimeError(f"tx {h} tidak masuk dalam 100 detik (RPC/mempool?)")
 
 
+def deployments(chain=None):
+    """`deployments/<chain>.json` = alamat yang dibutuhkan PEMERIKSA. Ter-track, sengaja.
+
+    Sebelum ada berkas ini, alamat hanya hidup di env atau `data/broadcast/**` - dan `data/`
+    di-gitignore. Artinya `tools/anchor.py --verify` gagal di clone bersih, padahal kalimat
+    "siapa pun bisa memeriksa trail kami tanpa meminta apa pun" adalah klaim utama vault. Alamat
+    kontrak itu informasi publik; yang tidak publik hanyalah kunci, dan itu tidak pernah ditulis.
+    """
+    p = os.path.join(ROOT, "deployments", f"{chain or CHAIN}.json")
+    if not os.path.isfile(p):
+        return {}
+    try:
+        return json.load(open(p, encoding="utf-8"))
+    except json.JSONDecodeError:
+        print(f"  ! {p} bukan JSON sah -> diabaikan, jangan menebak isinya")
+        return {}
+
+
 def resolve_anchor():
+    """Tiga sumber, berurutan: env -> manifest ter-track -> broadcast lokal."""
     a = (os.environ.get("ANCHOR_ADDRESS") or env.get("ANCHOR_ADDRESS") or "").strip()
     if a:
         return a
+    got = (deployments().get("contracts", {}) or {}).get("DecisionAnchor")
+    if got:
+        return got
     files = sorted(glob.glob(os.path.join(ROOT, "broadcast", "**", "run-latest.json"), recursive=True))
     for f in reversed(files):
         br = json.load(open(f, encoding="utf-8"))

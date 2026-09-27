@@ -1,0 +1,30 @@
+{
+ "agent": "0x4bb30E3b3bc22082c1935fE3bE7c07448e69c862",
+ "chainId": 97,
+ "contracts": {
+  "DecisionAnchor": "0xDD162AFB5F5f92d5092f845A93660e3B38259330",
+  "DemoAsset": "0x4180A42A119F0B5480637900679C0AaFB1F2a8d7",
+  "DemoPair": "0x6f93d787bBE99A6842CCa511ccB3b8D6d976696E",
+  "DemoPayToken": "0xB11D90214089684081F57A03d3300E20725297f8",
+  "ERC8004IdentityRegistry": "0x8004A818BFB912233c491871b3d84c89A494BD9e",
+  "ExecutionVault": "0x2743cD33C8790437594E119289838F35c0d1d290",
+  "Permit2": "0x000000000022D473030F116dDEE9F6B43aC78BA3",
+  "x402ExactPermit2Proxy": "0x402085c248EeA27D92E8b30b2C58ed07f9E20001"
+ },
+ "execution_state": {
+  "daily_cap_quote_atomic": 5000000,
+  "max_position_quote_atomic": 1000000
+ },
+ "verification": {
+  "DecisionAnchor": "bytecode 4748 B",
+  "DemoAsset": "bytecode 1862 B",
+  "DemoPair": "bytecode 2675 B",
+  "DemoPayToken": "bytecode 4002 B",
+  "ERC8004IdentityRegistry": "bytecode 130 B",
+  "ExecutionVault": "bytecode 5459 B",
+  "Permit2": "bytecode 9152 B",
+  "x402ExactPermit2Proxy": "bytecode 2913 B"
+ },
+ "why": "dibutuhkan agar `tools/anchor.py --verify` dan `tools/execute_live.py --status` bisa dijalankan dari clone bersih; alamat ini juga terbaca publik di explorer",
+ "written_utc": "2026-09-27T05:24:05Z"
+}
