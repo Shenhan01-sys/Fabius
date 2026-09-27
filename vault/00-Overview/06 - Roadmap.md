@@ -14,7 +14,7 @@ fitur yang tidak bisa diverifikasi.
 
 | hari | kerja | selesai terlihat sebagai |
 |---|---|---|
-| 27 | P1 eksekusi nyata di 97 (top-up gas → deploy → 1 posisi buka&tutup) | tx `status=1`, `openPositionOf` terbaca, realized PnL dari event |
+| 27 | P1 eksekusi nyata di 97 (deploy → 1 posisi buka&tutup) | tx `status=1`, `openPositionOf` terbaca, realized PnL dari event |
 | 27–28 | P4 `seats.py` (5 kursi + rotasi di atas `seat_eligible`) | satu siklus draft kursi ter-anchor, alasan rotasi tercatat |
 | 28 | P2 host gateway + P3 FE (builder pakai Vercel) | URL kartu agen bukan localhost; orang awam bisa lihat satu keputusan |
 | 28–29 | P5 Uji A horison pendek (prospektif) | angka whale **tanpa** lookahead, walau n kecil |
