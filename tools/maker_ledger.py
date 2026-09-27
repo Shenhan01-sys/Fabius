@@ -47,9 +47,14 @@ RT_COST_BPS = costs.MEASURED_RT_BPS   # P10: satu pintu (terukur) - lihat tools/
 MIN_EDGE = 4              # maker bersama minimum agar dua token dianggap satu kolam
                           # (2 membuat graf kecil-dunia: satu kolam menyerap 378 simbol)
 MIN_TRADES = 8            # di bawah ini tidak boleh ada label "terampil"
+STALE_MTM_S = 30 * 60     # MTM dengan harga terakhir > 30 menit sebelum as_of = TIDAK DIUKUR.
+                          # Perekam ⑦ menarik tiap ±4 menit; yang hilang dari daftar setelah itu
+                          # hilang karena keluar sorotan, bukan karena kami menutupnya.
 
 if not os.path.isfile(FLOW):
     raise SystemExit(f"tidak ada {FLOW} - jalankan universe/record_wallet_flow.py dulu")
+
+DUPES = 0   # diisi load_tx(): kemunculan ekstra (hash, maker, token, sisi) yang dibuang
 
 
 def last_snapshot_utc():
@@ -93,7 +98,22 @@ def load_tx():
                      "h": str(r.get("h") or ""), "tags": tuple(sorted(r.get("g") or [])[:3])})
     # urutan deterministik: waktu lalu hash, bukan urutan halaman API
     rows.sort(key=lambda x: (x["t"], x["h"], x["m"], x["y"]))
-    return rows
+    # Jendela perekam tumpang tindih, jadi satu transaksi bisa tercatat dua kali (terukur 28 Sep:
+    # 73 hash muncul >1x = 102 kemunculan ekstra lewat tools/maker_audit.py). Untuk deret harga itu
+    # cuma barisan yang dobel; untuk FIFO kita dobelan itu MEMBUKA LOT DUA KALI, lalu jualnya ikut
+    # dobel - ukuran lot membesar tanpa peristiwa baru. Sisakan kejadian pertama per
+    # (hash, maker, token, sisi); yang tanpa hash (tidak mungkin ada di berkas ini) tidak disentuh.
+    uniq, seen, drop = [], set(), 0
+    for r in rows:
+        key = (r["h"], r["m"], r["tk"], r["buy"])
+        if r["h"] and key in seen:
+            drop += 1
+            continue
+        seen.add(key)
+        uniq.append(r)
+    global DUPES
+    DUPES = drop
+    return uniq
 
 
 def price_map(rows, as_of):
@@ -114,17 +134,33 @@ def price_map(rows, as_of):
 
 
 def closed_trades(rows, as_of, last_px):
+    """FIFO per (maker, alamat token): SISI yang menentukan, `c` hanya metadata.
+
+    Probe 28 Sep atas berkas yang sama (`_research/probe_open_close.py`):
+      - `P(c=1 | b=1) = 0,621` dan `P(c=1 | b=0) = 0,567` -> field `c` TIDAK ditentukan oleh sisi,
+        jadi ia bukan "beli=pembuka / jual=penutup" seperti yang diasumsikan versi pertama;
+      - `tk` tidak pernah asset quote (0 dari 14.001 baris) -> satu baris = satu (maker, token dasar).
+
+    Versi pertama mensyaratkan `(b=1,c=1)` untuk membuka lot dan `(b=0,c=0)` untuk menutup, jadi
+    **6.704 dari 13.999** baris dibuang ke keranjang "lain". Akibatnya bukan "kurang data": lot yang
+    tidak pernah dibuka menghasilkan jual yatim, dan yang tersisa hanyalah flip yang kebetulan
+    cocok dengan tebakanku - penyaringan yang memilih pemenangnya sendiri. Sekarang: beli menambah
+    exposure, jual menguranginya. `c` tetap dihitung per kelas `(b,c)` dan dilaporkan, supaya
+    ketidakcocokan terlihat, bukan dibuang diam-diam.
+    """
     lots = collections.defaultdict(collections.deque)
-    trades, yatim, lain = [], 0, 0
+    trades, yatim = [], 0
+    bc = collections.Counter()
     for r in rows:
         if r["t"] > as_of:
             break
         key = (r["m"], r["tk"] or r["y"])
         qty = r["usd"] / r["px"]
-        if r["buy"] and r["open"]:
+        bc[(int(bool(r["buy"])), int(bool(r["open"])))] += 1
+        if r["buy"]:
             lots[key].append([qty, r["px"], r["t"]])
             continue
-        if (not r["buy"]) and (not r["open"]):
+        if not r["buy"]:
             dq, left, filled, entry_val = lots[key], qty, 0.0, 0.0
             while left > 1e-12 and dq:
                 take = min(left, dq[0][0])
@@ -138,16 +174,19 @@ def closed_trades(rows, as_of, last_px):
                 yatim += 1
                 continue
             exit_val = filled * r["px"]
+            entry_px = entry_val / filled
             bps = 10000.0 * (exit_val - entry_val) / entry_val if entry_val > 0 else 0.0
+            # rasio harga di luar 1:100 bukan "keuntungan besar", itu hampir pasti satuan yang
+            # bertabrakan (harga per-satoshi vs per-token) - ditandai, TIDAK dibuang diam-diam.
             trades.append({"maker": key[0], "token": key[1], "symbol": r["y"], "usd": round(entry_val, 2),
-                           "entry_px": round(entry_val / filled, 10), "exit_px": r["px"],
+                           "entry_px": round(entry_px, 10), "exit_px": r["px"],
                            "gross_bps": round(bps, 2), "net_bps": round(bps - RT_COST_BPS, 2),
-                           "open_t": r["t"], "close_t": r["t"], "mtm": False})
+                           "open_t": r["t"], "close_t": r["t"], "mtm": False,
+                           "suspek": not (0.01 <= (r["px"] / entry_px if entry_px > 0 else 1.0) <= 100.0)})
             continue
-        lain += 1
 
     # yang belum tertutup: ditandai-taup dengan harga TERAKHIR yang terlihat, BUKAN dibuang
-    mtm = 0
+    mtm = stale = 0
     sym_of = {(r.get("tk") or r["y"]): r["y"] for r in rows}
     for (m, tok), dq in lots.items():
         for qty, px, t_open in dq:
@@ -155,13 +194,21 @@ def closed_trades(rows, as_of, last_px):
                 continue
             ref = last_px.get(tok)
             bps = 10000.0 * (ref[0] - px) / px if ref else 0.0
+            # "harga terakhir yang kami lihat" bukan harga penutupan. Untuk token yang sudah jatuh
+            # dari daftar yang kami tarik, ref itu relics: mark-to-taup-nya adalah keinginan, bukan
+            # pengukuran. Yang basi dipisah, TIDAK dibuang dan TIDAK disamakan dengan yang segar.
+            basi = ref is None or (as_of - ref[1]) > STALE_MTM_S
             trades.append({"maker": m, "token": tok, "symbol": sym_of.get(tok, tok),
                            "usd": round(qty * px, 2),
                            "entry_px": px, "exit_px": (ref[0] if ref else px),
                            "gross_bps": round(bps, 2), "net_bps": round(bps - RT_COST_BPS, 2),
-                           "open_t": t_open, "close_t": (ref[1] if ref else t_open), "mtm": True})
+                           "open_t": t_open, "close_t": (ref[1] if ref else t_open), "mtm": True,
+                           "mtm_basi": basi,
+                           "suspek": not (ref is None or
+                                          0.01 <= (ref[0] / px if px > 0 else 1.0) <= 100.0)})
             mtm += 1
-    return trades, sum(len(v) for v in lots.values()), yatim, lain, mtm
+            stale += 1 if basi else 0
+    return trades, sum(len(v) for v in lots.values()), yatim, dict(bc), mtm, stale
 
 
 def pools_from(rows, as_of):
@@ -232,17 +279,23 @@ def main():
     as_of = to_epoch(as_of_s)
     rows = load_tx()
     last_px = price_map(rows, as_of)
-    trades, unclosed, yatim, lain, mtm = closed_trades(rows, as_of, last_px)
+    trades, unclosed, yatim, bc, mtm, basi = closed_trades(rows, as_of, last_px)
 
     # Rem sehat sebelum satu pun angka dipercaya: kalau distribusi |net|-nya tidak masuk akal,
     # mean apa pun di bawahnya adalah artefak - bukan hasil. Ini yang menyelamatkan pembacaan 27 Sep:
     # satu maker keluar +3,5 JUTA bps dan penyebabnya kunci lot berupa ticker, bukan alamat token.
     ab = sorted(abs(x["net_bps"]) for x in trades) or [0.0]
     gila = sum(1 for v in ab if v > 2000.0)
+    suspek = [x for x in trades if x.get("suspek")]
+    bersih = [x for x in trades if not x.get("suspek")]
+    abn = sorted(abs(x["net_bps"]) for x in bersih) or [0.0]
     sanity = {"median_abs_bps": round(ab[len(ab) // 2], 1),
               "p90_abs_bps": round(ab[int(len(ab) * 0.9)], 1),
               "maks_abs_bps": round(ab[-1], 1), "lot_net_lebih_2000bps": gila,
-              "persen_lot_gila": round(100.0 * gila / max(len(ab), 1), 1)}
+              "persen_lot_gila": round(100.0 * gila / max(len(ab), 1), 1),
+              "lot_suspek_rasio_harga": len(suspek),
+              "median_abs_bps_lot_bersih": round(abn[len(abn) // 2], 1),
+              "maks_abs_bps_lot_bersih": round(abn[-1], 1)}
 
     tags = collections.defaultdict(collections.Counter)
     for r in rows:
@@ -264,12 +317,19 @@ def main():
         net = sum(x["net_bps"] for x in ts) / n
         gross = sum(x["gross_bps"] for x in ts) / n
         net_c = (sum(x["net_bps"] for x in tc) / nc) if nc else None
+        # yang benar-benar DIUKUR: flip selesai + MTM yang harganya masih segar. Lot dengan harga
+        # basi tidak hilang dari laporan - cuma tidak boleh menyamar jadi hasil.
+        tu = [x for x in ts if not x["mtm"] or not x.get("mtm_basi")]
+        nu = len(tu)
+        net_u = (sum(x["net_bps"] for x in tu) / nu) if nu else None
         hit = 100.0 * sum(1 for x in ts if x["net_bps"] > 0) / n
         sd = (sum((x["net_bps"] - net) ** 2 for x in ts) / max(n - 1, 1)) ** 0.5
         pool = collections.Counter(lead_of.get(x.get("token"), x["symbol"]) for x in ts)
         scored.append({"maker": m, "trades": n, "trades_selesai": nc, "trades_mtm": n - nc,
+                       "trades_mtm_basi": n - nu, "trades_terukur": nu,
                        "gross_mean_bps": round(gross, 1), "net_mean_bps": round(net, 1),
                        "net_mean_selesai_bps": (round(net_c, 1) if net_c is not None else None),
+                       "net_mean_terukur_bps": (round(net_u, 1) if net_u is not None else None),
                        "net_hit_pct": round(hit, 1),
                        "net_sd_bps": round(sd, 1), "usd": round(sum(x["usd"] for x in ts), 0),
                        "pool": max(sorted(pool), key=lambda k: (pool[k], k)),
@@ -286,10 +346,18 @@ def main():
            if s["net_mean_selesai_bps"] is not None and s["trades_selesai"]]
     dn = sum(k for _, k in tc_) or 1
     onlyc = sum(v * k for v, k in tc_) / dn
+    tu_ = [(s["net_mean_terukur_bps"], s["trades_terukur"]) for s in scored
+           if s["net_mean_terukur_bps"] is not None and s["trades_terukur"]]
+    du = sum(k for _, k in tu_) or 1
+    onlyu = sum(v * k for v, k in tu_) / du
+    pos_u = [s for s in lab if (s["net_mean_terukur_bps"] or -1) > 0]
     out = {"as_of_utc": as_of_s, "dibuat_utc": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
            "rt_cost_bps": RT_COST_BPS, "rt_cost_basis": costs.cost_basis(), "min_trades_untuk_label": a.min_trades,
            "tx_dibaca": len(rows), "trade_tertam": len(trades), "lot_ditanda_taup": mtm,
-           "jual_yatim": yatim, "baris_lain_dilewati": lain, "maker_bertanda": len(by_maker),
+           "jual_yatim": yatim, "kelas_bc": {f"b={k[0]},c={k[1]}": v for k, v in sorted(bc.items())},
+           "mtm_basi": basi, "stale_mtm_s": STALE_MTM_S, "duplikat_dibuang": DUPES,
+           "net_timbang_bps_terukur": round(onlyu, 1), "maker_net_positif_terukur": len(pos_u),
+           "rem_sehat": sanity, "maker_bertanda": len(by_maker),
            "maker_layak_label": len(lab), "maker_net_positif_semua": len(pos),
            "maker_net_positif_hanya_selesai": len(pos_c),
            "net_timbang_bps_semua": round(allm, 1), "net_timbang_bps_selesai": round(onlyc, 1),
@@ -303,20 +371,36 @@ def main():
         print(json.dumps(out, indent=1, sort_keys=True, ensure_ascii=False))
     else:
         print(f"as_of {as_of_s} | ongkos round-trip yang dipakai {RT_COST_BPS} bps (terukur, bukan asumsi)")
-        print(f"tx dibaca {len(rows):,} | lot dibuka yang belum ketutup (ditandai-taup) {mtm:,} | "
-              f"jual yatim {yatim:,} | baris lain dilewati {lain:,}")
+        print(f"tx dibaca {len(rows):,} (setelah {DUPES:,} kemunculan ekstra dibuang) | "
+              f"lot belum ketutup (ditandai-taup) {mtm:,} | jual yatim {yatim:,}")
+        print("   kelas (b,c) yang dibaca (SISI yang menentukan lot, c hanya metadata): "
+              + " | ".join(f"b={k[0]},c={k[1]}:{v:,}" for k, v in sorted(bc.items())))
         print(f"maker dengan >=1 lot: {len(by_maker)} | layak label (n>={a.min_trades}): {len(lab)}")
         print(f"\n  REM SEHAT distribusi |net| per lot: median {sanity['median_abs_bps']:,.1f} bps | "
               f"p90 {sanity['p90_abs_bps']:,.1f} | maks {sanity['maks_abs_bps']:,.1f} | "
               f"lot >2000 bps: {sanity['lot_net_lebih_2000bps']:,} ({sanity['persen_lot_gila']} %)")
+        print(f"   lot dengan rasio harga keluar/masuk di luar 1:100 (satuan bertabrakan?): "
+              f"{sanity['lot_suspek_rasio_harga']:,} | kalau yang itu dibuang, median |net| lot bersih "
+              f"{sanity['median_abs_bps_lot_bersih']:,.1f} bps | maks {sanity['maks_abs_bps_lot_bersih']:,.1f}")
         if sanity["persen_lot_gila"] > 5 or sanity["median_abs_bps"] > 2000:
-            print("     ^^ distribusi ini TIDAK masuk akal sebagai angka pasar. Mean di bawah jangan")
-            print("        dikutip: perbaiki mekanikanya (kunci token, satuan harga) lebih dulu.")
-        print(f"\n  DUA BACAAN YANG TIDAK SAMA:")
+            print(f"     ^^ median |net| {sanity['median_abs_bps']:,.0f} bps = ~"
+                  f"{sanity['median_abs_bps'] / 100:,.0f}x per lot. Pada memecoin yang baru lahir itu"
+                  f" MUNGKIN nyata -")
+            print("        yang tidak mungkin adalah MEMAKANNYA sebagai rata-rata: populasinya sudah")
+            print("        diseleksi dua kali (dompet berlabel + token yang sedang muncul di sorotan),")
+            print("        dan distribusi ekor-gemuk tidak punya mean yang stabil pada n ini.")
+            print("        Yang sah dikutip: MEDIAN lawan pembanding acak + bootstrap, bukan mean.")
+        print(f"\n  TIGA BACAAN YANG TIDAK SAMA (dan hanya satu yang isinya pengukuran):")
         print(f"    hanya flip selesai : net tertimbang {onlyc:+8.1f} bps | "
               f"{len(pos_c)}/{len(lab)} maker positif  <- BIAS: yang tidak selesai tidak dihitung")
         print(f"    semua lot (MTM)    : net tertimbang {allm:+8.1f} bps | "
-              f"{len(pos)}/{len(lab)} maker positif  <- yang dipakai")
+              f"{len(pos)}/{len(lab)} maker positif  <- termasuk {basi:,} lot berharga basi")
+        print(f"    yang TERUKUR saja  : net tertimbang {onlyu:+8.1f} bps | "
+              f"{len(pos_u)}/{len(lab)} maker positif  <- flip selesai + MTM < {STALE_MTM_S // 60} menit;"
+              f" sisanya TIDAK DIUKUR, bukan nol")
+        if abs(allm - onlyu) > 100:
+            print(f"     ^^ selisih {allm - onlyu:+,.0f} bps antara 'yang dipakai' dan 'yang diukur': "
+                  f"penilaian posisi yang hilang dari sorotan bukan hasil, itu asumsi.")
         print(f"\n  {'maker':44} {'n':>4} {'selesai':>7} {'gross':>9} {'NET':>9} {'NET(selesai)':>12} "
               f"{'hit%':>6} kolam / tag hari ini")
         for s in lab[:20]:
