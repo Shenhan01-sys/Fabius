@@ -60,9 +60,12 @@ kalibrasi veto — apakah veto kami memprediksi hasil buruk. Statusnya masih ter
 Perintah yang sudah ada jalurnya dan bisa dijalankan dari clone:
 
 ```
-python -X utf8 tools/judge.py            # adapter penilai (lihat --help untuk mode)
 python -X utf8 tools/direction.py        # keputusan akhir: gerbang menentukan, model hanya mengurangi
 ```
+
+`tools/judge.py` **bukan CLI** — tidak ada `__main__`, tidak ada `argparse`, tidak ada `print`:
+ia modul yang dipanggil `direction.py` lewat satu fungsi (`ask_jev(state, pertanyaan)`), jadi
+menjalankan penilai berarti menjalankan `direction.py`.
 
 Yang masih belum ditulis: fixture kontrol negatif dan laporan akurasi veto (`tools/judge_audit.py`).
 Bentuk uji yang diizinkan: (a) state nyata vs state kosong → veto harus **berbeda**; (b) tempel

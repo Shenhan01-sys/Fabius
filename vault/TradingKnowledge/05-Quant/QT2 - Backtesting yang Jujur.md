@@ -41,7 +41,8 @@ Empat dosa yang harus dinyatakan eksplisit di tiap laporan:
 
 Walk-forward: deret dibagi segmen waktu, `NEED_BARS=2400` untuk 5 fold (§A); fold terbaik dibuang
 dan sisanya harus tetap positif. Alasannya terdokumentasi: satu segmen bagus bisa menyamar sebagai
-aturan bagus (BNB +14,9 bps di horizon 24 jam mati tepat di drop-best-fold — §F).
+aturan bagus (BNB +14,9 bps di horizon 24 jam mati tepat di drop-best-fold — baris 74 di
+[[06-Results/04 - Negative Results]]).
 
 ## Cara pakai yang diklaim
 

@@ -41,7 +41,7 @@ anggota, atau invalidasi; tanpa tiga hal itu "smart money" adalah merek, bukan m
 
 | kebutuhan | status Fabius | bukti / batas |
 |---|---|---|
-| aliran dompet berlabel, point-in-time | `ADA` | §B: 100 transaksi/panggilan, jendela lihat 8–13 menit; ekor `origin/master` 50.285 baris · 21.907 tx · 452 maker · 1.590 token · rentang 34,33 jam; **riwayat tidak bisa ditarik** (paging diabaikan) |
+| aliran dompet berlabel, point-in-time | `ADA` | §B: 100 transaksi/panggilan, jendela lihat 8–13 menit; run `94aead6` **18:21:16Z**: 50.285 baris · 21.907 tx · 452 maker · 1.590 token · rentang 34,33 jam (ekor terbaru lebih besar — §B menyimpan keduanya, dan keduanya basi dalam menit); **riwayat tidak bisa ditarik** (paging diabaikan) |
 | kontrol "dompet biasa" dari sumber yang sama | `TIDAK-ADA` | **0 dari 607** transaksi pertama tidak bertag (0,0 %) — populasinya memang didefinisikan sebagai "yang sudah dilabeli" (§B) |
 | harga forward untuk menilai hasil | `ADA` | Aster 9.599 bar ≈ 400 hari; baris `px` kami sendiri (§A/§B) |
 | skor maker yang bisa dipercaya | `TIDAK-ADA` | `tools/maker_ledger.py` ada, angkanya diblokir §H |

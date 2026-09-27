@@ -27,8 +27,10 @@ div_bull     : dua pivot-up pada c dengan macd lebih rendah  # -> masalah pivot 
 ```
 
 EMA bergantung pada seed awal, jadi nilai MACD pada bar ke-`i` berubah sedikit tergantung berapa
-banyak bar historis yang dibaca lebih dulu; pada deret pendek (1.224 bar, kasus MARSCOIN di
-[[Fakta Terukur]] §F) efeknya tidak bisa dianggap nol. Konvensi `hist = macd − signal` dan
+banyak bar historis yang dibaca lebih dulu; pada deret pendek (MARSCOIN 1.224 bar pada jendela
+25 Sep, tabel siklus di [[01-Agent/01 - Asset Classes and Seats]]; dibaca ulang 28 Sep lewat
+`python -X utf8 tools/bars.py MARSCOINUSDT --days 60` = **1.297 bar / 54,0 hari**) efeknya tidak
+bisa dianggap nol. Konvensi `hist = macd − signal` dan
 `hist = 2·(macd − signal)` dipakai bergantian antar-platform: angka berbeda, kesimpulan orang sama.
 
 ## Cara pakai yang diklaim

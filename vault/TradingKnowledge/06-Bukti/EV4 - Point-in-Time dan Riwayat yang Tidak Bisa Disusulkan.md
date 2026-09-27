@@ -39,7 +39,7 @@ Cara mesin memakai lapisan ini: setiap field `## Butuh data` di catatan `03-Siny
 | aliran ke depan | `ADA-TAPI` | point-in-time via `.github/workflows/`; tapi populasinya = pilihan pelabelan GMGN (0 dari 607 tx pertama bertag — §B) |
 | L2, tick, funding historis, unlock/vesting, MVRV/SOPR/NUPL, exchange reserve | `TIDAK-ADA` | daftar tertutup di [[Fakta Terukur]] §C — keluarga V3/V4, U2/U3, O1/O2/O7 berhenti di T1 sampai ada rekaman |
 | riwayat 90 hari whale untuk uji horison | `ADA-TAPI` | kelas retro (Dune): boleh jadi statistik, tidak jadi saksi waktu ([[Concepts/Point-in-Time vs Retro-updatable]]) |
-| jsonl lokal sebagai keadaan sistem | `ADA-TAPI` | `git fetch` dulu — terukur lokal pernah 169 commit tertinggal ([[Fakta Terukur]] §G; [[Concepts/Stale Local Copy]]) |
+| jsonl lokal sebagai keadaan sistem | `ADA-TAPI` | `git fetch` dulu — terukur lokal pernah 169 commit tertinggal, lalu 188 pada pembacaan berikutnya (§G menyimpan yang terakhir; riwayat angkanya ada di `09-Inbox/Session-2026-09-28`) |
 
 ## Uji di Fabius
 

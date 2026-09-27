@@ -10,7 +10,9 @@ tags: [tk, tk-setup, "ST6"]
 [[FD4 - Ongkos Perdagangan]] · [[FD6 - Ukuran Posisi]] · [[FD7 - Invalidation Stop dan Time-Stop]] · [[PL2 - Menyaring Universe]]
 **Sumber:** bukan dari `Plan.txt` — pipeline yang **sudah ada di repo ini**: perekam ⑦
 ([[03-Data/D2 - Wallet Flow]]) → `tools/screen_universe.py` → `tools/security_gate.py` → `tools/direction.py`
-→ `tools/flow_signal.py` / `tools/whale_cohorts.py` → `tools/ledger.py`
+→ `tools/ledger.py`   ·   *(`tools/flow_signal.py` dan `tools/whale_cohorts.py` berdiri sendiri:
+mereka membaca ⑦ tapi **tidak diimpor** satu pun alat keputusan di rantai di atas — itu persis
+lubang yang dicatat [[GAP3 - Yang Punya Data Tapi Belum Diuji]] baris 1)*
 
 **Ringkas:** satu-satunya setup di folder ini yang anggotanya benar-benar kita rekam: arah dari deret harga
 sendiri, aliran dompet per-kolam (⑦), filter keamanan/konsentrasi, kapasitas keluar, dan ongkos terukur

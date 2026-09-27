@@ -93,9 +93,11 @@ yang sudah diuji, jadi tidak ada `T3` · `T0` untuk kalimat "sudah terpasang".
 
 ## Boleh dibaca, dilarang dibaca
 
-- **Boleh:** "empat sumber tanpa API key memberi kami deret 400 hari + funding/OI live + aliran dompet
-  point-in-time; Dune memberi sejarah dengan lag ±1 jam; CEX besar mati atau terpotong tergantung
-  jaringan; belum ada pustaka quant umum yang kami verifikasi di mesin ini."
+- **Boleh:** "empat jalur **tanpa API key** (Aster `klines` + `premiumIndex`/`openInterest`,
+  Hyperliquid `candleSnapshot` + `metaAndAssetCtxs`) memberi kami deret 400 hari dan funding/OI
+  hidup; **aliran dompet point-in-time butuh kunci GMGN** dan hanya menyimpan jendela 8–13 menit;
+  Dune memberi sejarah dengan lag ±1 jam; CEX besar mati atau terpotong tergantung jaringan; belum
+  ada pustaka quant umum yang kami verifikasi di mesin ini."
 - **Dilarang:** "stack data kami lengkap" · "CCXT/vectorbt dipakai Fabius" · "tinggal beli Glassnode"
   · mengutip §G/§H sebagai hasil (blok itu angka yang basi atau angka alat yang rusak).
 

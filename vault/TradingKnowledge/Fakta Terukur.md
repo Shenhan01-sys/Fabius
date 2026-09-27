@@ -149,8 +149,11 @@ token boleh kena beberapa veto sekaligus. Jadi angka antar-alasan **tidak bisa d
 sama lain**; yang sebanding hanya dua kohort teratas (lolos vs ditolak), dan itu pun mean-nya
 digerakkan ekor (`best_bps` **+213.686,5** untuk satu token). Report itu sendiri mencetak batasnya:
 "bukan trade yang bisa dieksekusi · tanpa slippage nyata · tanpa ukuran posisi · bukan prediksi
-return" — dan `constants` di dalamnya masih `RT_COST_BPS = 20.0` (P10), jadi angka itu bukan
-"setelah ongkos kita".
+return" — dan `constants` di dalamnya masih `RT_COST_BPS = 20.0` dengan `GATE_GROSS_BPS = 40.0`
+(gross harus di atas 2× ongkos warisan itu) — jadi angka-angkanya bukan "setelah ongkos kita":
+dengan 59 bps terukur, ambang gross yang sepadan adalah **118 bps**, dan pada ambang itu hampir
+tidak ada kandidat yang lolos (§F baris aturan arah: gross maksimum yang pernah kami lihat
++4,0 bps).
 
 ## G. Keadaan hidup saat halaman ini ditulis (28 Sep 2026)
 ```

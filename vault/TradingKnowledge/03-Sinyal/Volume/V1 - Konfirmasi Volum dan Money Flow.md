@@ -45,7 +45,7 @@ mengujinya.
 | kebutuhan | status Fabius | bukti / batas |
 |---|---|---|
 | volum 24 jam per kandidat (satu snapshot) | `ADA` | `volume_24h` direkam `universe/record_bsc_universe.py`; ambang `MIN_VOL_OVER_LIQ` ≥ 0,10 — [[Fakta Terukur]] §E |
-| volum per bar 1 jam untuk deret panjang | `ADA-TAPI` | kolom `v` ikut di-cache `tools/bars.py` (Aster 9.599 bar — §A) tapi **tidak dipakai** `tools/direction.py`/`tools/backtest.py`: `feats()` hanya menerima closes/highs/lows |
+| volum per bar 1 jam untuk deret panjang | `ADA-TAPI` | kolom `v` ikut di-cache `tools/bars.py` (Aster 9.599 bar — §A) tapi **tidak dipakai** `tools/direction.py`/`tools/backtest.py`: `feats(closes, highs, lows, opens=None)` tidak pernah menerima volum |
 | jumlah transaksi per bar (proxy perhatian) | `ADA-TAPI` | kolom `n` ikut di-cache; belum pernah dibaca satu pun alat |
 | sisi agresor (siapa yang memaksa harga) | `TIDAK-ADA` | lihat [[V3 - CVD Delta dan Footprint]] · [[Fakta Terukur]] §C |
 | volum bersih dari wash trading | `TIDAK-ADA` | tidak ada jalur pemisahan; yang ada cuma **proxy** |

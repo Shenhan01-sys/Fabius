@@ -82,7 +82,8 @@ bukan jalur stop).
 ## Tingkat bukti
 
 `T1` untuk taksonomi stop (kerangka standar) · `T3` untuk "kedua prediksi yang jatuh tempo keluar
-lewat time-stop, dengan hasil berlawanan 148 bps" — terukur dari rekaman sendiri (§F) · `T0` untuk
+lewat time-stop, dengan hasil berlawanan 148 bps" — angka 148 itu aritmetika dari dua angka §F
+(`+1,5` dan `−146,3`), bukan pengukuran ketiga · `T0` untuk
 "stop kami membatasi kerugian" — tidak ada pemicu yang menegakkannya di kode mana pun.
 
 ## Boleh dibaca, dilarang dibaca

@@ -12,7 +12,8 @@ hanya satu hal, dan itu bagian terpenting: `tools/direction.py` sudah menghitung
 **Ringkas:** ATR bukan sinyal arah; ia satuan. Fungsinya mengubah "0,5 dollar" dan "0,5 % dari
 normal hari ini" jadi kalimat yang bisa dibandingkan antar-aset — dan untuk Fabius itu bukan
 kemewahan: kandidat kami bisa berupa token yang baru berumur satu jam, dengan harga beberapa orden
-di bawah BNB (mark 778,45 vs entri MARSCOIN 0,11605 — [[Fakta Terukur]] §A/§F). Catatan ini juga
+di bawah BNB (mark 778,45 dari §A vs entri MARSCOIN 0,11605 dari
+`06-Results/04 - Negative Results` §4b). Catatan ini juga
 menandai tiga ketidakcocokan nyata di kode kami sendiri: ATR kami bukan Wilder, ia dihitung di bawah
 24 bar tanpa peringatan eksplisit, dan jarak stop belum pernah bertemu rumus ukuran posisi.
 

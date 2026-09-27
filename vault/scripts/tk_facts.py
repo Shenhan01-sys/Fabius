@@ -39,6 +39,11 @@ PRODUK = re.compile(r"(?i)\b(fabius|kami|perekam|rekaman|universe|wallet-flow|du
 # mengaku terukur, tanpa memandang besarannya.
 UKUR = re.compile(r"(?i)\b(terukur|diukur|terverifikasi|dibaca ulang|sudah dihitung|sudah diuji|"
                   r"dijalankan|dicetak)\b")
+# Angka hanya dihitung sebagai klaim kalau ia berdiri di depan/depan satuan ukur. Tanpa ini,
+# "§05", "run 25 Sep", "p 1e-9", "n=2" dan penomoran bagian semua dilaporkan sebagai angka
+# produk - dan laporan yang 90 % noise tidak dibaca orang, persis seperti gerbang yang diam.
+SATUAN = re.compile(r"(?i)\d[\d.,]*\s*(bps|baris|bar\b|tx\b|transaksi|maker|token|commit|kredit|"
+                    r"persen|%)|\bn\s*[=≥><]+\s*\d|[\d.,]+\s*(hari|jam|menit|detik)\b")
 # Angka harus berdiri sendiri: `x402` (nama protokol) dan `EIP-712` bukan klaim jumlah, tapi `\d`
 # biasa akan mengambil "402"-nya dan melaporkan hantu.
 NUM = re.compile(r"(?<![A-Za-z0-9_])\d[\d.,]*\d|(?<![A-Za-z0-9_])\d(?![A-Za-z0-9_])")
@@ -102,7 +107,7 @@ def main():
         hits = []
         lines = claim_lines(io.open(p, encoding="utf-8").read())
         for i, line in enumerate(lines, 1):
-            produk, klaim = bool(PRODUK.search(line)), bool(UKUR.search(line))
+            produk, klaim = bool(PRODUK.search(line)), bool(UKUR.search(line) and SATUAN.search(line))
             if not (produk or klaim):
                 continue
             probe = HEX.sub("", line)

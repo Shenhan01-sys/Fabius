@@ -84,7 +84,8 @@ pada run yang sama ([[06-Results/02 - Thresholds]]).
   **sistematis terlalu kecil** (§E) — bentuknya diwarisi supaya sebanding dengan kode rujukan, dan
   kelemahannya ditulis, bukan dipoles.
 - **Fold terbaik = topeng.** Drop-best-folding ada karena satu segmen baik bisa menyamar sebagai
-  aturan baik; itu terukur di sini (BNB +14,9 bps → −8,7 setelah fold terbaik dibuang, §F).
+  aturan baik; itu terukur di sini (BNB +14,9 bps → −8,7 setelah fold terbaik dibuang — baris 74 di
+  [[06-Results/04 - Negative Results]]).
 - **Zona abu-abu bukan kegagalan.** `|acf|` 0,05–0,10 artinya belum tahu, dan membacanya sebagai
   "hampir lolos" adalah pintu masuk overfitting yang paling sopan.
 

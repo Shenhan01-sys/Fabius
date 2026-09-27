@@ -35,7 +35,7 @@ Cara mesin memakai lapisan ini: `## Uji di Fabius` di catatan mana pun wajib men
 |---|---|---|
 | deret harga forward unduhan sendiri | `ADA` | Aster 9.599 bar ≈ 400 hari; Hyperliquid 5.001 bar kontrol silang — [[Fakta Terukur]] §A |
 | koreksi survivorship yang sejati | `TIDAK-ADA` | catatan token yang mati di tengah jalan tidak ada dan tidak bisa dibeli ([[06-Results/06 - Pre-registration Horizon]]) |
-| riwayat panel sebelum berlabel | `ADA-TAPI` | rekaman ⑦ mulai 26 Sep 08:01Z — uji bersih (Uji A) baru berverdik ±26 Okt |
+| riwayat panel sebelum berlabel | `ADA-TAPI` | rekaman ⑦ dipasang 26 Sep 08:01Z (aritmetika §B) — Uji A baru bisa berverdik setelah **30 hari data prospektif** terkumpul; tanggalnya konsekuensi, bukan angka produk |
 | funding historis / L2 / tick | `TIDAK-ADA` | daftar tertutup di [[Fakta Terukur]] §C — metode yang bergantung padanya tidak bisa diuji surut sama sekali |
 
 ## Uji di Fabius

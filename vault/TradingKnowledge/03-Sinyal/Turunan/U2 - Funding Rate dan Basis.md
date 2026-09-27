@@ -33,8 +33,9 @@ annualisasi_kasar ≈ funding_per_interval × interval_per_tahun   # aritmetika,
 Klaim komunitas: funding positif besar = kerumunan long (bahan squeeze ke atas), funding negatif
 ekstrem = kerumunan short (bahan squeeze ke bawah); basis tinggi = harga "terlalu mahal terhadap
 spot"; carry trade = "edge bebas risiko". Yang terakhir itu perlu dikoreksi dengan angka kami
-sendiri: pada biaya round-trip **59 bps** (§D), dua putaran memakan 59 bps, sementara funding
-0,0100 %/4 jam (§A, ETH pada tanggal baca) = 10 bps per kaki 4 jam. "Bebas risiko" dalam arti
+sendiri: satu putaran penuh (masuk + keluar) di venue kami memakan **59 bps** (§D), sementara
+funding 0,0100 %/4 jam (§A, ETH pada tanggal baca) = **1 bps per kaki**, sekitar 6 bps per hari.
+Carry sekecil itu tidak membayar ongkos masuk-keluar: delta-netral berarti
 "netral arah", bukan "netral terhadap ongkos dan eksekusi".
 
 ## Butuh data
