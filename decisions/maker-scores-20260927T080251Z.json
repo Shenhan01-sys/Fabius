@@ -1,0 +1,6390 @@
+{
+ "as_of_utc": "2026-09-27T08:02:51Z",
+ "baris_lain_dilewati": 6704,
+ "dibuat_utc": "2026-09-27T19:15:41Z",
+ "jual_yatim": 902,
+ "kolam": 2,
+ "kolam_terbanyak_simbol": [
+  [
+   "BPAY",
+   181
+  ],
+  [
+   "FLAPCAT",
+   2
+  ]
+ ],
+ "lot_ditanda_taup": 3818,
+ "maker_bertanda": 343,
+ "maker_layak_label": 166,
+ "maker_net_positif_hanya_selesai": 140,
+ "maker_net_positif_semua": 128,
+ "min_trades_untuk_label": 8,
+ "net_timbang_bps_selesai": 19320.6,
+ "net_timbang_bps_semua": 7685.2,
+ "rows": [
+  {
+   "gross_mean_bps": 4871.9,
+   "layak_label": true,
+   "maker": "0xa83b73f5644cde337b61da79589f10ea15548811",
+   "net_hit_pct": 65.3,
+   "net_mean_bps": 4812.9,
+   "net_mean_selesai_bps": 7622.7,
+   "net_sd_bps": 16924.0,
+   "pool": "BPAY",
+   "tag_hari_ini": [
+    "app_smart_money",
+    "axiom",
+    "kol"
+   ],
+   "trades": 225,
+   "trades_mtm": 87,
+   "trades_selesai": 138,
+   "usd": 43807.0
+  },
+  {
+   "gross_mean_bps": 16903.0,
+   "layak_label": true,
+   "maker": "0xee190b5beb2703a8087a02fab90bc9ce17b4ca76",
+   "net_hit_pct": 85.4,
+   "net_mean_bps": 16844.0,
+   "net_mean_selesai_bps": 18313.6,
+   "net_sd_bps": 18139.0,
+   "pool": "BPAY",
+   "tag_hari_ini": [
+    "fomo",
+    "gmgn",
+    "smart_degen"
+   ],
+   "trades": 171,
+   "trades_mtm": 12,
+   "trades_selesai": 159,
+   "usd": 13761.0
+  },
+  {
+   "gross_mean_bps": 3019.4,
+   "layak_label": true,
+   "maker": "0x1ad30ecfb4b4916ea4df960d03721313586af8c6",
+   "net_hit_pct": 46.3,
+   "net_mean_bps": 2960.4,
+   "net_mean_selesai_bps": 14102.7,
+   "net_sd_bps": 14949.4,
+   "pool": "BPAY",
+   "tag_hari_ini": [
+    "gmgn",
+    "gmgn_go",
+    "smart_degen"
+   ],
+   "trades": 162,
+   "trades_mtm": 108,
+   "trades_selesai": 54,
+   "usd": 9365.0
+  },
+  {
+   "gross_mean_bps": 8751.1,
+   "layak_label": true,
+   "maker": "0x3472ccf6209925204b9cf352171ee150904fda7e",
+   "net_hit_pct": 54.8,
+   "net_mean_bps": 8692.1,
+   "net_mean_selesai_bps": 18257.7,
+   "net_sd_bps": 27773.1,
+   "pool": "BPAY",
+   "tag_hari_ini": [
+    "gmgn_go",
+    "kol",
+    "top_followed"
+   ],
+   "trades": 155,
+   "trades_mtm": 85,
+   "trades_selesai": 70,
+   "usd": 18153.0
+  },
+  {
+   "gross_mean_bps": -143.9,
+   "layak_label": true,
+   "maker": "0x0c1eadcaa8e668952514c61ad0a88350dacf43cd",
+   "net_hit_pct": 17.4,
+   "net_mean_bps": -202.9,
+   "net_mean_selesai_bps": 11796.5,
+   "net_sd_bps": 11592.4,
+   "pool": "BPAY",
+   "tag_hari_ini": [
+    "gmgn",
+    "gmgn_go",
+    "kol"
+   ],
+   "trades": 138,
+   "trades_mtm": 122,
+   "trades_selesai": 16,
+   "usd": 2876.0
+  },
+  {
+   "gross_mean_bps": 58090.9,
+   "layak_label": true,
+   "maker": "0xaf249a32cae6262e0ea5af6f5b302c835c029d08",
+   "net_hit_pct": 96.4,
+   "net_mean_bps": 58031.9,
+   "net_mean_selesai_bps": 53619.4,
+   "net_sd_bps": 90602.4,
+   "pool": "BPAY",
+   "tag_hari_ini": [
+    "gmgn",
+    "smart_degen"
+   ],
+   "trades": 137,
+   "trades_mtm": 6,
+   "trades_selesai": 131,
+   "usd": 1238.0
+  },
+  {
+   "gross_mean_bps": 14675.6,
+   "layak_label": true,
+   "maker": "0xb959d86f790350a79c9e1fed706aeafc73fc0ad7",
+   "net_hit_pct": 57.9,
+   "net_mean_bps": 14616.6,
+   "net_mean_selesai_bps": 31894.1,
+   "net_sd_bps": 33791.8,
+   "pool": "BPAY",
+   "tag_hari_ini": [
+    "arbitrager",
+    "gmgn",
+    "gmgn_go"
+   ],
+   "trades": 121,
+   "trades_mtm": 61,
+   "trades_selesai": 60,
+   "usd": 3974.0
+  },
+  {
+   "gross_mean_bps": 3863.0,
+   "layak_label": true,
+   "maker": "0xe3577dd395e5adf2b0ffac3b2f0efa47c6bb77c3",
+   "net_hit_pct": 69.9,
+   "net_mean_bps": 3804.0,
+   "net_mean_selesai_bps": 8727.0,
+   "net_sd_bps": 7275.7,
+   "pool": "BPAY",
+   "tag_hari_ini": [
+    "gmgn",
+    "gmgn_go",
+    "kol"
+   ],
+   "trades": 113,
+   "trades_mtm": 56,
+   "trades_selesai": 57,
+   "usd": 8189.0
+  },
+  {
+   "gross_mean_bps": 3922.5,
+   "layak_label": true,
+   "maker": "0xef395d6a8ef0fa4f2593ee3e10b9fd4df1fa9c2e",
+   "net_hit_pct": 56.2,
+   "net_mean_bps": 3863.5,
+   "net_mean_selesai_bps": 10383.7,
+   "net_sd_bps": 10649.6,
+   "pool": "BPAY",
+   "tag_hari_ini": [
+    "fresh_wallet",
+    "gmgn",
+    "gmgn_go"
+   ],
+   "trades": 112,
+   "trades_mtm": 61,
+   "trades_selesai": 51,
+   "usd": 9183.0
+  },
+  {
+   "gross_mean_bps": 11766.4,
+   "layak_label": true,
+   "maker": "0xf7a934528d38e2f2865a7cd30c335c6d115928b8",
+   "net_hit_pct": 55.8,
+   "net_mean_bps": 11707.4,
+   "net_mean_selesai_bps": 15757.8,
+   "net_sd_bps": 38476.2,
+   "pool": "BPAY",
+   "tag_hari_ini": [
+    "gmgn",
+    "gmgn_go",
+    "kol"
+   ],
+   "trades": 104,
+   "trades_mtm": 64,
+   "trades_selesai": 40,
+   "usd": 6450.0
+  },
+  {
+   "gross_mean_bps": 1501.6,
+   "layak_label": true,
+   "maker": "0x0f93496909e0f93424a9db8cfa141b1094c9abb3",
+   "net_hit_pct": 43.7,
+   "net_mean_bps": 1442.6,
+   "net_mean_selesai_bps": 5546.1,
+   "net_sd_bps": 3444.1,
+   "pool": "BPAY",
+   "tag_hari_ini": [
+    "gmgn",
+    "gmgn_go",
+    "launchpad_smart",
+    "smart_degen"
+   ],
+   "trades": 103,
+   "trades_mtm": 85,
+   "trades_selesai": 18,
+   "usd": 45435.0
+  },
+  {
+   "gross_mean_bps": 4487.9,
+   "layak_label": true,
+   "maker": "0xbf004bff64725914ee36d03b87d6965b0ced4903",
+   "net_hit_pct": 68.3,
+   "net_mean_bps": 4428.9,
+   "net_mean_selesai_bps": 8728.7,
+   "net_sd_bps": 8740.1,
+   "pool": "BPAY",
+   "tag_hari_ini": [
+    "gmgn_go",
+    "kol",
+    "top_followed",
+    "top_renamed"
+   ],
+   "trades": 101,
+   "trades_mtm": 44,
+   "trades_selesai": 57,
+   "usd": 27591.0
+  },
+  {
+   "gross_mean_bps": 6282.4,
+   "layak_label": true,
+   "maker": "0x1b6e6a3a63d3d6d48bb5708d2bd70327029bed8d",
+   "net_hit_pct": 67.0,
+   "net_mean_bps": 6223.4,
+   "net_mean_selesai_bps": 11765.0,
+   "net_sd_bps": 14466.6,
+   "pool": "BPAY",
+   "tag_hari_ini": [
+    "gmgn",
+    "smart_degen"
+   ],
+   "trades": 94,
+   "trades_mtm": 43,
+   "trades_selesai": 51,
+   "usd": 3283.0
+  },
+  {
+   "gross_mean_bps": -1785.7,
+   "layak_label": true,
+   "maker": "0xa564cb6cdf3c163ddae3f23593b78462cc36f71c",
+   "net_hit_pct": 13.0,
+   "net_mean_bps": -1844.7,
+   "net_mean_selesai_bps": null,
+   "net_sd_bps": 29145.0,
+   "pool": "BPAY",
+   "tag_hari_ini": [
+    "smart_degen"
+   ],
+   "trades": 92,
+   "trades_mtm": 92,
+   "trades_selesai": 0,
+   "usd": 9950.0
+  },
+  {
+   "gross_mean_bps": 10596.6,
+   "layak_label": true,
+   "maker": "0xe7e3773235a7ee4e3b3c1f51a4b516abe888bee6",
+   "net_hit_pct": 46.2,
+   "net_mean_bps": 10537.6,
+   "net_mean_selesai_bps": 17871.4,
+   "net_sd_bps": 36688.7,
+   "pool": "BPAY",
+   "tag_hari_ini": [
+    "arbitrager",
+    "fomo",
+    "gmgn_go"
+   ],
+   "trades": 91,
+   "trades_mtm": 66,
+   "trades_selesai": 25,
+   "usd": 14732.0
+  },
+  {
+   "gross_mean_bps": 2959.8,
+   "layak_label": true,
+   "maker": "0x1ef832120aa68c650e84df4769c5d9616d914014",
+   "net_hit_pct": 71.6,
+   "net_mean_bps": 2900.8,
+   "net_mean_selesai_bps": 4813.3,
+   "net_sd_bps": 3967.5,
+   "pool": "BPAY",
+   "tag_hari_ini": [
+    "gmgn",
+    "launchpad_smart",
+    "smart_degen"
+   ],
+   "trades": 88,
+   "trades_mtm": 38,
+   "trades_selesai": 50,
+   "usd": 14654.0
+  },
+  {
+   "gross_mean_bps": -396.8,
+   "layak_label": true,
+   "maker": "0xcf4dbd0e979100f0ba9e2080ad9c9cc88dd49b3c",
+   "net_hit_pct": 40.5,
+   "net_mean_bps": -455.8,
+   "net_mean_selesai_bps": null,
+   "net_sd_bps": 6039.3,
+   "pool": "BPAY",
+   "tag_hari_ini": [
+    "gmgn_go",
+    "smart_degen"
+   ],
+   "trades": 84,
+   "trades_mtm": 84,
+   "trades_selesai": 0,
+   "usd": 4233.0
+  },
+  {
+   "gross_mean_bps": 7213.3,
+   "layak_label": true,
+   "maker": "0xf98ab9fe84bf564b3de827fc9e3bacddc3122679",
+   "net_hit_pct": 56.6,
+   "net_mean_bps": 7154.3,
+   "net_mean_selesai_bps": 3736.5,
+   "net_sd_bps": 36082.3,
+   "pool": "\u5e01\u5b89\u8774\u8776",
+   "tag_hari_ini": [
+    "fomo",
+    "gmgn",
+    "smart_degen"
+   ],
+   "trades": 76,
+   "trades_mtm": 47,
+   "trades_selesai": 29,
+   "usd": 2991.0
+  },
+  {
+   "gross_mean_bps": 30472.5,
+   "layak_label": true,
+   "maker": "0x20ff275ee89cbf0ece757d1691325b653dd4e756",
+   "net_hit_pct": 64.4,
+   "net_mean_bps": 30413.5,
+   "net_mean_selesai_bps": 57404.5,
+   "net_sd_bps": 56990.0,
+   "pool": "BPAY",
+   "tag_hari_ini": [
+    "fomo",
+    "gmgn",
+    "gmgn_go"
+   ],
+   "trades": 73,
+   "trades_mtm": 34,
+   "trades_selesai": 39,
+   "usd": 6486.0
+  },
+  {
+   "gross_mean_bps": 10780.4,
+   "layak_label": true,
+   "maker": "0xfb4e4fa492217d8401aa9e893c78707b61923953",
+   "net_hit_pct": 70.4,
+   "net_mean_bps": 10721.4,
+   "net_mean_selesai_bps": 17601.5,
+   "net_sd_bps": 20863.2,
+   "pool": "BPAY",
+   "tag_hari_ini": [
+    "arbitrager",
+    "gmgn_go",
+    "kol"
+   ],
+   "trades": 71,
+   "trades_mtm": 26,
+   "trades_selesai": 45,
+   "usd": 5551.0
+  },
+  {
+   "gross_mean_bps": 1348.7,
+   "layak_label": true,
+   "maker": "0x6e960ba6e0fb3d0da9f6be603a777b5dcca93d63",
+   "net_hit_pct": 53.8,
+   "net_mean_bps": 1289.7,
+   "net_mean_selesai_bps": 8300.5,
+   "net_sd_bps": 7116.7,
+   "pool": "BPAY",
+   "tag_hari_ini": [
+    "smart_degen"
+   ],
+   "trades": 65,
+   "trades_mtm": 46,
+   "trades_selesai": 19,
+   "usd": 5165.0
+  },
+  {
+   "gross_mean_bps": 4480.5,
+   "layak_label": true,
+   "maker": "0x199776730d88cfa1aa54e7f41df386b80ac150c5",
+   "net_hit_pct": 63.5,
+   "net_mean_bps": 4421.5,
+   "net_mean_selesai_bps": 14232.4,
+   "net_sd_bps": 11929.5,
+   "pool": "BPAY",
+   "tag_hari_ini": [
+    "gmgn",
+    "gmgn_go",
+    "kol"
+   ],
+   "trades": 63,
+   "trades_mtm": 46,
+   "trades_selesai": 17,
+   "usd": 6489.0
+  },
+  {
+   "gross_mean_bps": 7164.2,
+   "layak_label": true,
+   "maker": "0xc84248de43b69297e56366a26c812146628aca16",
+   "net_hit_pct": 60.7,
+   "net_mean_bps": 7105.2,
+   "net_mean_selesai_bps": 12856.3,
+   "net_sd_bps": 15250.2,
+   "pool": "BPAY",
+   "tag_hari_ini": [
+    "axiom",
+    "gmgn",
+    "smart_degen"
+   ],
+   "trades": 61,
+   "trades_mtm": 20,
+   "trades_selesai": 41,
+   "usd": 10846.0
+  },
+  {
+   "gross_mean_bps": 3233.6,
+   "layak_label": true,
+   "maker": "0xec81b38cb081b86f789d8f70435ede7c330492a9",
+   "net_hit_pct": 48.3,
+   "net_mean_bps": 3174.6,
+   "net_mean_selesai_bps": 11021.6,
+   "net_sd_bps": 7919.2,
+   "pool": "BPAY",
+   "tag_hari_ini": [
+    "gmgn",
+    "gmgn_go",
+    "smart_degen"
+   ],
+   "trades": 60,
+   "trades_mtm": 37,
+   "trades_selesai": 23,
+   "usd": 7025.0
+  },
+  {
+   "gross_mean_bps": 1202.9,
+   "layak_label": true,
+   "maker": "0xaa8450f755a8a9bc8b2fb111a11fe2dbc7c59eeb",
+   "net_hit_pct": 45.0,
+   "net_mean_bps": 1143.9,
+   "net_mean_selesai_bps": 4960.6,
+   "net_sd_bps": 2512.0,
+   "pool": "BPAY",
+   "tag_hari_ini": [
+    "gmgn",
+    "gmgn_go",
+    "launchpad_smart"
+   ],
+   "trades": 60,
+   "trades_mtm": 54,
+   "trades_selesai": 6,
+   "usd": 7742.0
+  },
+  {
+   "gross_mean_bps": 4254.5,
+   "layak_label": true,
+   "maker": "0x3b3e1c2e550c096f71433c274eacbaa5270fcab5",
+   "net_hit_pct": 43.6,
+   "net_mean_bps": 4195.5,
+   "net_mean_selesai_bps": 14594.3,
+   "net_sd_bps": 13660.1,
+   "pool": "BPAY",
+   "tag_hari_ini": [
+    "fomo",
+    "gmgn",
+    "gmgn_go"
+   ],
+   "trades": 55,
+   "trades_mtm": 31,
+   "trades_selesai": 24,
+   "usd": 5531.0
+  },
+  {
+   "gross_mean_bps": 20027.5,
+   "layak_label": true,
+   "maker": "0xc608a550673dc0a0b858f48310e0a2d2642ddb30",
+   "net_hit_pct": 48.1,
+   "net_mean_bps": 19968.5,
+   "net_mean_selesai_bps": 54973.3,
+   "net_sd_bps": 48858.2,
+   "pool": "BPAY",
+   "tag_hari_ini": [
+    "gmgn",
+    "smart_degen"
+   ],
+   "trades": 54,
+   "trades_mtm": 39,
+   "trades_selesai": 15,
+   "usd": 2428.0
+  },
+  {
+   "gross_mean_bps": 15481.7,
+   "layak_label": true,
+   "maker": "0xaa0217958b4760a7e2e846095d065ee3af8affff",
+   "net_hit_pct": 68.5,
+   "net_mean_bps": 15422.7,
+   "net_mean_selesai_bps": 26967.4,
+   "net_sd_bps": 22025.7,
+   "pool": "BPAY",
+   "tag_hari_ini": [
+    "gmgn",
+    "smart_degen"
+   ],
+   "trades": 54,
+   "trades_mtm": 22,
+   "trades_selesai": 32,
+   "usd": 3850.0
+  },
+  {
+   "gross_mean_bps": 4524.7,
+   "layak_label": true,
+   "maker": "0x7a2363a401b2340c7941dd2eeff0196a5078d2e6",
+   "net_hit_pct": 61.1,
+   "net_mean_bps": 4465.7,
+   "net_mean_selesai_bps": 10841.8,
+   "net_sd_bps": 10717.1,
+   "pool": "BPAY",
+   "tag_hari_ini": [
+    "app_smart_money",
+    "fomo",
+    "kol"
+   ],
+   "trades": 54,
+   "trades_mtm": 26,
+   "trades_selesai": 28,
+   "usd": 15115.0
+  },
+  {
+   "gross_mean_bps": 3581.7,
+   "layak_label": true,
+   "maker": "0xd216cf8ee73da8438a3e57dc63703043cfb6e075",
+   "net_hit_pct": 63.0,
+   "net_mean_bps": 3522.7,
+   "net_mean_selesai_bps": 8048.1,
+   "net_sd_bps": 7862.9,
+   "pool": "BPAY",
+   "tag_hari_ini": [
+    "gmgn_go",
+    "kol",
+    "launchpad_smart"
+   ],
+   "trades": 54,
+   "trades_mtm": 27,
+   "trades_selesai": 27,
+   "usd": 7591.0
+  },
+  {
+   "gross_mean_bps": 18166.8,
+   "layak_label": true,
+   "maker": "0x538eae3017ef7e48af53f7a4d0b1f4d23d68df35",
+   "net_hit_pct": 67.9,
+   "net_mean_bps": 18107.8,
+   "net_mean_selesai_bps": 33054.7,
+   "net_sd_bps": 27204.4,
+   "pool": "BPAY",
+   "tag_hari_ini": [
+    "gmgn",
+    "gmgn_go",
+    "smart_degen"
+   ],
+   "trades": 53,
+   "trades_mtm": 24,
+   "trades_selesai": 29,
+   "usd": 1955.0
+  },
+  {
+   "gross_mean_bps": -2461.3,
+   "layak_label": true,
+   "maker": "0x7470cd82544109104c6513750e6d2d91912ef34f",
+   "net_hit_pct": 34.0,
+   "net_mean_bps": -2520.3,
+   "net_mean_selesai_bps": null,
+   "net_sd_bps": 4945.8,
+   "pool": "BPAY",
+   "tag_hari_ini": [
+    "smart_degen"
+   ],
+   "trades": 53,
+   "trades_mtm": 53,
+   "trades_selesai": 0,
+   "usd": 10739.0
+  },
+  {
+   "gross_mean_bps": 4090.6,
+   "layak_label": true,
+   "maker": "0x40e569e9b5458c89b4910f3ecfade0f650e92a40",
+   "net_hit_pct": 39.2,
+   "net_mean_bps": 4031.6,
+   "net_mean_selesai_bps": 4039.1,
+   "net_sd_bps": 31381.8,
+   "pool": "BPAY",
+   "tag_hari_ini": [
+    "gmgn",
+    "gmgn_go",
+    "kol"
+   ],
+   "trades": 51,
+   "trades_mtm": 40,
+   "trades_selesai": 11,
+   "usd": 4656.0
+  },
+  {
+   "gross_mean_bps": 63000.2,
+   "layak_label": true,
+   "maker": "0xc694bc91de4b6397abfbabc9d1293c4ffc2f2863",
+   "net_hit_pct": 79.6,
+   "net_mean_bps": 62941.2,
+   "net_mean_selesai_bps": 50934.8,
+   "net_sd_bps": 197752.2,
+   "pool": "BPAY",
+   "tag_hari_ini": [
+    "gmgn",
+    "gmgn_go",
+    "launchpad_smart",
+    "smart_degen"
+   ],
+   "trades": 49,
+   "trades_mtm": 15,
+   "trades_selesai": 34,
+   "usd": 2326.0
+  },
+  {
+   "gross_mean_bps": 5451.4,
+   "layak_label": true,
+   "maker": "0xffbd5a03e1e936bfae82c567f8b41e0a95296dcc",
+   "net_hit_pct": 38.8,
+   "net_mean_bps": 5392.4,
+   "net_mean_selesai_bps": 7896.1,
+   "net_sd_bps": 23879.8,
+   "pool": "BPAY",
+   "tag_hari_ini": [
+    "gmgn",
+    "gmgn_go",
+    "kol"
+   ],
+   "trades": 49,
+   "trades_mtm": 41,
+   "trades_selesai": 8,
+   "usd": 10691.0
+  },
+  {
+   "gross_mean_bps": 14552.4,
+   "layak_label": true,
+   "maker": "0xe1e3252b8b2f9bf2a8335389ba8ee62e6ea29407",
+   "net_hit_pct": 68.8,
+   "net_mean_bps": 14493.4,
+   "net_mean_selesai_bps": 27719.9,
+   "net_sd_bps": 24831.1,
+   "pool": "BPAY",
+   "tag_hari_ini": [
+    "gmgn",
+    "gmgn_go",
+    "kol"
+   ],
+   "trades": 48,
+   "trades_mtm": 24,
+   "trades_selesai": 24,
+   "usd": 15941.0
+  },
+  {
+   "gross_mean_bps": 2523.6,
+   "layak_label": true,
+   "maker": "0x47f8797f0dbdc4a75dcb66cedba2e9e2dd62b8b0",
+   "net_hit_pct": 61.7,
+   "net_mean_bps": 2464.6,
+   "net_mean_selesai_bps": 6649.2,
+   "net_sd_bps": 8066.2,
+   "pool": "BPAY",
+   "tag_hari_ini": [
+    "smart_degen"
+   ],
+   "trades": 47,
+   "trades_mtm": 19,
+   "trades_selesai": 28,
+   "usd": 2874.0
+  },
+  {
+   "gross_mean_bps": 1543.8,
+   "layak_label": true,
+   "maker": "0xbca42062068ee20056bae8534d78afc4ddcaefa9",
+   "net_hit_pct": 67.4,
+   "net_mean_bps": 1484.8,
+   "net_mean_selesai_bps": 2942.9,
+   "net_sd_bps": 2560.3,
+   "pool": "BPAY",
+   "tag_hari_ini": [
+    "gmgn",
+    "gmgn_go",
+    "smart_degen"
+   ],
+   "trades": 46,
+   "trades_mtm": 29,
+   "trades_selesai": 17,
+   "usd": 5984.0
+  },
+  {
+   "gross_mean_bps": 4148.6,
+   "layak_label": true,
+   "maker": "0xec5e7609a77226ca4d26f55b5aedf3f1506eba28",
+   "net_hit_pct": 37.8,
+   "net_mean_bps": 4089.6,
+   "net_mean_selesai_bps": 17264.7,
+   "net_sd_bps": 16550.9,
+   "pool": "BPAY",
+   "tag_hari_ini": [
+    "gmgn",
+    "gmgn_go",
+    "kol"
+   ],
+   "trades": 45,
+   "trades_mtm": 35,
+   "trades_selesai": 10,
+   "usd": 3174.0
+  },
+  {
+   "gross_mean_bps": 16490.5,
+   "layak_label": true,
+   "maker": "0xe29dcd492de0af0dd13bff7e3d0a7ee024b5c052",
+   "net_hit_pct": 32.5,
+   "net_mean_bps": 16431.5,
+   "net_mean_selesai_bps": 144706.4,
+   "net_sd_bps": 56958.0,
+   "pool": "BPAY",
+   "tag_hari_ini": [
+    "gmgn",
+    "gmgn_go",
+    "kol"
+   ],
+   "trades": 40,
+   "trades_mtm": 37,
+   "trades_selesai": 3,
+   "usd": 830.0
+  },
+  {
+   "gross_mean_bps": 1044.3,
+   "layak_label": true,
+   "maker": "0x0cbcac020e4b50c38137c7140560161d77e76acd",
+   "net_hit_pct": 32.5,
+   "net_mean_bps": 985.3,
+   "net_mean_selesai_bps": 15207.8,
+   "net_sd_bps": 12017.2,
+   "pool": "BPAY",
+   "tag_hari_ini": [
+    "fomo",
+    "gmgn",
+    "gmgn_go"
+   ],
+   "trades": 40,
+   "trades_mtm": 32,
+   "trades_selesai": 8,
+   "usd": 4988.0
+  },
+  {
+   "gross_mean_bps": 1130.4,
+   "layak_label": true,
+   "maker": "0x9d547e3c7adb04e88e07761b370e85c7f82dd69a",
+   "net_hit_pct": 37.8,
+   "net_mean_bps": 1071.4,
+   "net_mean_selesai_bps": 2645.7,
+   "net_sd_bps": 2820.1,
+   "pool": "BPAY",
+   "tag_hari_ini": [
+    "gmgn",
+    "gmgn_go",
+    "smart_degen"
+   ],
+   "trades": 37,
+   "trades_mtm": 30,
+   "trades_selesai": 7,
+   "usd": 6777.0
+  },
+  {
+   "gross_mean_bps": 10101.7,
+   "layak_label": true,
+   "maker": "0x00bbebb4522ad6bdf2b363872b9b5cc0661acda1",
+   "net_hit_pct": 65.7,
+   "net_mean_bps": 10042.7,
+   "net_mean_selesai_bps": 19827.9,
+   "net_sd_bps": 19831.0,
+   "pool": "BPAY",
+   "tag_hari_ini": [
+    "fomo",
+    "gmgn",
+    "gmgn_go"
+   ],
+   "trades": 35,
+   "trades_mtm": 17,
+   "trades_selesai": 18,
+   "usd": 3872.0
+  },
+  {
+   "gross_mean_bps": 1359.0,
+   "layak_label": true,
+   "maker": "0x7942262a7a5637e6eb0eec9b91b55ec232141f87",
+   "net_hit_pct": 57.1,
+   "net_mean_bps": 1300.0,
+   "net_mean_selesai_bps": 5461.4,
+   "net_sd_bps": 6487.9,
+   "pool": "BPAY",
+   "tag_hari_ini": [
+    "arbitrager",
+    "fomo",
+    "gmgn",
+    "gmgn_go"
+   ],
+   "trades": 35,
+   "trades_mtm": 16,
+   "trades_selesai": 19,
+   "usd": 2828.0
+  },
+  {
+   "gross_mean_bps": 880.6,
+   "layak_label": true,
+   "maker": "0x59495c0497abb3c2a60eb7df89b6ad94df8b6993",
+   "net_hit_pct": 45.7,
+   "net_mean_bps": 821.6,
+   "net_mean_selesai_bps": 3395.2,
+   "net_sd_bps": 11625.6,
+   "pool": "BPAY",
+   "tag_hari_ini": [
+    "gmgn",
+    "gmgn_go",
+    "smart_degen"
+   ],
+   "trades": 35,
+   "trades_mtm": 21,
+   "trades_selesai": 14,
+   "usd": 9639.0
+  },
+  {
+   "gross_mean_bps": 303.1,
+   "layak_label": true,
+   "maker": "0x2ea8b49cab05f15591a9917d71b1dee8d6a180f1",
+   "net_hit_pct": 57.1,
+   "net_mean_bps": 244.1,
+   "net_mean_selesai_bps": 5404.5,
+   "net_sd_bps": 6203.5,
+   "pool": "BPAY",
+   "tag_hari_ini": [
+    "smart_degen"
+   ],
+   "trades": 35,
+   "trades_mtm": 19,
+   "trades_selesai": 16,
+   "usd": 3333.0
+  },
+  {
+   "gross_mean_bps": 23554.1,
+   "layak_label": true,
+   "maker": "0x877af245c61289b24f0c619a4346cdbc68f1aaac",
+   "net_hit_pct": 67.6,
+   "net_mean_bps": 23495.1,
+   "net_mean_selesai_bps": 41697.6,
+   "net_sd_bps": 56915.3,
+   "pool": "BPAY",
+   "tag_hari_ini": [
+    "gmgn_go",
+    "kol",
+    "smart_degen"
+   ],
+   "trades": 34,
+   "trades_mtm": 15,
+   "trades_selesai": 19,
+   "usd": 6331.0
+  },
+  {
+   "gross_mean_bps": 17604.5,
+   "layak_label": true,
+   "maker": "0xc9e4a15b6795a0cf97206218b52e20d78bc13145",
+   "net_hit_pct": 35.3,
+   "net_mean_bps": 17545.5,
+   "net_mean_selesai_bps": 56906.4,
+   "net_sd_bps": 42230.2,
+   "pool": "BPAY",
+   "tag_hari_ini": [
+    "gmgn",
+    "gmgn_go",
+    "kol"
+   ],
+   "trades": 34,
+   "trades_mtm": 22,
+   "trades_selesai": 12,
+   "usd": 1542.0
+  },
+  {
+   "gross_mean_bps": 8301.4,
+   "layak_label": true,
+   "maker": "0x74e1b7b417cdf272dc0eb3336a65cc20d69069e0",
+   "net_hit_pct": 55.9,
+   "net_mean_bps": 8242.4,
+   "net_mean_selesai_bps": 16395.6,
+   "net_sd_bps": 18067.4,
+   "pool": "BPAY",
+   "tag_hari_ini": [
+    "gmgn",
+    "smart_degen"
+   ],
+   "trades": 34,
+   "trades_mtm": 16,
+   "trades_selesai": 18,
+   "usd": 3763.0
+  },
+  {
+   "gross_mean_bps": 11388.6,
+   "layak_label": true,
+   "maker": "0xf8456bca2358a904d95b498f3b3c26ecaffb6553",
+   "net_hit_pct": 30.3,
+   "net_mean_bps": 11329.6,
+   "net_mean_selesai_bps": 104896.0,
+   "net_sd_bps": 39324.7,
+   "pool": "BPAY",
+   "tag_hari_ini": [
+    "gmgn",
+    "gmgn_go",
+    "kol"
+   ],
+   "trades": 33,
+   "trades_mtm": 29,
+   "trades_selesai": 4,
+   "usd": 888.0
+  },
+  {
+   "gross_mean_bps": 5681.6,
+   "layak_label": true,
+   "maker": "0xdb3a65a512dee57cbf4d8c797fcbad290dcde953",
+   "net_hit_pct": 59.4,
+   "net_mean_bps": 5622.6,
+   "net_mean_selesai_bps": 11409.6,
+   "net_sd_bps": 10358.1,
+   "pool": "BPAY",
+   "tag_hari_ini": [
+    "gmgn",
+    "gmgn_go",
+    "kol"
+   ],
+   "trades": 32,
+   "trades_mtm": 13,
+   "trades_selesai": 19,
+   "usd": 1091.0
+  },
+  {
+   "gross_mean_bps": 34981.3,
+   "layak_label": true,
+   "maker": "0xd41feaa24dede516a501862cf1f376defb811772",
+   "net_hit_pct": 58.1,
+   "net_mean_bps": 34922.3,
+   "net_mean_selesai_bps": 65077.2,
+   "net_sd_bps": 63890.0,
+   "pool": "BPAY",
+   "tag_hari_ini": [
+    "kol",
+    "launchpad_smart",
+    "smart_degen"
+   ],
+   "trades": 31,
+   "trades_mtm": 14,
+   "trades_selesai": 17,
+   "usd": 4320.0
+  },
+  {
+   "gross_mean_bps": 7823.9,
+   "layak_label": true,
+   "maker": "0x24ec26db209181ed63c4c92ef8b5aa5fbf16de88",
+   "net_hit_pct": 61.3,
+   "net_mean_bps": 7764.9,
+   "net_mean_selesai_bps": 17717.8,
+   "net_sd_bps": 17111.4,
+   "pool": "BPAY",
+   "tag_hari_ini": [
+    "fomo",
+    "smart_degen"
+   ],
+   "trades": 31,
+   "trades_mtm": 14,
+   "trades_selesai": 17,
+   "usd": 1192.0
+  },
+  {
+   "gross_mean_bps": 7626.9,
+   "layak_label": true,
+   "maker": "0x1ff54f07fc355364f7a2a755b22f0aaa35be26fc",
+   "net_hit_pct": 71.0,
+   "net_mean_bps": 7567.9,
+   "net_mean_selesai_bps": 6051.8,
+   "net_sd_bps": 14380.0,
+   "pool": "BPAY",
+   "tag_hari_ini": [
+    "smart_degen"
+   ],
+   "trades": 31,
+   "trades_mtm": 18,
+   "trades_selesai": 13,
+   "usd": 1691.0
+  },
+  {
+   "gross_mean_bps": 2604.3,
+   "layak_label": true,
+   "maker": "0x7a236324529091958a323af124b1af694319f385",
+   "net_hit_pct": 54.8,
+   "net_mean_bps": 2545.3,
+   "net_mean_selesai_bps": 7117.5,
+   "net_sd_bps": 9690.5,
+   "pool": "BPAY",
+   "tag_hari_ini": [
+    "gmgn",
+    "smart_degen"
+   ],
+   "trades": 31,
+   "trades_mtm": 11,
+   "trades_selesai": 20,
+   "usd": 1224.0
+  },
+  {
+   "gross_mean_bps": 35451.5,
+   "layak_label": true,
+   "maker": "0xb750f03e86980a3dffdfad269a88f008bb78ea51",
+   "net_hit_pct": 56.7,
+   "net_mean_bps": 35392.5,
+   "net_mean_selesai_bps": 94803.1,
+   "net_sd_bps": 47077.0,
+   "pool": "BPAY",
+   "tag_hari_ini": [
+    "gmgn",
+    "gmgn_go",
+    "smart_degen"
+   ],
+   "trades": 30,
+   "trades_mtm": 19,
+   "trades_selesai": 11,
+   "usd": 2860.0
+  },
+  {
+   "gross_mean_bps": 9752.0,
+   "layak_label": true,
+   "maker": "0x0143c153035dd5061f237a9eddd722940718d1c8",
+   "net_hit_pct": 60.0,
+   "net_mean_bps": 9693.0,
+   "net_mean_selesai_bps": 29183.5,
+   "net_sd_bps": 18516.5,
+   "pool": "BPAY",
+   "tag_hari_ini": [
+    "fomo",
+    "gmgn_go",
+    "launchpad_smart"
+   ],
+   "trades": 30,
+   "trades_mtm": 22,
+   "trades_selesai": 8,
+   "usd": 2519.0
+  },
+  {
+   "gross_mean_bps": 2628.8,
+   "layak_label": true,
+   "maker": "0xb4e1e589f5a5cb7f4c5d3bb0179dd678e421fee9",
+   "net_hit_pct": 53.3,
+   "net_mean_bps": 2569.8,
+   "net_mean_selesai_bps": 7364.6,
+   "net_sd_bps": 4840.8,
+   "pool": "BPAY",
+   "tag_hari_ini": [
+    "gmgn",
+    "gmgn_go",
+    "kol"
+   ],
+   "trades": 30,
+   "trades_mtm": 18,
+   "trades_selesai": 12,
+   "usd": 3718.0
+  },
+  {
+   "gross_mean_bps": -5451.9,
+   "layak_label": true,
+   "maker": "0x1223fea1a68d60ac8b4d04839c9c34a281a05153",
+   "net_hit_pct": 0.0,
+   "net_mean_bps": -5510.9,
+   "net_mean_selesai_bps": null,
+   "net_sd_bps": 3772.3,
+   "pool": "BPAY",
+   "tag_hari_ini": [
+    "smart_degen"
+   ],
+   "trades": 30,
+   "trades_mtm": 30,
+   "trades_selesai": 0,
+   "usd": 2973.0
+  },
+  {
+   "gross_mean_bps": -1021.6,
+   "layak_label": true,
+   "maker": "0xd137469da61b84aa489058229dfe54c63a30faa0",
+   "net_hit_pct": 27.6,
+   "net_mean_bps": -1080.6,
+   "net_mean_selesai_bps": 1769.4,
+   "net_sd_bps": 11884.4,
+   "pool": "BPAY",
+   "tag_hari_ini": [
+    "gmgn",
+    "gmgn_go",
+    "smart_degen"
+   ],
+   "trades": 29,
+   "trades_mtm": 26,
+   "trades_selesai": 3,
+   "usd": 20076.0
+  },
+  {
+   "gross_mean_bps": 9436.7,
+   "layak_label": true,
+   "maker": "0x77e5efcf4d14f6136242dc2f5618d1854761deef",
+   "net_hit_pct": 60.7,
+   "net_mean_bps": 9377.7,
+   "net_mean_selesai_bps": 22003.8,
+   "net_sd_bps": 20390.2,
+   "pool": "BPAY",
+   "tag_hari_ini": [
+    "gmgn",
+    "gmgn_go",
+    "kol"
+   ],
+   "trades": 28,
+   "trades_mtm": 16,
+   "trades_selesai": 12,
+   "usd": 1754.0
+  },
+  {
+   "gross_mean_bps": 8716.0,
+   "layak_label": true,
+   "maker": "0x3781c8fe412b1b34cd1acbd20b100a7f03c67ffd",
+   "net_hit_pct": 53.6,
+   "net_mean_bps": 8657.0,
+   "net_mean_selesai_bps": 27789.4,
+   "net_sd_bps": 17614.9,
+   "pool": "BPAY",
+   "tag_hari_ini": [
+    "gmgn",
+    "smart_degen"
+   ],
+   "trades": 28,
+   "trades_mtm": 21,
+   "trades_selesai": 7,
+   "usd": 2387.0
+  },
+  {
+   "gross_mean_bps": 5443.8,
+   "layak_label": true,
+   "maker": "0xbfec50586eda3f3c9bbc25615b13212a1dfd4216",
+   "net_hit_pct": 53.6,
+   "net_mean_bps": 5384.8,
+   "net_mean_selesai_bps": 31641.2,
+   "net_sd_bps": 14606.5,
+   "pool": "BPAY",
+   "tag_hari_ini": [
+    "gmgn",
+    "gmgn_go",
+    "smart_degen"
+   ],
+   "trades": 28,
+   "trades_mtm": 25,
+   "trades_selesai": 3,
+   "usd": 1438.0
+  },
+  {
+   "gross_mean_bps": 670.4,
+   "layak_label": true,
+   "maker": "0x7f282a3313bc8e375f2f0893a8518b4b00ed6e55",
+   "net_hit_pct": 50.0,
+   "net_mean_bps": 611.4,
+   "net_mean_selesai_bps": 4149.9,
+   "net_sd_bps": 5679.8,
+   "pool": "BPAY",
+   "tag_hari_ini": [
+    "gmgn",
+    "gmgn_go",
+    "kol"
+   ],
+   "trades": 28,
+   "trades_mtm": 18,
+   "trades_selesai": 10,
+   "usd": 8758.0
+  },
+  {
+   "gross_mean_bps": 5451.8,
+   "layak_label": true,
+   "maker": "0xf5b90417ba9a6d5495f5d65555e51e5064e503cb",
+   "net_hit_pct": 33.3,
+   "net_mean_bps": 5392.8,
+   "net_mean_selesai_bps": null,
+   "net_sd_bps": 40593.3,
+   "pool": "BPAY",
+   "tag_hari_ini": [
+    "gmgn",
+    "smart_degen"
+   ],
+   "trades": 27,
+   "trades_mtm": 27,
+   "trades_selesai": 0,
+   "usd": 283.0
+  },
+  {
+   "gross_mean_bps": 5224.9,
+   "layak_label": true,
+   "maker": "0xb5df35f1d8e40514819603198edfed2c1884edbc",
+   "net_hit_pct": 44.4,
+   "net_mean_bps": 5165.9,
+   "net_mean_selesai_bps": 20889.6,
+   "net_sd_bps": 12761.7,
+   "pool": "BPAY",
+   "tag_hari_ini": [
+    "gmgn",
+    "gmgn_go",
+    "smart_degen"
+   ],
+   "trades": 27,
+   "trades_mtm": 20,
+   "trades_selesai": 7,
+   "usd": 3669.0
+  },
+  {
+   "gross_mean_bps": 2516.0,
+   "layak_label": true,
+   "maker": "0xc1aa26a646270b9dd62ca24b14ccaea1c1010f72",
+   "net_hit_pct": 44.4,
+   "net_mean_bps": 2457.0,
+   "net_mean_selesai_bps": 12255.2,
+   "net_sd_bps": 14605.3,
+   "pool": "BPAY",
+   "tag_hari_ini": [
+    "gmgn",
+    "gmgn_go",
+    "padre"
+   ],
+   "trades": 27,
+   "trades_mtm": 14,
+   "trades_selesai": 13,
+   "usd": 5484.0
+  },
+  {
+   "gross_mean_bps": 607.2,
+   "layak_label": true,
+   "maker": "0xed0ffebb4342c814947c27c2e00df6fd18bf81b8",
+   "net_hit_pct": 44.4,
+   "net_mean_bps": 548.2,
+   "net_mean_selesai_bps": 5942.1,
+   "net_sd_bps": 6238.0,
+   "pool": "BPAY",
+   "tag_hari_ini": [
+    "gmgn",
+    "gmgn_go",
+    "kol"
+   ],
+   "trades": 27,
+   "trades_mtm": 16,
+   "trades_selesai": 11,
+   "usd": 4789.0
+  },
+  {
+   "gross_mean_bps": -536.5,
+   "layak_label": true,
+   "maker": "0xef30c1956348725c0ad6b29c2208ab93bec3b6a8",
+   "net_hit_pct": 37.0,
+   "net_mean_bps": -595.5,
+   "net_mean_selesai_bps": 657.1,
+   "net_sd_bps": 6983.6,
+   "pool": "BPAY",
+   "tag_hari_ini": [
+    "gmgn",
+    "gmgn_go",
+    "smart_degen"
+   ],
+   "trades": 27,
+   "trades_mtm": 19,
+   "trades_selesai": 8,
+   "usd": 4943.0
+  },
+  {
+   "gross_mean_bps": 6041.8,
+   "layak_label": true,
+   "maker": "0x388f6076d72b080680e111992bdb4777bd4fb42e",
+   "net_hit_pct": 34.6,
+   "net_mean_bps": 5982.8,
+   "net_mean_selesai_bps": null,
+   "net_sd_bps": 41374.9,
+   "pool": "BPAY",
+   "tag_hari_ini": [
+    "smart_degen"
+   ],
+   "trades": 26,
+   "trades_mtm": 26,
+   "trades_selesai": 0,
+   "usd": 272.0
+  },
+  {
+   "gross_mean_bps": 967.0,
+   "layak_label": true,
+   "maker": "0x84dc5bd4fd241ca5b3d1a5bb71f15ddc2d4a8d0c",
+   "net_hit_pct": 48.0,
+   "net_mean_bps": 908.0,
+   "net_mean_selesai_bps": 8176.4,
+   "net_sd_bps": 8843.4,
+   "pool": "BPAY",
+   "tag_hari_ini": [
+    "gmgn",
+    "gmgn_go",
+    "smart_degen"
+   ],
+   "trades": 25,
+   "trades_mtm": 17,
+   "trades_selesai": 8,
+   "usd": 87.0
+  },
+  {
+   "gross_mean_bps": 3281.0,
+   "layak_label": true,
+   "maker": "0xe3a4527faf35f166b9856d2c41ff9eb7d4bf68b6",
+   "net_hit_pct": 25.0,
+   "net_mean_bps": 3222.0,
+   "net_mean_selesai_bps": 19232.1,
+   "net_sd_bps": 12709.9,
+   "pool": "BPAY",
+   "tag_hari_ini": [
+    "gmgn",
+    "smart_degen"
+   ],
+   "trades": 24,
+   "trades_mtm": 20,
+   "trades_selesai": 4,
+   "usd": 983.0
+  },
+  {
+   "gross_mean_bps": 17698.0,
+   "layak_label": true,
+   "maker": "0x64b23c2987aca16b3d3c55ad6f694058783c72ea",
+   "net_hit_pct": 69.6,
+   "net_mean_bps": 17639.0,
+   "net_mean_selesai_bps": 13605.4,
+   "net_sd_bps": 50536.0,
+   "pool": "BPAY",
+   "tag_hari_ini": [
+    "app_smart_money",
+    "gmgn_go",
+    "kol"
+   ],
+   "trades": 23,
+   "trades_mtm": 13,
+   "trades_selesai": 10,
+   "usd": 1825.0
+  },
+  {
+   "gross_mean_bps": 11522.2,
+   "layak_label": true,
+   "maker": "0xa52dfc2f716c72a5e37757804a38a12ad0b9c7c6",
+   "net_hit_pct": 69.6,
+   "net_mean_bps": 11463.2,
+   "net_mean_selesai_bps": 22217.4,
+   "net_sd_bps": 25462.4,
+   "pool": "BPAY",
+   "tag_hari_ini": [
+    "axiom",
+    "gmgn",
+    "gmgn_go"
+   ],
+   "trades": 23,
+   "trades_mtm": 10,
+   "trades_selesai": 13,
+   "usd": 2404.0
+  },
+  {
+   "gross_mean_bps": 2308.5,
+   "layak_label": true,
+   "maker": "0xd9dde43b994c4d80d539df191040496b75a62e6e",
+   "net_hit_pct": 52.2,
+   "net_mean_bps": 2249.5,
+   "net_mean_selesai_bps": 10173.3,
+   "net_sd_bps": 7592.9,
+   "pool": "BPAY",
+   "tag_hari_ini": [
+    "gmgn",
+    "gmgn_go",
+    "smart_degen"
+   ],
+   "trades": 23,
+   "trades_mtm": 14,
+   "trades_selesai": 9,
+   "usd": 597.0
+  },
+  {
+   "gross_mean_bps": 6092.2,
+   "layak_label": true,
+   "maker": "0x51b2fd7b62c708350729a48495364f1fd367257a",
+   "net_hit_pct": 59.1,
+   "net_mean_bps": 6033.2,
+   "net_mean_selesai_bps": 24538.5,
+   "net_sd_bps": 12573.5,
+   "pool": "BPAY",
+   "tag_hari_ini": [
+    "axiom",
+    "fomo",
+    "gmgn_go"
+   ],
+   "trades": 22,
+   "trades_mtm": 16,
+   "trades_selesai": 6,
+   "usd": 3680.0
+  },
+  {
+   "gross_mean_bps": 3877.1,
+   "layak_label": true,
+   "maker": "0x785e87783b5237796639114ffd50fd29453bec41",
+   "net_hit_pct": 42.9,
+   "net_mean_bps": 3818.1,
+   "net_mean_selesai_bps": 12902.1,
+   "net_sd_bps": 11423.0,
+   "pool": "BPAY",
+   "tag_hari_ini": [
+    "gmgn",
+    "gmgn_go",
+    "smart_degen"
+   ],
+   "trades": 21,
+   "trades_mtm": 12,
+   "trades_selesai": 9,
+   "usd": 1195.0
+  },
+  {
+   "gross_mean_bps": 426.4,
+   "layak_label": true,
+   "maker": "0x550647e8faf10116f0367526080c1005809b4653",
+   "net_hit_pct": 33.3,
+   "net_mean_bps": 367.4,
+   "net_mean_selesai_bps": 15719.4,
+   "net_sd_bps": 5651.0,
+   "pool": "BPAY",
+   "tag_hari_ini": [
+    "gmgn",
+    "gmgn_go",
+    "kol"
+   ],
+   "trades": 21,
+   "trades_mtm": 19,
+   "trades_selesai": 2,
+   "usd": 4130.0
+  },
+  {
+   "gross_mean_bps": -813.4,
+   "layak_label": true,
+   "maker": "0xf1d07077e484b900b36809bb3d6b9724c52a0d05",
+   "net_hit_pct": 47.6,
+   "net_mean_bps": -872.4,
+   "net_mean_selesai_bps": 29.5,
+   "net_sd_bps": 3234.0,
+   "pool": "BPAY",
+   "tag_hari_ini": [
+    "smart_degen"
+   ],
+   "trades": 21,
+   "trades_mtm": 3,
+   "trades_selesai": 18,
+   "usd": 1504.0
+  },
+  {
+   "gross_mean_bps": 76064.7,
+   "layak_label": true,
+   "maker": "0xfe2856e429494f5fcb395b9e68c1f80aead17282",
+   "net_hit_pct": 80.0,
+   "net_mean_bps": 76005.7,
+   "net_mean_selesai_bps": 90065.5,
+   "net_sd_bps": 59691.9,
+   "pool": "BPAY",
+   "tag_hari_ini": [
+    "smart_degen"
+   ],
+   "trades": 20,
+   "trades_mtm": 3,
+   "trades_selesai": 17,
+   "usd": 45.0
+  },
+  {
+   "gross_mean_bps": 26849.5,
+   "layak_label": true,
+   "maker": "0x2ce9d43d1cba6ae31d7f07bfe0098dfa2d833373",
+   "net_hit_pct": 60.0,
+   "net_mean_bps": 26790.5,
+   "net_mean_selesai_bps": 23255.3,
+   "net_sd_bps": 85721.2,
+   "pool": "BPAY",
+   "tag_hari_ini": [
+    "fomo",
+    "gmgn",
+    "gmgn_go",
+    "kol"
+   ],
+   "trades": 20,
+   "trades_mtm": 13,
+   "trades_selesai": 7,
+   "usd": 7171.0
+  },
+  {
+   "gross_mean_bps": 6726.7,
+   "layak_label": true,
+   "maker": "0x14c8de276386391d205d13b2e19cf1f3d39f4b34",
+   "net_hit_pct": 45.0,
+   "net_mean_bps": 6667.7,
+   "net_mean_selesai_bps": 24131.6,
+   "net_sd_bps": 18569.0,
+   "pool": "BPAY",
+   "tag_hari_ini": [
+    "gmgn",
+    "gmgn_go",
+    "smart_degen"
+   ],
+   "trades": 20,
+   "trades_mtm": 12,
+   "trades_selesai": 8,
+   "usd": 1039.0
+  },
+  {
+   "gross_mean_bps": 1261.6,
+   "layak_label": true,
+   "maker": "0x90adf1059ba38a4be43fad51e881d709285c6d33",
+   "net_hit_pct": 60.0,
+   "net_mean_bps": 1202.6,
+   "net_mean_selesai_bps": 2433.5,
+   "net_sd_bps": 1811.6,
+   "pool": "BPAY",
+   "tag_hari_ini": [
+    "gmgn",
+    "gmgn_go",
+    "smart_degen"
+   ],
+   "trades": 20,
+   "trades_mtm": 12,
+   "trades_selesai": 8,
+   "usd": 2133.0
+  },
+  {
+   "gross_mean_bps": -807.8,
+   "layak_label": true,
+   "maker": "0x2c26f58bba087d83c43c19b4761042320c5beaf4",
+   "net_hit_pct": 45.0,
+   "net_mean_bps": -866.8,
+   "net_mean_selesai_bps": 3154.2,
+   "net_sd_bps": 3969.6,
+   "pool": "BPAY",
+   "tag_hari_ini": [
+    "fomo",
+    "gmgn",
+    "gmgn_go"
+   ],
+   "trades": 20,
+   "trades_mtm": 13,
+   "trades_selesai": 7,
+   "usd": 2367.0
+  },
+  {
+   "gross_mean_bps": -1139.0,
+   "layak_label": true,
+   "maker": "0xb2d1af0746c410e146272e804b1741f07f83b851",
+   "net_hit_pct": 40.0,
+   "net_mean_bps": -1198.0,
+   "net_mean_selesai_bps": 5621.3,
+   "net_sd_bps": 6096.5,
+   "pool": "BPAY",
+   "tag_hari_ini": [
+    "gmgn_go",
+    "kol",
+    "top_followed"
+   ],
+   "trades": 20,
+   "trades_mtm": 15,
+   "trades_selesai": 5,
+   "usd": 10540.0
+  },
+  {
+   "gross_mean_bps": -4279.3,
+   "layak_label": true,
+   "maker": "0x17bb3f846ef1dd12d42a25475f75f2225f24039b",
+   "net_hit_pct": 15.0,
+   "net_mean_bps": -4338.3,
+   "net_mean_selesai_bps": 2467.3,
+   "net_sd_bps": 6212.1,
+   "pool": "BPAY",
+   "tag_hari_ini": [
+    "fomo",
+    "gmgn",
+    "gmgn_go"
+   ],
+   "trades": 20,
+   "trades_mtm": 19,
+   "trades_selesai": 1,
+   "usd": 2153.0
+  },
+  {
+   "gross_mean_bps": -126.6,
+   "layak_label": true,
+   "maker": "0x416fd2d99f0c3f8c3f9d87030bb6712c87dbed6b",
+   "net_hit_pct": 36.8,
+   "net_mean_bps": -185.6,
+   "net_mean_selesai_bps": 4517.7,
+   "net_sd_bps": 4820.4,
+   "pool": "\u4e2d\u56fd\u68a6",
+   "tag_hari_ini": [
+    "smart_degen"
+   ],
+   "trades": 19,
+   "trades_mtm": 14,
+   "trades_selesai": 5,
+   "usd": 2042.0
+  },
+  {
+   "gross_mean_bps": -3303.3,
+   "layak_label": true,
+   "maker": "0x3bc82d3d920208f5f0590319494012599768b1fe",
+   "net_hit_pct": 5.3,
+   "net_mean_bps": -3362.3,
+   "net_mean_selesai_bps": null,
+   "net_sd_bps": 3785.6,
+   "pool": "BPAY",
+   "tag_hari_ini": [
+    "smart_degen"
+   ],
+   "trades": 19,
+   "trades_mtm": 19,
+   "trades_selesai": 0,
+   "usd": 2310.0
+  },
+  {
+   "gross_mean_bps": -3341.7,
+   "layak_label": true,
+   "maker": "0x2afc1126cecca84a519a6173767bd25a96189bea",
+   "net_hit_pct": 15.8,
+   "net_mean_bps": -3400.7,
+   "net_mean_selesai_bps": null,
+   "net_sd_bps": 6516.4,
+   "pool": "BPAY",
+   "tag_hari_ini": [
+    "smart_degen"
+   ],
+   "trades": 19,
+   "trades_mtm": 19,
+   "trades_selesai": 0,
+   "usd": 2374.0
+  },
+  {
+   "gross_mean_bps": 30527.5,
+   "layak_label": true,
+   "maker": "0x85f30a12840985eed55be14134b6ef0b34d38c2d",
+   "net_hit_pct": 50.0,
+   "net_mean_bps": 30468.5,
+   "net_mean_selesai_bps": 65246.6,
+   "net_sd_bps": 42916.3,
+   "pool": "BPAY",
+   "tag_hari_ini": [
+    "gmgn",
+    "gmgn_go",
+    "kol"
+   ],
+   "trades": 18,
+   "trades_mtm": 9,
+   "trades_selesai": 9,
+   "usd": 1629.0
+  },
+  {
+   "gross_mean_bps": 5730.3,
+   "layak_label": true,
+   "maker": "0xaaf79e3aa46d79f565dded3cc15303c527c6ca9c",
+   "net_hit_pct": 33.3,
+   "net_mean_bps": 5671.3,
+   "net_mean_selesai_bps": 26052.2,
+   "net_sd_bps": 17158.3,
+   "pool": "BPAY",
+   "tag_hari_ini": [
+    "axiom",
+    "fomo",
+    "gmgn"
+   ],
+   "trades": 18,
+   "trades_mtm": 12,
+   "trades_selesai": 6,
+   "usd": 3295.0
+  },
+  {
+   "gross_mean_bps": 4322.4,
+   "layak_label": true,
+   "maker": "0x365e9e13c15ed3d38824703d3e74563ea26874aa",
+   "net_hit_pct": 61.1,
+   "net_mean_bps": 4263.4,
+   "net_mean_selesai_bps": 14393.1,
+   "net_sd_bps": 8622.8,
+   "pool": "BPAY",
+   "tag_hari_ini": [
+    "gmgn",
+    "smart_degen"
+   ],
+   "trades": 18,
+   "trades_mtm": 12,
+   "trades_selesai": 6,
+   "usd": 3334.0
+  },
+  {
+   "gross_mean_bps": 2960.2,
+   "layak_label": true,
+   "maker": "0x4af2561ba7b7b7a61c975b6560bd1d94df657563",
+   "net_hit_pct": 61.1,
+   "net_mean_bps": 2901.2,
+   "net_mean_selesai_bps": 9635.2,
+   "net_sd_bps": 9182.1,
+   "pool": "BPAY",
+   "tag_hari_ini": [
+    "gmgn",
+    "gmgn_go",
+    "smart_degen"
+   ],
+   "trades": 18,
+   "trades_mtm": 11,
+   "trades_selesai": 7,
+   "usd": 946.0
+  },
+  {
+   "gross_mean_bps": 1618.6,
+   "layak_label": true,
+   "maker": "0x532f47492d7cfec571faaf8167215972ef206478",
+   "net_hit_pct": 38.9,
+   "net_mean_bps": 1559.6,
+   "net_mean_selesai_bps": 3371.7,
+   "net_sd_bps": 4700.0,
+   "pool": "BPAY",
+   "tag_hari_ini": [
+    "gmgn",
+    "gmgn_go",
+    "smart_degen"
+   ],
+   "trades": 18,
+   "trades_mtm": 15,
+   "trades_selesai": 3,
+   "usd": 2954.0
+  },
+  {
+   "gross_mean_bps": 6410.1,
+   "layak_label": true,
+   "maker": "0xd722c57366b09c6c44c6b0e1a80760c5760f68ce",
+   "net_hit_pct": 47.1,
+   "net_mean_bps": 6351.1,
+   "net_mean_selesai_bps": 6188.0,
+   "net_sd_bps": 29312.1,
+   "pool": "BPAY",
+   "tag_hari_ini": [
+    "app_smart_money",
+    "gmgn",
+    "gmgn_go"
+   ],
+   "trades": 17,
+   "trades_mtm": 11,
+   "trades_selesai": 6,
+   "usd": 1651.0
+  },
+  {
+   "gross_mean_bps": 2518.8,
+   "layak_label": true,
+   "maker": "0x3831fe5ec6766b15667e4515e0b1f4070204f0bd",
+   "net_hit_pct": 41.2,
+   "net_mean_bps": 2459.8,
+   "net_mean_selesai_bps": 16001.0,
+   "net_sd_bps": 7410.7,
+   "pool": "BPAY",
+   "tag_hari_ini": [
+    "gmgn",
+    "gmgn_go",
+    "smart_degen"
+   ],
+   "trades": 17,
+   "trades_mtm": 14,
+   "trades_selesai": 3,
+   "usd": 4204.0
+  },
+  {
+   "gross_mean_bps": 957.7,
+   "layak_label": true,
+   "maker": "0xc6f990ee53e369bbd0697d74ede16aaeaaf8caa5",
+   "net_hit_pct": 41.2,
+   "net_mean_bps": 898.7,
+   "net_mean_selesai_bps": null,
+   "net_sd_bps": 3000.9,
+   "pool": "BPAY",
+   "tag_hari_ini": [
+    "fomo",
+    "gmgn_go",
+    "launchpad_smart"
+   ],
+   "trades": 17,
+   "trades_mtm": 17,
+   "trades_selesai": 0,
+   "usd": 4342.0
+  },
+  {
+   "gross_mean_bps": -7081.9,
+   "layak_label": true,
+   "maker": "0x40653e8545a5f1556f3b65356f3a4a1984e18643",
+   "net_hit_pct": 0.0,
+   "net_mean_bps": -7140.9,
+   "net_mean_selesai_bps": null,
+   "net_sd_bps": 1320.3,
+   "pool": "BPAY",
+   "tag_hari_ini": [
+    "gmgn",
+    "smart_degen"
+   ],
+   "trades": 17,
+   "trades_mtm": 17,
+   "trades_selesai": 0,
+   "usd": 1096.0
+  },
+  {
+   "gross_mean_bps": 659.3,
+   "layak_label": true,
+   "maker": "0x926b631451983a79c543f47bb92dc71618e32d0e",
+   "net_hit_pct": 31.2,
+   "net_mean_bps": 600.3,
+   "net_mean_selesai_bps": 5752.6,
+   "net_sd_bps": 6280.6,
+   "pool": "BPAY",
+   "tag_hari_ini": [
+    "gmgn",
+    "gmgn_go",
+    "smart_degen"
+   ],
+   "trades": 16,
+   "trades_mtm": 10,
+   "trades_selesai": 6,
+   "usd": 3336.0
+  },
+  {
+   "gross_mean_bps": 486.6,
+   "layak_label": true,
+   "maker": "0x55fade80e573c4594b0dd73041297024f1f2ee95",
+   "net_hit_pct": 31.2,
+   "net_mean_bps": 427.6,
+   "net_mean_selesai_bps": 8913.6,
+   "net_sd_bps": 8172.0,
+   "pool": "BPAY",
+   "tag_hari_ini": [
+    "gmgn",
+    "gmgn_go",
+    "kol",
+    "top_followed"
+   ],
+   "trades": 16,
+   "trades_mtm": 10,
+   "trades_selesai": 6,
+   "usd": 2168.0
+  },
+  {
+   "gross_mean_bps": -782.8,
+   "layak_label": true,
+   "maker": "0xbad1772ffff47b87915d88124d20ba44364acd0f",
+   "net_hit_pct": 31.2,
+   "net_mean_bps": -841.8,
+   "net_mean_selesai_bps": 10238.2,
+   "net_sd_bps": 8102.5,
+   "pool": "BPAY",
+   "tag_hari_ini": [
+    "gmgn",
+    "gmgn_go",
+    "smart_degen",
+    "top_followed"
+   ],
+   "trades": 16,
+   "trades_mtm": 12,
+   "trades_selesai": 4,
+   "usd": 4887.0
+  },
+  {
+   "gross_mean_bps": 8277.8,
+   "layak_label": true,
+   "maker": "0x87ca445705c3d714097545ee5d6421fcfa068852",
+   "net_hit_pct": 46.7,
+   "net_mean_bps": 8218.8,
+   "net_mean_selesai_bps": 22416.5,
+   "net_sd_bps": 15104.5,
+   "pool": "BPAY",
+   "tag_hari_ini": [
+    "fomo",
+    "gmgn",
+    "gmgn_go"
+   ],
+   "trades": 15,
+   "trades_mtm": 8,
+   "trades_selesai": 7,
+   "usd": 981.0
+  },
+  {
+   "gross_mean_bps": 6447.4,
+   "layak_label": true,
+   "maker": "0x150952108f28dcaf4e4542090e67cd2696563944",
+   "net_hit_pct": 40.0,
+   "net_mean_bps": 6388.4,
+   "net_mean_selesai_bps": 35213.8,
+   "net_sd_bps": 24230.8,
+   "pool": "BPAY",
+   "tag_hari_ini": [
+    "fomo",
+    "gmgn",
+    "gmgn_go"
+   ],
+   "trades": 15,
+   "trades_mtm": 11,
+   "trades_selesai": 4,
+   "usd": 2337.0
+  },
+  {
+   "gross_mean_bps": 5937.3,
+   "layak_label": true,
+   "maker": "0xdd6f338b91f40e5a02c468b7cb49cccc569a3134",
+   "net_hit_pct": 40.0,
+   "net_mean_bps": 5878.3,
+   "net_mean_selesai_bps": null,
+   "net_sd_bps": 18886.1,
+   "pool": "BPAY",
+   "tag_hari_ini": [
+    "fomo",
+    "gmgn",
+    "gmgn_go",
+    "kol"
+   ],
+   "trades": 15,
+   "trades_mtm": 15,
+   "trades_selesai": 0,
+   "usd": 1701.0
+  },
+  {
+   "gross_mean_bps": 4120.6,
+   "layak_label": true,
+   "maker": "0x06dbb002a30a50d69c1ceb1b8a0827da99648eaf",
+   "net_hit_pct": 66.7,
+   "net_mean_bps": 4061.6,
+   "net_mean_selesai_bps": 9700.0,
+   "net_sd_bps": 6810.4,
+   "pool": "BPAY",
+   "tag_hari_ini": [
+    "gmgn",
+    "gmgn_go",
+    "smart_degen"
+   ],
+   "trades": 15,
+   "trades_mtm": 10,
+   "trades_selesai": 5,
+   "usd": 724.0
+  },
+  {
+   "gross_mean_bps": -1656.3,
+   "layak_label": true,
+   "maker": "0x3269f3cccc877e6f1f9ca671e5a735345dee4940",
+   "net_hit_pct": 20.0,
+   "net_mean_bps": -1715.3,
+   "net_mean_selesai_bps": 1560.7,
+   "net_sd_bps": 3603.6,
+   "pool": "BPAY",
+   "tag_hari_ini": [
+    "gmgn",
+    "smart_degen"
+   ],
+   "trades": 15,
+   "trades_mtm": 12,
+   "trades_selesai": 3,
+   "usd": 2588.0
+  },
+  {
+   "gross_mean_bps": 59.9,
+   "layak_label": true,
+   "maker": "0xec1e5db246faaa9057fd01c6882df0433e6711a3",
+   "net_hit_pct": 28.6,
+   "net_mean_bps": 0.9,
+   "net_mean_selesai_bps": 10007.6,
+   "net_sd_bps": 8409.8,
+   "pool": "BPAY",
+   "tag_hari_ini": [
+    "gmgn",
+    "gmgn_go",
+    "smart_degen"
+   ],
+   "trades": 14,
+   "trades_mtm": 10,
+   "trades_selesai": 4,
+   "usd": 2915.0
+  },
+  {
+   "gross_mean_bps": 48.3,
+   "layak_label": true,
+   "maker": "0xa730171bf22067c15b7227b08d68783c376cc393",
+   "net_hit_pct": 64.3,
+   "net_mean_bps": -10.7,
+   "net_mean_selesai_bps": 1380.5,
+   "net_sd_bps": 4393.2,
+   "pool": "BPAY",
+   "tag_hari_ini": [
+    "gmgn",
+    "smart_degen"
+   ],
+   "trades": 14,
+   "trades_mtm": 4,
+   "trades_selesai": 10,
+   "usd": 596.0
+  },
+  {
+   "gross_mean_bps": 13295.9,
+   "layak_label": true,
+   "maker": "0xacd7793d92cd870e56db2372b36e41c59ae4fb40",
+   "net_hit_pct": 53.8,
+   "net_mean_bps": 13236.9,
+   "net_mean_selesai_bps": 47194.8,
+   "net_sd_bps": 40290.1,
+   "pool": "FLAPROCKECT",
+   "tag_hari_ini": [
+    "fomo",
+    "gmgn_go",
+    "smart_degen"
+   ],
+   "trades": 13,
+   "trades_mtm": 10,
+   "trades_selesai": 3,
+   "usd": 2229.0
+  },
+  {
+   "gross_mean_bps": 12948.5,
+   "layak_label": true,
+   "maker": "0xc25515fa26a3614c87e7ac944288d86efbe046bc",
+   "net_hit_pct": 61.5,
+   "net_mean_bps": 12889.5,
+   "net_mean_selesai_bps": 27828.8,
+   "net_sd_bps": 32153.0,
+   "pool": "BPAY",
+   "tag_hari_ini": [
+    "gmgn",
+    "gmgn_go",
+    "smart_degen"
+   ],
+   "trades": 13,
+   "trades_mtm": 6,
+   "trades_selesai": 7,
+   "usd": 2587.0
+  },
+  {
+   "gross_mean_bps": 4383.7,
+   "layak_label": true,
+   "maker": "0x88234fd0f5471e28e1767f198c53c2004e9e76c7",
+   "net_hit_pct": 23.1,
+   "net_mean_bps": 4324.7,
+   "net_mean_selesai_bps": 21799.0,
+   "net_sd_bps": 17409.8,
+   "pool": "BPAY",
+   "tag_hari_ini": [
+    "gmgn",
+    "smart_degen"
+   ],
+   "trades": 13,
+   "trades_mtm": 9,
+   "trades_selesai": 4,
+   "usd": 529.0
+  },
+  {
+   "gross_mean_bps": 4340.1,
+   "layak_label": true,
+   "maker": "0xa54a4fa7c944e716ff437e32d972004621b5134e",
+   "net_hit_pct": 92.3,
+   "net_mean_bps": 4281.1,
+   "net_mean_selesai_bps": 2991.0,
+   "net_sd_bps": 8015.3,
+   "pool": "BPAY",
+   "tag_hari_ini": [
+    "gmgn",
+    "gmgn_go",
+    "kol"
+   ],
+   "trades": 13,
+   "trades_mtm": 3,
+   "trades_selesai": 10,
+   "usd": 408.0
+  },
+  {
+   "gross_mean_bps": 3257.2,
+   "layak_label": true,
+   "maker": "0x13086564974b5f772f57aa9bf67af8e775a9022b",
+   "net_hit_pct": 53.8,
+   "net_mean_bps": 3198.2,
+   "net_mean_selesai_bps": 13998.7,
+   "net_sd_bps": 8734.7,
+   "pool": "BPAY",
+   "tag_hari_ini": [
+    "smart_degen"
+   ],
+   "trades": 13,
+   "trades_mtm": 10,
+   "trades_selesai": 3,
+   "usd": 1287.0
+  },
+  {
+   "gross_mean_bps": 2431.0,
+   "layak_label": true,
+   "maker": "0xe682a492cb696cd1de2d0ae2abaf0320f2f66f84",
+   "net_hit_pct": 69.2,
+   "net_mean_bps": 2372.0,
+   "net_mean_selesai_bps": null,
+   "net_sd_bps": 4175.8,
+   "pool": "BPAY",
+   "tag_hari_ini": [
+    "smart_degen"
+   ],
+   "trades": 13,
+   "trades_mtm": 13,
+   "trades_selesai": 0,
+   "usd": 1397.0
+  },
+  {
+   "gross_mean_bps": 143.5,
+   "layak_label": true,
+   "maker": "0x66f0cae211a0eb352e61eaa38a2cf130272767e7",
+   "net_hit_pct": 38.5,
+   "net_mean_bps": 84.5,
+   "net_mean_selesai_bps": 4897.5,
+   "net_sd_bps": 9552.8,
+   "pool": "BPAY",
+   "tag_hari_ini": [
+    "gmgn",
+    "launchpad_smart",
+    "smart_degen"
+   ],
+   "trades": 13,
+   "trades_mtm": 11,
+   "trades_selesai": 2,
+   "usd": 2741.0
+  },
+  {
+   "gross_mean_bps": -1804.6,
+   "layak_label": true,
+   "maker": "0x0f84d2da979180394fbf9c4499febd0f602a6767",
+   "net_hit_pct": 30.8,
+   "net_mean_bps": -1863.6,
+   "net_mean_selesai_bps": 1354.0,
+   "net_sd_bps": 7895.4,
+   "pool": "BPAY",
+   "tag_hari_ini": [
+    "fomo",
+    "gmgn",
+    "kol",
+    "smart_degen"
+   ],
+   "trades": 13,
+   "trades_mtm": 12,
+   "trades_selesai": 1,
+   "usd": 3004.0
+  },
+  {
+   "gross_mean_bps": -2470.4,
+   "layak_label": true,
+   "maker": "0xf31f69320cf90edd0aafa7d72a6e0ea2a7a718d7",
+   "net_hit_pct": 23.1,
+   "net_mean_bps": -2529.4,
+   "net_mean_selesai_bps": -4754.8,
+   "net_sd_bps": 3675.4,
+   "pool": "BPAY",
+   "tag_hari_ini": [
+    "gmgn",
+    "smart_degen"
+   ],
+   "trades": 13,
+   "trades_mtm": 12,
+   "trades_selesai": 1,
+   "usd": 1645.0
+  },
+  {
+   "gross_mean_bps": 60115.0,
+   "layak_label": true,
+   "maker": "0x4e51b3580dc76ba3bd529ce66970c28ca0debbf3",
+   "net_hit_pct": 33.3,
+   "net_mean_bps": 60056.0,
+   "net_mean_selesai_bps": 206876.5,
+   "net_sd_bps": 131657.3,
+   "pool": "BPAY",
+   "tag_hari_ini": [
+    "bluechip_owner",
+    "smart_degen"
+   ],
+   "trades": 12,
+   "trades_mtm": 10,
+   "trades_selesai": 2,
+   "usd": 66.0
+  },
+  {
+   "gross_mean_bps": 24636.2,
+   "layak_label": true,
+   "maker": "0x7e8fb0392542812476d9f2d0d71c01d1fa0776c5",
+   "net_hit_pct": 58.3,
+   "net_mean_bps": 24577.2,
+   "net_mean_selesai_bps": 26859.8,
+   "net_sd_bps": 47980.7,
+   "pool": "BPAY",
+   "tag_hari_ini": [
+    "app_smart_money",
+    "fomo",
+    "gmgn_go"
+   ],
+   "trades": 12,
+   "trades_mtm": 6,
+   "trades_selesai": 6,
+   "usd": 1589.0
+  },
+  {
+   "gross_mean_bps": 11858.0,
+   "layak_label": true,
+   "maker": "0xb62daf1371b62596ffc7168f1dd328132920d063",
+   "net_hit_pct": 91.7,
+   "net_mean_bps": 11799.0,
+   "net_mean_selesai_bps": 23999.6,
+   "net_sd_bps": 21716.0,
+   "pool": "BPAY",
+   "tag_hari_ini": [
+    "fomo",
+    "gmgn",
+    "gmgn_go"
+   ],
+   "trades": 12,
+   "trades_mtm": 7,
+   "trades_selesai": 5,
+   "usd": 530.0
+  },
+  {
+   "gross_mean_bps": 6695.0,
+   "layak_label": true,
+   "maker": "0x61fd0d043d519f5a2bd05785000f30db96809429",
+   "net_hit_pct": 66.7,
+   "net_mean_bps": 6636.0,
+   "net_mean_selesai_bps": 19021.5,
+   "net_sd_bps": 13725.5,
+   "pool": "BPAY",
+   "tag_hari_ini": [
+    "arbitrager",
+    "gmgn",
+    "kol",
+    "top_followed"
+   ],
+   "trades": 12,
+   "trades_mtm": 7,
+   "trades_selesai": 5,
+   "usd": 993.0
+  },
+  {
+   "gross_mean_bps": 4635.1,
+   "layak_label": true,
+   "maker": "0x98feae3174b130f06cad43e7d5d9d3e146f4dd14",
+   "net_hit_pct": 66.7,
+   "net_mean_bps": 4576.1,
+   "net_mean_selesai_bps": 5596.3,
+   "net_sd_bps": 6755.0,
+   "pool": "BPAY",
+   "tag_hari_ini": [
+    "fomo",
+    "gmgn",
+    "gmgn_go"
+   ],
+   "trades": 12,
+   "trades_mtm": 2,
+   "trades_selesai": 10,
+   "usd": 2614.0
+  },
+  {
+   "gross_mean_bps": 3155.3,
+   "layak_label": true,
+   "maker": "0x1dde452ba18505865deaa29b84be2191943579ab",
+   "net_hit_pct": 41.7,
+   "net_mean_bps": 3096.3,
+   "net_mean_selesai_bps": 14197.3,
+   "net_sd_bps": 7312.9,
+   "pool": "FLAPCAT",
+   "tag_hari_ini": [
+    "gmgn",
+    "gmgn_go",
+    "kol"
+   ],
+   "trades": 12,
+   "trades_mtm": 9,
+   "trades_selesai": 3,
+   "usd": 834.0
+  },
+  {
+   "gross_mean_bps": 1584.5,
+   "layak_label": true,
+   "maker": "0x2f47ca870e6febbd7cd9b7fdbe1d76467709a085",
+   "net_hit_pct": 58.3,
+   "net_mean_bps": 1525.5,
+   "net_mean_selesai_bps": 4888.6,
+   "net_sd_bps": 3017.1,
+   "pool": "FLAPCAT",
+   "tag_hari_ini": [
+    "gmgn",
+    "kol",
+    "smart_degen"
+   ],
+   "trades": 12,
+   "trades_mtm": 8,
+   "trades_selesai": 4,
+   "usd": 999.0
+  },
+  {
+   "gross_mean_bps": 1013.9,
+   "layak_label": true,
+   "maker": "0x43704156bde299cbca3f28d38d2709ff54bc7754",
+   "net_hit_pct": 50.0,
+   "net_mean_bps": 954.9,
+   "net_mean_selesai_bps": 917.9,
+   "net_sd_bps": 4426.1,
+   "pool": "MOON",
+   "tag_hari_ini": [
+    "smart_degen"
+   ],
+   "trades": 12,
+   "trades_mtm": 11,
+   "trades_selesai": 1,
+   "usd": 662.0
+  },
+  {
+   "gross_mean_bps": 843.1,
+   "layak_label": true,
+   "maker": "0x8e898abbb73c614496192dd4b257b21c255ae0bf",
+   "net_hit_pct": 50.0,
+   "net_mean_bps": 784.1,
+   "net_mean_selesai_bps": 3680.7,
+   "net_sd_bps": 2644.0,
+   "pool": "FLAPCAT",
+   "tag_hari_ini": [
+    "gmgn",
+    "smart_degen"
+   ],
+   "trades": 12,
+   "trades_mtm": 8,
+   "trades_selesai": 4,
+   "usd": 999.0
+  },
+  {
+   "gross_mean_bps": -5677.8,
+   "layak_label": true,
+   "maker": "0xb0b972767dc34987b7c6f31d07ccc377b402e557",
+   "net_hit_pct": 0.0,
+   "net_mean_bps": -5736.8,
+   "net_mean_selesai_bps": null,
+   "net_sd_bps": 4212.8,
+   "pool": "BPAY",
+   "tag_hari_ini": [
+    "fomo",
+    "gmgn",
+    "smart_degen"
+   ],
+   "trades": 12,
+   "trades_mtm": 12,
+   "trades_selesai": 0,
+   "usd": 3958.0
+  },
+  {
+   "gross_mean_bps": 15414.8,
+   "layak_label": true,
+   "maker": "0xfc87cb1addd6363d64535b752573b1f8371f6396",
+   "net_hit_pct": 63.6,
+   "net_mean_bps": 15355.8,
+   "net_mean_selesai_bps": 27444.4,
+   "net_sd_bps": 27190.2,
+   "pool": "\u5c0f\u5b9d",
+   "tag_hari_ini": [
+    "gmgn",
+    "smart_degen"
+   ],
+   "trades": 11,
+   "trades_mtm": 5,
+   "trades_selesai": 6,
+   "usd": 366.0
+  },
+  {
+   "gross_mean_bps": 11085.6,
+   "layak_label": true,
+   "maker": "0x5501c9471bad074e44fdc1208db96e3ccdb89020",
+   "net_hit_pct": 27.3,
+   "net_mean_bps": 11026.6,
+   "net_mean_selesai_bps": 5054.1,
+   "net_sd_bps": 47355.1,
+   "pool": "BPAY",
+   "tag_hari_ini": [
+    "fomo",
+    "gmgn",
+    "smart_degen"
+   ],
+   "trades": 11,
+   "trades_mtm": 10,
+   "trades_selesai": 1,
+   "usd": 945.0
+  },
+  {
+   "gross_mean_bps": 7299.6,
+   "layak_label": true,
+   "maker": "0xadf471da503c9be8d6b51b22a142747216da94a5",
+   "net_hit_pct": 63.6,
+   "net_mean_bps": 7240.6,
+   "net_mean_selesai_bps": 19483.8,
+   "net_sd_bps": 14249.2,
+   "pool": "BPAY",
+   "tag_hari_ini": [
+    "fomo",
+    "gmgn",
+    "smart_degen"
+   ],
+   "trades": 11,
+   "trades_mtm": 7,
+   "trades_selesai": 4,
+   "usd": 956.0
+  },
+  {
+   "gross_mean_bps": 2586.9,
+   "layak_label": true,
+   "maker": "0xb22e658d49d950b9961898e7bd9d427f0618a3b8",
+   "net_hit_pct": 63.6,
+   "net_mean_bps": 2527.9,
+   "net_mean_selesai_bps": 7421.1,
+   "net_sd_bps": 6154.0,
+   "pool": "BPAY",
+   "tag_hari_ini": [
+    "smart_degen"
+   ],
+   "trades": 11,
+   "trades_mtm": 9,
+   "trades_selesai": 2,
+   "usd": 13847.0
+  },
+  {
+   "gross_mean_bps": 1066.0,
+   "layak_label": true,
+   "maker": "0x3811f2312f1ed66d08c3c30da1775c5629c5cfe7",
+   "net_hit_pct": 45.5,
+   "net_mean_bps": 1007.0,
+   "net_mean_selesai_bps": 4699.9,
+   "net_sd_bps": 6309.1,
+   "pool": "BPAY",
+   "tag_hari_ini": [
+    "gmgn",
+    "gmgn_go",
+    "smart_degen"
+   ],
+   "trades": 11,
+   "trades_mtm": 5,
+   "trades_selesai": 6,
+   "usd": 156.0
+  },
+  {
+   "gross_mean_bps": 811.8,
+   "layak_label": true,
+   "maker": "0x2359476e2d454a27bc5c07e4b5854fdc59c56336",
+   "net_hit_pct": 36.4,
+   "net_mean_bps": 752.8,
+   "net_mean_selesai_bps": 2438.8,
+   "net_sd_bps": 1243.8,
+   "pool": "\u8c37\u7269\u4eba\u751f",
+   "tag_hari_ini": [
+    "gmgn",
+    "gmgn_go",
+    "smart_degen"
+   ],
+   "trades": 11,
+   "trades_mtm": 8,
+   "trades_selesai": 3,
+   "usd": 1219.0
+  },
+  {
+   "gross_mean_bps": -1360.2,
+   "layak_label": true,
+   "maker": "0xb2555cc4fc09161479d47ee0bc4c40c2ad8923b8",
+   "net_hit_pct": 54.5,
+   "net_mean_bps": -1419.2,
+   "net_mean_selesai_bps": null,
+   "net_sd_bps": 5398.7,
+   "pool": "BPAY",
+   "tag_hari_ini": [
+    "fomo",
+    "smart_degen"
+   ],
+   "trades": 11,
+   "trades_mtm": 11,
+   "trades_selesai": 0,
+   "usd": 2615.0
+  },
+  {
+   "gross_mean_bps": -2448.9,
+   "layak_label": true,
+   "maker": "0xeb527d93995f767ab369a4a931aaf94b1f0c9a03",
+   "net_hit_pct": 18.2,
+   "net_mean_bps": -2507.9,
+   "net_mean_selesai_bps": 856.9,
+   "net_sd_bps": 5913.2,
+   "pool": "BPAY",
+   "tag_hari_ini": [
+    "gmgn",
+    "smart_degen"
+   ],
+   "trades": 11,
+   "trades_mtm": 10,
+   "trades_selesai": 1,
+   "usd": 1439.0
+  },
+  {
+   "gross_mean_bps": -5182.6,
+   "layak_label": true,
+   "maker": "0x7b3d8e939ee08b52d06ab5e6f85791a6007e8d61",
+   "net_hit_pct": 9.1,
+   "net_mean_bps": -5241.6,
+   "net_mean_selesai_bps": 6913.9,
+   "net_sd_bps": 4317.1,
+   "pool": "BPAY",
+   "tag_hari_ini": [
+    "app_smart_money",
+    "axiom",
+    "kol"
+   ],
+   "trades": 11,
+   "trades_mtm": 10,
+   "trades_selesai": 1,
+   "usd": 3892.0
+  },
+  {
+   "gross_mean_bps": -6341.4,
+   "layak_label": true,
+   "maker": "0x1f082f1e247be7bc3e1313acfab43f4aa0ff1f3f",
+   "net_hit_pct": 9.1,
+   "net_mean_bps": -6400.4,
+   "net_mean_selesai_bps": null,
+   "net_sd_bps": 2744.0,
+   "pool": "BPAY",
+   "tag_hari_ini": [
+    "smart_degen"
+   ],
+   "trades": 11,
+   "trades_mtm": 11,
+   "trades_selesai": 0,
+   "usd": 434.0
+  },
+  {
+   "gross_mean_bps": 5895.8,
+   "layak_label": true,
+   "maker": "0x10dbacd088fad79c3c66ee82f1cd1c002e74740a",
+   "net_hit_pct": 40.0,
+   "net_mean_bps": 5836.8,
+   "net_mean_selesai_bps": 22270.6,
+   "net_sd_bps": 17328.9,
+   "pool": "BPAY",
+   "tag_hari_ini": [
+    "gmgn",
+    "smart_degen"
+   ],
+   "trades": 10,
+   "trades_mtm": 6,
+   "trades_selesai": 4,
+   "usd": 672.0
+  },
+  {
+   "gross_mean_bps": 2133.2,
+   "layak_label": true,
+   "maker": "0xe6baa72d658746320f083253e76147dfde8f23e1",
+   "net_hit_pct": 50.0,
+   "net_mean_bps": 2074.2,
+   "net_mean_selesai_bps": 10677.3,
+   "net_sd_bps": 9420.8,
+   "pool": "BPAY",
+   "tag_hari_ini": [
+    "smart_degen"
+   ],
+   "trades": 10,
+   "trades_mtm": 5,
+   "trades_selesai": 5,
+   "usd": 1761.0
+  },
+  {
+   "gross_mean_bps": 1082.8,
+   "layak_label": true,
+   "maker": "0x9e44967396a78f5324fe8a14d5389b267908b0be",
+   "net_hit_pct": 40.0,
+   "net_mean_bps": 1023.8,
+   "net_mean_selesai_bps": null,
+   "net_sd_bps": 5798.7,
+   "pool": "BPAY",
+   "tag_hari_ini": [
+    "gmgn",
+    "smart_degen"
+   ],
+   "trades": 10,
+   "trades_mtm": 10,
+   "trades_selesai": 0,
+   "usd": 3473.0
+  },
+  {
+   "gross_mean_bps": 106.2,
+   "layak_label": true,
+   "maker": "0x94cf7ed19901eb7d487c779e6d1baa87157b2d01",
+   "net_hit_pct": 40.0,
+   "net_mean_bps": 47.2,
+   "net_mean_selesai_bps": 3482.1,
+   "net_sd_bps": 3889.5,
+   "pool": "BPAY",
+   "tag_hari_ini": [
+    "gmgn_go",
+    "kol",
+    "launchpad_smart"
+   ],
+   "trades": 10,
+   "trades_mtm": 6,
+   "trades_selesai": 4,
+   "usd": 2952.0
+  },
+  {
+   "gross_mean_bps": -621.9,
+   "layak_label": true,
+   "maker": "0x3e34b6e489ec40987fc4d0cbf2b3a7f37d312adb",
+   "net_hit_pct": 30.0,
+   "net_mean_bps": -680.9,
+   "net_mean_selesai_bps": -2076.7,
+   "net_sd_bps": 1538.2,
+   "pool": "BPAY",
+   "tag_hari_ini": [
+    "smart_degen"
+   ],
+   "trades": 10,
+   "trades_mtm": 8,
+   "trades_selesai": 2,
+   "usd": 492.0
+  },
+  {
+   "gross_mean_bps": -781.1,
+   "layak_label": true,
+   "maker": "0xfe2aaa63539959eb1f083b0b567da8f6b1c3a8c6",
+   "net_hit_pct": 40.0,
+   "net_mean_bps": -840.1,
+   "net_mean_selesai_bps": 333.6,
+   "net_sd_bps": 2792.8,
+   "pool": "INU",
+   "tag_hari_ini": [
+    "gmgn",
+    "gmgn_go",
+    "launchpad_smart"
+   ],
+   "trades": 10,
+   "trades_mtm": 5,
+   "trades_selesai": 5,
+   "usd": 1064.0
+  },
+  {
+   "gross_mean_bps": -2236.8,
+   "layak_label": true,
+   "maker": "0xac26a7c4cc3c77d8d6813af0a360f88ea3c120aa",
+   "net_hit_pct": 30.0,
+   "net_mean_bps": -2295.8,
+   "net_mean_selesai_bps": -665.7,
+   "net_sd_bps": 3398.4,
+   "pool": "BPAY",
+   "tag_hari_ini": [
+    "smart_degen"
+   ],
+   "trades": 10,
+   "trades_mtm": 3,
+   "trades_selesai": 7,
+   "usd": 538.0
+  },
+  {
+   "gross_mean_bps": -3502.7,
+   "layak_label": true,
+   "maker": "0xc6a304cad64c1c6922fbf320eb93ebc4307b4321",
+   "net_hit_pct": 10.0,
+   "net_mean_bps": -3561.7,
+   "net_mean_selesai_bps": null,
+   "net_sd_bps": 5836.7,
+   "pool": "BPAY",
+   "tag_hari_ini": [
+    "gmgn",
+    "smart_degen"
+   ],
+   "trades": 10,
+   "trades_mtm": 10,
+   "trades_selesai": 0,
+   "usd": 1835.0
+  },
+  {
+   "gross_mean_bps": -5865.5,
+   "layak_label": true,
+   "maker": "0xffa702a3d72ec26e400ee451327af28c30a78e87",
+   "net_hit_pct": 10.0,
+   "net_mean_bps": -5924.5,
+   "net_mean_selesai_bps": null,
+   "net_sd_bps": 5085.7,
+   "pool": "BPAY",
+   "tag_hari_ini": [
+    "gmgn",
+    "smart_degen"
+   ],
+   "trades": 10,
+   "trades_mtm": 10,
+   "trades_selesai": 0,
+   "usd": 1602.0
+  },
+  {
+   "gross_mean_bps": 21719.3,
+   "layak_label": true,
+   "maker": "0x07283248aaf0daa99ed0e5d8c072c11d90dc6dc9",
+   "net_hit_pct": 77.8,
+   "net_mean_bps": 21660.3,
+   "net_mean_selesai_bps": 29392.0,
+   "net_sd_bps": 15533.2,
+   "pool": "BPAY",
+   "tag_hari_ini": [
+    "fomo",
+    "gmgn",
+    "smart_degen"
+   ],
+   "trades": 9,
+   "trades_mtm": 2,
+   "trades_selesai": 7,
+   "usd": 114.0
+  },
+  {
+   "gross_mean_bps": 16074.0,
+   "layak_label": true,
+   "maker": "0x695b065ddf17ca69f4b1b77f1a0680cd438f1970",
+   "net_hit_pct": 66.7,
+   "net_mean_bps": 16015.0,
+   "net_mean_selesai_bps": 33816.7,
+   "net_sd_bps": 22994.0,
+   "pool": "BPAY",
+   "tag_hari_ini": [
+    "gmgn",
+    "gmgn_go",
+    "kol"
+   ],
+   "trades": 9,
+   "trades_mtm": 5,
+   "trades_selesai": 4,
+   "usd": 1675.0
+  },
+  {
+   "gross_mean_bps": 14241.6,
+   "layak_label": true,
+   "maker": "0xab4a8a526d63af3ab39eb6f6b072ca12176c78d6",
+   "net_hit_pct": 77.8,
+   "net_mean_bps": 14182.6,
+   "net_mean_selesai_bps": 22319.5,
+   "net_sd_bps": 19029.6,
+   "pool": "BPAY",
+   "tag_hari_ini": [
+    "gmgn",
+    "gmgn_go",
+    "padre"
+   ],
+   "trades": 9,
+   "trades_mtm": 3,
+   "trades_selesai": 6,
+   "usd": 1133.0
+  },
+  {
+   "gross_mean_bps": 12754.2,
+   "layak_label": true,
+   "maker": "0x99ca58021f82bd8592652869cca392031b3a0e46",
+   "net_hit_pct": 55.6,
+   "net_mean_bps": 12695.2,
+   "net_mean_selesai_bps": 343.0,
+   "net_sd_bps": 43550.3,
+   "pool": "BPAY",
+   "tag_hari_ini": [
+    "fomo",
+    "gmgn",
+    "gmgn_go"
+   ],
+   "trades": 9,
+   "trades_mtm": 5,
+   "trades_selesai": 4,
+   "usd": 698.0
+  },
+  {
+   "gross_mean_bps": 9783.2,
+   "layak_label": true,
+   "maker": "0x2948ebe47277da144a86f43f2b48981c8ff72a3e",
+   "net_hit_pct": 77.8,
+   "net_mean_bps": 9724.2,
+   "net_mean_selesai_bps": 13631.3,
+   "net_sd_bps": 8153.4,
+   "pool": "\u5c0f\u5b9d",
+   "tag_hari_ini": [
+    "gmgn",
+    "gmgn_go",
+    "kol"
+   ],
+   "trades": 9,
+   "trades_mtm": 3,
+   "trades_selesai": 6,
+   "usd": 230.0
+  },
+  {
+   "gross_mean_bps": 6182.7,
+   "layak_label": true,
+   "maker": "0x8b54982efb0d30df9eac59b3badde4ea951d20ca",
+   "net_hit_pct": 77.8,
+   "net_mean_bps": 6123.7,
+   "net_mean_selesai_bps": 10111.4,
+   "net_sd_bps": 6644.9,
+   "pool": "BPAY",
+   "tag_hari_ini": [
+    "gmgn",
+    "gmgn_go",
+    "launchpad_smart"
+   ],
+   "trades": 9,
+   "trades_mtm": 5,
+   "trades_selesai": 4,
+   "usd": 417.0
+  },
+  {
+   "gross_mean_bps": 3222.2,
+   "layak_label": true,
+   "maker": "0x42fbff25c0237b15dd2966065f72908bd8059289",
+   "net_hit_pct": 66.7,
+   "net_mean_bps": 3163.2,
+   "net_mean_selesai_bps": 11766.0,
+   "net_sd_bps": 8708.4,
+   "pool": "BPAY",
+   "tag_hari_ini": [
+    "app_smart_money",
+    "gmgn",
+    "gmgn_go",
+    "smart_degen"
+   ],
+   "trades": 9,
+   "trades_mtm": 6,
+   "trades_selesai": 3,
+   "usd": 1629.0
+  },
+  {
+   "gross_mean_bps": 1984.6,
+   "layak_label": true,
+   "maker": "0xe29cae3f4c71492df224a90b9dc93d3a920ff5f5",
+   "net_hit_pct": 66.7,
+   "net_mean_bps": 1925.6,
+   "net_mean_selesai_bps": 6011.8,
+   "net_sd_bps": 4632.2,
+   "pool": "PINKTIME",
+   "tag_hari_ini": [
+    "smart_degen"
+   ],
+   "trades": 9,
+   "trades_mtm": 5,
+   "trades_selesai": 4,
+   "usd": 685.0
+  },
+  {
+   "gross_mean_bps": 1830.6,
+   "layak_label": true,
+   "maker": "0xb226f97bc5b01978848dc440b40c70faea7c006e",
+   "net_hit_pct": 44.4,
+   "net_mean_bps": 1771.6,
+   "net_mean_selesai_bps": 8880.8,
+   "net_sd_bps": 5611.0,
+   "pool": "BPAY",
+   "tag_hari_ini": [
+    "app_smart_money",
+    "arbitrager",
+    "gmgn_go"
+   ],
+   "trades": 9,
+   "trades_mtm": 7,
+   "trades_selesai": 2,
+   "usd": 2327.0
+  },
+  {
+   "gross_mean_bps": -1114.0,
+   "layak_label": true,
+   "maker": "0xaa4e9e8f1e9c03e6de9f5f78680a0f8ae5908709",
+   "net_hit_pct": 44.4,
+   "net_mean_bps": -1173.0,
+   "net_mean_selesai_bps": null,
+   "net_sd_bps": 2364.7,
+   "pool": "BPAY",
+   "tag_hari_ini": [
+    "fomo",
+    "gmgn",
+    "gmgn_go"
+   ],
+   "trades": 9,
+   "trades_mtm": 9,
+   "trades_selesai": 0,
+   "usd": 1683.0
+  },
+  {
+   "gross_mean_bps": -2146.5,
+   "layak_label": true,
+   "maker": "0x260ac171499323201b781b14b7b2ea679db18339",
+   "net_hit_pct": 22.2,
+   "net_mean_bps": -2205.5,
+   "net_mean_selesai_bps": null,
+   "net_sd_bps": 5457.8,
+   "pool": "BPAY",
+   "tag_hari_ini": [
+    "gmgn",
+    "gmgn_go",
+    "smart_degen"
+   ],
+   "trades": 9,
+   "trades_mtm": 9,
+   "trades_selesai": 0,
+   "usd": 1009.0
+  },
+  {
+   "gross_mean_bps": -2341.1,
+   "layak_label": true,
+   "maker": "0xafe251d5ec1d51e149b80783df25a2361737ac87",
+   "net_hit_pct": 22.2,
+   "net_mean_bps": -2400.1,
+   "net_mean_selesai_bps": -271.5,
+   "net_sd_bps": 3620.4,
+   "pool": "BPAY",
+   "tag_hari_ini": [
+    "smart_degen"
+   ],
+   "trades": 9,
+   "trades_mtm": 6,
+   "trades_selesai": 3,
+   "usd": 378.0
+  },
+  {
+   "gross_mean_bps": -2685.9,
+   "layak_label": true,
+   "maker": "0x6d89b9f9b05fdffcf69ca415a36c4ce653901ec7",
+   "net_hit_pct": 22.2,
+   "net_mean_bps": -2744.9,
+   "net_mean_selesai_bps": null,
+   "net_sd_bps": 2980.1,
+   "pool": "BPAY",
+   "tag_hari_ini": [
+    "gmgn",
+    "smart_degen"
+   ],
+   "trades": 9,
+   "trades_mtm": 9,
+   "trades_selesai": 0,
+   "usd": 945.0
+  },
+  {
+   "gross_mean_bps": 7500.2,
+   "layak_label": true,
+   "maker": "0x6620f205f94884c920b372112b4bb8cf2a2930ea",
+   "net_hit_pct": 75.0,
+   "net_mean_bps": 7441.2,
+   "net_mean_selesai_bps": 12157.9,
+   "net_sd_bps": 11525.4,
+   "pool": "BPAY",
+   "tag_hari_ini": [
+    "gmgn",
+    "smart_degen"
+   ],
+   "trades": 8,
+   "trades_mtm": 2,
+   "trades_selesai": 6,
+   "usd": 449.0
+  },
+  {
+   "gross_mean_bps": 4068.4,
+   "layak_label": true,
+   "maker": "0x489351e607fab6919db684dbabc2ba804ae04d9e",
+   "net_hit_pct": 87.5,
+   "net_mean_bps": 4009.4,
+   "net_mean_selesai_bps": 6690.9,
+   "net_sd_bps": 3809.2,
+   "pool": "AGENTIC",
+   "tag_hari_ini": [
+    "smart_degen"
+   ],
+   "trades": 8,
+   "trades_mtm": 5,
+   "trades_selesai": 3,
+   "usd": 729.0
+  },
+  {
+   "gross_mean_bps": 3638.1,
+   "layak_label": true,
+   "maker": "0x4790895eea7a7cc72d6d078ae065d48bcb6acf49",
+   "net_hit_pct": 37.5,
+   "net_mean_bps": 3579.1,
+   "net_mean_selesai_bps": 13543.6,
+   "net_sd_bps": 12809.9,
+   "pool": "BPAY",
+   "tag_hari_ini": [
+    "smart_degen"
+   ],
+   "trades": 8,
+   "trades_mtm": 7,
+   "trades_selesai": 1,
+   "usd": 33.0
+  },
+  {
+   "gross_mean_bps": -1422.3,
+   "layak_label": true,
+   "maker": "0x00000de014986e2056e7b7ac1bbafa00629f899c",
+   "net_hit_pct": 25.0,
+   "net_mean_bps": -1481.3,
+   "net_mean_selesai_bps": 6648.8,
+   "net_sd_bps": 8561.4,
+   "pool": "BPAY",
+   "tag_hari_ini": [
+    "fomo",
+    "gmgn",
+    "smart_degen"
+   ],
+   "trades": 8,
+   "trades_mtm": 7,
+   "trades_selesai": 1,
+   "usd": 3474.0
+  },
+  {
+   "gross_mean_bps": -2097.1,
+   "layak_label": true,
+   "maker": "0x7f7cfb554704357395ed3a9fd6a7fdee4cd89457",
+   "net_hit_pct": 37.5,
+   "net_mean_bps": -2156.1,
+   "net_mean_selesai_bps": 851.8,
+   "net_sd_bps": 2931.7,
+   "pool": "BPAY",
+   "tag_hari_ini": [
+    "fomo",
+    "gmgn",
+    "gmgn_go"
+   ],
+   "trades": 8,
+   "trades_mtm": 6,
+   "trades_selesai": 2,
+   "usd": 387.0
+  },
+  {
+   "gross_mean_bps": -2370.5,
+   "layak_label": true,
+   "maker": "0x0f6fbb464f9c06da4500d3d625b2276236879c7e",
+   "net_hit_pct": 25.0,
+   "net_mean_bps": -2429.5,
+   "net_mean_selesai_bps": null,
+   "net_sd_bps": 4162.1,
+   "pool": "BPAY",
+   "tag_hari_ini": [
+    "gmgn",
+    "smart_degen"
+   ],
+   "trades": 8,
+   "trades_mtm": 8,
+   "trades_selesai": 0,
+   "usd": 796.0
+  },
+  {
+   "gross_mean_bps": -2931.9,
+   "layak_label": true,
+   "maker": "0xd4faf0d4a9b33e383806497bc40748160ce12991",
+   "net_hit_pct": 50.0,
+   "net_mean_bps": -2990.9,
+   "net_mean_selesai_bps": 1562.5,
+   "net_sd_bps": 4741.2,
+   "pool": "BPAY",
+   "tag_hari_ini": [
+    "gmgn",
+    "smart_degen"
+   ],
+   "trades": 8,
+   "trades_mtm": 5,
+   "trades_selesai": 3,
+   "usd": 196.0
+  },
+  {
+   "gross_mean_bps": 15601.0,
+   "layak_label": false,
+   "maker": "0x1252ca190d42bb25c44b8008b044c9618220be87",
+   "net_hit_pct": 71.4,
+   "net_mean_bps": 15542.0,
+   "net_mean_selesai_bps": 39453.5,
+   "net_sd_bps": 29107.4,
+   "pool": "BPAY",
+   "tag_hari_ini": [
+    "app_smart_money",
+    "gmgn",
+    "kol"
+   ],
+   "trades": 7,
+   "trades_mtm": 4,
+   "trades_selesai": 3,
+   "usd": 410.0
+  },
+  {
+   "gross_mean_bps": 7713.6,
+   "layak_label": false,
+   "maker": "0xa05ec35f7d1eba823cff2ed26aeaed419683742f",
+   "net_hit_pct": 100.0,
+   "net_mean_bps": 7654.6,
+   "net_mean_selesai_bps": 7041.7,
+   "net_sd_bps": 8365.2,
+   "pool": "BPAY",
+   "tag_hari_ini": [
+    "gmgn",
+    "gmgn_go",
+    "kol",
+    "top_followed"
+   ],
+   "trades": 7,
+   "trades_mtm": 4,
+   "trades_selesai": 3,
+   "usd": 1965.0
+  },
+  {
+   "gross_mean_bps": 4480.5,
+   "layak_label": false,
+   "maker": "0x9c8d1fb0ddc7f2ba41616ae6011f6c248aa185a4",
+   "net_hit_pct": 71.4,
+   "net_mean_bps": 4421.5,
+   "net_mean_selesai_bps": 11515.4,
+   "net_sd_bps": 8437.7,
+   "pool": "BPAY",
+   "tag_hari_ini": [
+    "fomo",
+    "gmgn",
+    "smart_degen"
+   ],
+   "trades": 7,
+   "trades_mtm": 4,
+   "trades_selesai": 3,
+   "usd": 900.0
+  },
+  {
+   "gross_mean_bps": 3118.7,
+   "layak_label": false,
+   "maker": "0x1b1832ac9ca59a55ea12676d0d7310149cde101f",
+   "net_hit_pct": 57.1,
+   "net_mean_bps": 3059.7,
+   "net_mean_selesai_bps": 4184.8,
+   "net_sd_bps": 4175.7,
+   "pool": "TCC",
+   "tag_hari_ini": [
+    "gmgn",
+    "smart_degen"
+   ],
+   "trades": 7,
+   "trades_mtm": 4,
+   "trades_selesai": 3,
+   "usd": 1149.0
+  },
+  {
+   "gross_mean_bps": 1652.4,
+   "layak_label": false,
+   "maker": "0x267b1b36fbd07c0689803d1797075de8dffbb969",
+   "net_hit_pct": 57.1,
+   "net_mean_bps": 1593.4,
+   "net_mean_selesai_bps": 12038.2,
+   "net_sd_bps": 5940.5,
+   "pool": "BPAY",
+   "tag_hari_ini": [
+    "axiom",
+    "fomo",
+    "gmgn_go"
+   ],
+   "trades": 7,
+   "trades_mtm": 6,
+   "trades_selesai": 1,
+   "usd": 1513.0
+  },
+  {
+   "gross_mean_bps": 1034.5,
+   "layak_label": false,
+   "maker": "0x34791440b825e4a2c60328ad5f8c577ccbd456a6",
+   "net_hit_pct": 42.9,
+   "net_mean_bps": 975.5,
+   "net_mean_selesai_bps": 2308.1,
+   "net_sd_bps": 7302.5,
+   "pool": "BPAY",
+   "tag_hari_ini": [
+    "smart_degen"
+   ],
+   "trades": 7,
+   "trades_mtm": 3,
+   "trades_selesai": 4,
+   "usd": 1015.0
+  },
+  {
+   "gross_mean_bps": 1029.2,
+   "layak_label": false,
+   "maker": "0xc3dd91e1ffdea2fcdb504debd55828e086289091",
+   "net_hit_pct": 57.1,
+   "net_mean_bps": 970.2,
+   "net_mean_selesai_bps": 6064.9,
+   "net_sd_bps": 5700.0,
+   "pool": "BPAY",
+   "tag_hari_ini": [
+    "gmgn",
+    "gmgn_go",
+    "smart_degen"
+   ],
+   "trades": 7,
+   "trades_mtm": 6,
+   "trades_selesai": 1,
+   "usd": 1678.0
+  },
+  {
+   "gross_mean_bps": 94.7,
+   "layak_label": false,
+   "maker": "0xd3a71f80906876d063321ccb125f2f214993de17",
+   "net_hit_pct": 57.1,
+   "net_mean_bps": 35.7,
+   "net_mean_selesai_bps": 626.2,
+   "net_sd_bps": 4686.3,
+   "pool": "BPAY",
+   "tag_hari_ini": [
+    "fomo",
+    "gmgn",
+    "gmgn_go",
+    "kol"
+   ],
+   "trades": 7,
+   "trades_mtm": 5,
+   "trades_selesai": 2,
+   "usd": 604.0
+  },
+  {
+   "gross_mean_bps": -1807.5,
+   "layak_label": false,
+   "maker": "0x5a5eefb3e27a08c93d09a5866261ca35bcd2be98",
+   "net_hit_pct": 14.3,
+   "net_mean_bps": -1866.5,
+   "net_mean_selesai_bps": 21831.6,
+   "net_sd_bps": 10936.9,
+   "pool": "BPAY",
+   "tag_hari_ini": [
+    "gmgn",
+    "smart_degen"
+   ],
+   "trades": 7,
+   "trades_mtm": 6,
+   "trades_selesai": 1,
+   "usd": 132.0
+  },
+  {
+   "gross_mean_bps": -1864.3,
+   "layak_label": false,
+   "maker": "0xafd48c24346cd15818033a73dbd9b57ea72c5036",
+   "net_hit_pct": 0.0,
+   "net_mean_bps": -1923.3,
+   "net_mean_selesai_bps": null,
+   "net_sd_bps": 1481.2,
+   "pool": "BPAY",
+   "tag_hari_ini": [
+    "gmgn",
+    "smart_degen"
+   ],
+   "trades": 7,
+   "trades_mtm": 7,
+   "trades_selesai": 0,
+   "usd": 593.0
+  },
+  {
+   "gross_mean_bps": -3509.1,
+   "layak_label": false,
+   "maker": "0x224c6ca9aba87dda3340c10681f3673afadfe607",
+   "net_hit_pct": 14.3,
+   "net_mean_bps": -3568.1,
+   "net_mean_selesai_bps": null,
+   "net_sd_bps": 3334.6,
+   "pool": "BPAY",
+   "tag_hari_ini": [
+    "gmgn",
+    "gmgn_go",
+    "smart_degen"
+   ],
+   "trades": 7,
+   "trades_mtm": 7,
+   "trades_selesai": 0,
+   "usd": 680.0
+  },
+  {
+   "gross_mean_bps": 21249.9,
+   "layak_label": false,
+   "maker": "0xc2c6acd377458010713e733e1b21dd6f670d091c",
+   "net_hit_pct": 50.0,
+   "net_mean_bps": 21190.9,
+   "net_mean_selesai_bps": 109066.4,
+   "net_sd_bps": 44711.0,
+   "pool": "BPAY",
+   "tag_hari_ini": [
+    "axiom",
+    "gmgn",
+    "gmgn_go",
+    "kol"
+   ],
+   "trades": 6,
+   "trades_mtm": 5,
+   "trades_selesai": 1,
+   "usd": 5796.0
+  },
+  {
+   "gross_mean_bps": 13401.3,
+   "layak_label": false,
+   "maker": "0x27574268800a7cf72a750a13df8730c9dfe956b4",
+   "net_hit_pct": 83.3,
+   "net_mean_bps": 13342.3,
+   "net_mean_selesai_bps": 20293.2,
+   "net_sd_bps": 13582.2,
+   "pool": "BPAY",
+   "tag_hari_ini": [
+    "smart_degen"
+   ],
+   "trades": 6,
+   "trades_mtm": 2,
+   "trades_selesai": 4,
+   "usd": 871.0
+  },
+  {
+   "gross_mean_bps": 10370.4,
+   "layak_label": false,
+   "maker": "0x13dd4d2b7acb97c69d5599fa7b0cecbabda17a3b",
+   "net_hit_pct": 100.0,
+   "net_mean_bps": 10311.4,
+   "net_mean_selesai_bps": 10958.4,
+   "net_sd_bps": 1595.3,
+   "pool": "BPAY",
+   "tag_hari_ini": [
+    "fomo",
+    "gmgn",
+    "gmgn_go"
+   ],
+   "trades": 6,
+   "trades_mtm": 2,
+   "trades_selesai": 4,
+   "usd": 303.0
+  },
+  {
+   "gross_mean_bps": 7688.2,
+   "layak_label": false,
+   "maker": "0x2ad949a2bdecb5e72e83af852fa7c474502462f9",
+   "net_hit_pct": 66.7,
+   "net_mean_bps": 7629.2,
+   "net_mean_selesai_bps": 16996.2,
+   "net_sd_bps": 14697.2,
+   "pool": "BPAY",
+   "tag_hari_ini": [
+    "fomo",
+    "gmgn",
+    "gmgn_go"
+   ],
+   "trades": 6,
+   "trades_mtm": 4,
+   "trades_selesai": 2,
+   "usd": 301.0
+  },
+  {
+   "gross_mean_bps": 5811.5,
+   "layak_label": false,
+   "maker": "0xc4d655cb5ee3818e3ae846247ae9f9fd2d9b7921",
+   "net_hit_pct": 100.0,
+   "net_mean_bps": 5752.5,
+   "net_mean_selesai_bps": 10583.6,
+   "net_sd_bps": 6019.8,
+   "pool": "BPAY",
+   "tag_hari_ini": [
+    "smart_degen"
+   ],
+   "trades": 6,
+   "trades_mtm": 5,
+   "trades_selesai": 1,
+   "usd": 684.0
+  },
+  {
+   "gross_mean_bps": 5486.5,
+   "layak_label": false,
+   "maker": "0xf38ce55fe4e517e77e1056a54e64f22d43d88c3a",
+   "net_hit_pct": 50.0,
+   "net_mean_bps": 5427.5,
+   "net_mean_selesai_bps": null,
+   "net_sd_bps": 18498.3,
+   "pool": "BPAY",
+   "tag_hari_ini": [
+    "fomo",
+    "gmgn_go",
+    "kol"
+   ],
+   "trades": 6,
+   "trades_mtm": 6,
+   "trades_selesai": 0,
+   "usd": 1339.0
+  },
+  {
+   "gross_mean_bps": 3447.9,
+   "layak_label": false,
+   "maker": "0x00b7a082636d8c2d1eb1f371296e032ec4a8c204",
+   "net_hit_pct": 66.7,
+   "net_mean_bps": 3388.9,
+   "net_mean_selesai_bps": 5932.4,
+   "net_sd_bps": 7275.9,
+   "pool": "BPAY",
+   "tag_hari_ini": [
+    "fomo",
+    "smart_degen"
+   ],
+   "trades": 6,
+   "trades_mtm": 2,
+   "trades_selesai": 4,
+   "usd": 121.0
+  },
+  {
+   "gross_mean_bps": 745.3,
+   "layak_label": false,
+   "maker": "0xde1ed485022549d87aec85fe08107682322f1dab",
+   "net_hit_pct": 50.0,
+   "net_mean_bps": 686.3,
+   "net_mean_selesai_bps": null,
+   "net_sd_bps": 1017.9,
+   "pool": "BPAY",
+   "tag_hari_ini": [
+    "gmgn",
+    "launchpad_smart",
+    "smart_degen"
+   ],
+   "trades": 6,
+   "trades_mtm": 6,
+   "trades_selesai": 0,
+   "usd": 1841.0
+  },
+  {
+   "gross_mean_bps": 445.4,
+   "layak_label": false,
+   "maker": "0x57a01234c07902722dca5c7363c4cdde6b059f9d",
+   "net_hit_pct": 50.0,
+   "net_mean_bps": 386.4,
+   "net_mean_selesai_bps": 1986.0,
+   "net_sd_bps": 1609.9,
+   "pool": "\u5ba2\u670d\u5c0fC",
+   "tag_hari_ini": [
+    "fomo",
+    "gmgn",
+    "launchpad_smart"
+   ],
+   "trades": 6,
+   "trades_mtm": 4,
+   "trades_selesai": 2,
+   "usd": 2763.0
+  },
+  {
+   "gross_mean_bps": 302.6,
+   "layak_label": false,
+   "maker": "0x1de9dd772681c605f704b82d99e7c576dc802423",
+   "net_hit_pct": 66.7,
+   "net_mean_bps": 243.6,
+   "net_mean_selesai_bps": -405.0,
+   "net_sd_bps": 2242.6,
+   "pool": "BPAY",
+   "tag_hari_ini": [
+    "gmgn",
+    "smart_degen"
+   ],
+   "trades": 6,
+   "trades_mtm": 2,
+   "trades_selesai": 4,
+   "usd": 378.0
+  },
+  {
+   "gross_mean_bps": -24.3,
+   "layak_label": false,
+   "maker": "0xbb1556dc0ca0383ba72f637e910f2ba9c1ccc601",
+   "net_hit_pct": 33.3,
+   "net_mean_bps": -83.3,
+   "net_mean_selesai_bps": 9175.8,
+   "net_sd_bps": 8591.3,
+   "pool": "BPAY",
+   "tag_hari_ini": [
+    "gmgn",
+    "gmgn_go",
+    "smart_degen"
+   ],
+   "trades": 6,
+   "trades_mtm": 4,
+   "trades_selesai": 2,
+   "usd": 904.0
+  },
+  {
+   "gross_mean_bps": -411.7,
+   "layak_label": false,
+   "maker": "0x6ed306d48de4e0a034accf66f042a37fc6dd2123",
+   "net_hit_pct": 16.7,
+   "net_mean_bps": -470.7,
+   "net_mean_selesai_bps": null,
+   "net_sd_bps": 1044.4,
+   "pool": "BPAY",
+   "tag_hari_ini": [
+    "smart_degen"
+   ],
+   "trades": 6,
+   "trades_mtm": 6,
+   "trades_selesai": 0,
+   "usd": 285.0
+  },
+  {
+   "gross_mean_bps": -512.8,
+   "layak_label": false,
+   "maker": "0xc821afc02037089edf594f0fa6320c7354ba940d",
+   "net_hit_pct": 33.3,
+   "net_mean_bps": -571.8,
+   "net_mean_selesai_bps": 13224.4,
+   "net_sd_bps": 9504.6,
+   "pool": "BPAY",
+   "tag_hari_ini": [
+    "smart_degen"
+   ],
+   "trades": 6,
+   "trades_mtm": 5,
+   "trades_selesai": 1,
+   "usd": 1136.0
+  },
+  {
+   "gross_mean_bps": -574.7,
+   "layak_label": false,
+   "maker": "0xba295e3de694929392f84c494fd7109d9cee2ee0",
+   "net_hit_pct": 33.3,
+   "net_mean_bps": -633.7,
+   "net_mean_selesai_bps": -201.8,
+   "net_sd_bps": 3078.8,
+   "pool": "BPAY",
+   "tag_hari_ini": [
+    "smart_degen"
+   ],
+   "trades": 6,
+   "trades_mtm": 3,
+   "trades_selesai": 3,
+   "usd": 1469.0
+  },
+  {
+   "gross_mean_bps": -1221.0,
+   "layak_label": false,
+   "maker": "0xbc0087c6db7caa239c0151529a20e650c886106e",
+   "net_hit_pct": 33.3,
+   "net_mean_bps": -1280.0,
+   "net_mean_selesai_bps": 575.4,
+   "net_sd_bps": 3194.5,
+   "pool": "GS",
+   "tag_hari_ini": [
+    "fomo",
+    "gmgn",
+    "gmgn_go"
+   ],
+   "trades": 6,
+   "trades_mtm": 3,
+   "trades_selesai": 3,
+   "usd": 681.0
+  },
+  {
+   "gross_mean_bps": -1643.2,
+   "layak_label": false,
+   "maker": "0xf78201616d6ae8cd7a63be1930e6639ba67e109e",
+   "net_hit_pct": 33.3,
+   "net_mean_bps": -1702.2,
+   "net_mean_selesai_bps": -410.5,
+   "net_sd_bps": 3536.9,
+   "pool": "BPAY",
+   "tag_hari_ini": [
+    "fomo",
+    "gmgn",
+    "smart_degen"
+   ],
+   "trades": 6,
+   "trades_mtm": 3,
+   "trades_selesai": 3,
+   "usd": 588.0
+  },
+  {
+   "gross_mean_bps": -2147.8,
+   "layak_label": false,
+   "maker": "0x70f354747745aa7b4035c2e3da33dd1eab7b6955",
+   "net_hit_pct": 0.0,
+   "net_mean_bps": -2206.8,
+   "net_mean_selesai_bps": -2206.8,
+   "net_sd_bps": 171.5,
+   "pool": "BPAY",
+   "tag_hari_ini": [
+    "smart_degen"
+   ],
+   "trades": 6,
+   "trades_mtm": 0,
+   "trades_selesai": 6,
+   "usd": 285.0
+  },
+  {
+   "gross_mean_bps": -2863.4,
+   "layak_label": false,
+   "maker": "0x1355375f10f4f44256fbef50c8bbefa75839d706",
+   "net_hit_pct": 16.7,
+   "net_mean_bps": -2922.4,
+   "net_mean_selesai_bps": null,
+   "net_sd_bps": 3340.7,
+   "pool": "BPAY",
+   "tag_hari_ini": [
+    "fomo",
+    "gmgn",
+    "launchpad_smart",
+    "smart_degen"
+   ],
+   "trades": 6,
+   "trades_mtm": 6,
+   "trades_selesai": 0,
+   "usd": 983.0
+  },
+  {
+   "gross_mean_bps": -3507.6,
+   "layak_label": false,
+   "maker": "0x61e1de40854cae288a11feb9b28a064df14d29ef",
+   "net_hit_pct": 33.3,
+   "net_mean_bps": -3566.6,
+   "net_mean_selesai_bps": 479.1,
+   "net_sd_bps": 4341.8,
+   "pool": "BPAY",
+   "tag_hari_ini": [
+    "arbitrager",
+    "axiom",
+    "kol"
+   ],
+   "trades": 6,
+   "trades_mtm": 5,
+   "trades_selesai": 1,
+   "usd": 2868.0
+  },
+  {
+   "gross_mean_bps": -4067.8,
+   "layak_label": false,
+   "maker": "0xf73a400c35530e26e3b388da5ad290190287dde8",
+   "net_hit_pct": 0.0,
+   "net_mean_bps": -4126.8,
+   "net_mean_selesai_bps": null,
+   "net_sd_bps": 4484.2,
+   "pool": "BPAY",
+   "tag_hari_ini": [
+    "smart_degen"
+   ],
+   "trades": 6,
+   "trades_mtm": 6,
+   "trades_selesai": 0,
+   "usd": 794.0
+  },
+  {
+   "gross_mean_bps": -4812.6,
+   "layak_label": false,
+   "maker": "0x5250dbcf6ac11c4c2cbd8dcaf5a6d019f3268ea8",
+   "net_hit_pct": 0.0,
+   "net_mean_bps": -4871.6,
+   "net_mean_selesai_bps": null,
+   "net_sd_bps": 2040.7,
+   "pool": "BPAY",
+   "tag_hari_ini": [
+    "arbitrager",
+    "gmgn",
+    "gmgn_go",
+    "kol"
+   ],
+   "trades": 6,
+   "trades_mtm": 6,
+   "trades_selesai": 0,
+   "usd": 1541.0
+  },
+  {
+   "gross_mean_bps": -4940.7,
+   "layak_label": false,
+   "maker": "0x191906abaef6fc122b9b23ad0d76221de7629a9b",
+   "net_hit_pct": 16.7,
+   "net_mean_bps": -4999.7,
+   "net_mean_selesai_bps": null,
+   "net_sd_bps": 3602.1,
+   "pool": "BPAY",
+   "tag_hari_ini": [
+    "fomo",
+    "smart_degen"
+   ],
+   "trades": 6,
+   "trades_mtm": 6,
+   "trades_selesai": 0,
+   "usd": 733.0
+  },
+  {
+   "gross_mean_bps": -5635.9,
+   "layak_label": false,
+   "maker": "0x947d08d4848bb05e23b0852935a985a65d278810",
+   "net_hit_pct": 0.0,
+   "net_mean_bps": -5694.9,
+   "net_mean_selesai_bps": null,
+   "net_sd_bps": 4362.1,
+   "pool": "BPAY",
+   "tag_hari_ini": [
+    "smart_degen"
+   ],
+   "trades": 6,
+   "trades_mtm": 6,
+   "trades_selesai": 0,
+   "usd": 2315.0
+  },
+  {
+   "gross_mean_bps": -6718.9,
+   "layak_label": false,
+   "maker": "0x9c2431093b96d989e7a66cc17efbdf7a3807f25c",
+   "net_hit_pct": 16.7,
+   "net_mean_bps": -6777.9,
+   "net_mean_selesai_bps": 1312.9,
+   "net_sd_bps": 4006.5,
+   "pool": "BPAY",
+   "tag_hari_ini": [
+    "fomo",
+    "gmgn",
+    "smart_degen"
+   ],
+   "trades": 6,
+   "trades_mtm": 5,
+   "trades_selesai": 1,
+   "usd": 376.0
+  },
+  {
+   "gross_mean_bps": 4987.0,
+   "layak_label": false,
+   "maker": "0x2af9334d3f02b417b523d293989cc15743bd1733",
+   "net_hit_pct": 80.0,
+   "net_mean_bps": 4928.0,
+   "net_mean_selesai_bps": 7391.3,
+   "net_sd_bps": 5822.4,
+   "pool": "BPAY",
+   "tag_hari_ini": [
+    "gmgn",
+    "gmgn_go",
+    "smart_degen"
+   ],
+   "trades": 5,
+   "trades_mtm": 1,
+   "trades_selesai": 4,
+   "usd": 380.0
+  },
+  {
+   "gross_mean_bps": 4067.0,
+   "layak_label": false,
+   "maker": "0x12c0f1760d470f5b9c1ecdd2055718b4871c74b1",
+   "net_hit_pct": 60.0,
+   "net_mean_bps": 4008.0,
+   "net_mean_selesai_bps": null,
+   "net_sd_bps": 11808.3,
+   "pool": "BPAY",
+   "tag_hari_ini": [
+    "gmgn",
+    "gmgn_go",
+    "smart_degen"
+   ],
+   "trades": 5,
+   "trades_mtm": 5,
+   "trades_selesai": 0,
+   "usd": 490.0
+  },
+  {
+   "gross_mean_bps": 1928.3,
+   "layak_label": false,
+   "maker": "0x07cb661f4919abf7d867eeb5ec9af737e47f80bd",
+   "net_hit_pct": 60.0,
+   "net_mean_bps": 1869.3,
+   "net_mean_selesai_bps": 3254.9,
+   "net_sd_bps": 3954.6,
+   "pool": "\u4f20\u5947\u7eaa\u5143",
+   "tag_hari_ini": [
+    "gmgn",
+    "gmgn_go",
+    "smart_degen"
+   ],
+   "trades": 5,
+   "trades_mtm": 3,
+   "trades_selesai": 2,
+   "usd": 834.0
+  },
+  {
+   "gross_mean_bps": 588.1,
+   "layak_label": false,
+   "maker": "0x9143a2eebd3b918ff70a162da493e1bad117a6f4",
+   "net_hit_pct": 80.0,
+   "net_mean_bps": 529.1,
+   "net_mean_selesai_bps": null,
+   "net_sd_bps": 775.8,
+   "pool": "\u8774\u8776\u76db\u4e16",
+   "tag_hari_ini": [
+    "smart_degen"
+   ],
+   "trades": 5,
+   "trades_mtm": 5,
+   "trades_selesai": 0,
+   "usd": 123.0
+  },
+  {
+   "gross_mean_bps": -182.5,
+   "layak_label": false,
+   "maker": "0x28257c600b0f61c1b13e236f822cebf95a36a712",
+   "net_hit_pct": 40.0,
+   "net_mean_bps": -241.5,
+   "net_mean_selesai_bps": 6306.9,
+   "net_sd_bps": 3866.6,
+   "pool": "BPAY",
+   "tag_hari_ini": [
+    "gmgn",
+    "gmgn_go",
+    "smart_degen"
+   ],
+   "trades": 5,
+   "trades_mtm": 4,
+   "trades_selesai": 1,
+   "usd": 604.0
+  },
+  {
+   "gross_mean_bps": -740.3,
+   "layak_label": false,
+   "maker": "0xd53b231a2b2f6f0a243e4ec3dadf0f97984374c7",
+   "net_hit_pct": 20.0,
+   "net_mean_bps": -799.3,
+   "net_mean_selesai_bps": -1746.5,
+   "net_sd_bps": 2015.7,
+   "pool": "BPAY",
+   "tag_hari_ini": [
+    "smart_degen"
+   ],
+   "trades": 5,
+   "trades_mtm": 3,
+   "trades_selesai": 2,
+   "usd": 330.0
+  },
+  {
+   "gross_mean_bps": -1108.0,
+   "layak_label": false,
+   "maker": "0xaa968cbf85c1ccc137323181b61979caf972ac76",
+   "net_hit_pct": 40.0,
+   "net_mean_bps": -1167.0,
+   "net_mean_selesai_bps": 569.3,
+   "net_sd_bps": 2793.6,
+   "pool": "\u7a81\u7136\u7684\u5f52\u96f6",
+   "tag_hari_ini": [
+    "gmgn",
+    "smart_degen"
+   ],
+   "trades": 5,
+   "trades_mtm": 3,
+   "trades_selesai": 2,
+   "usd": 338.0
+  },
+  {
+   "gross_mean_bps": -1753.3,
+   "layak_label": false,
+   "maker": "0xf100af33f90445d1d482fb63df3f6cdb475eeb0f",
+   "net_hit_pct": 20.0,
+   "net_mean_bps": -1812.3,
+   "net_mean_selesai_bps": null,
+   "net_sd_bps": 2389.7,
+   "pool": "BPAY",
+   "tag_hari_ini": [
+    "axiom",
+    "gmgn",
+    "gmgn_go"
+   ],
+   "trades": 5,
+   "trades_mtm": 5,
+   "trades_selesai": 0,
+   "usd": 1565.0
+  },
+  {
+   "gross_mean_bps": -2051.0,
+   "layak_label": false,
+   "maker": "0xbe72b068672620cdf451afd97dfd8f86e296e78d",
+   "net_hit_pct": 60.0,
+   "net_mean_bps": -2110.0,
+   "net_mean_selesai_bps": 628.1,
+   "net_sd_bps": 3769.1,
+   "pool": "BPAY",
+   "tag_hari_ini": [
+    "gmgn",
+    "gmgn_go",
+    "smart_degen"
+   ],
+   "trades": 5,
+   "trades_mtm": 2,
+   "trades_selesai": 3,
+   "usd": 890.0
+  },
+  {
+   "gross_mean_bps": -2354.8,
+   "layak_label": false,
+   "maker": "0x30e1d2978059e142e7df0b0efc6bdff93f902ebb",
+   "net_hit_pct": 20.0,
+   "net_mean_bps": -2413.8,
+   "net_mean_selesai_bps": null,
+   "net_sd_bps": 4644.8,
+   "pool": "BPAY",
+   "tag_hari_ini": [
+    "gmgn",
+    "gmgn_go",
+    "kol"
+   ],
+   "trades": 5,
+   "trades_mtm": 5,
+   "trades_selesai": 0,
+   "usd": 1140.0
+  },
+  {
+   "gross_mean_bps": -3069.2,
+   "layak_label": false,
+   "maker": "0x84575b50ed0468f1ee437a62e82847e385cdd48d",
+   "net_hit_pct": 0.0,
+   "net_mean_bps": -3128.2,
+   "net_mean_selesai_bps": null,
+   "net_sd_bps": 4181.8,
+   "pool": "BPAY",
+   "tag_hari_ini": [
+    "gmgn",
+    "gmgn_go",
+    "smart_degen"
+   ],
+   "trades": 5,
+   "trades_mtm": 5,
+   "trades_selesai": 0,
+   "usd": 1762.0
+  },
+  {
+   "gross_mean_bps": 1460.5,
+   "layak_label": false,
+   "maker": "0x7523a8fdbcc92143cf523b6d771433369e915722",
+   "net_hit_pct": 100.0,
+   "net_mean_bps": 1401.5,
+   "net_mean_selesai_bps": null,
+   "net_sd_bps": 1460.2,
+   "pool": "BPAY",
+   "tag_hari_ini": [
+    "smart_degen"
+   ],
+   "trades": 4,
+   "trades_mtm": 4,
+   "trades_selesai": 0,
+   "usd": 1823.0
+  },
+  {
+   "gross_mean_bps": -547.3,
+   "layak_label": false,
+   "maker": "0x7586854ec236f3ef8e7e5c7cc55dd3b449feed98",
+   "net_hit_pct": 25.0,
+   "net_mean_bps": -606.3,
+   "net_mean_selesai_bps": -265.2,
+   "net_sd_bps": 1068.2,
+   "pool": "\u8774\u8776\u4f20\u5947",
+   "tag_hari_ini": [
+    "smart_degen"
+   ],
+   "trades": 4,
+   "trades_mtm": 3,
+   "trades_selesai": 1,
+   "usd": 754.0
+  },
+  {
+   "gross_mean_bps": -804.9,
+   "layak_label": false,
+   "maker": "0x1f656eda1b42f26b602f3c23ead40f04b2589633",
+   "net_hit_pct": 50.0,
+   "net_mean_bps": -863.9,
+   "net_mean_selesai_bps": 982.3,
+   "net_sd_bps": 2591.4,
+   "pool": "BPAY",
+   "tag_hari_ini": [
+    "gmgn",
+    "gmgn_go",
+    "smart_degen"
+   ],
+   "trades": 4,
+   "trades_mtm": 2,
+   "trades_selesai": 2,
+   "usd": 119.0
+  },
+  {
+   "gross_mean_bps": -1865.1,
+   "layak_label": false,
+   "maker": "0x46651c88ba5e1f91ddb4854a5ca1e9c5e256024e",
+   "net_hit_pct": 0.0,
+   "net_mean_bps": -1924.1,
+   "net_mean_selesai_bps": -1194.9,
+   "net_sd_bps": 1630.6,
+   "pool": "\u8774\u8776\u4f20\u5947",
+   "tag_hari_ini": [
+    "gmgn",
+    "gmgn_go",
+    "smart_degen"
+   ],
+   "trades": 4,
+   "trades_mtm": 2,
+   "trades_selesai": 2,
+   "usd": 112.0
+  },
+  {
+   "gross_mean_bps": -2127.3,
+   "layak_label": false,
+   "maker": "0xb71df51f94bbc0a91027871d9ee0a8a4bf28888a",
+   "net_hit_pct": 25.0,
+   "net_mean_bps": -2186.3,
+   "net_mean_selesai_bps": null,
+   "net_sd_bps": 5968.4,
+   "pool": "\u9ec4\u978b",
+   "tag_hari_ini": [
+    "gmgn",
+    "gmgn_go",
+    "smart_degen"
+   ],
+   "trades": 4,
+   "trades_mtm": 4,
+   "trades_selesai": 0,
+   "usd": 105.0
+  },
+  {
+   "gross_mean_bps": -2185.9,
+   "layak_label": false,
+   "maker": "0x8e6312070cb323915dfebacbdfb43efad8b2f81b",
+   "net_hit_pct": 50.0,
+   "net_mean_bps": -2244.9,
+   "net_mean_selesai_bps": 4529.2,
+   "net_sd_bps": 7869.4,
+   "pool": "BPAY",
+   "tag_hari_ini": [
+    "gmgn",
+    "smart_degen"
+   ],
+   "trades": 4,
+   "trades_mtm": 2,
+   "trades_selesai": 2,
+   "usd": 377.0
+  },
+  {
+   "gross_mean_bps": -2605.1,
+   "layak_label": false,
+   "maker": "0x8168b8af46261bccbaa673c2f86bd78153c47bc6",
+   "net_hit_pct": 25.0,
+   "net_mean_bps": -2664.1,
+   "net_mean_selesai_bps": null,
+   "net_sd_bps": 3491.7,
+   "pool": "BPAY",
+   "tag_hari_ini": [
+    "gmgn",
+    "gmgn_go",
+    "kol"
+   ],
+   "trades": 4,
+   "trades_mtm": 4,
+   "trades_selesai": 0,
+   "usd": 453.0
+  },
+  {
+   "gross_mean_bps": -2980.7,
+   "layak_label": false,
+   "maker": "0x53c60e312c7f3d9fc15c7c021c6348364f1bafd1",
+   "net_hit_pct": 0.0,
+   "net_mean_bps": -3039.7,
+   "net_mean_selesai_bps": null,
+   "net_sd_bps": 3496.7,
+   "pool": "BPAY",
+   "tag_hari_ini": [
+    "gmgn",
+    "gmgn_go",
+    "kol"
+   ],
+   "trades": 4,
+   "trades_mtm": 4,
+   "trades_selesai": 0,
+   "usd": 392.0
+  },
+  {
+   "gross_mean_bps": -3355.0,
+   "layak_label": false,
+   "maker": "0x023ebb1f04fbfc37f0047097e970a6a466808df9",
+   "net_hit_pct": 25.0,
+   "net_mean_bps": -3414.0,
+   "net_mean_selesai_bps": null,
+   "net_sd_bps": 4188.1,
+   "pool": "BPAY",
+   "tag_hari_ini": [
+    "smart_degen"
+   ],
+   "trades": 4,
+   "trades_mtm": 4,
+   "trades_selesai": 0,
+   "usd": 337.0
+  },
+  {
+   "gross_mean_bps": -3442.2,
+   "layak_label": false,
+   "maker": "0xd9174e8d44febf7576530af900cc311abb185dd0",
+   "net_hit_pct": 25.0,
+   "net_mean_bps": -3501.2,
+   "net_mean_selesai_bps": null,
+   "net_sd_bps": 4097.2,
+   "pool": "BPAY",
+   "tag_hari_ini": [
+    "gmgn",
+    "smart_degen"
+   ],
+   "trades": 4,
+   "trades_mtm": 4,
+   "trades_selesai": 0,
+   "usd": 341.0
+  },
+  {
+   "gross_mean_bps": -4086.6,
+   "layak_label": false,
+   "maker": "0x3d730d9cf66b56b1aec6e626fddb34bf7b045e0e",
+   "net_hit_pct": 0.0,
+   "net_mean_bps": -4145.6,
+   "net_mean_selesai_bps": null,
+   "net_sd_bps": 4764.9,
+   "pool": "BPAY",
+   "tag_hari_ini": [
+    "smart_degen"
+   ],
+   "trades": 4,
+   "trades_mtm": 4,
+   "trades_selesai": 0,
+   "usd": 294.0
+  },
+  {
+   "gross_mean_bps": -4746.9,
+   "layak_label": false,
+   "maker": "0x3a87c19862d53c23b55556cbf65b539dac44db4a",
+   "net_hit_pct": 0.0,
+   "net_mean_bps": -4805.9,
+   "net_mean_selesai_bps": null,
+   "net_sd_bps": 3501.8,
+   "pool": "BPAY",
+   "tag_hari_ini": [
+    "gmgn",
+    "gmgn_go",
+    "smart_degen"
+   ],
+   "trades": 4,
+   "trades_mtm": 4,
+   "trades_selesai": 0,
+   "usd": 177.0
+  },
+  {
+   "gross_mean_bps": -8373.4,
+   "layak_label": false,
+   "maker": "0x0f3495decf6f8304ed02049c13b7d2df37e66339",
+   "net_hit_pct": 0.0,
+   "net_mean_bps": -8432.4,
+   "net_mean_selesai_bps": null,
+   "net_sd_bps": 1239.0,
+   "pool": "BPAY",
+   "tag_hari_ini": [
+    "gmgn",
+    "smart_degen"
+   ],
+   "trades": 4,
+   "trades_mtm": 4,
+   "trades_selesai": 0,
+   "usd": 257.0
+  },
+  {
+   "gross_mean_bps": 9310.6,
+   "layak_label": false,
+   "maker": "0xcb099f7d28dc611bde3b0f58e9194b621eeee8ed",
+   "net_hit_pct": 66.7,
+   "net_mean_bps": 9251.6,
+   "net_mean_selesai_bps": null,
+   "net_sd_bps": 18473.4,
+   "pool": "BPAY",
+   "tag_hari_ini": [
+    "arbitrager",
+    "fomo",
+    "kol"
+   ],
+   "trades": 3,
+   "trades_mtm": 3,
+   "trades_selesai": 0,
+   "usd": 136.0
+  },
+  {
+   "gross_mean_bps": 5292.1,
+   "layak_label": false,
+   "maker": "0xdb22abc985553332d614ec2d429258618861d9f5",
+   "net_hit_pct": 33.3,
+   "net_mean_bps": 5233.1,
+   "net_mean_selesai_bps": 20113.2,
+   "net_sd_bps": 12890.1,
+   "pool": "BPAY",
+   "tag_hari_ini": [
+    "smart_degen"
+   ],
+   "trades": 3,
+   "trades_mtm": 2,
+   "trades_selesai": 1,
+   "usd": 71.0
+  },
+  {
+   "gross_mean_bps": 5091.3,
+   "layak_label": false,
+   "maker": "0x609f2c912175f8cd4438c1882f291fa6a4b4c735",
+   "net_hit_pct": 66.7,
+   "net_mean_bps": 5032.3,
+   "net_mean_selesai_bps": 7890.1,
+   "net_sd_bps": 5029.2,
+   "pool": "BPAY",
+   "tag_hari_ini": [
+    "gmgn",
+    "gmgn_go",
+    "kol"
+   ],
+   "trades": 3,
+   "trades_mtm": 1,
+   "trades_selesai": 2,
+   "usd": 568.0
+  },
+  {
+   "gross_mean_bps": 4667.4,
+   "layak_label": false,
+   "maker": "0x832e08c65325733ec61f60d0fa8a2a13b9251a1d",
+   "net_hit_pct": 66.7,
+   "net_mean_bps": 4608.4,
+   "net_mean_selesai_bps": 11143.1,
+   "net_sd_bps": 11320.5,
+   "pool": "BPAY",
+   "tag_hari_ini": [
+    "axiom",
+    "fomo",
+    "gmgn_go"
+   ],
+   "trades": 3,
+   "trades_mtm": 1,
+   "trades_selesai": 2,
+   "usd": 748.0
+  },
+  {
+   "gross_mean_bps": 4641.5,
+   "layak_label": false,
+   "maker": "0xcc4f8d002ee219bd3840c0abdee2485674a8bbab",
+   "net_hit_pct": 100.0,
+   "net_mean_bps": 4582.5,
+   "net_mean_selesai_bps": 3573.0,
+   "net_sd_bps": 1810.6,
+   "pool": "\u9e2d",
+   "tag_hari_ini": [
+    "gmgn",
+    "smart_degen"
+   ],
+   "trades": 3,
+   "trades_mtm": 1,
+   "trades_selesai": 2,
+   "usd": 383.0
+  },
+  {
+   "gross_mean_bps": 4518.7,
+   "layak_label": false,
+   "maker": "0xaa613f7a2ae3e9fb66b0fec74241e2fe3b6b26bf",
+   "net_hit_pct": 33.3,
+   "net_mean_bps": 4459.7,
+   "net_mean_selesai_bps": 28940.0,
+   "net_sd_bps": 21201.7,
+   "pool": "BPAY",
+   "tag_hari_ini": [
+    "gmgn",
+    "gmgn_go",
+    "kol"
+   ],
+   "trades": 3,
+   "trades_mtm": 2,
+   "trades_selesai": 1,
+   "usd": 10.0
+  },
+  {
+   "gross_mean_bps": 3535.0,
+   "layak_label": false,
+   "maker": "0xcc291dcd83bd9f2600cca4d65ae3b724eaf4f5a9",
+   "net_hit_pct": 100.0,
+   "net_mean_bps": 3476.0,
+   "net_mean_selesai_bps": 3122.3,
+   "net_sd_bps": 612.7,
+   "pool": "GME",
+   "tag_hari_ini": [
+    "gmgn",
+    "gmgn_go",
+    "kol"
+   ],
+   "trades": 3,
+   "trades_mtm": 2,
+   "trades_selesai": 1,
+   "usd": 5950.0
+  },
+  {
+   "gross_mean_bps": 2755.0,
+   "layak_label": false,
+   "maker": "0x2f062dbfc663ab52d373b754090b33390c8ae342",
+   "net_hit_pct": 66.7,
+   "net_mean_bps": 2696.0,
+   "net_mean_selesai_bps": 6299.1,
+   "net_sd_bps": 6654.9,
+   "pool": "BPAY",
+   "tag_hari_ini": [
+    "gmgn",
+    "smart_degen"
+   ],
+   "trades": 3,
+   "trades_mtm": 1,
+   "trades_selesai": 2,
+   "usd": 68.0
+  },
+  {
+   "gross_mean_bps": 1401.2,
+   "layak_label": false,
+   "maker": "0xa0d32f3fd987b087238283e9b674eaf0750413c8",
+   "net_hit_pct": 33.3,
+   "net_mean_bps": 1342.2,
+   "net_mean_selesai_bps": null,
+   "net_sd_bps": 4275.0,
+   "pool": "BPAY",
+   "tag_hari_ini": [
+    "gmgn",
+    "gmgn_go",
+    "smart_degen"
+   ],
+   "trades": 3,
+   "trades_mtm": 3,
+   "trades_selesai": 0,
+   "usd": 816.0
+  },
+  {
+   "gross_mean_bps": 1335.9,
+   "layak_label": false,
+   "maker": "0x12fba237ac57b408efdbe63c0380ca17ed70b3b1",
+   "net_hit_pct": 66.7,
+   "net_mean_bps": 1276.9,
+   "net_mean_selesai_bps": null,
+   "net_sd_bps": 9413.7,
+   "pool": "BPAY",
+   "tag_hari_ini": [
+    "fomo",
+    "gmgn_go",
+    "kol"
+   ],
+   "trades": 3,
+   "trades_mtm": 3,
+   "trades_selesai": 0,
+   "usd": 448.0
+  },
+  {
+   "gross_mean_bps": 1184.5,
+   "layak_label": false,
+   "maker": "0x42678cf15dbc2332dd6d4d3b0be32e7071f8f46f",
+   "net_hit_pct": 100.0,
+   "net_mean_bps": 1125.5,
+   "net_mean_selesai_bps": null,
+   "net_sd_bps": 1639.4,
+   "pool": "GD",
+   "tag_hari_ini": [
+    "smart_degen"
+   ],
+   "trades": 3,
+   "trades_mtm": 3,
+   "trades_selesai": 0,
+   "usd": 1971.0
+  },
+  {
+   "gross_mean_bps": 1177.5,
+   "layak_label": false,
+   "maker": "0x18d2707d77eb90d5ce7d2faaf79e977b01aa0901",
+   "net_hit_pct": 33.3,
+   "net_mean_bps": 1118.5,
+   "net_mean_selesai_bps": null,
+   "net_sd_bps": 7717.4,
+   "pool": "\u9f99\u732b",
+   "tag_hari_ini": [
+    "gmgn",
+    "gmgn_go",
+    "smart_degen"
+   ],
+   "trades": 3,
+   "trades_mtm": 3,
+   "trades_selesai": 0,
+   "usd": 833.0
+  },
+  {
+   "gross_mean_bps": 1087.7,
+   "layak_label": false,
+   "maker": "0x914e8893763d3a63a4d58e842504737898663992",
+   "net_hit_pct": 100.0,
+   "net_mean_bps": 1028.7,
+   "net_mean_selesai_bps": null,
+   "net_sd_bps": 1445.8,
+   "pool": "RIPCZ",
+   "tag_hari_ini": [
+    "fomo",
+    "gmgn",
+    "gmgn_go"
+   ],
+   "trades": 3,
+   "trades_mtm": 3,
+   "trades_selesai": 0,
+   "usd": 341.0
+  },
+  {
+   "gross_mean_bps": 569.8,
+   "layak_label": false,
+   "maker": "0x59586facf2de16a6fbb26f8aabf0f39df9053cbf",
+   "net_hit_pct": 100.0,
+   "net_mean_bps": 510.8,
+   "net_mean_selesai_bps": 578.1,
+   "net_sd_bps": 232.9,
+   "pool": "\u5c0f\u5c71\u6942",
+   "tag_hari_ini": [
+    "gmgn",
+    "smart_degen"
+   ],
+   "trades": 3,
+   "trades_mtm": 1,
+   "trades_selesai": 2,
+   "usd": 113.0
+  },
+  {
+   "gross_mean_bps": -651.4,
+   "layak_label": false,
+   "maker": "0x3b3b107c372cb5d31c38e5a02652e51fa9859dea",
+   "net_hit_pct": 0.0,
+   "net_mean_bps": -710.4,
+   "net_mean_selesai_bps": null,
+   "net_sd_bps": 1082.8,
+   "pool": "\u5b59\u4e8c\u5723",
+   "tag_hari_ini": [
+    "smart_degen"
+   ],
+   "trades": 3,
+   "trades_mtm": 3,
+   "trades_selesai": 0,
+   "usd": 419.0
+  },
+  {
+   "gross_mean_bps": -1536.6,
+   "layak_label": false,
+   "maker": "0x07464dd0ac34cbb351bd864458360c17612379c4",
+   "net_hit_pct": 33.3,
+   "net_mean_bps": -1595.6,
+   "net_mean_selesai_bps": -1207.1,
+   "net_sd_bps": 1871.6,
+   "pool": "\u725b\u4e00",
+   "tag_hari_ini": [
+    "smart_degen"
+   ],
+   "trades": 3,
+   "trades_mtm": 2,
+   "trades_selesai": 1,
+   "usd": 64.0
+  },
+  {
+   "gross_mean_bps": -1660.2,
+   "layak_label": false,
+   "maker": "0xd44e17d5daeab4ec126e2c8395758b55f959298b",
+   "net_hit_pct": 33.3,
+   "net_mean_bps": -1719.2,
+   "net_mean_selesai_bps": 8160.4,
+   "net_sd_bps": 8632.3,
+   "pool": "CALLOUT",
+   "tag_hari_ini": [
+    "gmgn",
+    "launchpad_smart",
+    "smart_degen"
+   ],
+   "trades": 3,
+   "trades_mtm": 2,
+   "trades_selesai": 1,
+   "usd": 137.0
+  },
+  {
+   "gross_mean_bps": -2442.1,
+   "layak_label": false,
+   "maker": "0x819ac645ff9bdda7fd6f1fdf8dabc584c88578a6",
+   "net_hit_pct": 0.0,
+   "net_mean_bps": -2501.1,
+   "net_mean_selesai_bps": null,
+   "net_sd_bps": 1616.0,
+   "pool": "\u9017\u5305",
+   "tag_hari_ini": [
+    "gmgn_go",
+    "kol",
+    "top_followed"
+   ],
+   "trades": 3,
+   "trades_mtm": 3,
+   "trades_selesai": 0,
+   "usd": 129.0
+  },
+  {
+   "gross_mean_bps": -2753.9,
+   "layak_label": false,
+   "maker": "0xeaedc9f3606f5dce5d7eb79b710eefd7df3ac732",
+   "net_hit_pct": 33.3,
+   "net_mean_bps": -2812.9,
+   "net_mean_selesai_bps": null,
+   "net_sd_bps": 4017.2,
+   "pool": "BPAY",
+   "tag_hari_ini": [
+    "gmgn",
+    "smart_degen"
+   ],
+   "trades": 3,
+   "trades_mtm": 3,
+   "trades_selesai": 0,
+   "usd": 609.0
+  },
+  {
+   "gross_mean_bps": -2955.3,
+   "layak_label": false,
+   "maker": "0xef0e3689d96754d9532978671d9b5cdedd8d7cde",
+   "net_hit_pct": 33.3,
+   "net_mean_bps": -3014.3,
+   "net_mean_selesai_bps": null,
+   "net_sd_bps": 9728.2,
+   "pool": "BPAY",
+   "tag_hari_ini": [
+    "gmgn",
+    "gmgn_go",
+    "kol"
+   ],
+   "trades": 3,
+   "trades_mtm": 3,
+   "trades_selesai": 0,
+   "usd": 174.0
+  },
+  {
+   "gross_mean_bps": -3028.2,
+   "layak_label": false,
+   "maker": "0x23160cb3768d900aa3e4293028df8d9c5c3981fa",
+   "net_hit_pct": 33.3,
+   "net_mean_bps": -3087.2,
+   "net_mean_selesai_bps": 173.6,
+   "net_sd_bps": 2877.9,
+   "pool": "BPAY",
+   "tag_hari_ini": [
+    "gmgn",
+    "smart_degen"
+   ],
+   "trades": 3,
+   "trades_mtm": 2,
+   "trades_selesai": 1,
+   "usd": 577.0
+  },
+  {
+   "gross_mean_bps": -4236.9,
+   "layak_label": false,
+   "maker": "0x92c18b468cc4fbfb08ddbd1896beb61c61a4f188",
+   "net_hit_pct": 33.3,
+   "net_mean_bps": -4295.9,
+   "net_mean_selesai_bps": 4345.6,
+   "net_sd_bps": 7484.1,
+   "pool": "BPAY",
+   "tag_hari_ini": [
+    "gmgn",
+    "gmgn_go",
+    "smart_degen"
+   ],
+   "trades": 3,
+   "trades_mtm": 2,
+   "trades_selesai": 1,
+   "usd": 232.0
+  },
+  {
+   "gross_mean_bps": -4319.5,
+   "layak_label": false,
+   "maker": "0x5cc1ed35999ca59555a96f83f9ff3c6f748e9d65",
+   "net_hit_pct": 0.0,
+   "net_mean_bps": -4378.5,
+   "net_mean_selesai_bps": null,
+   "net_sd_bps": 4807.5,
+   "pool": "BPAY",
+   "tag_hari_ini": [
+    "axiom",
+    "gmgn",
+    "smart_degen"
+   ],
+   "trades": 3,
+   "trades_mtm": 3,
+   "trades_selesai": 0,
+   "usd": 749.0
+  },
+  {
+   "gross_mean_bps": -5049.7,
+   "layak_label": false,
+   "maker": "0x15c63b4f67214c47ab5194ff171d8f816ba72678",
+   "net_hit_pct": 0.0,
+   "net_mean_bps": -5108.7,
+   "net_mean_selesai_bps": null,
+   "net_sd_bps": 3010.6,
+   "pool": "BPAY",
+   "tag_hari_ini": [
+    "fomo",
+    "gmgn",
+    "smart_degen"
+   ],
+   "trades": 3,
+   "trades_mtm": 3,
+   "trades_selesai": 0,
+   "usd": 186.0
+  },
+  {
+   "gross_mean_bps": -6889.5,
+   "layak_label": false,
+   "maker": "0x1c66ae54d5e4ee86980c90edbc55ddb29161b4ea",
+   "net_hit_pct": 0.0,
+   "net_mean_bps": -6948.5,
+   "net_mean_selesai_bps": null,
+   "net_sd_bps": 726.6,
+   "pool": "BPAY",
+   "tag_hari_ini": [
+    "gmgn",
+    "gmgn_go",
+    "smart_degen"
+   ],
+   "trades": 3,
+   "trades_mtm": 3,
+   "trades_selesai": 0,
+   "usd": 1121.0
+  },
+  {
+   "gross_mean_bps": -8230.6,
+   "layak_label": false,
+   "maker": "0xb9bdada303aa0d67f65b8cbbb733b846052d0608",
+   "net_hit_pct": 0.0,
+   "net_mean_bps": -8289.6,
+   "net_mean_selesai_bps": null,
+   "net_sd_bps": 1486.6,
+   "pool": "BPAY",
+   "tag_hari_ini": [
+    "smart_degen"
+   ],
+   "trades": 3,
+   "trades_mtm": 3,
+   "trades_selesai": 0,
+   "usd": 227.0
+  },
+  {
+   "gross_mean_bps": -8670.2,
+   "layak_label": false,
+   "maker": "0x2017a23885ce13ad7ddfaa9af97b600e309f3131",
+   "net_hit_pct": 0.0,
+   "net_mean_bps": -8729.2,
+   "net_mean_selesai_bps": null,
+   "net_sd_bps": 791.0,
+   "pool": "BPAY",
+   "tag_hari_ini": [
+    "gmgn",
+    "smart_degen"
+   ],
+   "trades": 3,
+   "trades_mtm": 3,
+   "trades_selesai": 0,
+   "usd": 641.0
+  },
+  {
+   "gross_mean_bps": 95216.0,
+   "layak_label": false,
+   "maker": "0x395e9b25043842dde5bcdfe18ec125bde88067f5",
+   "net_hit_pct": 50.0,
+   "net_mean_bps": 95157.0,
+   "net_mean_selesai_bps": null,
+   "net_sd_bps": 146003.9,
+   "pool": "BPAY",
+   "tag_hari_ini": [
+    "fomo",
+    "gmgn",
+    "smart_degen"
+   ],
+   "trades": 2,
+   "trades_mtm": 2,
+   "trades_selesai": 0,
+   "usd": 2257.0
+  },
+  {
+   "gross_mean_bps": 42927.4,
+   "layak_label": false,
+   "maker": "0xedc7c552077bbe04f61a52c9d17bce85154f1fc4",
+   "net_hit_pct": 100.0,
+   "net_mean_bps": 42868.4,
+   "net_mean_selesai_bps": 42868.4,
+   "net_sd_bps": 29522.2,
+   "pool": "BPAY",
+   "tag_hari_ini": [
+    "fomo",
+    "gmgn",
+    "gmgn_go"
+   ],
+   "trades": 2,
+   "trades_mtm": 0,
+   "trades_selesai": 2,
+   "usd": 746.0
+  },
+  {
+   "gross_mean_bps": 26632.5,
+   "layak_label": false,
+   "maker": "0xd9a9ad838b0c3409cfaa6f9a053a1c740f8ba038",
+   "net_hit_pct": 100.0,
+   "net_mean_bps": 26573.5,
+   "net_mean_selesai_bps": 18859.5,
+   "net_sd_bps": 10909.3,
+   "pool": "BPAY",
+   "tag_hari_ini": [
+    "arbitrager",
+    "kol"
+   ],
+   "trades": 2,
+   "trades_mtm": 1,
+   "trades_selesai": 1,
+   "usd": 12.0
+  },
+  {
+   "gross_mean_bps": 16924.8,
+   "layak_label": false,
+   "maker": "0x610ff379bd26c80be232323a989f6928c081bef9",
+   "net_hit_pct": 100.0,
+   "net_mean_bps": 16865.8,
+   "net_mean_selesai_bps": 33084.7,
+   "net_sd_bps": 22936.9,
+   "pool": "BPAY",
+   "tag_hari_ini": [
+    "smart_degen"
+   ],
+   "trades": 2,
+   "trades_mtm": 1,
+   "trades_selesai": 1,
+   "usd": 15.0
+  },
+  {
+   "gross_mean_bps": 7561.5,
+   "layak_label": false,
+   "maker": "0xd7fec8a82afc596f5e05428e4345b83bb131545d",
+   "net_hit_pct": 100.0,
+   "net_mean_bps": 7502.5,
+   "net_mean_selesai_bps": null,
+   "net_sd_bps": 6549.5,
+   "pool": "BPAY",
+   "tag_hari_ini": [
+    "gmgn",
+    "smart_degen"
+   ],
+   "trades": 2,
+   "trades_mtm": 2,
+   "trades_selesai": 0,
+   "usd": 378.0
+  },
+  {
+   "gross_mean_bps": 6881.1,
+   "layak_label": false,
+   "maker": "0x8c89f3efaac0fb48d14e5b82912fb5e418dd3709",
+   "net_hit_pct": 50.0,
+   "net_mean_bps": 6822.1,
+   "net_mean_selesai_bps": null,
+   "net_sd_bps": 18632.4,
+   "pool": "BPAY",
+   "tag_hari_ini": [
+    "fomo",
+    "gmgn",
+    "gmgn_go"
+   ],
+   "trades": 2,
+   "trades_mtm": 2,
+   "trades_selesai": 0,
+   "usd": 410.0
+  },
+  {
+   "gross_mean_bps": 5586.0,
+   "layak_label": false,
+   "maker": "0x4e85377b24b82bb219aa94cf16ac823864c295af",
+   "net_hit_pct": 50.0,
+   "net_mean_bps": 5527.0,
+   "net_mean_selesai_bps": null,
+   "net_sd_bps": 17853.6,
+   "pool": "\u5e73\u5e73\u798f\u53cc",
+   "tag_hari_ini": [
+    "gmgn",
+    "gmgn_go",
+    "smart_degen"
+   ],
+   "trades": 2,
+   "trades_mtm": 2,
+   "trades_selesai": 0,
+   "usd": 605.0
+  },
+  {
+   "gross_mean_bps": 5392.0,
+   "layak_label": false,
+   "maker": "0x06440b3dcd33565eefd6857ec055e04cde6e3add",
+   "net_hit_pct": 50.0,
+   "net_mean_bps": 5333.0,
+   "net_mean_selesai_bps": null,
+   "net_sd_bps": 15236.3,
+   "pool": "BPAY",
+   "tag_hari_ini": [
+    "smart_degen"
+   ],
+   "trades": 2,
+   "trades_mtm": 2,
+   "trades_selesai": 0,
+   "usd": 289.0
+  },
+  {
+   "gross_mean_bps": 4433.0,
+   "layak_label": false,
+   "maker": "0x102f56db39b388640a2c9f3e9bf4a43791c649bf",
+   "net_hit_pct": 100.0,
+   "net_mean_bps": 4374.0,
+   "net_mean_selesai_bps": null,
+   "net_sd_bps": 5079.8,
+   "pool": "YIHE",
+   "tag_hari_ini": [
+    "gmgn",
+    "smart_degen"
+   ],
+   "trades": 2,
+   "trades_mtm": 2,
+   "trades_selesai": 0,
+   "usd": 303.0
+  },
+  {
+   "gross_mean_bps": 4047.0,
+   "layak_label": false,
+   "maker": "0xe28601398a5448d1147e6e8b0e0c6d686f0d216d",
+   "net_hit_pct": 50.0,
+   "net_mean_bps": 3988.0,
+   "net_mean_selesai_bps": 11997.0,
+   "net_sd_bps": 11326.5,
+   "pool": "BPAY",
+   "tag_hari_ini": [
+    "arbitrager",
+    "gmgn",
+    "gmgn_go",
+    "kol"
+   ],
+   "trades": 2,
+   "trades_mtm": 1,
+   "trades_selesai": 1,
+   "usd": 742.0
+  },
+  {
+   "gross_mean_bps": 3864.7,
+   "layak_label": false,
+   "maker": "0xc2d2af8fb150cbda21065e1914ddcfa959b23dcf",
+   "net_hit_pct": 100.0,
+   "net_mean_bps": 3805.7,
+   "net_mean_selesai_bps": 3805.7,
+   "net_sd_bps": 0.0,
+   "pool": "BPAY",
+   "tag_hari_ini": [
+    "gmgn",
+    "gmgn_go",
+    "smart_degen"
+   ],
+   "trades": 2,
+   "trades_mtm": 1,
+   "trades_selesai": 1,
+   "usd": 152.0
+  },
+  {
+   "gross_mean_bps": 2427.5,
+   "layak_label": false,
+   "maker": "0x8d16f8851022e721f192262b2864be81e7830ab4",
+   "net_hit_pct": 100.0,
+   "net_mean_bps": 2368.5,
+   "net_mean_selesai_bps": 61.8,
+   "net_sd_bps": 3262.2,
+   "pool": "CZCOIN",
+   "tag_hari_ini": [
+    "gmgn",
+    "gmgn_go",
+    "smart_degen"
+   ],
+   "trades": 2,
+   "trades_mtm": 1,
+   "trades_selesai": 1,
+   "usd": 76.0
+  },
+  {
+   "gross_mean_bps": 1315.3,
+   "layak_label": false,
+   "maker": "0x36dcdd48dfbfc258d662452b3d942e3f2b3c730b",
+   "net_hit_pct": 50.0,
+   "net_mean_bps": 1256.3,
+   "net_mean_selesai_bps": 5351.1,
+   "net_sd_bps": 5790.9,
+   "pool": "BPAY",
+   "tag_hari_ini": [
+    "smart_degen"
+   ],
+   "trades": 2,
+   "trades_mtm": 1,
+   "trades_selesai": 1,
+   "usd": 533.0
+  },
+  {
+   "gross_mean_bps": 437.9,
+   "layak_label": false,
+   "maker": "0xacf1e98524761c0fc9909cdf580f685e8ddc8a88",
+   "net_hit_pct": 50.0,
+   "net_mean_bps": 378.9,
+   "net_mean_selesai_bps": 4049.6,
+   "net_sd_bps": 5191.2,
+   "pool": "4PAY",
+   "tag_hari_ini": [
+    "gmgn",
+    "gmgn_go",
+    "kol"
+   ],
+   "trades": 2,
+   "trades_mtm": 1,
+   "trades_selesai": 1,
+   "usd": 74.0
+  },
+  {
+   "gross_mean_bps": -192.5,
+   "layak_label": false,
+   "maker": "0xc4e921c2fae4554716190988ed0ed13051d93d95",
+   "net_hit_pct": 0.0,
+   "net_mean_bps": -251.5,
+   "net_mean_selesai_bps": null,
+   "net_sd_bps": 9.7,
+   "pool": "\u7e41\u8363",
+   "tag_hari_ini": [
+    "gmgn",
+    "gmgn_go",
+    "launchpad_smart"
+   ],
+   "trades": 2,
+   "trades_mtm": 2,
+   "trades_selesai": 0,
+   "usd": 306.0
+  },
+  {
+   "gross_mean_bps": -359.5,
+   "layak_label": false,
+   "maker": "0x3f1348871aa393e38c5632853938598979ac2b2a",
+   "net_hit_pct": 50.0,
+   "net_mean_bps": -418.5,
+   "net_mean_selesai_bps": null,
+   "net_sd_bps": 1814.7,
+   "pool": "TEST",
+   "tag_hari_ini": [
+    "gmgn",
+    "kol"
+   ],
+   "trades": 2,
+   "trades_mtm": 2,
+   "trades_selesai": 0,
+   "usd": 89.0
+  },
+  {
+   "gross_mean_bps": -910.5,
+   "layak_label": false,
+   "maker": "0x13267f77e7241db36f9ee3418dd3069bbc91f2b2",
+   "net_hit_pct": 50.0,
+   "net_mean_bps": -969.5,
+   "net_mean_selesai_bps": null,
+   "net_sd_bps": 5392.1,
+   "pool": "BPAY",
+   "tag_hari_ini": [
+    "gmgn",
+    "kol"
+   ],
+   "trades": 2,
+   "trades_mtm": 2,
+   "trades_selesai": 0,
+   "usd": 448.0
+  },
+  {
+   "gross_mean_bps": -1211.1,
+   "layak_label": false,
+   "maker": "0xf0701cd6ae9c9d3e4b4ac0d79e03838bcf434db5",
+   "net_hit_pct": 50.0,
+   "net_mean_bps": -1270.1,
+   "net_mean_selesai_bps": 3388.2,
+   "net_sd_bps": 6587.9,
+   "pool": "BPAY",
+   "tag_hari_ini": [
+    "fomo",
+    "gmgn",
+    "gmgn_go"
+   ],
+   "trades": 2,
+   "trades_mtm": 1,
+   "trades_selesai": 1,
+   "usd": 168.0
+  },
+  {
+   "gross_mean_bps": -1785.8,
+   "layak_label": false,
+   "maker": "0xa7d4ffc4eca3c71af150ce302560a9d04a1d2b9f",
+   "net_hit_pct": 50.0,
+   "net_mean_bps": -1844.8,
+   "net_mean_selesai_bps": null,
+   "net_sd_bps": 4005.1,
+   "pool": "BPAY",
+   "tag_hari_ini": [
+    "app_smart_money",
+    "gmgn_go",
+    "kol"
+   ],
+   "trades": 2,
+   "trades_mtm": 2,
+   "trades_selesai": 0,
+   "usd": 2244.0
+  },
+  {
+   "gross_mean_bps": -3006.1,
+   "layak_label": false,
+   "maker": "0x8d5624fa29526c879a1ca7560961e4c5a08089ae",
+   "net_hit_pct": 50.0,
+   "net_mean_bps": -3065.1,
+   "net_mean_selesai_bps": null,
+   "net_sd_bps": 5888.5,
+   "pool": "BPAY",
+   "tag_hari_ini": [
+    "kol",
+    "top_followed",
+    "top_renamed"
+   ],
+   "trades": 2,
+   "trades_mtm": 2,
+   "trades_selesai": 0,
+   "usd": 2027.0
+  },
+  {
+   "gross_mean_bps": -3047.6,
+   "layak_label": false,
+   "maker": "0x073cb4936fee0c8ec68293edf640b5e0653f2222",
+   "net_hit_pct": 0.0,
+   "net_mean_bps": -3106.6,
+   "net_mean_selesai_bps": null,
+   "net_sd_bps": 1724.5,
+   "pool": "BPAY",
+   "tag_hari_ini": [
+    "gmgn",
+    "kol"
+   ],
+   "trades": 2,
+   "trades_mtm": 2,
+   "trades_selesai": 0,
+   "usd": 151.0
+  },
+  {
+   "gross_mean_bps": -3697.1,
+   "layak_label": false,
+   "maker": "0x202a5577b84d4cd041234a606c90d7440a22479f",
+   "net_hit_pct": 50.0,
+   "net_mean_bps": -3756.1,
+   "net_mean_selesai_bps": 752.9,
+   "net_sd_bps": 6376.8,
+   "pool": "BPAY",
+   "tag_hari_ini": [
+    "gmgn",
+    "gmgn_go",
+    "smart_degen"
+   ],
+   "trades": 2,
+   "trades_mtm": 1,
+   "trades_selesai": 1,
+   "usd": 523.0
+  },
+  {
+   "gross_mean_bps": -3928.5,
+   "layak_label": false,
+   "maker": "0x58d2ddc2da610ff16860771a0742cbcda7180092",
+   "net_hit_pct": 0.0,
+   "net_mean_bps": -3987.5,
+   "net_mean_selesai_bps": null,
+   "net_sd_bps": 2245.1,
+   "pool": "BPAY",
+   "tag_hari_ini": [
+    "fomo",
+    "gmgn",
+    "smart_degen"
+   ],
+   "trades": 2,
+   "trades_mtm": 2,
+   "trades_selesai": 0,
+   "usd": 454.0
+  },
+  {
+   "gross_mean_bps": -4221.8,
+   "layak_label": false,
+   "maker": "0x75248f467538bd72ca82ac6a6a7e6190b64b9721",
+   "net_hit_pct": 0.0,
+   "net_mean_bps": -4280.8,
+   "net_mean_selesai_bps": null,
+   "net_sd_bps": 5351.1,
+   "pool": "BPAY",
+   "tag_hari_ini": [
+    "gmgn",
+    "gmgn_go",
+    "smart_degen"
+   ],
+   "trades": 2,
+   "trades_mtm": 2,
+   "trades_selesai": 0,
+   "usd": 939.0
+  },
+  {
+   "gross_mean_bps": -4616.9,
+   "layak_label": false,
+   "maker": "0x629fe6d73d5ca48c1b5e4ef35bb7319080c4aba5",
+   "net_hit_pct": 0.0,
+   "net_mean_bps": -4675.9,
+   "net_mean_selesai_bps": null,
+   "net_sd_bps": 6529.3,
+   "pool": "BPAY",
+   "tag_hari_ini": [
+    "gmgn",
+    "gmgn_go",
+    "kol"
+   ],
+   "trades": 2,
+   "trades_mtm": 2,
+   "trades_selesai": 0,
+   "usd": 1923.0
+  },
+  {
+   "gross_mean_bps": -4814.9,
+   "layak_label": false,
+   "maker": "0x4a30496554ef401e4b687189f7df6efe4b3e0249",
+   "net_hit_pct": 0.0,
+   "net_mean_bps": -4873.9,
+   "net_mean_selesai_bps": null,
+   "net_sd_bps": 4901.7,
+   "pool": "BPAY",
+   "tag_hari_ini": [
+    "fomo",
+    "gmgn_go",
+    "kol"
+   ],
+   "trades": 2,
+   "trades_mtm": 2,
+   "trades_selesai": 0,
+   "usd": 510.0
+  },
+  {
+   "gross_mean_bps": -6465.2,
+   "layak_label": false,
+   "maker": "0x037e6b68ca866598d464a370afa060e4583aa0b8",
+   "net_hit_pct": 0.0,
+   "net_mean_bps": -6524.2,
+   "net_mean_selesai_bps": null,
+   "net_sd_bps": 813.3,
+   "pool": "BPAY",
+   "tag_hari_ini": [
+    "arbitrager",
+    "fomo",
+    "gmgn_go"
+   ],
+   "trades": 2,
+   "trades_mtm": 2,
+   "trades_selesai": 0,
+   "usd": 949.0
+  },
+  {
+   "gross_mean_bps": -8653.1,
+   "layak_label": false,
+   "maker": "0xdadca49e762abb5c904223d73388eb9dcceba21c",
+   "net_hit_pct": 0.0,
+   "net_mean_bps": -8712.1,
+   "net_mean_selesai_bps": null,
+   "net_sd_bps": 1175.4,
+   "pool": "BPAY",
+   "tag_hari_ini": [
+    "fomo",
+    "gmgn_go",
+    "launchpad_smart"
+   ],
+   "trades": 2,
+   "trades_mtm": 2,
+   "trades_selesai": 0,
+   "usd": 374.0
+  },
+  {
+   "gross_mean_bps": 65309.8,
+   "layak_label": false,
+   "maker": "0x07188b9c7cf0f29646925c6ee49488e6d1ce7aed",
+   "net_hit_pct": 100.0,
+   "net_mean_bps": 65250.8,
+   "net_mean_selesai_bps": null,
+   "net_sd_bps": 0.0,
+   "pool": "TICKR",
+   "tag_hari_ini": [
+    "smart_degen"
+   ],
+   "trades": 1,
+   "trades_mtm": 1,
+   "trades_selesai": 0,
+   "usd": 303.0
+  },
+  {
+   "gross_mean_bps": 59322.7,
+   "layak_label": false,
+   "maker": "0xdd6c766f788243468e448326347a64368fb791d7",
+   "net_hit_pct": 100.0,
+   "net_mean_bps": 59263.7,
+   "net_mean_selesai_bps": null,
+   "net_sd_bps": 0.0,
+   "pool": "TICKR",
+   "tag_hari_ini": [
+    "smart_degen"
+   ],
+   "trades": 1,
+   "trades_mtm": 1,
+   "trades_selesai": 0,
+   "usd": 303.0
+  },
+  {
+   "gross_mean_bps": 22089.9,
+   "layak_label": false,
+   "maker": "0x68c431a47f69c95f136b7772e58dd52c2765bfb6",
+   "net_hit_pct": 100.0,
+   "net_mean_bps": 22030.9,
+   "net_mean_selesai_bps": null,
+   "net_sd_bps": 0.0,
+   "pool": "BPAY",
+   "tag_hari_ini": [
+    "fomo",
+    "gmgn",
+    "smart_degen"
+   ],
+   "trades": 1,
+   "trades_mtm": 1,
+   "trades_selesai": 0,
+   "usd": 227.0
+  },
+  {
+   "gross_mean_bps": 6698.4,
+   "layak_label": false,
+   "maker": "0xd3358b1f39a6a71911c6e33717d185f99d43e80d",
+   "net_hit_pct": 100.0,
+   "net_mean_bps": 6639.4,
+   "net_mean_selesai_bps": null,
+   "net_sd_bps": 0.0,
+   "pool": "BPAY",
+   "tag_hari_ini": [
+    "fomo",
+    "gmgn",
+    "gmgn_go"
+   ],
+   "trades": 1,
+   "trades_mtm": 1,
+   "trades_selesai": 0,
+   "usd": 382.0
+  },
+  {
+   "gross_mean_bps": 4692.4,
+   "layak_label": false,
+   "maker": "0x9dbfded199ee3a6b291c223e65f97d387156aada",
+   "net_hit_pct": 100.0,
+   "net_mean_bps": 4633.4,
+   "net_mean_selesai_bps": null,
+   "net_sd_bps": 0.0,
+   "pool": "BPAY",
+   "tag_hari_ini": [
+    "fomo",
+    "gmgn",
+    "kol",
+    "top_followed"
+   ],
+   "trades": 1,
+   "trades_mtm": 1,
+   "trades_selesai": 0,
+   "usd": 188.0
+  },
+  {
+   "gross_mean_bps": 3034.7,
+   "layak_label": false,
+   "maker": "0x1aa938848160c1aa635a8bdf3c32f0b2af599a00",
+   "net_hit_pct": 100.0,
+   "net_mean_bps": 2975.7,
+   "net_mean_selesai_bps": null,
+   "net_sd_bps": 0.0,
+   "pool": "BPAY",
+   "tag_hari_ini": [
+    "arbitrager",
+    "smart_degen"
+   ],
+   "trades": 1,
+   "trades_mtm": 1,
+   "trades_selesai": 0,
+   "usd": 607.0
+  },
+  {
+   "gross_mean_bps": 2506.8,
+   "layak_label": false,
+   "maker": "0xafc6db58c0d717ccc70c6ad2cef12629fe79454b",
+   "net_hit_pct": 100.0,
+   "net_mean_bps": 2447.8,
+   "net_mean_selesai_bps": null,
+   "net_sd_bps": 0.0,
+   "pool": "BPAY",
+   "tag_hari_ini": [
+    "smart_degen"
+   ],
+   "trades": 1,
+   "trades_mtm": 1,
+   "trades_selesai": 0,
+   "usd": 76.0
+  },
+  {
+   "gross_mean_bps": 2220.1,
+   "layak_label": false,
+   "maker": "0x81d20b2c34d37e406659a80008723b4ea815717d",
+   "net_hit_pct": 100.0,
+   "net_mean_bps": 2161.1,
+   "net_mean_selesai_bps": null,
+   "net_sd_bps": 0.0,
+   "pool": "TISM",
+   "tag_hari_ini": [
+    "gmgn",
+    "launchpad_smart",
+    "smart_degen"
+   ],
+   "trades": 1,
+   "trades_mtm": 1,
+   "trades_selesai": 0,
+   "usd": 253.0
+  },
+  {
+   "gross_mean_bps": 1915.8,
+   "layak_label": false,
+   "maker": "0xf7ff38f74c8a5b4750e5f65ae74c924a441b7b90",
+   "net_hit_pct": 100.0,
+   "net_mean_bps": 1856.8,
+   "net_mean_selesai_bps": null,
+   "net_sd_bps": 0.0,
+   "pool": "BPAY",
+   "tag_hari_ini": [
+    "arbitrager",
+    "gmgn",
+    "gmgn_go"
+   ],
+   "trades": 1,
+   "trades_mtm": 1,
+   "trades_selesai": 0,
+   "usd": 225.0
+  },
+  {
+   "gross_mean_bps": 1907.5,
+   "layak_label": false,
+   "maker": "0x3d5d860eda90c80acaa34996da4b5baea7b414c3",
+   "net_hit_pct": 100.0,
+   "net_mean_bps": 1848.5,
+   "net_mean_selesai_bps": null,
+   "net_sd_bps": 0.0,
+   "pool": "BPAY",
+   "tag_hari_ini": [
+    "fomo",
+    "gmgn",
+    "smart_degen"
+   ],
+   "trades": 1,
+   "trades_mtm": 1,
+   "trades_selesai": 0,
+   "usd": 266.0
+  },
+  {
+   "gross_mean_bps": 1660.2,
+   "layak_label": false,
+   "maker": "0xac2722ab173142eaf33adeb78e79cb31db0e2a96",
+   "net_hit_pct": 100.0,
+   "net_mean_bps": 1601.2,
+   "net_mean_selesai_bps": null,
+   "net_sd_bps": 0.0,
+   "pool": "BPAY",
+   "tag_hari_ini": [
+    "gmgn",
+    "gmgn_go",
+    "smart_degen"
+   ],
+   "trades": 1,
+   "trades_mtm": 1,
+   "trades_selesai": 0,
+   "usd": 266.0
+  },
+  {
+   "gross_mean_bps": 1505.3,
+   "layak_label": false,
+   "maker": "0x2a2619e81d61c09aa9206535bac1b7a5921ea050",
+   "net_hit_pct": 100.0,
+   "net_mean_bps": 1446.3,
+   "net_mean_selesai_bps": null,
+   "net_sd_bps": 0.0,
+   "pool": "BNBS",
+   "tag_hari_ini": [
+    "kol"
+   ],
+   "trades": 1,
+   "trades_mtm": 1,
+   "trades_selesai": 0,
+   "usd": 199.0
+  },
+  {
+   "gross_mean_bps": 1375.8,
+   "layak_label": false,
+   "maker": "0xbac453b9b7f53b35ac906b641925b2f5f2567a89",
+   "net_hit_pct": 100.0,
+   "net_mean_bps": 1316.8,
+   "net_mean_selesai_bps": null,
+   "net_sd_bps": 0.0,
+   "pool": "BPAY",
+   "tag_hari_ini": [
+    "arbitrager",
+    "gmgn_go",
+    "kol"
+   ],
+   "trades": 1,
+   "trades_mtm": 1,
+   "trades_selesai": 0,
+   "usd": 757.0
+  },
+  {
+   "gross_mean_bps": 1313.1,
+   "layak_label": false,
+   "maker": "0xa89c410d08d492365339e669c0591a303137da88",
+   "net_hit_pct": 100.0,
+   "net_mean_bps": 1254.1,
+   "net_mean_selesai_bps": null,
+   "net_sd_bps": 0.0,
+   "pool": "BPAY",
+   "tag_hari_ini": [
+    "gmgn",
+    "gmgn_go",
+    "smart_degen"
+   ],
+   "trades": 1,
+   "trades_mtm": 1,
+   "trades_selesai": 0,
+   "usd": 151.0
+  },
+  {
+   "gross_mean_bps": 1213.7,
+   "layak_label": false,
+   "maker": "0xf672ce59fafd2a173d275abc626087b1eae874a2",
+   "net_hit_pct": 100.0,
+   "net_mean_bps": 1154.7,
+   "net_mean_selesai_bps": null,
+   "net_sd_bps": 0.0,
+   "pool": "TISM",
+   "tag_hari_ini": [
+    "gmgn",
+    "launchpad_smart",
+    "smart_degen"
+   ],
+   "trades": 1,
+   "trades_mtm": 1,
+   "trades_selesai": 0,
+   "usd": 253.0
+  },
+  {
+   "gross_mean_bps": 1124.9,
+   "layak_label": false,
+   "maker": "0x78f210557fcd6663f162c75ed0d96108e42e4f9c",
+   "net_hit_pct": 100.0,
+   "net_mean_bps": 1065.9,
+   "net_mean_selesai_bps": null,
+   "net_sd_bps": 0.0,
+   "pool": "MAX",
+   "tag_hari_ini": [
+    "gmgn",
+    "gmgn_go",
+    "kol"
+   ],
+   "trades": 1,
+   "trades_mtm": 1,
+   "trades_selesai": 0,
+   "usd": 112.0
+  },
+  {
+   "gross_mean_bps": 707.3,
+   "layak_label": false,
+   "maker": "0x4d0e5759e4f2af31b93b25277b77b7c59dbb1f9c",
+   "net_hit_pct": 100.0,
+   "net_mean_bps": 648.3,
+   "net_mean_selesai_bps": null,
+   "net_sd_bps": 0.0,
+   "pool": "BORT",
+   "tag_hari_ini": [
+    "arbitrager",
+    "fomo",
+    "gmgn_go"
+   ],
+   "trades": 1,
+   "trades_mtm": 1,
+   "trades_selesai": 0,
+   "usd": 2192.0
+  },
+  {
+   "gross_mean_bps": 616.5,
+   "layak_label": false,
+   "maker": "0xdc6b9d500d26ac3dd43f783f4ada4d6c37205232",
+   "net_hit_pct": 100.0,
+   "net_mean_bps": 557.5,
+   "net_mean_selesai_bps": null,
+   "net_sd_bps": 0.0,
+   "pool": "\u54c8\u57fa\u7c73",
+   "tag_hari_ini": [
+    "axiom",
+    "fomo",
+    "gmgn_go"
+   ],
+   "trades": 1,
+   "trades_mtm": 1,
+   "trades_selesai": 0,
+   "usd": 382.0
+  },
+  {
+   "gross_mean_bps": 326.7,
+   "layak_label": false,
+   "maker": "0xcfe5376a597d06470d7b88aa29fe1d5249e4abcf",
+   "net_hit_pct": 100.0,
+   "net_mean_bps": 267.7,
+   "net_mean_selesai_bps": null,
+   "net_sd_bps": 0.0,
+   "pool": "TISM",
+   "tag_hari_ini": [
+    "gmgn",
+    "smart_degen"
+   ],
+   "trades": 1,
+   "trades_mtm": 1,
+   "trades_selesai": 0,
+   "usd": 253.0
+  },
+  {
+   "gross_mean_bps": 82.6,
+   "layak_label": false,
+   "maker": "0x193c4badffe2b7a6a39b9164e272c022c9e77888",
+   "net_hit_pct": 100.0,
+   "net_mean_bps": 23.6,
+   "net_mean_selesai_bps": null,
+   "net_sd_bps": 0.0,
+   "pool": "FIST",
+   "tag_hari_ini": [
+    "smart_degen"
+   ],
+   "trades": 1,
+   "trades_mtm": 1,
+   "trades_selesai": 0,
+   "usd": 383.0
+  },
+  {
+   "gross_mean_bps": 0.0,
+   "layak_label": false,
+   "maker": "0x1a5a182ac9a7fb0ead66a74016bd50239c7820f7",
+   "net_hit_pct": 0.0,
+   "net_mean_bps": -59.0,
+   "net_mean_selesai_bps": null,
+   "net_sd_bps": 0.0,
+   "pool": "FREEDOM OF MONEY",
+   "tag_hari_ini": [
+    "gmgn",
+    "gmgn_go",
+    "kol"
+   ],
+   "trades": 1,
+   "trades_mtm": 1,
+   "trades_selesai": 0,
+   "usd": 119.0
+  },
+  {
+   "gross_mean_bps": 0.0,
+   "layak_label": false,
+   "maker": "0x729b03f4592371a0eadd6e3800c9468b50c48b3f",
+   "net_hit_pct": 0.0,
+   "net_mean_bps": -59.0,
+   "net_mean_selesai_bps": null,
+   "net_sd_bps": 0.0,
+   "pool": "XSTOCKS",
+   "tag_hari_ini": [
+    "gmgn",
+    "gmgn_go",
+    "kol"
+   ],
+   "trades": 1,
+   "trades_mtm": 1,
+   "trades_selesai": 0,
+   "usd": 76.0
+  },
+  {
+   "gross_mean_bps": 0.0,
+   "layak_label": false,
+   "maker": "0xc58686fedf9504576fc06199ebca62cee00750b3",
+   "net_hit_pct": 0.0,
+   "net_mean_bps": -59.0,
+   "net_mean_selesai_bps": null,
+   "net_sd_bps": 0.0,
+   "pool": "\u74e6\u83b1\u62c9",
+   "tag_hari_ini": [
+    "gmgn",
+    "kol"
+   ],
+   "trades": 1,
+   "trades_mtm": 1,
+   "trades_selesai": 0,
+   "usd": 75.0
+  },
+  {
+   "gross_mean_bps": 0.0,
+   "layak_label": false,
+   "maker": "0xde1fad76e62e967df4202bf745aa2a727d10fa51",
+   "net_hit_pct": 0.0,
+   "net_mean_bps": -59.0,
+   "net_mean_selesai_bps": null,
+   "net_sd_bps": 0.0,
+   "pool": "\u8774\u8776\u65f6\u4ee3",
+   "tag_hari_ini": [
+    "smart_degen"
+   ],
+   "trades": 1,
+   "trades_mtm": 1,
+   "trades_selesai": 0,
+   "usd": 76.0
+  },
+  {
+   "gross_mean_bps": -67.1,
+   "layak_label": false,
+   "maker": "0x2b6dde3025acf758e6350d4adb4cc74cf6146644",
+   "net_hit_pct": 0.0,
+   "net_mean_bps": -126.1,
+   "net_mean_selesai_bps": null,
+   "net_sd_bps": 0.0,
+   "pool": "BPAY",
+   "tag_hari_ini": [
+    "fomo",
+    "gmgn_go",
+    "launchpad_smart"
+   ],
+   "trades": 1,
+   "trades_mtm": 1,
+   "trades_selesai": 0,
+   "usd": 192.0
+  },
+  {
+   "gross_mean_bps": -85.6,
+   "layak_label": false,
+   "maker": "0x7cbb5da5a9e4ffc99c2df3f7391780afc86cef96",
+   "net_hit_pct": 0.0,
+   "net_mean_bps": -144.6,
+   "net_mean_selesai_bps": null,
+   "net_sd_bps": 0.0,
+   "pool": "\u7d22\u55e8",
+   "tag_hari_ini": [
+    "gmgn",
+    "smart_degen"
+   ],
+   "trades": 1,
+   "trades_mtm": 1,
+   "trades_selesai": 0,
+   "usd": 611.0
+  },
+  {
+   "gross_mean_bps": -112.4,
+   "layak_label": false,
+   "maker": "0x051a53d095d277e22e3d905b10d3bbe75f0ac508",
+   "net_hit_pct": 0.0,
+   "net_mean_bps": -171.4,
+   "net_mean_selesai_bps": null,
+   "net_sd_bps": 0.0,
+   "pool": "FLAP",
+   "tag_hari_ini": [
+    "axiom",
+    "fomo",
+    "gmgn_go"
+   ],
+   "trades": 1,
+   "trades_mtm": 1,
+   "trades_selesai": 0,
+   "usd": 763.0
+  },
+  {
+   "gross_mean_bps": -112.4,
+   "layak_label": false,
+   "maker": "0x1d99f3e7623714f0c2842b224801cd3e43210161",
+   "net_hit_pct": 0.0,
+   "net_mean_bps": -171.4,
+   "net_mean_selesai_bps": null,
+   "net_sd_bps": 0.0,
+   "pool": "AIOF",
+   "tag_hari_ini": [
+    "axiom",
+    "gmgn",
+    "smart_degen"
+   ],
+   "trades": 1,
+   "trades_mtm": 1,
+   "trades_selesai": 0,
+   "usd": 763.0
+  },
+  {
+   "gross_mean_bps": -272.8,
+   "layak_label": false,
+   "maker": "0x970213820728e72f99315335c8b458eb17606ac5",
+   "net_hit_pct": 0.0,
+   "net_mean_bps": -331.8,
+   "net_mean_selesai_bps": null,
+   "net_sd_bps": 0.0,
+   "pool": "CALLOUT",
+   "tag_hari_ini": [
+    "gmgn",
+    "smart_degen"
+   ],
+   "trades": 1,
+   "trades_mtm": 1,
+   "trades_selesai": 0,
+   "usd": 88.0
+  },
+  {
+   "gross_mean_bps": -467.5,
+   "layak_label": false,
+   "maker": "0x78038e1c0bf1894343c0fd5b18778fed3c035ddc",
+   "net_hit_pct": 0.0,
+   "net_mean_bps": -526.5,
+   "net_mean_selesai_bps": null,
+   "net_sd_bps": 0.0,
+   "pool": "\u6211\u8981\u53bb\u4e2d\u56fd",
+   "tag_hari_ini": [
+    "smart_degen"
+   ],
+   "trades": 1,
+   "trades_mtm": 1,
+   "trades_selesai": 0,
+   "usd": 76.0
+  },
+  {
+   "gross_mean_bps": -593.3,
+   "layak_label": false,
+   "maker": "0x8d1ed69941e34100b1290eb038cd7a2e75dae000",
+   "net_hit_pct": 0.0,
+   "net_mean_bps": -652.3,
+   "net_mean_selesai_bps": null,
+   "net_sd_bps": 0.0,
+   "pool": "JEANPHIL",
+   "tag_hari_ini": [
+    "gmgn",
+    "smart_degen"
+   ],
+   "trades": 1,
+   "trades_mtm": 1,
+   "trades_selesai": 0,
+   "usd": 1516.0
+  },
+  {
+   "gross_mean_bps": -688.3,
+   "layak_label": false,
+   "maker": "0x89eda54d22485a8cd746d9779cfd2b5e50864448",
+   "net_hit_pct": 0.0,
+   "net_mean_bps": -747.3,
+   "net_mean_selesai_bps": null,
+   "net_sd_bps": 0.0,
+   "pool": "BPAY",
+   "tag_hari_ini": [
+    "gmgn",
+    "gmgn_go",
+    "smart_degen"
+   ],
+   "trades": 1,
+   "trades_mtm": 1,
+   "trades_selesai": 0,
+   "usd": 75.0
+  },
+  {
+   "gross_mean_bps": -1128.0,
+   "layak_label": false,
+   "maker": "0x8475bfecad234ee82cf0d5a8b1d640dafa855837",
+   "net_hit_pct": 0.0,
+   "net_mean_bps": -1187.0,
+   "net_mean_selesai_bps": null,
+   "net_sd_bps": 0.0,
+   "pool": "BPAY",
+   "tag_hari_ini": [
+    "fomo",
+    "smart_degen"
+   ],
+   "trades": 1,
+   "trades_mtm": 1,
+   "trades_selesai": 0,
+   "usd": 91.0
+  },
+  {
+   "gross_mean_bps": -1436.5,
+   "layak_label": false,
+   "maker": "0xf7dfaa0dd04c9ee257118766d29b81eb3b32a38d",
+   "net_hit_pct": 0.0,
+   "net_mean_bps": -1495.5,
+   "net_mean_selesai_bps": null,
+   "net_sd_bps": 0.0,
+   "pool": "GCAT",
+   "tag_hari_ini": [
+    "fomo",
+    "gmgn",
+    "kol"
+   ],
+   "trades": 1,
+   "trades_mtm": 1,
+   "trades_selesai": 0,
+   "usd": 46.0
+  },
+  {
+   "gross_mean_bps": -1449.2,
+   "layak_label": false,
+   "maker": "0xf640a5fdbb11abd71f0e1459f9fca3205f53ce45",
+   "net_hit_pct": 0.0,
+   "net_mean_bps": -1508.2,
+   "net_mean_selesai_bps": null,
+   "net_sd_bps": 0.0,
+   "pool": "BPAY",
+   "tag_hari_ini": [
+    "fomo",
+    "gmgn",
+    "gmgn_go"
+   ],
+   "trades": 1,
+   "trades_mtm": 1,
+   "trades_selesai": 0,
+   "usd": 15.0
+  },
+  {
+   "gross_mean_bps": -1475.8,
+   "layak_label": false,
+   "maker": "0x6be4213b9c9a2e8bbaed9a59c5d8224f92272c63",
+   "net_hit_pct": 0.0,
+   "net_mean_bps": -1534.8,
+   "net_mean_selesai_bps": null,
+   "net_sd_bps": 0.0,
+   "pool": "BPAY",
+   "tag_hari_ini": [
+    "smart_degen"
+   ],
+   "trades": 1,
+   "trades_mtm": 1,
+   "trades_selesai": 0,
+   "usd": 1515.0
+  },
+  {
+   "gross_mean_bps": -1479.4,
+   "layak_label": false,
+   "maker": "0x20542372cbfd5c6874ae5945af68f2053f89899e",
+   "net_hit_pct": 0.0,
+   "net_mean_bps": -1538.4,
+   "net_mean_selesai_bps": null,
+   "net_sd_bps": 0.0,
+   "pool": "BPAY",
+   "tag_hari_ini": [
+    "app_smart_money",
+    "kol",
+    "top_followed"
+   ],
+   "trades": 1,
+   "trades_mtm": 1,
+   "trades_selesai": 0,
+   "usd": 378.0
+  },
+  {
+   "gross_mean_bps": -1554.8,
+   "layak_label": false,
+   "maker": "0x309b573046edd656e0b6d8e3e13d39499ed0f909",
+   "net_hit_pct": 0.0,
+   "net_mean_bps": -1613.8,
+   "net_mean_selesai_bps": null,
+   "net_sd_bps": 0.0,
+   "pool": "BPAY",
+   "tag_hari_ini": [
+    "gmgn",
+    "gmgn_go",
+    "smart_degen"
+   ],
+   "trades": 1,
+   "trades_mtm": 1,
+   "trades_selesai": 0,
+   "usd": 227.0
+  },
+  {
+   "gross_mean_bps": -1864.5,
+   "layak_label": false,
+   "maker": "0xe0ea6ec289f879f80971c98c693d583662fe95c4",
+   "net_hit_pct": 0.0,
+   "net_mean_bps": -1923.5,
+   "net_mean_selesai_bps": null,
+   "net_sd_bps": 0.0,
+   "pool": "HUMAN",
+   "tag_hari_ini": [
+    "gmgn",
+    "gmgn_go",
+    "smart_degen"
+   ],
+   "trades": 1,
+   "trades_mtm": 1,
+   "trades_selesai": 0,
+   "usd": 303.0
+  },
+  {
+   "gross_mean_bps": -2307.9,
+   "layak_label": false,
+   "maker": "0xa94dc17497dca1dc1f079d8879164f565ae13576",
+   "net_hit_pct": 0.0,
+   "net_mean_bps": -2366.9,
+   "net_mean_selesai_bps": null,
+   "net_sd_bps": 0.0,
+   "pool": "BPAY",
+   "tag_hari_ini": [
+    "gmgn",
+    "gmgn_go",
+    "smart_degen"
+   ],
+   "trades": 1,
+   "trades_mtm": 1,
+   "trades_selesai": 0,
+   "usd": 8.0
+  },
+  {
+   "gross_mean_bps": -2413.5,
+   "layak_label": false,
+   "maker": "0x95657b8a4b37caa05e4b74bdb48c7e3f094c85dc",
+   "net_hit_pct": 0.0,
+   "net_mean_bps": -2472.5,
+   "net_mean_selesai_bps": null,
+   "net_sd_bps": 0.0,
+   "pool": "CZCOIN",
+   "tag_hari_ini": [
+    "fresh_wallet",
+    "gmgn",
+    "launchpad_smart"
+   ],
+   "trades": 1,
+   "trades_mtm": 1,
+   "trades_selesai": 0,
+   "usd": 759.0
+  },
+  {
+   "gross_mean_bps": -2724.8,
+   "layak_label": false,
+   "maker": "0x31f60f3f0f15f5d905d968d2f48f6e3801a61e34",
+   "net_hit_pct": 0.0,
+   "net_mean_bps": -2783.8,
+   "net_mean_selesai_bps": null,
+   "net_sd_bps": 0.0,
+   "pool": "BPAY",
+   "tag_hari_ini": [
+    "gmgn",
+    "smart_degen"
+   ],
+   "trades": 1,
+   "trades_mtm": 1,
+   "trades_selesai": 0,
+   "usd": 355.0
+  },
+  {
+   "gross_mean_bps": -3185.2,
+   "layak_label": false,
+   "maker": "0x7a23941bb4d66bcb7da7ce002025eb7392a5c658",
+   "net_hit_pct": 0.0,
+   "net_mean_bps": -3244.2,
+   "net_mean_selesai_bps": null,
+   "net_sd_bps": 0.0,
+   "pool": "BPAY",
+   "tag_hari_ini": [
+    "fomo",
+    "gmgn",
+    "smart_degen"
+   ],
+   "trades": 1,
+   "trades_mtm": 1,
+   "trades_selesai": 0,
+   "usd": 113.0
+  },
+  {
+   "gross_mean_bps": -3231.6,
+   "layak_label": false,
+   "maker": "0x00241901735b6fd9a8c7e2a0448ee09d01cd767e",
+   "net_hit_pct": 0.0,
+   "net_mean_bps": -3290.6,
+   "net_mean_selesai_bps": null,
+   "net_sd_bps": 0.0,
+   "pool": "\uae30\uc640",
+   "tag_hari_ini": [
+    "axiom",
+    "gmgn",
+    "kol"
+   ],
+   "trades": 1,
+   "trades_mtm": 1,
+   "trades_selesai": 0,
+   "usd": 226.0
+  },
+  {
+   "gross_mean_bps": -3532.7,
+   "layak_label": false,
+   "maker": "0x2e29be7288dcbd20a8f55bb581ab8ee5e15400e0",
+   "net_hit_pct": 0.0,
+   "net_mean_bps": -3591.7,
+   "net_mean_selesai_bps": null,
+   "net_sd_bps": 0.0,
+   "pool": "CHARITY",
+   "tag_hari_ini": [
+    "gmgn",
+    "gmgn_go",
+    "smart_degen"
+   ],
+   "trades": 1,
+   "trades_mtm": 1,
+   "trades_selesai": 0,
+   "usd": 95.0
+  },
+  {
+   "gross_mean_bps": -3546.8,
+   "layak_label": false,
+   "maker": "0xe16da211c7d873765592e5e452649097461f6ab5",
+   "net_hit_pct": 0.0,
+   "net_mean_bps": -3605.8,
+   "net_mean_selesai_bps": null,
+   "net_sd_bps": 0.0,
+   "pool": "DYPAID",
+   "tag_hari_ini": [
+    "gmgn",
+    "gmgn_go",
+    "kol"
+   ],
+   "trades": 1,
+   "trades_mtm": 1,
+   "trades_selesai": 0,
+   "usd": 151.0
+  },
+  {
+   "gross_mean_bps": -4175.6,
+   "layak_label": false,
+   "maker": "0xa5e43a273207aad16d7c2dbbbdeb1b27ad68f977",
+   "net_hit_pct": 0.0,
+   "net_mean_bps": -4234.6,
+   "net_mean_selesai_bps": null,
+   "net_sd_bps": 0.0,
+   "pool": "BPAY",
+   "tag_hari_ini": [
+    "fomo",
+    "gmgn",
+    "gmgn_go"
+   ],
+   "trades": 1,
+   "trades_mtm": 1,
+   "trades_selesai": 0,
+   "usd": 151.0
+  },
+  {
+   "gross_mean_bps": -4667.9,
+   "layak_label": false,
+   "maker": "0xc652368b05a27dd70d135f636536714e2806bd9a",
+   "net_hit_pct": 0.0,
+   "net_mean_bps": -4726.9,
+   "net_mean_selesai_bps": null,
+   "net_sd_bps": 0.0,
+   "pool": "CZCOIN",
+   "tag_hari_ini": [
+    "app_smart_money",
+    "gmgn",
+    "gmgn_go"
+   ],
+   "trades": 1,
+   "trades_mtm": 1,
+   "trades_selesai": 0,
+   "usd": 105.0
+  },
+  {
+   "gross_mean_bps": -4819.8,
+   "layak_label": false,
+   "maker": "0x76ea831e2a1e4116406509f3c1f403b7bf935849",
+   "net_hit_pct": 0.0,
+   "net_mean_bps": -4878.8,
+   "net_mean_selesai_bps": null,
+   "net_sd_bps": 0.0,
+   "pool": "BPAY",
+   "tag_hari_ini": [
+    "fomo",
+    "gmgn",
+    "gmgn_go"
+   ],
+   "trades": 1,
+   "trades_mtm": 1,
+   "trades_selesai": 0,
+   "usd": 75.0
+  },
+  {
+   "gross_mean_bps": -5498.3,
+   "layak_label": false,
+   "maker": "0x5f9bc316d8473d8c6634bd26f3e0932cd6bf0718",
+   "net_hit_pct": 0.0,
+   "net_mean_bps": -5557.3,
+   "net_mean_selesai_bps": null,
+   "net_sd_bps": 0.0,
+   "pool": "BPAY",
+   "tag_hari_ini": [
+    "arbitrager",
+    "gmgn_go",
+    "kol"
+   ],
+   "trades": 1,
+   "trades_mtm": 1,
+   "trades_selesai": 0,
+   "usd": 2270.0
+  },
+  {
+   "gross_mean_bps": -6070.3,
+   "layak_label": false,
+   "maker": "0xf0f8a6479a428edd0eab965e624800585b62972c",
+   "net_hit_pct": 0.0,
+   "net_mean_bps": -6129.3,
+   "net_mean_selesai_bps": null,
+   "net_sd_bps": 0.0,
+   "pool": "BPAY",
+   "tag_hari_ini": [
+    "arbitrager",
+    "gmgn",
+    "gmgn_go",
+    "kol"
+   ],
+   "trades": 1,
+   "trades_mtm": 1,
+   "trades_selesai": 0,
+   "usd": 152.0
+  },
+  {
+   "gross_mean_bps": -6115.1,
+   "layak_label": false,
+   "maker": "0x3c86d511803afb9b7478a15527274f9b464bab89",
+   "net_hit_pct": 0.0,
+   "net_mean_bps": -6174.1,
+   "net_mean_selesai_bps": null,
+   "net_sd_bps": 0.0,
+   "pool": "BPAY",
+   "tag_hari_ini": [
+    "gmgn",
+    "smart_degen"
+   ],
+   "trades": 1,
+   "trades_mtm": 1,
+   "trades_selesai": 0,
+   "usd": 65.0
+  },
+  {
+   "gross_mean_bps": -6837.5,
+   "layak_label": false,
+   "maker": "0x22803338a03f9788065ab7d0d458c33af89a9a92",
+   "net_hit_pct": 0.0,
+   "net_mean_bps": -6896.5,
+   "net_mean_selesai_bps": null,
+   "net_sd_bps": 0.0,
+   "pool": "BPAY",
+   "tag_hari_ini": [
+    "fomo",
+    "gmgn",
+    "smart_degen"
+   ],
+   "trades": 1,
+   "trades_mtm": 1,
+   "trades_selesai": 0,
+   "usd": 378.0
+  },
+  {
+   "gross_mean_bps": -7333.0,
+   "layak_label": false,
+   "maker": "0x5229a8669a9cc1df775701e1753aa2e1b9f1085b",
+   "net_hit_pct": 0.0,
+   "net_mean_bps": -7392.0,
+   "net_mean_selesai_bps": null,
+   "net_sd_bps": 0.0,
+   "pool": "BPAY",
+   "tag_hari_ini": [
+    "smart_degen"
+   ],
+   "trades": 1,
+   "trades_mtm": 1,
+   "trades_selesai": 0,
+   "usd": 66.0
+  },
+  {
+   "gross_mean_bps": -7363.6,
+   "layak_label": false,
+   "maker": "0x60642771ff8a96eb88bd07e087e7fc77f50c51b7",
+   "net_hit_pct": 0.0,
+   "net_mean_bps": -7422.6,
+   "net_mean_selesai_bps": null,
+   "net_sd_bps": 0.0,
+   "pool": "BPAY",
+   "tag_hari_ini": [
+    "fomo",
+    "smart_degen"
+   ],
+   "trades": 1,
+   "trades_mtm": 1,
+   "trades_selesai": 0,
+   "usd": 37.0
+  },
+  {
+   "gross_mean_bps": -7547.6,
+   "layak_label": false,
+   "maker": "0xe5816184adee6486739e6a82b71d9bd7abcdc065",
+   "net_hit_pct": 0.0,
+   "net_mean_bps": -7606.6,
+   "net_mean_selesai_bps": null,
+   "net_sd_bps": 0.0,
+   "pool": "BPAY",
+   "tag_hari_ini": [
+    "arbitrager",
+    "gmgn",
+    "kol"
+   ],
+   "trades": 1,
+   "trades_mtm": 1,
+   "trades_selesai": 0,
+   "usd": 75.0
+  },
+  {
+   "gross_mean_bps": -7708.2,
+   "layak_label": false,
+   "maker": "0x72f4f5c30bd772ccc078d3b35298637d446548bb",
+   "net_hit_pct": 0.0,
+   "net_mean_bps": -7767.2,
+   "net_mean_selesai_bps": null,
+   "net_sd_bps": 0.0,
+   "pool": "BPAY",
+   "tag_hari_ini": [
+    "fomo",
+    "gmgn",
+    "gmgn_go"
+   ],
+   "trades": 1,
+   "trades_mtm": 1,
+   "trades_selesai": 0,
+   "usd": 199.0
+  },
+  {
+   "gross_mean_bps": -7752.6,
+   "layak_label": false,
+   "maker": "0xb78a7eb0704ab9b026e11dedad36df72f6d1178d",
+   "net_hit_pct": 0.0,
+   "net_mean_bps": -7811.6,
+   "net_mean_selesai_bps": null,
+   "net_sd_bps": 0.0,
+   "pool": "BPAY",
+   "tag_hari_ini": [
+    "gmgn",
+    "gmgn_go",
+    "smart_degen"
+   ],
+   "trades": 1,
+   "trades_mtm": 1,
+   "trades_selesai": 0,
+   "usd": 265.0
+  },
+  {
+   "gross_mean_bps": -8187.9,
+   "layak_label": false,
+   "maker": "0x45c3d2421bdecfb02f14a1e29427498fd3a422d1",
+   "net_hit_pct": 0.0,
+   "net_mean_bps": -8246.9,
+   "net_mean_selesai_bps": null,
+   "net_sd_bps": 0.0,
+   "pool": "BPAY",
+   "tag_hari_ini": [
+    "gmgn",
+    "gmgn_go",
+    "smart_degen"
+   ],
+   "trades": 1,
+   "trades_mtm": 1,
+   "trades_selesai": 0,
+   "usd": 50.0
+  },
+  {
+   "gross_mean_bps": -8280.4,
+   "layak_label": false,
+   "maker": "0x3475831749ea6c9992e638d01427453b9cc83a12",
+   "net_hit_pct": 0.0,
+   "net_mean_bps": -8339.4,
+   "net_mean_selesai_bps": null,
+   "net_sd_bps": 0.0,
+   "pool": "BPAY",
+   "tag_hari_ini": [
+    "axiom",
+    "fomo",
+    "gmgn_go"
+   ],
+   "trades": 1,
+   "trades_mtm": 1,
+   "trades_selesai": 0,
+   "usd": 76.0
+  },
+  {
+   "gross_mean_bps": -8703.3,
+   "layak_label": false,
+   "maker": "0x41ccc209d3ba4e81ef0c1fcb6d191127fb5b42f5",
+   "net_hit_pct": 0.0,
+   "net_mean_bps": -8762.3,
+   "net_mean_selesai_bps": null,
+   "net_sd_bps": 0.0,
+   "pool": "BPAY",
+   "tag_hari_ini": [
+    "gmgn",
+    "gmgn_go",
+    "kol"
+   ],
+   "trades": 1,
+   "trades_mtm": 1,
+   "trades_selesai": 0,
+   "usd": 382.0
+  },
+  {
+   "gross_mean_bps": -8758.1,
+   "layak_label": false,
+   "maker": "0x5c8e0e4d003667d5234868e62caf2b467a7046de",
+   "net_hit_pct": 0.0,
+   "net_mean_bps": -8817.1,
+   "net_mean_selesai_bps": null,
+   "net_sd_bps": 0.0,
+   "pool": "BPAY",
+   "tag_hari_ini": [
+    "smart_degen"
+   ],
+   "trades": 1,
+   "trades_mtm": 1,
+   "trades_selesai": 0,
+   "usd": 375.0
+  },
+  {
+   "gross_mean_bps": -8861.7,
+   "layak_label": false,
+   "maker": "0x54d209d9d224a615e0e5f0476644886897b75e45",
+   "net_hit_pct": 0.0,
+   "net_mean_bps": -8920.7,
+   "net_mean_selesai_bps": null,
+   "net_sd_bps": 0.0,
+   "pool": "BPAY",
+   "tag_hari_ini": [
+    "fomo",
+    "gmgn",
+    "gmgn_go",
+    "kol"
+   ],
+   "trades": 1,
+   "trades_mtm": 1,
+   "trades_selesai": 0,
+   "usd": 754.0
+  }
+ ],
+ "rows_sha256": "0x6ba1419c0076c5997304b44f81a2fba947b74413d97ddf5865394111230eb3bf",
+ "rt_cost_bps": 59.0,
+ "trade_tertam": 6149,
+ "tx_dibaca": 13999
+}
