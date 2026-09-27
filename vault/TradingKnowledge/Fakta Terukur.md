@@ -103,12 +103,24 @@ sifat sebuah sumber, melainkan sifat **sumber + jaringan tempat kamu bertanya**.
 |---|---|---|
 | round-trip di venue demo kami | **59 bps** posisi 1 unit (kurva x·y=k + fee 30 bps, **bukan** gas mainnet) | `forge test --match-test test_round_trip_...` → [[07-Testing/T3 - Execution Suite]] |
 | realized round-trip nyata di 97 | **−59 bps** per putaran, dibaca dari event `Closed` | `decisions/execution-trail.jsonl` · [[Concepts/Cost Is Fixed]] |
-| model biaya warisan dari proyek rujukan | 5,5 bps fee + 4,5 bps slip **per sisi** = 10 bps/sisi → **20 bps round-trip**; ambang efektifnya **2×** ongkos (gross > 40 bps) | [[06-Results/02 - Thresholds]] |
+| model biaya warisan dari proyek rujukan | 5,5 bps fee + 4,5 bps slip **per sisi** = 10 bps/sisi → **20 bps round-trip**; ambang efektifnya **2×** ongkos (gross > 40 bps) | [[06-Results/02 - Thresholds]] — **sudah bukan default lagi**, lihat P10 di bawah |
 | ongkos tetap $0,05 bolak-balik pada $1 | butuh **+5 %** cuma untuk balik modal — dan tabel itu **estimasi mainnet, belum diukur di repo ini** | [[01-Agent/A4 - Trust Gating and Real-Money Rules]] |
 | gas testnet 97 | **0,10 gwei** live; guard lama memakai floor **1 gwei** → menolak karena plafon sendiri | `08-Backlog` P1 |
+| **isi** dari 59 bps itu | dua sisi fee 30 bps yang berkomposisi = `1 − (1 − 0,003)²` = **59,9 bps** → pada 1 unit, **≈ 0 bps** sisa untuk dampak kurva | `python -X utf8 tools/costs.py --self-test` · [[FD3 - Likuiditas dan Dampak Harga]] |
+| ambang gross yang berlaku sekarang | **118 bps** = 2 × 59 (satu round-trip untuk dipilih, satu untuk keluar) | `python -X utf8 tools/costs.py` |
 
-**P10 masih terbuka:** menyatukan 59 bps terukur dengan 20 bps asumsi di seluruh jalur uji.
-Angka mana pun yang digabungkan dengan 20 bps harus menyebut bahwa ongkos terukur kami 3× lipat.
+**P10 ditutup 28 Sep 2026** (`tools/costs.py` + `vault/scripts/wire_costs.py`): satu model ongkos
+untuk semua jalur uji — `backtest.py`, `ledger.py`, `screen_universe.py`, `smartmoney_score.py`,
+`flow_test.py`, `maker_ledger.py` semuanya menarik dari modul yang sama, default = **59 bps yang
+terukur** (basis `measured-own-venue`), dan override `--cost` dicatat di artefak sebagai
+`cli-override` supaya tidak bisa menyamar sebagai angka ukur. 20 bps tetap ada sebagai label
+**asumsi warisan**, tidak lagi menyetir angka.
+
+Konsekuensinya dicatat di [[06-Results/04 - Negative Results]] §6 dan
+[[00-Overview/05 - Corrections]]: deret yang dihitung ulang **memburuk**, bukan membaik — satu-satunya
+"MENANG" di seri paper (+1,5 bps) menjadi **−37,5 bps**, dan seri itu kini WR 0 %.
+`python -X utf8 tools/costs.py --self-test` mengikat 59 ke fee pool (dua sisi 30 bps berkomposisi =
+59,9), jadi kalau suatu hari angkanya tidak lagi berasal dari mana pun, gerbangnya yang berteriak.
 
 ## E. Ambang yang berlaku sekarang
 
@@ -135,9 +147,11 @@ sudah tertulis. Cara mengujinya ada di [[07-Peta-Fabius/GAP2 - Uji Setiap Veto T
 | apa | hasil | halaman |
 |---|---|---|
 | aturan arah `direction.py`, 400 hari × 12 aset, ambang diimpor (tidak di-fit) | **net rugi di 12/12** saat gerbang `\|acf\|` dicabut (−27,9…−0,8 bps/trade); gross hanya +1,5…+4,0 bps vs ongkos 20 bps; **dibalik tetap kalah** (−39,2…−12,1); horizon 24 j **0/12** lolos | [[06-Results/04 - Negative Results]] |
+| **hitung ulang 28 Sep dengan ongkos terukur (P10)** | masih **12/12 negatif**, sekarang **−39,8 … −66,9 bps**/trade (gross tidak berubah: −7,9 … +19,2 — yang berubah cuma penggarisnya); dengan gerbang `\|acf\|` hidup: **4 simbol dinilai, 0 lolos** | `python -X utf8 tools/backtest.py --mom-only` dan tanpa flag → `decisions/backtest-20260927Z-h4-momonly.json`, `...-h4.json` |
 | panel whale GMGN, horison per jam | **win rate 69,8 % tapi −10,4 bps per jam** | F-D16 di [[00-Overview/03 - Decisions]] |
 | smart money vs kerumunan, berpasangan per (token, jendela 4 j) | mentah: panel **+680,7 bps** vs kontrol **+336,4 bps** (51.863 entri swap BSC, 10 hari, ongkos 20 bps). Berpasangan & drift terbuang: **selisih −10,4 bps, p=0,568** → tidak berbeda dari kerumunan; 54 wallet capai n≥20, **0 lolos BH** | `tools/smartmoney_score.py` → [[06-Results/04 - Negative Results]] §4c |
 | dua `Enter` yang jatuh tempo | **+1,5 bps** dan **−146,3 bps** net (n=2) | [[06-Results/03 - Not Yet Proven]] baris 16 |
+| **hitung ulang 28 Sep (P10, ongkos 59 bps)** | ketiga keputusan paper yang jatuh tempo: **−37,5**, **−185,3**, **−485,3 bps** net → **WR 0 %**; satu-satunya "MENANG" yang pernah kami catat adalah artefak penggaris 20 bps | `python -X utf8 tools/ledger.py` lalu `tools/winlog.py` |
 | jalur eksekusi nyata | 3 putaran chain, **WR 0 %**, net −59,0 bps rata-rata — dan itu memang **ongkos**, bukan sinyal (pool kami sendiri tanpa arus luar) | `tools/winlog.py` |
 | `\|acf\|` MARSCOIN | 0,075 → **zona abu-abu** (0,05–0,10 = belum tahu) | [[06-Results/03 - Not Yet Proven]] |
 | `security_gate` pada kandidat arah | 5/5 membalas: 4 `OK` + 1 `UNMEASURED` (`pPOLY is_honeypot=None` tidak dihitung bersih) | [[04-Tools/TL3 - security_gate]] |
@@ -159,10 +173,13 @@ tidak ada kandidat yang lolos (§F baris aturan arah: gross maksimum yang pernah
 ```
 python -X utf8 tools/anchor.py --verify   -> anchorCount() = 19 | 13 baris terpelacak | 13/13 COCOK
 python -X utf8 tools/verdict_counts.py    -> countByVerdict: Enter 4 / Abstain 15  (4 + 15 = 19)
-python -X utf8 tools/winlog.py            -> PAPER n=2 WR 50,0 % net rata2 -72,4 bps (total -144,8)
+python -X utf8 tools/winlog.py            -> PAPER n=3 WR 0,0 % net rata2 -236,0 bps (total -708,1)
+                                             streak paper: 3 KALAH | terpanjang menang 0
                                              CHAIN n=3 WR 0,0 % net rata2 -59,0 bps (total -177,0)
                                              streak chain: 3 KALAH | terpanjang menang 0
                                              gerbang F-D16: n>=20 -> BELUM (kurang 17)
+                                             ! 2 decisionHash dengan net berbeda antar artefak:
+                                               (1,5 -> -37,5) dan (-146,3 -> -185,3)  <- ganti ongkos P10
 git fetch origin                          -> lokal 1 commit di depan, 188 di belakang
 git log --oneline HEAD..origin/master     -> SEMUANYA commit data ("wallet flow" / "snapshot
                                              universe"): nol commit non-data di antaranya

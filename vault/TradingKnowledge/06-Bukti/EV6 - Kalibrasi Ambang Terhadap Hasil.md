@@ -15,7 +15,7 @@ tags: [tk, tk-bukti, "EV6"]
 |---|---|---|---|
 | A — aritmetika data | `MIN_AGE_SEC` 24 jam | TIDAK diuji terhadap hasil — tidak akan pernah | tanpa bar tidak ada yang bisa dinilai; berubah hanya kalau jendela datanya berubah |
 | B — risiko diputuskan | `MIN_LIQ_USD` 50.000 · `MAX_TOP10` 45 % · `MIN_LOCK` 20 % · `MAX_BUNDLER` 30 % · `MIN_HOLDER` 60 · `MIN_VOL_OVER_LIQ` 0,10 | WAJIB diuji | "veto memprediksi" := outcome (return forward DAN kemampuan keluar) populasi yang kena veto X lebih buruk daripada yang lolos, pada jendela dan aturan yang sama ([[EV3 - Signifikansi dan Multiple Testing]]) |
-| C — ongkos terukur | round-trip 59 bps vs asumsi warisan 20 bps | sudah terukur, belum disatukan | P10 terbuka ([[Fakta Terukur]] §D) — tiap angka yang digabung dengan 20 bps wajib menyebut yang 59 |
+| C — ongkos terukur | round-trip 59 bps vs asumsi warisan 20 bps | terukur **dan sudah jadi satu sumber** sejak 28 Sep | P10 ditutup (`tools/costs.py`, §D): default 59, override tercatat `cli-override`; angka mana pun yang masih disebut 20 bps harus dijelaskan sebagai asumsi warisan |
 
 Tiga verdik yang disepakati di muka, bukan tiga sikap: (1) memprediksi → tahan dengan angka + tanggal; (2) tidak memprediksi → **cabut**, tulis alasannya di [[06-Results/02 - Thresholds]]; (3) tidak bisa dinilai → BUKAN keduanya. Kelas B juga membawa tanggal kedaluwarsa moral: ambang yang tetap tak teruji sementara jendela hasil sudah menumpuk bukan lagi konservatisme — itu dekorasi dengan angka di sebelahnya.
 

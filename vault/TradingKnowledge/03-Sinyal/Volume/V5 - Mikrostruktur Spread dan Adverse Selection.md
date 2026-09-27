@@ -45,7 +45,7 @@ ruang apa pun untuk biaya spread di atasnya.
 | queue position, probabilitas isi maker | `TIDAK-ADA` | butuh buku order + riwayat antrian |
 | biaya round-trip yang **terukur** di venue demo | `ADA` | **59 bps** posisi 1 unit (kurva x·y=k + fee 30 bps, bukan gas mainnet) — §D |
 | biaya round-trip **nyata** yang sudah terjadi | `ADA` | **−59 bps** per putaran, dibaca dari event `Closed` di `decisions/execution-trail.jsonl` — §D |
-| ongkos asumsi warisan (5,5 bps fee + 4,5 bps spread/sisi) | `ADA-TAPI` | **20 bps** round-trip dari korpus rujukan; selisih 3× dengan angka terukur kita masih terbuka (P10, §D) |
+| ongkos asumsi warisan (5,5 bps fee + 4,5 bps spread/sisi) | `ADA-TAPI` | **20 bps** round-trip dari korpus rujukan; sejak **P10 28 Sep** ia bukan default lagi — semua jalur uji menarik 59 bps dari `tools/costs.py` (§D) |
 | slip dari kedalaman pool untuk ukuran keluar | `ADA-TAPI` | `exit-size <= 1 % liq` ([[01-Agent/01 - Asset Classes and Seats]] §3) — model kurva, belum diuji pada arus orang lain |
 
 ## Uji di Fabius
@@ -62,7 +62,7 @@ di atas **59 bps** (§D) sebelum kata "edge" boleh dipakai.
 ## Batas dan mode gagal
 
 - **Memakai 20 bps sebagai ongkos** setelah punya 59 bps terukur = menguji strategi pada biaya yang
-  tidak ada. Setiap angka yang digabung dengan 20 bps wajib menyebut rasionya (§D, P10).
+  tidak ada. Setiap angka yang digabung dengan 20 bps wajib menyebut rasionya (§D; P10 ditutup 28 Sep).
 - **Adverse selection tidak terlihat sebagai tagihan.** Ia muncul sebagai "kenapa harga bergerak
   setelah aku masuk", dan tidak ada kolom di data kita yang mencatatnya — jadi ia cenderung
   diasumsikan nol. Asumsi nol pada komponen yang tidak diukur adalah cara klasik hasil terlihat

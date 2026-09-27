@@ -39,7 +39,9 @@ sys.path.insert(0, HERE)
 
 import bars  # noqa: E402
 
-RT_COST_BPS = 20.0
+import costs  # noqa: E402  (P10: satu model ongkos untuk semua jalur uji)
+
+RT_COST_BPS = costs.MEASURED_RT_BPS   # P10: satu pintu (terukur) - lihat tools/costs.py
 HORIZON = 4
 MIN_N = 20
 BH_ALPHA = 0.10

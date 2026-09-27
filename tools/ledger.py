@@ -51,7 +51,9 @@ sys.path.insert(0, HERE)
 import bars as barsmod  # noqa: E402
 import direction as D   # noqa: E402  (ongkos & ambang satu sumber; tidak ada angka kedua)
 
-RT_COST_BPS = 20.0          # vault/01-Agent/01 - Asset Classes and Seats.md §3 (5,5 + 4,5 per sisi) - sama dengan yang dipakai backtest
+import costs  # noqa: E402  (P10: satu model ongkos untuk semua jalur uji)
+
+RT_COST_BPS = costs.MEASURED_RT_BPS   # P10: satu pintu (terukur) - lihat tools/costs.py
 BARS_DIR = os.path.join(ROOT, "decisions")
 
 
@@ -237,7 +239,7 @@ def main():
         with open(p, "a", encoding="utf-8") as fh:
             fh.write(json.dumps({"kind": "ledger", "as_of_utc": time.strftime(
                 "%Y-%m-%dT%H:%M:%SZ", time.gmtime(now_ms / 1000)),
-                "cost_bps_rt": RT_COST_BPS,
+                "cost_bps_rt": RT_COST_BPS, "cost_basis": costs.cost_basis(),
                 "rows_sha256": "0x" + hashlib.sha256(blob.encode()).hexdigest(),
                 "rows": rows}, ensure_ascii=False, sort_keys=True) + "\n")
         print(f"tertulis: {p}")

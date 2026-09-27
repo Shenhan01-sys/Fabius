@@ -89,7 +89,10 @@ diturunkan satu sama lain: deret OHLC (①) · transaksi dompet yang lewat (⑦)
   kolam" kosong secara struktural — hasil nol bisa berarti "tidak ada data", bukan "tidak ada edge".
 - **Alat skornya sedang tidak bisa dipercaya** (§H). Sampai mekanika `tools/maker_ledger.py` beres, satu-satunya
   angka maker yang boleh dipakai adalah yang dicetak `tools/ledger.py` atas keputusan sendiri.
-- **Ongkos dua kepala.** Jalur warisan menutup dengan 20 bps sementara yang terukur 59 bps (§D); P10 terbuka —
+- **Ongkos dua kepala (sampai 28 Sep).** Jalur warisan menutup dengan 20 bps sementara yang terukur
+  59 bps (§D). P10 **ditutup 28 Sep** (`tools/costs.py`): satu sumber, default terukur, dan hitung
+  ulangnya bikin seri paper kehilangan satu-satunya "MENANG" — lihat
+  [[06-Results/04 - Negative Results]] §5b. Yang tersisa dari lubang ini bukan angka tapi ukuran:
   setiap `net` dari jalur lama adalah angka yang terlalu ramah.
 - **Mode gagal termahal:** ④ bersih tapi keluar tetap tidak mungkin. Yang tidak terjual tidak punya `net` dalam
   bps, tidak tertutup time-stop apa pun, dan akan tercatat sebagai angka yang bagus ([[Concepts/Unmeasured Is Not Clean]]).

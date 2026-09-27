@@ -53,7 +53,7 @@ tidak punya arus luar, jadi strukturnya selalu ≈ minus ongkos.
 |---|---|---|
 | likuiditas pool untuk menghitung kapasitas keluar | `ADA` | gerbang ⑥; ikut di-hash lewat `seat_blockers` — [[Fakta Terukur]] §E |
 | ongkos round-trip terukur di venue sendiri | `ADA` | 59 bps posisi 1 unit (test) = −59 bps realized (chain 97) — §D |
-| model ongkos warisan untuk perbandingan | `ADA-TAPI` | 20 bps RT; ambang efektif 2× ongkos — **P10 terbuka**: 20 bps belum disatukan dengan 59 bps — §D |
+| model ongkos warisan untuk perbandingan | `ADA-TAPI` | 20 bps RT; ambang efektif 2× ongkos — **P10 ditutup 28 Sep**: satu sumber `tools/costs.py` — §D |
 | order book / kedalaman bid-ask nyata | `TIDAK-ADA` | tidak ada jalur L2 — §C; tanpa itu spread hanya bisa disimpulkan, tidak diukur |
 | partial fill | `TIDAK-ADA` | venue kami selalu mengisi penuh di kurva; **fill parsial adalah properti pasar, bukan properti repo ini** |
 | venue pasar nyata (CEX/DEX publik) | `MATI-DARI-MESIN-INI` | Binance `451` · Bybit `403` · OKX/Bitget terpotong TLS, terukur 24 Sep — §C |

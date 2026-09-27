@@ -42,7 +42,7 @@ Semua 9.599-bar titik keputusan (240–1.216 trade per simbol) dijalankan tanpa 
 | trade | 240 – 1.216 |
 | win-rate | 19,2 % – 47,4 % (mayoritas 37–45 %) |
 | gross bps/trade | **−7,9 … +19,2** |
-| net bps/trade (sesudah 20 bps RT) | **−27,9 … −0,8** |
+| net bps/trade (sesudah 20 bps RT) | **−27,9 … −0,8** — *(dihitung ulang 28 Sep dengan ongkos terukur: lihat §5b)* |
 | t-stat | −4,84 … −0,02 (tidak satu pun positif) |
 | drop-best-fold | **negatif di 12 dari 12** (−34,8 … −17,3) |
 | net bps | **negatif di 12 dari 12**, tanpa pengecualian |
@@ -169,6 +169,50 @@ jadi versi bersihnya kecil kemungkinan berbalik menjadi "edge".
 4. **Jangan panggil ini walk-forward fitted.** Tidak ada satu parameter pun yang dipilih dengan
    melihat hasil di atas; jadi yang dilakukan adalah tes bersegmen + sensitivitas. Menyebutnya
    walk-forward akan menjual sesuatu yang tidak kita beli.
+
+## 5b. Hitung ulang 28 Sep — satu penggaris untuk semua jalur uji (P10)
+
+Sampai 27 Sep ada **dua** angka round-trip yang hidup berdampingan tanpa ada artefak yang bilang
+mana yang dipakai: jalur uji memakai **20 bps** (model biaya warisan: 5,5 bps fee + 4,5 bps slip per
+sisi, tidak pernah direplikasi di repo ini), sedangkan venue kami sendiri **menghasilkan 59 bps**
+(`forge test test_round_trip_...` + event `Closed` di chain 97). Sekarang satu sumber:
+`tools/costs.py`, default = yang terukur, override `--cost` tercatat sebagai `cli-override`.
+
+Jalankan ulang yang sama, hanya penggarisnya yang berubah (28 Sep 2026, 400 hari × 12 aset,
+ambang diimpor bukan di-fit):
+
+| | sesudah 20 bps (27 Sep) | **sesudah 59 bps (28 Sep)** |
+|---|---|---|
+| net bps/trade, rentang 12 simbol | −27,9 … −0,8 | **−66,9 … −39,8** |
+| simbol dengan net positif | 0 dari 12 | **0 dari 12** |
+| drop-best-fold | negatif 12/12 (−34,8 … −17,3) | negatif 12/12 (**−73,8 … −56,3**) |
+| gross bps/trade | −7,9 … +19,2 | −7,9 … +19,2 *(tidak berubah — gross tidak peduli penggaris)* |
+| gerbang `\|acf\|` hidup | nol trade di 6 simbol terdalam; 4 dinilai, 0 lolos | **4 dinilai (HYPE/CAKE/SUI/1000PEPE), 0 lolos** |
+| ambang gross yang harus dilampaui | > 40 bps | **> 118 bps** (= 2 × 59) |
+
+Artefaknya: `decisions/backtest-20260927Z-h4-momonly.json` (12 simbol, gerbang dicabut) dan
+`decisions/backtest-20260927Z-h4.json` (gerbang hidup). Baca-ulang:
+`python -X utf8 tools/backtest.py --mom-only` lalu `python -X utf8 tools/backtest.py`.
+
+**Seri keputusan ter-anchor ikut berubah, dan ini yang paling harus diperhatikan orang yang
+membaca vault ini:** sampai kemarin kami punya satu keputusan paper yang disebut MENANG. Dengan
+ongkos terukur, ketiga yang sudah jatuh tempo semuanya rugi:
+
+| keputusan | net @20 bps | **net @59 bps** |
+|---|---|---|
+| MARSCOIN short, due 25 Sep 17:00Z | **+1,5** | **−37,5** |
+| MARSCOIN short, due 25 Sep 18:00Z | −146,3 | **−185,3** |
+| MARSCOIN long, stop kena, due 27 Sep 18:00Z | *(belum jatuh tempo saat itu)* | **−485,3** |
+| **PAPER** | n=2, WR 50 %, rata-rata −72,4 | **n=3, WR 0 %, rata-rata −236,0, total −708,1** |
+
+Seri **CHAIN** tidak berubah (−59,0 bps rata-rata, 3 putaran) — di sana netnya sudah realisasi dari
+event, bukan selisih dengan asumsi. `python -X utf8 tools/winlog.py` bahkan mencetak perselisihannya
+sendiri: `2 decisionHash dengan net berbeda antar artefak` — itu jejak penggantian penggaris, bukan
+dua peristiwa berbeda.
+
+Angka lama **tidak** dihapus dari halaman ini: dia rekaman dari run yang memang pernah terjadi. Yang
+berubah adalah klaim yang boleh dibangun di atasnya — dicatat di [[00-Overview/05 - Corrections]] dan
+[[06-Results/03 - Not Yet Proven]] baris 16.
 
 ## 6. Batas yang masih tersisa (jangan dibaca sebagai "sudah selesai")
 

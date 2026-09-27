@@ -58,14 +58,25 @@ hasilnya net **−27,9 … −0,8 bps** dan rugi di **12/12**; arah dibalik teta
 (−39,2 … −12,1) ([[Fakta Terukur]] §F). Ini contoh terukur dari "filter ongkos membunuh edge tipis",
 bukan sekadar rumus.
 
-Keadaan yang harus ikut disebut di setiap angka: **P10 masih terbuka** — 59 bps terukur belum
-disatukan dengan 20 bps asumsi di seluruh jalur uji ([[Fakta Terukur]] §D). Praktisnya hari ini ada
-tiga bahasa ongkos sekaligus: jalur uji memakai 20 bps, venue kami menghasilkan 59 bps, dan artefak
-`decisions/whale-sweep-90d.json` memakai `cost_bps_applied = 0.0` sehingga **semua** horison di
-berkas itu GROSS (§H). Angka mana pun yang digabungkan dengan 20 bps wajib menyebut bahwa ongkos
-terukur kami 3× lipat. Kalau ambang efektif warisan (2×) dipakai apa adanya pada ongkos terukur,
-garisnya berubah dari gross > 40 bps menjadi gross > ±118 bps — aritmetika, dan sampai P10 ditutup
-**belum ada satu pun jalur yang menegakkannya**.
+**P10 ditutup 28 Sep 2026** (`tools/costs.py` + `vault/scripts/wire_costs.py`). Yang berubah bukan
+hanya label: satu sumber sekarang dipakai `backtest.py`, `ledger.py`, `screen_universe.py`,
+`smartmoney_score.py`, `flow_test.py`, `maker_ledger.py`, default = **59 bps yang terukur**, dan
+override `--cost` tercatat di artefak sebagai `cli-override`. Hitung ulang dijalankan pada hari yang
+sama, dan kesimpulannya **tidak** membaik:
+
+| | @20 bps (27 Sep) | **@59 bps (28 Sep)** |
+|---|---|---|
+| net bps/trade, 12 simbol, gerbang dicabut | −27,9 … −0,8 | **−66,9 … −39,8** (gross tidak berubah) |
+| simbol lolos | 0 dari 12 | **0 dari 12** |
+| ambang gross (2× ongkos) | > 40 bps | **> 118 bps** |
+| satu-satunya "MENANG" di seri paper | +1,5 bps | **−37,5 bps** → PAPER kini n=3, WR 0 % |
+
+Rinciannya di [[06-Results/04 - Negative Results]] §5b dan [[06-Results/07 - Matured Outcomes]].
+Yang **masih** belum disatukan, dan itu bukan sisa P10 tapi batas yang lain: 59 bps adalah satu
+putaran di **ukuran 1 unit di venue demo kami** — ongkos per ukuran di sana belum diukur, dan venue
+produksi (yang akan kami sentuh saat nyata) belum menghasilkan angka apa pun. Artefak
+`decisions/whale-sweep-90d.json` juga tetap `cost_bps_applied = 0.0` → seluruh horison di berkas itu
+GROSS sampai diuji ulang (§H).
 
 ## Batas dan mode gagal
 
@@ -88,12 +99,13 @@ garisnya berubah dari gross > 40 bps menjadi gross > ±118 bps — aritmetika, d
 `T3` untuk 59 bps dan −59 bps (kami yang mengukur, dua jalur berbeda setuju) · `T1` untuk bentuk
 "ongkos tetap + proporsional" (kerangka standar, tidak kami validasi sendiri) · `T0` untuk angka
 $0,05 dan segala turunan "+5 %"-nya (estimasi mainnet, belum diukur di repo) · untuk klaim
-"ongkos sudah disatukan di jalur uji": **belum**, dan itu P10, bukan teori.
+"ongkos sudah disatukan di jalur uji": **sudah, 28 Sep** (`tools/costs.py`, P10 ditutup).
 
 ## Boleh dibaca, dilarang dibaca
 
-- **Boleh:** "aturan arah kami gross +1,5…+4,0 bps melawan ongkos 20 bps dan rugi di 12/12; di venue
-  kami sendiri ongkos terukurnya 59 bps — dan keduanya belum disatukan (P10)."
+- **Boleh:** "aturan arah kami gross +1,5…+4,0 bps melawan asumsi 20 bps dan rugi di 12/12; dengan
+  ongkos terukur 59 bps yang sekarang dipakai semua jalur uji, rentangnya −39,8…−66,9 bps — dan di
+  venue kami sendiri memang 59 bps yang terjadi."
 - **Dilarang:** "biaya kami sekitar 20 bps" (itu warisan, terukur 59) · "strategi ini net profit"
   tanpa menyebut pada ukuran berapa · menampilkan angka horison `whale-sweep-90d.json` sebagai net.
 

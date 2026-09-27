@@ -34,6 +34,7 @@ import math
 import os
 import sys
 from collections import defaultdict
+
 # Windows: cmd.exe default cp1252 dan glyph yang kami cetak (`①④⑥` di arah, `⚠` di laporan)
 # bukan bagian dari yang di-hash - jadi encoding stdout yang disetel, bukan stringnya.
 # Tanpa ini, `print` bisa pecah DI TENGAH tabel dan separuh hasilnya terbaca seperti laporan penuh.
@@ -48,13 +49,16 @@ ROOT = os.path.dirname(HERE)                               # .../Fabius
 DATA = os.path.join(ROOT, "universe", "bsc-universe.jsonl")
 OUT_DIR = os.path.join(HERE, "out")
 
+sys.path.insert(0, HERE)          # modul tetangga (costs.py) tinggal di tools/ ini
+import costs  # noqa: E402        # P10: satu model ongkos untuk semua jalur uji
+
 # ---- konstanta biaya, diekstrak dari kode rujukan (lihat docstring) ----
 FEE_SIDE = 0.00055          # 5,5 bps taker per sisi
 SLIP_SIDE = 0.00045         # 4,5 bps spread+slippage per sisi
 COST_SIDE = FEE_SIDE + SLIP_SIDE
-RT_COST_BPS = 2 * COST_SIDE * 1e4      # 20,0 bps round-trip (2 kaki)
+RT_COST_BPS = costs.MEASURED_RT_BPS   # P10: bukan lagi 20 bps warisan - tools/costs.py
 GATE_NET_BPS = RT_COST_BPS             # syarat: net harus > biaya satu round-trip lagi
-GATE_GROSS_BPS = RT_COST_BPS + GATE_NET_BPS   # -> gross > 40 bps
+GATE_GROSS_BPS = costs.gate_gross_bps(RT_COST_BPS)   # 2x ongkos yang dipakai -> 118 bps
 BH_ALPHA = 0.10
 MIN_SAMPLES = 20
 
@@ -322,7 +326,7 @@ def main():
         "by_reason": reason_breakdown(refused),
         "fdr": {"family_tests": m_family, "alpha": BH_ALPHA, "passed": n_signif},
         "constants": {"FEE_SIDE": FEE_SIDE, "SLIPPAGE_SIDE": SLIP_SIDE, "COST_SIDE": COST_SIDE,
-                      "RT_COST_BPS": RT_COST_BPS, "GATE_GROSS_BPS": GATE_GROSS_BPS,
+                      "RT_COST_BPS": RT_COST_BPS, "COST_BASIS": costs.cost_basis(), "GATE_GROSS_BPS": GATE_GROSS_BPS,
                       "MIN_SAMPLES": MIN_SAMPLES, "BH_ALPHA": BH_ALPHA},
         "limits": ["bukan trade yang bisa dieksekusi", "tanpa slippage nyata",
                    "tanpa ukuran posisi", "bukan prediksi return"],

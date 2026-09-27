@@ -49,7 +49,7 @@ jalankan tadi":
 
 | prioritas | ID | apa yang selesai terlihat sebagai | bayar |
 |---|---|---|---|
-| 1 | **P10** — satu model ongkos | `tools/backtest.py` dan `tools/ledger.py` memakai angka yang sama; deret lama dihitung ulang dan dicatat di [[06-Results/04 - Negative Results]] — satu "MENANG +1,5 bps" menjadi **≈ −37,5 bps** *(aritmetika di atas §D + §F; belum dihitung ulang oleh alat — justru itu isi P10)* | `nol` |
+| 1 | **P10** — satu model ongkos ✅ 28 Sep | `tools/backtest.py` dan `tools/ledger.py` memakai angka yang sama; deret lama dihitung ulang dan dicatat di [[06-Results/04 - Negative Results]] — satu "MENANG +1,5 bps" menjadi **≈ −37,5 bps** *(aritmetika di atas §D + §F; belum dihitung ulang oleh alat — justru itu isi P10)* | `nol` |
 | 2 | **P11** — mekanika `maker_ledger` | blok REM SEHAT di [[Fakta Terukur]] §H lolos: median `\|net\|` masuk akal, arti `is_open_or_close` ditetapkan dengan baris mentah, MTM token hilang pesimistis | `nol` |
 | 3 | **P13** — rekam funding + OI per jam | satu berkas `universe/*` baru + manifest umur, dimulai **sekarang** supaya kalender bekerja | `nol` + `kalender` |
 | 4 | **P12** — uji tujuh veto | **sebagian sudah dihitung**: `tools/screen_universe.py` mencetak kohort lolos vs ditolak + outcome per alasan (§F) — dan arahnya tidak mendukung veto. Yang masih kurang = `tools/veto_study.py`: ongkos **59 bps**, median + bootstrap, satu baris verdik per veto di [[06-Results/02 - Thresholds]] (dipertahankan/dicabut/belum teruji), dan **nama tiap tes yang lolos BH ditulis** — report sekarang mencetak `passed: 5` tanpa menyebut lima yang mana | `jam-proses` |

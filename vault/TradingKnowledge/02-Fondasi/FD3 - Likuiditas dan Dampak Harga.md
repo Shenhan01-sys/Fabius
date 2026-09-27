@@ -24,9 +24,12 @@ kapasitas keluar: qty terbesar yang bisa ditutup dalam batas dampak dan waktu ya
 
 Bentuk kuadrat-akar di atas adalah **pendekatan** yang dipakai luas untuk pasar berkesinambungan;
 ia bukan identitas. Untuk venue kami yang sebenarnya (pool `x·y=k`), hubungannya justru cembung dan
-bisa dihitung persis — dan itu memberi pemeriksaan silang: round-trip **59 bps** untuk posisi 1 unit
-di venue demo ([[Fakta Terukur]] §D) = kurva + fee 30 bps, sehingga komponen kurva ±29 bps bolak-balik
-(±14,5 bps per sisi). Aritmetika dari dua angka itu, bukan pengukuran terpisah.
+bisa dihitung persis — dan itu memberi pemeriksaan silang yang tidak nyaman: round-trip **59 bps**
+untuk posisi 1 unit ([[Fakta Terukur]] §D) hampir **seluruhnya fee**. Dua sisi fee 30 bps yang
+berkomposisi sudah menghasilkan `1 − (1 − 0,003)² = 59,9 bps` (`tools/costs.py --self-test`), jadi
+sisa komponen kurva pada ukuran itu ≈ **0 bps** (−0,9, di dalam noise). Aritmetika dari dua angka
+§D, bukan pengukuran terpisah - dan konsekuensinya harus disebut: **kami belum pernah mengukur
+dampak sama sekali**, hanya mengukur harga masuk-keluar di pool yang likuid untuk 1 unit.
 
 ## Cara pakai yang diklaim
 

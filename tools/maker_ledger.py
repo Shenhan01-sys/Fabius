@@ -30,6 +30,7 @@ import hashlib
 import io
 import json
 import os
+import sys
 import time
 
 HERE = os.path.dirname(os.path.abspath(__file__))
@@ -38,8 +39,11 @@ FLOW = os.path.join(ROOT, "universe", "wallet-flow.jsonl")
 UNIV = os.path.join(ROOT, "universe", "bsc-universe.jsonl")
 OUT_DIR = os.path.join(ROOT, "decisions")
 
-RT_COST_BPS = 59.0        # satu-satunya round-trip yang pernah kami UKUR (venue sendiri; forge test
-                          # + fill nyata di 97). Bukan 20 bps asumsi lama.
+sys.path.insert(0, HERE)  # noqa: E402  (modul tetangga tinggal di tools/ ini)
+import costs  # noqa: E402  (P10: satu model ongkos untuk semua jalur uji)
+
+RT_COST_BPS = costs.MEASURED_RT_BPS   # P10: satu pintu (terukur) - lihat tools/costs.py
+
 MIN_EDGE = 4              # maker bersama minimum agar dua token dianggap satu kolam
                           # (2 membuat graf kecil-dunia: satu kolam menyerap 378 simbol)
 MIN_TRADES = 8            # di bawah ini tidak boleh ada label "terampil"
@@ -283,7 +287,7 @@ def main():
     dn = sum(k for _, k in tc_) or 1
     onlyc = sum(v * k for v, k in tc_) / dn
     out = {"as_of_utc": as_of_s, "dibuat_utc": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
-           "rt_cost_bps": RT_COST_BPS, "min_trades_untuk_label": a.min_trades,
+           "rt_cost_bps": RT_COST_BPS, "rt_cost_basis": costs.cost_basis(), "min_trades_untuk_label": a.min_trades,
            "tx_dibaca": len(rows), "trade_tertam": len(trades), "lot_ditanda_taup": mtm,
            "jual_yatim": yatim, "baris_lain_dilewati": lain, "maker_bertanda": len(by_maker),
            "maker_layak_label": len(lab), "maker_net_positif_semua": len(pos),

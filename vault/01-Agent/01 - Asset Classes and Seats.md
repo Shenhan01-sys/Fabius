@@ -69,7 +69,7 @@ Status kursi (kita pakai ambang **korpus HeliQuant**, disebut per file - Fabius 
 | n>=8 & WR>=0,55 & net>0 | warm ×1,3 ; WR>=0,66 ×1,6 | idem (tetap di bawah ×2) |
 | n>=20 cost-aware OOS + stability + **2 siklus data baru beruntun** | `VALIDATED` → ×2 dibuka | `edge_lab.py:30,126` + `scripts/60_self_learn.py:38-39,136-142` |
 | drawdown akun >= 0,20 | semua kursi paksa SAFE | `trade_ticket.py:41` |
-| biaya | 5,5 bps taker + 4,5 bps spread/slippage **per sisi** = 20 bps round-trip; syarat edge net>20 bps ⇒ **gross>40 bps** | `edge_lab.py:23,24,28,121,125` |
+| biaya | 5,5 bps taker + 4,5 bps spread/slippage **per sisi** = 20 bps round-trip; syarat edge net>20 bps ⇒ **gross>40 bps** — **angka korpus rujukan; jalur uji kami sejak 28 Sep memakai 59 bps terukur ([[Concepts/Cost Is Fixed]])** | `edge_lab.py:23,24,28,121,125` → `tools/costs.py` |
 
 Kenapa "1 rugi ≠ lepas" - angkanya: win-rate SUI di korpus lama **58,2%** ⇒ peluang satu trade rugi ≈ 42%; dengan 5 kursi aturan itu membuang ~2 kursi/hari **karena noise**. Lab HeliQuant sudah menamai penyakit ini: HYPE **+92% OOS** → **65% dari satu fold** → buang fold terbaik = **+1,9%** (`scripts/59_onboard_asset.py` + `edge_lab.py`, temuan #20).
 
@@ -200,7 +200,7 @@ Karena itu:
 
 1. **SATU tes per wallet**, lalu **Benjamini–Hochberg α=0,10 lintas wallet** (aturan `vault/02`;
    tanpa ini, dari 500 wallet selalu ada ~25 yang "signifikan" karena nasib).
-2. **Ongkos 20 bps RT** dipakai sejak awal — `vault/09` sudah menunjukkan gross kecil mati oleh ongkos.
+2. **Ongkos 20 bps RT** dipakai sampai 27 Sep (asumsi warisan); sejak **P10 28 Sep** jalur uji memakai **59 bps terukur** (`tools/costs.py`) — `vault/09` sudah menunjukkan gross kecil mati oleh ongkos.
 3. **Hasil negatif ditampilkan**, bukan dibuang. Kalau panel smart money juga tidak mengalahkan
    lemparan koin setelah ongkos, itu Temuan #1 untuk Fabius dan justru membuat x402 feed kita
    berharga: orang membayar untuk *mengetahui*, bukan untuk *dijanjikan*.

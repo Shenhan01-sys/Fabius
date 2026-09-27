@@ -64,8 +64,10 @@ sys.path.insert(0, HERE)
 
 import bars  # noqa: E402  (tools/bars.py - Aster 1h, cache + sha256)
 
+import costs  # noqa: E402  (P10: satu model ongkos untuk semua jalur uji)
+
 DUNE = "https://api.dune.com"
-RT_COST_BPS = 20.0        # vault/01-Agent/01 - Asset Classes and Seats.md §3 (5,5 + 4,5 per sisi) - sama dengan backtest & live
+RT_COST_BPS = costs.MEASURED_RT_BPS   # P10: satu pintu (terukur) - lihat tools/costs.py
 HORIZON_BARS = 4          # 4 jam = horizon keputusan kita
 MIN_TRADES = 20           # vault/06-Results/02 - Thresholds.md: jangan simpulkan apa pun dari < 20 sampel independen
 BH_ALPHA = 0.10
@@ -471,7 +473,7 @@ def main():
     print("`universe/wallet-flow.jsonl` + anchor di chain 97.")
 
     out = {"generated_utc": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
-           "days": a.days, "min_usd": a.min_usd, "cost_bps_rt": RT_COST_BPS,
+           "days": a.days, "min_usd": a.min_usd, "cost_bps_rt": RT_COST_BPS, "cost_basis": costs.cost_basis(),
            "horizon_bars": HORIZON_BARS, "tokens_tested": [t["symbol"] for t in toks],
            "panel_size": len(panel), "samples": len(per_window) - skipped,
            "dune_rows": len(rows), "dune_truncated": len(rows) >= a.max_rows or net_trunc,

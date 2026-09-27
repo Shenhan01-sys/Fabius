@@ -13,7 +13,7 @@ hasil keluar — koreksi lewat halaman baru, supaya urutannya bisa dipertanggung
 ## Bagian
 
 - [[01 - Claims and Limits]] — yang terbukti vs yang tidak
-- [[02 - Thresholds]] — MIN_TRADES, BH α, ongkos 20 bps, asal tiap angka
+- [[02 - Thresholds]] — MIN_TRADES, BH α, ongkos (20 bps sebelum, **59 bps sejak P10 28 Sep**), asal tiap angka
 - [[03 - Not Yet Proven]] — daftar hidup yang belum kami buktikan
 - [[04 - Negative Results]] — aturan arah mati; smart money vs kerumunan
 - [[05 - Pre-registration Flow]] — uji aliran kerumunan, terkunci sebelum hasil

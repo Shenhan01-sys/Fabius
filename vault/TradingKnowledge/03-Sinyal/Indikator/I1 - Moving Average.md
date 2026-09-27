@@ -49,7 +49,7 @@ Yang boleh disimpulkan: pasangan aturan `gap SMA24 ±1 % + ret24` tidak mengandu
 aset ber-perp yang bisa kami hargai sendiri, di horizon 4 j dan 24 j, setelah ongkos. Yang **tidak**
 boleh disimpulkan: bahwa semua aturan SMA kalah di semua pasar — `n` lain, aset lain (C2/D yang tidak
 bisa kami hargai sendiri), dan peran lain (filter rezim, trailing stop) **tidak diuji**. Ongkos uji
-itu 20 bps warisan sementara yang terukur **59 bps** (§D, P10 terbuka), jadi net sebenarnya lebih
+itu 20 bps warisan sementara yang terukur **59 bps** (§D, P10 ditutup 28 Sep), jadi net sebenarnya lebih
 dalam; dengan gross +1,5 … +4,0 bps, selisihnya aritmetika biasa.
 
 ## Butuh data

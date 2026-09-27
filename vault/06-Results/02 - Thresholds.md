@@ -43,7 +43,7 @@ keduanya kosong; `06-Results/03 - Not Yet Proven.md` baris 12 adalah lubang yang
 | `SLIP_SIDE` | 0,00045 | 4,5 bps **per sisi** (spread+slippage) | `edge_lab.py:24` |
 | `COST_SIDE` | 0,0010 | 10 bps per sisi = jumlah keduanya | `edge_lab.py:28` |
 | round-trip | 20,0 bps | 2 kaki | `edge_lab.py:110,123` |
-| **ambang edge** | net > 20 bps ⇒ **gross > 40 bps** | per trade horizon 24 jam | `edge_lab.py:121,125` |
+| **ambang edge** | dulu: net > 20 bps ⇒ **gross > 40 bps** · **sekarang (P10, 28 Sep): net > 59 ⇒ gross > 118 bps** | per trade horizon 24 jam | `edge_lab.py:121,125` → `tools/costs.py` |
 
 Dua catatan yang wajib ikut kalau angka ini dikutip siapa pun:
 

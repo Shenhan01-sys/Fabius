@@ -40,7 +40,7 @@ jawabannya "aliran kerumunan tidak bisa diperdagangkan setelah ongkos" dan kami 
 ## Aturan keputusan yang tidak boleh berubah di tengah jalan
 
 - horizon **4 jam** (4 bar 1 jam), masuk di close bar berikutnya setelah jam sinyal
-- **ongkos 20 bps round-trip** (5,5 taker + 4,5 spread/slip per sisi) — klaim lolos hanya kalau **net > 0**, dan gross harus > 40 bps seperti di `06-Results/02 - Thresholds.md`
+- **ongkos round-trip**: uji lama memakai 20 bps asumsi (5,5 taker + 4,5 spread/slip per sisi); sejak **P10 28 Sep** yang dipakai **59 bps terukur** (`tools/costs.py`), jadi ambang gross naik dari > 40 menjadi **> 118 bps** — lihat `06-Results/02 - Thresholds.md` dan `06-Results/04` §5b
 - **1 sampel per (token, jam)** — titik yang sama tidak boleh dihitung dua kali
 - **n ≥ 20** per token, dan **Benjamini–Hochberg α = 0,10 lintas token** (satu token = satu tes)
 - **drop-best-fold**: 5 segmen waktu, buang segmen terbaik, sisanya harus tetap > 0 (`09` menangkap penyakit ini di HeliQuant: HYPE +92 % OOS yang ternyata 65 % dari satu fold)
@@ -70,7 +70,7 @@ terpetakan ke kontrak perp → **17.636** titik punya hasil forward → **62 tok
 
 Tiga-duanya gagal, dan ini jawaban **ketiga dari arah yang berbeda** atas pertanyaan yang sama:
 aturan harga (`09` §1-4), label smart money (`09` §4c), aliran kerumunan (halaman ini). Tidak ada
-satu pun bidang yang kami punya yang menyisakan edge di atas 20 bps pada horizon 4 jam.
+satu pun bidang yang kami punya yang menyisakan edge di atas 20 bps pada horizon 4 jam — dan dengan ongkos terukur 59 bps (P10, 28 Sep) ambangnya naik, tidak turun.
 
 ## Penyimpangan kami sendiri selama menjalankan (dicatat, tidak dihapus)
 

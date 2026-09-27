@@ -12,8 +12,9 @@ mengecil — porsinya **membesar**. Ini alasan ukuran $0,5–1 kalah sebelum sin
 | hal | angka | dari |
 |---|---|---|
 | biaya round-trip venue demo, posisi 1 unit | **59 bps** | `test_round_trip_...` (forge) |
-| ongkos yang dipakai semua uji kami | **20 bps RT** (5,5 taker + 4,5 spread/slip per sisi) | `06-Results/02` |
-| gate kasar | gross harus > **40 bps** supaya net > 0 | `06-Results/02` |
+| **ongkos yang dipakai semua uji kami sekarang** | **59 bps RT** — default `tools/costs.py`, override tercatat `cli-override` | `python -X utf8 tools/costs.py` (P10 ditutup 28 Sep) |
+| ongkos yang dipakai uji sebelum 28 Sep | 20 bps RT (5,5 taker + 4,5 spread/slip per sisi) — **asumsi warisan**, kini tinggal label | `06-Results/02`, [[06-Results/04 - Negative Results]] §5b |
+| gate kasar | gross harus > **118 bps** (= 2 × 59) supaya net > 0; dulu > 40 bps pada asumsi 20 | `tools/costs.py::gate_gross_bps` |
 | gas nyata `openLong` di 97 | **258.008 / 295.443 gas** (±0,00003 tBNB @ 0,1 gwei) | `execute_live.py --open-long` |
 | gas nyata `close` di 97 | **123.216 / 150.576**; kontrak membukukan `gasUnitsPaid` 127.213 / 161.413 di event | `execute_live.py --close` |
 | realized round-trip nyata | **−59 bps** per putaran, pada posisi 1 unit | event `Closed` (bukan hitungan kami) |

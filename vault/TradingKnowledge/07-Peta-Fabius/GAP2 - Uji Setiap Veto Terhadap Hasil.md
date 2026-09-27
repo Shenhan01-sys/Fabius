@@ -74,7 +74,7 @@ Urutan yang sah, semuanya tanpa biaya data:
 
 **Belum ada** (`tools/veto_study.py` = belum ditulis): langkah 1–5 di atas dengan ongkos **59 bps**,
 median sebagai statistik utama + bootstrap, dan **satu keputusan tercatat per veto**. Report yang
-ada memakai `RT_COST_BPS = 20` (lihat P10 di [[Fakta Terukur]] §D) — jadi ia tidak bisa ditutup
+ada memakai `RT_COST_BPS = 20` (P10 ditutup 28 Sep; sebelum itu `RT_COST_BPS = 20` - lihat [[Fakta Terukur]] §D) — jadi ia tidak bisa ditutup
 dengan menekan tombol yang sama; itu alasan langkah 5 harus alat baru, bukan hasil lama.
 
 ## Batas dan mode gagal

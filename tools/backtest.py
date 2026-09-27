@@ -59,7 +59,9 @@ import bars as barsmod  # noqa: E402
 # ---- ambang: DIIMPOR dari direction.py supaya tidak ada dua kebenaran.
 import direction as D  # noqa: E402
 
-RT_COST_BPS = 20.0          # vault/01-Agent/01 - Asset Classes and Seats.md §3 (5,5 + 4,5 per sisi)
+import costs  # noqa: E402  (P10: satu model ongkos untuk semua jalur uji)
+
+RT_COST_BPS = costs.MEASURED_RT_BPS   # P10: satu pintu (terukur) - lihat tools/costs.py
 MIN_TRADES = 20             # vault/06-Results/02 - Thresholds.md: jangan simpulkan apa pun dari < 20 trade
 FOLDS = 5
 BH_ALPHA = 0.10
@@ -311,7 +313,7 @@ def main():
                        f"backtest-{time.strftime('%Y%m%d', time.gmtime())}Z-{tag}.json")
     with open(out, "w", encoding="utf-8") as fh:
         json.dump({"generated_utc": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
-                   "horizon_bars": a.horizon, "cost_bps_rt": cost,
+                   "horizon_bars": a.horizon, "cost_bps_rt": cost, "cost_basis": costs.cost_basis(a.cost),
                    "acf_gate": D.ACF_EFFICIENT if gate is None else gate, "mom_only": a.mom_only,
                    "bars_min_required": a.min_bars, "non_overlap": True,
                    "thresholds": {"acf_efficient": D.ACF_EFFICIENT, "acf_structured": D.ACF_STRUCTURED,

@@ -52,8 +52,8 @@ sebagai klaim produk.
 | anchor di chain | **19** (Enter 4 / Abstain 15) | `anchorCount()` / `countByVerdict` via `python -X utf8 tools/verdict_counts.py` |
 | verifikasi ulang trail | 13/13 cocok word-per-word, 0 BEDA | `anchor.py --verify` (28 Sep) |
 | keputusan jatuh tempo (PAPER) | n=2: **+1,5** dan **−146,3 bps** net (rata-rata −72,4) | `ledger.py` + `python -X utf8 tools/winlog.py`, [[06-Results/07 - Matured Outcomes]] |
-| biaya round-trip venue demo | **59 bps** | `forge test --match-test test_round_trip_...` |
-| hasil uji aturan arah | rugi setelah ongkos **12/12**; dibalik tetap kalah | [[06-Results/04 - Negative Results]] |
+| biaya round-trip venue demo | **59 bps** — default SEMUA jalur uji sejak **P10 28 Sep** (`tools/costs.py`) | `forge test --match-test test_round_trip_...` |
+| hasil uji aturan arah | rugi setelah ongkos **12/12**; dibalik tetap kalah. Hitung ulang 28 Sep (P10, 59 bps): tetap 12/12, kini −39,8…−66,9 bps | [[06-Results/04 - Negative Results]] §1/§5b |
 | hasil uji smart money 4 j | **−10,4 bps** vs kerumunan, p=0,568 | [[06-Results/06 - Pre-registration Horizon]] |
 | **posisi nyata dieksekusi di 97** | 3 round-trip, realized **−59 bps** per putaran (WR 0 %) | `decisions/execution-trail.jsonl` (angka dari event `Closed`) + `tools/winlog.py` |
 | gas nyata eksekusi | open 258.008/295.443 · close 123.216/150.576 | `tools/execute_live.py` |

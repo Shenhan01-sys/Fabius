@@ -48,7 +48,9 @@ judul catatan ini.
 
 1. Satu detektor point-in-time untuk resep penuh (hanya bar `<= t`; [[EV4 - Point-in-Time dan Riwayat yang Tidak Bisa Disusulkan]]).
 2. Event = pemicu; hasil = return bersih pada horizon tetap **dan** pada kena stop. Ongkos **59 bps**
-   ([[Fakta Terukur]] §D). Kalau jalur uji masih memakai 20 bps, tulis bahwa ongkos terukur kami 3× lipat (§D, P10 terbuka).
+   ([[Fakta Terukur]] §D). Semua jalur uji sudah memakai angka itu sejak P10 (28 Sep); yang tersisa
+   adalah menyebut basis di tiap artefak — `cost_basis` mencatat `measured-own-venue` atau
+   `cli-override`.
 3. **Ablasi wajib:** jalankan resep penuh, lalu buang satu anggota pada satu waktu. Kalau melepas Fib
    tidak menggeser expectancy, Fib tidak mengkonfirmasi apa pun — dia cuma menunda entry.
 4. Lolos kalau `n >= 20` non-overlap, tetap positif setelah fold terbaik dibuang, lolos BH α 0,10

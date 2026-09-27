@@ -69,8 +69,10 @@ Kerangka: `Templates/Template - Metode.md` (dipakai `01 02 03 05 06 07`) dan
 3. **Klaim pihak ketiga butuh pemiliknya.** "Riset menunjukkan…" tanpa paper = `T0`. Tulis
    `diklaim oleh <siapa>`, bukan `diketahui bahwa`.
 4. **Turunan harus bertanda.** Selisih atau rata dari angka yang sudah ada (mis. `+1,5` dan
-   `−146,3` → selisih **148 bps**; `59 − 30` → komponen kurva **±29 bps**) boleh ditulis dengan kata
-   **aritmetika**, supaya tidak terbaca sebagai pengukuran kedua.
+   `−146,3` → selisih **148 bps**; dua fee 30 bps berkomposisi → `1 − (1 − 0,003)² = 59,9 bps`, yang
+   menjelaskan kenapa 59 bps yang terukur itu hampir seluruhnya fee) boleh ditulis, dengan kata
+   **aritmetika** — jangan sampai terbaca sebagai pengukuran kedua. Contoh yang dibatalkan 28 Sep:
+   "`59 − 30` = komponen kurva 29 bps" salah karena 30 bps itu **per sisi**, bukan satu putaran.
 
 Satu lompatan yang harus tetap tertutup: catatan di subtree ini **tidak pernah** menaikkan tingkat
 bukti apa pun. Yang menaikkan bukti adalah run (`tools/backtest.py`, `tools/ledger.py`,

@@ -63,7 +63,7 @@ merekam kuotasi sebelum eksekusi. Yang dibutuhkan supaya metrik ini menjadi sesu
    yang sama** — kontrolnya harus sepasang, karena ukuran adalah variabel utamanya.
 3. Hasilnya masuk ke ongkos, bukan ke sinyal: ambang klaim kami adalah gross di atas **59 bps**
    (§D), `n >= 20` non-overlap, BH α 0,10, fold terbaik dibuang.
-4. Catat bahwa P10 (§D) masih terbuka: 59 bps terukur vs 20 bps asumsi yang dipakai seluruh jalur uji.
+4. Catat bahwa P10 ditutup 28 Sep (§D): 59 bps terukur vs 20 bps asumsi yang dipakai seluruh jalur uji.
    Menambahkan satu komponen biaya lagi tanpa menyatukan keduanya akan membuat laporan ongkos jadi
    tiga angka yang tidak saling menjumlah.
 

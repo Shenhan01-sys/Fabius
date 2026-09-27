@@ -50,8 +50,8 @@ jam yang sama (§B).
 | bar forward untuk menilai prediksi paper | `ADA` | Aster 9.599 bar 1 jam — [[Fakta Terukur]] §A |
 | rekaman entry yang terikat hash (bukan dihitung ulang) | `ADA` | `entry_ref` dibaca dari rekaman, ikut `decisionHash` di chain — [[04-Tools/TL5 - ledger]] |
 | fill nyata + `realizedQuote` dari event | `ADA` | 3 putaran chain, rata-rata −59,0 bps — §D/§F |
-| sampel jatuh tempo yang cukup | `TIDAK-ADA` | `n=2` paper, `n=3` chain; F-D16 belum terpenuhi — §G |
-| ongkos round-trip yang konsisten di semua jalur uji | `ADA-TAPI` | uji memakai 20 bps; terukur kami 59 bps — **P10 masih terbuka** — §D |
+| sampel jatuh tempo yang cukup | `TIDAK-ADA` | `n=3` paper (WR 0 %), `n=3` chain; F-D16 butuh 20 — §G |
+| ongkos round-trip yang konsisten di semua jalur uji | `ADA` | sejak **P10 28 Sep** satu sumber (`tools/costs.py`, default 59 bps terukur; override tercatat `cli-override`) — §D |
 | angka dari `tools/maker_ledger.py` | `TIDAK-ADA` | distribusinya tidak masuk akal (diblok eksplisit di §H) — hanya boleh dikutip sebagai "alat kami sedang rusak karena sebab yang diketahui" |
 
 ## Uji di Fabius
