@@ -36,6 +36,21 @@ roster : getAgent() -> handler 0x4bb30e3b3bc22082c1935fe3be7c07448e69c862 aktif=
 11/11 yang ADA di chain cocok word-per-word (agen, asset, verdict, 3 hash) | 0 tidak cocok | 0 belum di-anchor
 ```
 
+### Run ulang 28 Sep 2026 — keadaan hidup (blok di atas tetap sejarah, tidak disunat)
+
+```text
+  ! anchorCount() = 19 tapi hanya 13 baris yang terpelacak di ['direction-20260924Z.jsonl', 'direction-20260925.jsonl', 'direction-20260927Z.jsonl']
+verify : 13 keputusan dari 3 berkas | agen 0x4bb30E3b3bc22082c1935fE3bE7c07448e69c862
+kontrak: 0xDD162AFB5F5f92d5092f845A93660e3B38259330 | anchorCount() di chain = 19 | rpc https://bsc-testnet.drpc.org
+roster : getAgent() -> handler ... aktif=True | countByAgent = 19  (dijawab kontrak, bukan oleh kami)
+13/13 yang ADA di chain cocok word-per-word (agen, asset, verdict, 3 hash) | 0 tidak cocok | 0 belum di-anchor
+```
+
+`python -X utf8 tools/verdict_counts.py` pada hari yang sama: `anchorCount()` = **19**,
+`countByVerdict` = **4 Enter / 15 Abstain** (4 + 15 = 19, tidak ada verdict ketiga). Berkas
+`direction-20260927Z.jsonl` ikut terbaca sekarang — itu hasil dari run end-to-end 27 Sep
+(commit `d00863e`), bukan dari perubahan verifier.
+
 ## Yang dibuktikannya — dan yang tidak
 
 - ✅ Yang dihitung repo (`keccak(agent, decisionHash, snapshotHash, chainId)`) **ada di chain dengan
@@ -56,6 +71,8 @@ roster : getAgent() -> handler 0x4bb30e3b3bc22082c1935fe3be7c07448e69c862 aktif=
   baris sumber yang bisa dibaca repo. Perintah pembanding: `python -X utf8 tools/verdict_counts.py`.
   Dijadikan item terbuka ([[08-Backlog/01 - Backlog]] P6b). Sampai itu terurut, angka yang boleh dikutip
   adalah **11** (yang terbuktikan dari berkas), **bukan 17**.
+  **28 Sep:** keduanya bertambah — **19** di chain vs **13** terpelacak — tapi selisihnya **tetap
+  6 entri**, jadi P6b tidak tertutup oleh pertambahan angka; yang boleh dikutip sekarang **13**.
 - ❌ Tidak membuktikan keputusannya **benar**. Nilainya dinilai terpisah di
   [[04-Tools/TL5 - ledger]].
 - ❌ Tidak membuktikan saya tidak bisa menulis jejak baru — hanya yang **lama** tidak bisa diubah.

@@ -22,6 +22,7 @@ tags: [entry]
 | yang mau menjalankan | [[00-Overview/04 - Run It]] (semua perintah, sekali copy) |
 | yang mengaudit klaim | [[06-Results/01 - Claims and Limits]] + [[07-Testing/01 - Test Commands]] |
 | agen lanjutan (sesi berikutnya) | [[09-Inbox/00 - Hub Inbox]] terakhir + [[08-Backlog/01 - Backlog]] |
+| yang mau menambah metode analisis | [[TradingKnowledge/00 - Hub Trading Knowledge]] lalu matriksnya: [[TradingKnowledge/07-Peta-Fabius/GAP1 - Matriks Metode x Tahap]] |
 | yang cari angka | [[Quick-Reference]] (alamat, hash, gas, tanggal, semua bersumber) |
 
 ## Peta lapisan
@@ -39,5 +40,7 @@ tags: [entry]
 | 08 | [[08-Backlog/01 - Backlog]] | sisa kerja, risiko, yang kami tunda dan alasannya |
 | 09 | [[09-Inbox/00 - Hub Inbox]] | catatan sesi bertanggal (bahan mentah, belum terstruktur) |
 | 10 | [[10-Submissions/01 - Claims Cheat Sheet]] | kalimat submission, alamat kontrak, angka publik |
+| 11 | [[11-Notes/00 - Hub Notes]] | catatan pendukung bertopik |
+| TK | [[TradingKnowledge/00 - Hub Trading Knowledge]] | pengetahuan trading per metode — setiap klaim metode wajib lewat [[TradingKnowledge/Fakta Terukur]] dulu |
 
 Lihat juga [[Index]] (semua halaman), [[Conventions]] (aturan menulis), [[Dashboard]].

@@ -18,27 +18,22 @@ tags: [backlog, hub]
 | P7 | Putuskan: 30 hari jadi fitur (butuh dana & waktu) atau tetap hipotesis terbuka | ⬜ keputusan builder | kalimat publik sudah dikunci di [[10-Submissions/01 - Claims Cheat Sheet]] |
 | P9 | Segarkan `docs/decisions/direction-latest.json` **otomatis** setiap siklus (bukan hanya saat `x8004_register.py --card`), plus pemeriksaan di CI bahwa tanggal isi <= umur siklus | ⬜ ketahuan 27 Sep: kartu menunjuk keputusan terbaru, isinya masih 25 Sep | selesai = ada baris di `01 - Test Commands` yang membuktikannya dari run, bukan dari klaim |
 | P8 | **Bukti clone bersih** — `git clone` ke direktori kosong, lalu jalankan baris 1–6 registry [[07-Testing/01 - Test Commands]] | ✅ **selesai 27 Sep: 4/4**, dan tesnya menemukan dua klaim yang tadinya palsu | lihat [[07-Testing/T6 - Clean Clone Evidence]] — `--verify` gagal di clone karena alamat agen cuma ada di `.agent.env` (di-gitignore); diperbaiki lewat `deployments/97.json` + cek roster ke kontrak |
+| P10 | **Satukan model ongkos** — 59 bps terukur dipakai di semua jalur uji, bukan 20 bps warisan; hitung ulang deret ledger | ⬜ **naik ke urutan 1** sejak 28 Sep, alasannya di [[TradingKnowledge/07-Peta-Fabius/GAP5 - Urutan Kerja dan Bayarnya]] | `tools/backtest.py` + `tools/ledger.py` memakai satu konstanta; [[06-Results/04 - Negative Results]] mencatat hasil hitung ulang (satu "MENANG +1,5 bps" jadi ≈ −37,5 bps kalau ongkos terukur dipakai); klaim yang mengikutinya ikut dikoreksi di `05 - Corrections` |
+| P11 | **Perbaiki mekanika `tools/maker_ledger.py`** sebelum satu angka whale pun dikutip | ⬜ rem sehat masih menyala (median `|net|` 4.558 bps = distribusi mustahil) | satuan harga/USD untuk token berumur menit, arti `c` (`is_open_or_close`) ditetapkan dari baris mentah, MTM pesimistis untuk token yang hilang; selesai = blok "REM SEHAT" di [[TradingKnowledge/Fakta Terukur]] §H lolos dan `decisions/maker-scores-*.json` bisa dibuktikan ulang |
+| P12 | **Uji ketujuh ambang veto terhadap hasil** (`tools/veto_study.py`, belum ditulis) | ⬜ | rancangan + syaratnya di [[TradingKnowledge/07-Peta-Fabius/GAP2 - Uji Setiap Veto Terhadap Hasil]]; selesai = tujuh baris keputusan (dipertahankan / dicabut / belum teruji) di [[06-Results/02 - Thresholds]] |
+| P13 | **Mulai rekam funding + OI per jam** supaya uji carry mungkin suatu saat | ⬜ dibayar kalender, bukan jam-proses | satu berkas rekaman baru di `universe/` + manifest umur; yang boleh dilaporkan: "jalurnya hidup", **bukan** hasil |
+| P14 | **Spesifikasi tunggal** untuk swing/zona/gap (satu definisi, satu implementasi) | ⬜ | tanpa ini tiap uji `S*`/`I*` mengukur hal berbeda; tempat hasilnya: satu catatan di `Concepts/` + fungsi yang dipakai semua alat |
+| P15 | **Aliran ⑦ sebagai gerbang ⑧ turun-saja** (`SEARAH` / `KONTRA` / `TAK ADA DATA`) | ⬜ menahan diri pada P11 | dicatat per kejadian di `ledger.py`, dievaluasi di `winlog.py`; **tidak pernah** menaikkan keyakinan ([[Concepts/One-Way Gate]]) |
 
 ## Terkait
 
-- [[00-Overview/06 - Roadmap]] · [[Index]]
+- [[00-Overview/06 - Roadmap]] · [[Index]] · urutan P10–P15 ditentukan di
+  [[TradingKnowledge/07-Peta-Fabius/GAP5 - Urutan Kerja dan Bayarnya]]
 
 ## Bagian
 
 
 <!-- di atas: append-only oleh scripts/sync_vault.py; gloss tulisan tangan utuh -->
-```dataview
-LIST FROM #backlog SORT file.name ASC
-```
-```dataview
-LIST FROM #backlog SORT file.name ASC
-```
-```dataview
-LIST FROM #backlog SORT file.name ASC
-```
-```dataview
-LIST FROM #backlog SORT file.name ASC
-```
 ```dataview
 LIST FROM #backlog SORT file.name ASC
 ```

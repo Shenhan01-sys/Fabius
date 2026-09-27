@@ -45,20 +45,20 @@ dipakai untuk menghasilkan angka di bawah, dan ditandai begitu di tiap halaman y
 ([[Conventions]] §Turunan). Angka yang hanya bisa dibangkitkan alat workspace tidak dipajang
 sebagai klaim produk.
 
-## Angka yang sedang berlaku (per 27 Sep, semua terukur)
+## Angka yang sedang berlaku (per 28 Sep 2026, semua terukur)
 
 | fakta | angka | sumber |
 |---|---|---|
-| anchor di chain | **17** (Enter 3 / Abstain 14) | `anchorCount()` / `countByVerdict` |
-| verifikasi ulang trail | 11/11 cocok 6 field, 0 BEDA | `anchor.py --verify` |
-| posisi jatuh tempo | 2: **+1,5** dan **−146,3 bps** net | `ledger.py`, [[06-Results/07 - Matured Outcomes]] |
+| anchor di chain | **19** (Enter 4 / Abstain 15) | `anchorCount()` / `countByVerdict` via `python -X utf8 tools/verdict_counts.py` |
+| verifikasi ulang trail | 13/13 cocok word-per-word, 0 BEDA | `anchor.py --verify` (28 Sep) |
+| keputusan jatuh tempo (PAPER) | n=2: **+1,5** dan **−146,3 bps** net (rata-rata −72,4) | `ledger.py` + `python -X utf8 tools/winlog.py`, [[06-Results/07 - Matured Outcomes]] |
 | biaya round-trip venue demo | **59 bps** | `forge test --match-test test_round_trip_...` |
 | hasil uji aturan arah | rugi setelah ongkos **12/12**; dibalik tetap kalah | [[06-Results/04 - Negative Results]] |
 | hasil uji smart money 4 j | **−10,4 bps** vs kerumunan, p=0,568 | [[06-Results/06 - Pre-registration Horizon]] |
-| **posisi nyata dieksekusi di 97** | 2 round-trip, realized **−59 bps** per putaran | `decisions/execution-trail.jsonl` (angka dari event `Closed`) |
+| **posisi nyata dieksekusi di 97** | 3 round-trip, realized **−59 bps** per putaran (WR 0 %) | `decisions/execution-trail.jsonl` (angka dari event `Closed`) + `tools/winlog.py` |
 | gas nyata eksekusi | open 258.008/295.443 · close 123.216/150.576 | `tools/execute_live.py` |
 | jalur pemeriksaan hidup dari clone bersih | **4/4** pada HEAD `304fe4f` | [[07-Testing/T6 - Clean Clone Evidence]] |
-| aliran wallet terekam | 8.053 transaksi / 348 maker / 643 token / 11,82 jam | `_research/panel_stats.py` *(workspace)* |
+| aliran wallet terekam | **21.907 transaksi / 452 maker / 1.590 token / rentang 34,33 jam** pada ekor `origin/master` (`94aead6`, 27 Sep 18:21Z) | `universe/wallet-flow-manifest.txt` — baca ulang: `git fetch` + `python -X utf8 tools/whale_report.py` |
 | integritas dataset | **60 dari 62** snapshot lolos verifikasi sha256 | `write_universe_manifest.py` |
 | kredit Dune terpakai hari ini | 1,259 (agregat 90 hari, ±11 s) | `execution_cost_credits` di API |
 
@@ -67,10 +67,12 @@ sebagai klaim produk.
 - semua settlement & deploy di **BNB Chain testnet (97)**; tidak ada dana nyata
 - token pembayaran adalah **koin demo milik kami sendiri**
 - gateway x402 berjalan **di mesin kami** (belum di-host) — lihat [[05-Ecosystem/03 - Discovery Gap]]
-- jalur eksekusi **sudah dipakai**: dua round-trip nyata di 97, masing-masing rugi 59 bps —
+- jalur eksekusi **sudah dipakai**: tiga round-trip nyata di 97, masing-masing rugi 59 bps —
   di **venue demo milik kami sendiri**, jadi angkanya adalah biaya, bukan hasil pasar
-- `anchorCount()` di chain (17) lebih besar dari baris keputusan yang terpelacak di repo (11);
-  `--verify` memperingatkan ini di keluarannya. Jangan kutip 17 sebagai jumlah keputusan kami
+- `anchorCount()` di chain (**19**) lebih besar dari baris keputusan yang terpelacak di repo (**13**);
+  `--verify` memperingatkan ini di keluarannya. Jangan kutip 19 sebagai jumlah keputusan kami
   (lihat [[08-Backlog/01 - Backlog]] P6b)
+- lapisan pengetahuan trading tidak menghitung apa pun: angkanya lewat satu pintu,
+  [[TradingKnowledge/Fakta Terukur]] — dan halaman itu sendiri cuma mencatat ulang apa yang tercetak di sini
 
 Lihat juga: [[START-HERE]] · [[06-Results/01 - Claims and Limits]]

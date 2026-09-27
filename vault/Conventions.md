@@ -60,8 +60,10 @@ ditiru.
 | `D##` (keputusan) | `F-D##` | nomor dipakai bersama antar-proyek di workspace yang sama; tabrakan nomor sudah terjadi |
 
 ID lain: `P#` backlog · `A#` agen · `C#` kontrak · `D#` data · `TL#` perkakas · `E#` ekosistem ·
-`R#` hasil · `T#` testing · `OI-#` open item. **ID yang sudah dipakai tidak diganti**; bikin ID baru
-tanpa menambah baris ke peta dokumen = cacat.
+`R#` hasil · `T#` testing · `OI-#` open item · lapisan `TradingKnowledge/`: `PL#` tahap · `FD#`
+kaidah · `S# I# V# U# O# M#` sinyal per keluarga · `ST#` setup · `QT#` quant · `EV#` bukti ·
+`GAP#` peta keputusan (peta lengkapnya di [[TradingKnowledge/Aturan Subtree]]).
+**ID yang sudah dipakai tidak diganti**; bikin ID baru tanpa menambah baris ke peta dokumen = cacat.
 
 ## Struktur
 
@@ -77,9 +79,11 @@ tanpa menambah baris ke peta dokumen = cacat.
 08-Backlog/    sisa kerja + acceptance criteria per item
 09-Inbox/      catatan sesi bertanggal (mentah, belum terstruktur)
 10-Submissions/ kalimat klaim, alamat, angka publik
+11-Notes/      catatan pendukung bertopik (mis. kandidat model)
+TradingKnowledge/ lapisan pengetahuan trading (sendiri punya aturan: lihat halaman itu)
 Concepts/      catatan konsep atomik (#concept)
 Templates/     kerangka halaman
-scripts/       sync_vault.py, check_links.py, new_note.py
+scripts/       sync_vault.py, check_links.py, hub_shape.py, tk_check.py, new_note.py
 ```
 
 ## Penamaan
@@ -100,7 +104,9 @@ Frontmatter `tags` (kategori + identitas, mis. `tags: [kontrak, "C2"]`), lalu
 ## Perawatan
 
 - Setelah menambah/mengganti nama halaman: `python -X utf8 -u scripts/sync_vault.py` lalu
-  `python -X utf8 -u scripts/check_links.py` → target **`Broken: 0`**.
+  `python -X utf8 -u scripts/check_links.py` → target **`Broken: 0`**; lalu
+  `python -X utf8 scripts/hub_shape.py` (bentuk hub) dan kalau menyentuh lapisan trading:
+  `python -X utf8 scripts/tk_check.py` (bentuk catatan metode).
 - `_Auto-Index.md` jangan disunting manual (dibangkitkan).
 - Halaman lama yang digantikan tidak dihapus diam-diam: dipindah + banner
   `⚠️ DIARSIPKAN — lihat <halaman baru>` di kepala, atau isinya dipindah di commit yang sama.

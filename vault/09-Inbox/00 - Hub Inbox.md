@@ -14,6 +14,10 @@ jangan gandakan kalimatnya.
 
 - [[Session-2026-09-26-27]] — eksekusi, Dune, whale horison, dua koreksi diri
 - [[Session-2026-09-27-siang]] — P1 dieksekusi nyata (2 round-trip, −59 bps), P8 4/4 dari clone,
+  riwayat atribusi dibersihkan, gerbang pra-push dipasang di repo + Actions
+- [[Session-2026-09-28]] — lapisan `TradingKnowledge` dibangun + gerbang bentuknya; angka hidup
+  diukur ulang (19 anchor / 13 terpelacak, chain n=3, ⑦ 21.907 tx dari `origin/master`); P10–P15
+  lahir; push masih menunggu kata builder
 
 <!-- di atas: append-only oleh scripts/sync_vault.py; gloss tulisan tangan utuh -->
 ```dataview

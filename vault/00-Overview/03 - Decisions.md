@@ -294,3 +294,43 @@ bukan cuma lewat logikanya.
 
 **Terkait:** [[00-Overview/05 - Corrections]] · [[Conventions]] §Turunan ·
 [[07-Testing/T7 - Pre-Push Gate]] · [[09-Inbox/Session-2026-09-27-siang]]
+
+## F-D23 — Pengetahuan trading jadi lapisan terpisah dengan satu pintu angka · 28 Sep 2026
+
+Builder: *"kita harus memperluas knowledge terkait trading agar permainan Fabius lebih terstruktur
+dan rapi, dari fetching data, filtering, analisis, sampai decision making"* — dengan
+`vault/TradingKnowledge/Plan.txt` (transkrip percakapan dengan model: daftar metode, klaim "paling
+OP", resep kombinasi) sebagai bahan awal, dan `C:\...\ObsidianGuides` sebagai panduan bentuk.
+
+**Diputuskan:** lapisan itu dibangun di `vault/TradingKnowledge/` (MOC → hub → part-note, pola
+granular yang sama dengan vault ini), tapi dengan tiga penyimpangan yang sengaja, karena bahan
+awalnya bukan fakta:
+
+1. **Satu pintu angka.** [[TradingKnowledge/Fakta Terukur]] adalah satu-satunya halaman di subtree
+   itu yang boleh memuat angka tentang produk. Angka lain yang menyebut Fabius wajib ditulis
+   *(belum diukur)*. Alasannya konkret: tanpa aturan ini, "transkrip model → halaman vault rapi"
+   adalah jalur pencucian klaim — superlatif masuk, "pengetahuan" keluar.
+2. **Setiap catatan wajib punya tabel status data + tingkat bukti.** Ditegakkan alat, bukan
+   selera: `python -X utf8 vault/scripts/tk_check.py` (exit non-zero kalau bagian wajib hilang,
+   status enum kosong, atau ada path absolut Windows). Ini lanjutan langsung dari pelajaran
+   `hub_shape.py`: `check_links.py` bisa hijau sementara dokumen rusak, jadi gerbang bentuk memang
+   perlu ada ([[Conventions]] §Turunan).
+3. **Tidak ada peringkat.** `Plan.txt` minta "ambil 20 yang paling OP". Yang dibangun malah matriks
+   `metode × tahap × status data × bayar` ([[TradingKnowledge/07-Peta-Fabius/GAP1 - Matriks Metode x Tahap]])
+   karena peringkat metode tidak bisa dibuktikan, sedangkan "metode ini tidak bisa dijalankan dari
+   repo ini" bisa.
+
+**Yang ikut diputuskan (konsekuensi, bukan tambahan):** pengetahuan baru tidak boleh jadi
+pekerjaan baru sebelum yang lama selesai. Dari sinilah urutan backlog **P10–P15** lahir
+([[08-Backlog/01 - Backlog]]): satukan model ongkos dulu (59 bps terukur vs 20 bps warisan),
+perbaiki mekanika `maker_ledger` sebelum satu angka whale pun dikutip, uji tujuh ambang veto
+terhadap hasil, baru bicara metode sinyal baru. Empat yang pertama tidak butuh data baru dan tidak
+butuh waktu pasar — dan itu satu-satunya bagian yang masih masuk akal sebelum tenggat 30 Sep.
+
+**Risiko yang diterima:** lapisan ini gemuk dan bisa basi (93 halaman vault → ±90 catatan baru).
+Penahannya: halaman ini menunjuk perintah, bukan sebaliknya; dan `GAP1`/`Fakta Terukur` wajib
+dibaca ulang dengan `python -X utf8 tools/whale_report.py` + `tools/anchor.py --verify` sebelum
+dipakai memutuskan apa pun.
+
+**Terkait:** [[TradingKnowledge/00 - Hub Trading Knowledge]] · [[TradingKnowledge/Aturan Subtree]] ·
+[[TradingKnowledge/07-Peta-Fabius/GAP5 - Urutan Kerja dan Bayarnya]] · [[01-Agent/A4 - Trust Gating and Real-Money Rules]]

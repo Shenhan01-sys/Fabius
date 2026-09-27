@@ -14,7 +14,8 @@ kolom "diperbarui" adalah tanggal run, bukan tanggal edit halaman.
 | BNB-nya di mana? | kontrak 97 · identitas ERC-8004 · pembayaran x402 · venue & vault eksekusi | [[05-Ecosystem/00 - Hub BNB Ecosystem]] | 2026-09-27 |
 | Bisa dijalankan orang lain? | ya: `forge test`, `anchor.py --verify` (tanpa kunci), `ledger.py` | [[07-Testing/01 - Test Commands]] | 2026-09-27 |
 | Angka paling jujur yang kami punya | −72,4 bps rata-rata dari 2 posisi jatuh tempo (n=2) | [[06-Results/07 - Matured Outcomes]] | 2026-09-27 |
-| Yang paling lemah sekarang | eksekusi nyata belum terjadi di 97; gateway belum di-host | [[08-Backlog/01 - Backlog]] | 2026-09-27 |
+| Yang paling lemah sekarang | **sinyal**: nol jalur arah yang lolos uji setelah ongkos (rugi 12/12); alat skor ⑦ belum bisa dipercaya; gateway belum di-host | [[08-Backlog/01 - Backlog]] P10–P15 | 2026-09-28 |
+| Ilmunya di mana? | lapisan pengetahuan trading per metode, dengan status data & tingkat bukti tiap catatan | [[TradingKnowledge/00 - Hub Trading Knowledge]] · [[TradingKnowledge/Fakta Terukur]] | 2026-09-28 |
 | Berapa sisa waktu | tenggat 30 Sep 23:59 **WIB** | [[00-Overview/06 - Roadmap]] | 2026-09-27 |
 
 ```dataview

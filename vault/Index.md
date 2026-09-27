@@ -32,6 +32,8 @@ Masuk struktural: setiap lapisan, satu baris. Untuk orientasi & hitung mundur, b
 | 08 | [[08-Backlog/01 - Backlog]] | yang tersisa + risiko + yang ditunda dan alasannya |
 | 09 | [[09-Inbox/00 - Hub Inbox]] | catatan sesi bertanggal |
 | 10 | [[10-Submissions/01 - Claims Cheat Sheet]] | kalimat publik, alamat kontrak untuk form |
+| 11 | [[11-Notes/00 - Hub Notes]] | catatan pendukung bertopik (kandidat model, bahan mentah) |
+| TK | [[TradingKnowledge/00 - Hub Trading Knowledge]] | pengetahuan trading per metode, dipetakan ke tahap kita; angkanya cuma lewat [[TradingKnowledge/Fakta Terukur]] |
 
 ## ⚡ Referensi
 
