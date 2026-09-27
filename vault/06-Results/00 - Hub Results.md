@@ -31,6 +31,9 @@ LIST FROM #hasil SORT file.name ASC
 ```dataview
 LIST FROM #hasil SORT file.name ASC
 ```
+```dataview
+LIST FROM #hasil SORT file.name ASC
+```
 
 ## Terkait
 

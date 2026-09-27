@@ -255,3 +255,30 @@ Yang sengaja berbeda (dan alasannya ada di [[Conventions]] §Beda sadar): catata
 skrip perawatan Python bukan PowerShell (PowerShell 5.1 di mesin ini pernah menanam BOM ke berkas
 Solidity), dan ID keputusan `F-D##` — karena nomor `D##` sudah dipakai vault induk dan tabrakannya
 nyata. Kontennya tidak disalin dari Lencana: yang ditiru adalah format, bukan fakta.
+
+## F-D22 — Atribusi commit: builder saja, tanpa trailer AI · 27 Sep 2026
+
+Builder mengoreksi keras setelah commit kami membawa `Co-Authored-By: Claude`:
+*"sejak kapan kita build bareng claude? … Kita gaada build sama sekali dengan claude."* Aturannya:
+**tidak ada trailer atribusi AI di pesan commit manapun**, dan author git tetap identitas builder
+yang sudah terkonfigurasi (`Hans Gunawan <hansgunawan775@gmail.com>`).
+
+Ini bukan soal gaya. Repo ini publik dan dibaca sebagai bukti kerja siapa: klaim kontribusi adalah
+klaim faktual, dan trailer yang salah tidak netral - ia memindahkan kredit ke pihak yang tidak
+memegang arah pekerjaan.
+
+**Yang dilakukan (terukur, bukan dirasa):** trailer ditemukan di **2** commit Fabius (`08cb049`
+restructure vault, `5e4468f` P1+P8). Menghapus yang lama berarti menulis ulang **147 commit** -
+termasuk ±143 commit perekam `wallet flow` yang sudah publik - karena hash rantai. Builder memilih
+menulis ulang yang terbaru saja: **3 hash berubah** (`5e4468f` → `1f0faec` + dua turunannya),
+diverifikasi `git diff` kosong terhadap tip origin sebelumnya (`defa461`) sehingga **isi tidak berubah
+sedikit pun**; commit perekam yang masuk di tengah rewrite dipetik dulu sebelum
+`--force-with-lease`, supaya tidak ada jendela aliran yang hilang; ref cadangan
+`backup/pra-strip-trailer` ditinggalkan di repo lokal.
+
+Konsekuensi yang diterima sadar: satu commit lama (`08cb049`) tetap menampilkan trailer itu. Kalau
+suatu hari rentang 147 commit itu jadi murah (mis. riwayat di-squash untuk submission), yang
+tersisa tinggal menghapusnya sekali lagi.
+
+**Terkait:** [[00-Overview/05 - Corrections]] · [[Conventions]] §Turunan ·
+[[09-Inbox/Session-2026-09-27-siang]]

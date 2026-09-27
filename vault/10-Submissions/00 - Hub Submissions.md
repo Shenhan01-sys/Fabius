@@ -26,6 +26,9 @@ LIST FROM #submission SORT file.name ASC
 ```dataview
 LIST FROM #submission SORT file.name ASC
 ```
+```dataview
+LIST FROM #submission SORT file.name ASC
+```
 
 ## Terkait
 

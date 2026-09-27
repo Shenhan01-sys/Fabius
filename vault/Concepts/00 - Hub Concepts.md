@@ -32,6 +32,9 @@ LIST FROM #concept SORT file.name ASC
 ```dataview
 LIST FROM #concept SORT file.name ASC
 ```
+```dataview
+LIST FROM #concept SORT file.name ASC
+```
 
 ## Terkait
 

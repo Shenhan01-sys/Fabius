@@ -29,6 +29,9 @@ LIST FROM #agen SORT file.name ASC
 ```dataview
 LIST FROM #agen SORT file.name ASC
 ```
+```dataview
+LIST FROM #agen SORT file.name ASC
+```
 
 ## Terkait
 

@@ -27,6 +27,9 @@ LIST FROM #ekosistem SORT file.name ASC
 ```dataview
 LIST FROM #ekosistem SORT file.name ASC
 ```
+```dataview
+LIST FROM #ekosistem SORT file.name ASC
+```
 
 ## Terkait
 

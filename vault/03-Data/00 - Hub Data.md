@@ -29,6 +29,9 @@ LIST FROM #data SORT file.name ASC
 ```dataview
 LIST FROM #data SORT file.name ASC
 ```
+```dataview
+LIST FROM #data SORT file.name ASC
+```
 
 ## Terkait
 

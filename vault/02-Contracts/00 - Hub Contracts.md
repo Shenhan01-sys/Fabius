@@ -29,6 +29,9 @@ LIST FROM #kontrak SORT file.name ASC
 ```dataview
 LIST FROM #kontrak SORT file.name ASC
 ```
+```dataview
+LIST FROM #kontrak SORT file.name ASC
+```
 
 ## Terkait
 

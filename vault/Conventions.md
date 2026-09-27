@@ -38,6 +38,11 @@ ditiru.
   itu ia append-only, dan pemulihannya tercatat di `scripts/restore_hub_glosses.py` supaya
   "alat kami merusak dokumen kami sendiri" tidak perlu ditemukan dua kali.
 
+- **Commit bukan tempat kredit alat.** Author = builder; tidak ada `Co-Authored-By:` AI dan
+  tidak ada "dibangun bersama" siapa pun di pesan commit (F-D22 di [[00-Overview/03 - Decisions]]).
+  Kalau peran alat perlu dicatat, itu isi dokumen - bukan metadata yang dibaca orang sebagai klaim
+  kontribusi. Alat yang menghapus trailer dari riwayat juga wajib menghitung **biayanya** lebih
+  dulu (`git rev-list --count <base>..HEAD`): satu commit lama bisa menyeret ratusan.
 - **Gerbang bentuk, bukan hanya gerbang tautan.** `check_links.py` tetap melaporkan `Broken: 0` ketika `sync_vault.py` sedang menelan heading `## Terkait` di 11 hub: tautannya valid, tempatnya yang pindah. Karena itu ada `scripts/hub_shape.py` (exit non-zero kalau hub kehilangan `## Bagian` / `## Terkait` / `**Sumber:**` / blok dataview, atau ada baris tautan murni terseret ke daftar bagian) dan ia dijalankan setelah setiap perubahan alat.
 
 ## Beda sadar dari vault Lencana (dan alasannya)
