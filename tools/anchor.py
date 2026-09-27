@@ -90,6 +90,15 @@ def agent_address():
     """Hanya ALAMAT agen - cukup untuk membaca, tidak pernah untuk menandatangani."""
     k, _ = _agent_env()
     a = (k.get("AGENT_ADDRESS") or os.environ.get("AGENT_ADDRESS") or "").strip()
+    if not a:
+        # Sumber ketiga - dan yang membuat `--verify` bisa jalan dari clone bersih: manifesto
+        # TER-TRACK. Sebelum ada ini alamat hanya hidup di `.agent.env` (di-gitignore), jadi
+        # kalimat "nol kunci, siapa pun bisa periksa" gugur tepat di perintah yang kami jual.
+        got = (vd.deployments().get("agent") or "").strip()
+        if got:
+            print(f"  (alamat agen diambil dari deployments/{vd.CHAIN}.json; status roster "
+                  "dicetak di bawah, dijawab kontrak)")
+            return got
     if not a and k.get("AGENT_PRIVATE_KEY"):
         # Alamat boleh DERIVASI dari kunci: .agent.env bisa saja cuma menyimpan kunci, dan
         # meminta orang menulis ulang alamatnya hanya membuka peluang salah ketik pada sesuatu
@@ -100,6 +109,30 @@ def agent_address():
         raise SystemExit("AGENT_ADDRESS tidak diketahui -> tidak bisa menghitung ulang id anchor. "
                          "Isi Fabius/.agent.env atau set AGENT_ADDRESS di environment.")
     return a
+
+
+def agent_roster(addr):
+    """Cek alamat ke KONTRAK: (handler terdaftar, aktif, jumlah anchor milik alamat itu).
+
+    Kenapa wajib: begitu alamat agen boleh datang dari berkas repo, berkas itu harus bisa
+    dibantah. `getAgent()`/`countByAgent()` dijawab chain, bukan oleh kami - kalau manifesto salah
+    kutip atau ditukar, angka inilah yang menampilkannya. Id yang salah memang berisik (semua
+    baris jadi BEDA), tapi penyebabnya harus bisa dipisahkan dengan satu panggilan.
+    """
+    ac = vd.resolve_anchor()
+    try:
+        raw = vd.call(ac, "getAgent(address)", ("address",), (addr,))
+        # Retur struct dinamis diawali satu kata OFFSET (0x20). Membaca w[0] sebagai alamat
+        # menghasilkan 0x...0020 - angka yang terlihat seperti bukti rusak padahal decoder-nya.
+        w = [raw[2 + 64 * i: 2 + 64 * (i + 1)] for i in range(5)]
+        handler = "0x" + w[1][-40:]
+        active = int(w[3], 16) != 0
+        n = vd.num(vd.call(ac, "countByAgent(address)", ("address",), (addr,)))
+        return handler, active, n
+    except Exception as e:  # noqa: BLE001 - pemeriksaan tambahan tidak boleh menjatuhkan --verify
+        print(f"  ! getAgent()/countByAgent() tidak terbaca ({str(e)[:90]}) "
+              "-> status roster TIDAK terverifikasi")
+        return None, False, -1
 
 
 def agent_creds():
@@ -254,6 +287,12 @@ def main():
     if a.verify:
         # `--verify` sengaja TIDAK butuh kunci: ia hanya membaca. Kalau ia minta kunci, orang luar
         # yang ingin memeriksa klaim kita tidak bisa melakukannya - padahal itulah gunanya anchor.
+        # Cakupannya HANYA `direction-*.jsonl`, dan itu sudah diuji. Percobaan 27 Sep memperluas
+        # ke semua berkas `decisions/*.jsonl` (mengira itu sebabnya verifier membaca 11 baris
+        # sementara kontrak menyebut 17): yang masuk ternyata baris KANDIDAT dari `screen`
+        # (301 baris, termasuk nama token non-ASCII) yang tidak pernah dimaksudkan ke chain, jadi
+        # keluarannya "11/312 cocok" - alat yang terlihat rusak dan berhenti dibaca orang.
+        # Hipotesis "cakupan sempit" gugur; selisih 17 vs 11 tetap terbuka (P6b).
         vfiles = sorted(glob.glob(os.path.join(ROOT, "decisions", "direction-*.jsonl")))
         if a.file:
             vfiles = [a.file]
@@ -264,12 +303,22 @@ def main():
         vrows = []
         for f in vfiles:
             vrows.extend(pick_rows(load_rows(f), a.only))
+        n_chain = vd.num(vd.call(vd.resolve_anchor(), "anchorCount()"))
+        if n_chain != len(vrows):
+            print(f"  ! anchorCount() = {n_chain} tapi hanya {len(vrows)} baris yang terpelacak di "
+                  f"{[os.path.basename(x) for x in vfiles]}")
+            print("     -> yang diperiksa di bawah adalah baris yang TERPELACAK, bukan seluruh isi "
+                  "kontrak. Sisanya keputusan siklus awal, sebelum format rekaman ini ada; belum "
+                  "diurutkan baris-per-baris (vault/08-Backlog P6b).")
         addr = vd.resolve_anchor()
         agent_addr = agent_address()
         rpc = chain_check()
         n = vd.num(vd.call(addr, "anchorCount()"))
         print(f"verify : {len(vrows)} keputusan dari {len(vfiles)} berkas | agen {agent_addr}")
         print(f"kontrak: {addr} | anchorCount() di chain = {n} | rpc {rpc}\n")
+        handler, active, n_agent = agent_roster(agent_addr)
+        print(f"roster : getAgent() -> handler {handler or '?'} aktif={active} | "
+              f"countByAgent = {n_agent}  (dijawab kontrak, bukan oleh kami)")
         bad, miss = verify(vrows, addr, agent_addr)
         onchain = len(vrows) - miss
         print(f"\n{onchain - bad}/{onchain} yang ADA di chain cocok word-per-word "
