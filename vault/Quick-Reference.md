@@ -34,6 +34,7 @@ python -X utf8 tools/ledger.py                                 # nilai posisi ja
 python -X utf8 tools/verify_vendor.py                          # vendor == manifest (nol jaringan)
 python -X utf8 tools/direction.py --top 5 --emit               # siklus keputusan
 python -X utf8 universe/write_universe_manifest.py             # integritas dataset (sha256 per baris)
+python -X utf8 vault/scripts/prepush_check.py                  # WAJIB sebelum push: cek atribusi
 ```
 
 Yang **tidak** masuk blok itu dengan sengaja: `panel_stats.py`, `check_garbled.py` — apa pun

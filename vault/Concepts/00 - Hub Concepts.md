@@ -22,16 +22,6 @@ vault**, tempatnya di [[Conventions]], bukan di sini.
 - [[Cost Is Fixed]] — ongkos per transaksi tidak ikut mengecil saat modal mengecil
 
 <!-- di atas: append-only oleh scripts/sync_vault.py; gloss tulisan tangan utuh -->
-
-```dataview
-LIST FROM #concept SORT file.name ASC
-```
-```dataview
-LIST FROM #concept SORT file.name ASC
-```
-```dataview
-LIST FROM #concept SORT file.name ASC
-```
 ```dataview
 LIST FROM #concept SORT file.name ASC
 ```
@@ -39,8 +29,4 @@ LIST FROM #concept SORT file.name ASC
 ## Terkait
 
 - [[Conventions]] · [[06-Results/00 - Hub Results]] · [[Index]]
-
-```dataview
-LIST FROM #concept SORT file.name ASC
-```
 

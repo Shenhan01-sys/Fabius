@@ -5,13 +5,14 @@ tags: [testing, "T5"]
 # T5 - Integrity Harness
 
 **Bagian dari:** [[07-Testing/00 - Hub Testing]]
-**Perintah (empat baris, jalan dari clone, tanpa kunci):**
+**Perintah (enam baris; lima pertama jalan dari clone tanpa kunci):**
 
 ```bash
 python -X utf8 vault/scripts/check_links.py
 python -X utf8 tools/verify_vendor.py
 python -X utf8 universe/record_wallet_flow.py --report
 python -X utf8 vault/scripts/hub_shape.py
+python -X utf8 vault/scripts/prepush_check.py --self-test
 python -X utf8 _research/check_garbled.py
 ```
 
@@ -58,6 +59,11 @@ lagi cocok.
   upstream pada commit yang di-pin (bukan `main`, yang bisa bergerak).
 - ✅ Manifest dataset: sha256 per berkas + ukuran + ekor; kalau barisnya tidak bertambah, alatnya
   **exit non-zero** — pertumbuhan direkam, bukan diasumsikan.
+- ✅ `prepush_check.py` = gerbang **pra-push** aturan atribusi (F-D22): baca pesan commit pada
+  `origin/master..HEAD`, non-zero kalau ada trailer AI. Terukur 27 Sep: self-test 6/6; `--all` =
+  1 pelanggaran / 393 commit (`08cb049`, ditinggalkan sadar). Ia juga jalan di server lewat
+  `.github/workflows/attribution-guard.yml` — jadi tidak bergantung pada siapa yang menyetir.
+  Rinci di [[07-Testing/T7 - Pre-Push Gate]].
 - ❌ Keempatnya alat **kesehatan dokumen/kode**, bukan alat pembuktian pasar. Tidak satu pun
   menghasilkan klaim tentang win-rate.
 - ⚠️ Yang masih terbuka di sini: 2 dari 62 sha256 snapshot universe **tidak bisa dihitung ulang**

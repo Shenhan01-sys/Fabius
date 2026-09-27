@@ -21,16 +21,6 @@ dan cara menjalankan. **Bukan** tempat angka hasil pengukuran — itu di `06-Res
 - [[07 - Ecosystem Positioning]] — jawaban terukur atas "ini jangan-jangan cuma project trading?"
 
 <!-- di atas: append-only oleh scripts/sync_vault.py; gloss tulisan tangan utuh -->
-
-```dataview
-LIST FROM #overview SORT file.name ASC
-```
-```dataview
-LIST FROM #overview SORT file.name ASC
-```
-```dataview
-LIST FROM #overview SORT file.name ASC
-```
 ```dataview
 LIST FROM #overview SORT file.name ASC
 ```
@@ -38,8 +28,4 @@ LIST FROM #overview SORT file.name ASC
 ## Terkait
 
 - [[Quick-Reference]] · [[Index]] · [[Conventions]]
-
-```dataview
-LIST FROM #overview SORT file.name ASC
-```
 

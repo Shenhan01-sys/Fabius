@@ -19,23 +19,9 @@ membacanya sendiri. Angka gas di sini berasal dari receipt, bukan dari perkiraan
 - [[C4 - DemoPair and DemoAsset]] — venue x·y=k dan kenapa kami bikin sendiri
 
 <!-- di atas: append-only oleh scripts/sync_vault.py; gloss tulisan tangan utuh -->
-
-```dataview
-LIST FROM #kontrak SORT file.name ASC
-```
-```dataview
-LIST FROM #kontrak SORT file.name ASC
-```
-```dataview
-LIST FROM #kontrak SORT file.name ASC
-```
 ```dataview
 LIST FROM #kontrak SORT file.name ASC
 ```
 
 ## Terkait
-
-```dataview
-LIST FROM #kontrak SORT file.name ASC
-```
 

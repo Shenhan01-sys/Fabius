@@ -26,7 +26,9 @@ tags: [backlog, hub]
 
 
 <!-- di atas: append-only oleh scripts/sync_vault.py; gloss tulisan tangan utuh -->
-
+```dataview
+LIST FROM #backlog SORT file.name ASC
+```
 ```dataview
 LIST FROM #backlog SORT file.name ASC
 ```

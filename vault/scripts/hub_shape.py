@@ -39,6 +39,9 @@ for f in sorted(glob.glob(os.path.join(VAULT, "**", "00 - Hub*.md"), recursive=T
         problems.append("baris tautan murni terserap ke dalam daftar Bagian")
     if "```dataview" not in t:
         problems.append("tidak ada blok dataview (peta tidak akan pernah jujur sendiri)")
+    dups = len(re.findall(r"```dataview", t))
+    if dups > 1:
+        problems.append(f"{dups} blok dataview duplikat (alat penulisan meninggalkan salinan)")
     if "**Sumber:**" not in t:
         problems.append("tidak ada **Sumber:** (hub wajib menunjuk direktori yang ia dipetakan)")
     print(f"{'ok  ' if not problems else 'RUSAK'} {rel}")

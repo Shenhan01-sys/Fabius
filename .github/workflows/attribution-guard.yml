@@ -1,0 +1,48 @@
+name: attribution-guard
+# Pagarnya aturan atribusi, jalan di server bukan di laptop:
+# 1. `prepush_check.py --self-test`  -> detektornya masih menangkap pola trailer
+# 2. `prepush_check.py --range <sebelum>..<sesudah>` -> commit yang baru masuk tidak ada yang
+#    membawa atribusi AI. Ini yang bikin "vault bersih di GitHub" tetap benar setelah hari ini.
+# Read-only: tidak menulis apa pun, tidak pernah bisa menimpa riwayat.
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions: {}
+
+concurrency:
+  group: attribution-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  guard:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: detektor masih bekerja?
+        run: python -X utf8 vault/scripts/prepush_check.py --self-test
+      - name: commit yang masuk tidak ada atribusi AI
+        env:
+          BEFORE: ${{ github.event.before }}
+          AFTER: ${{ github.sha }}
+          BASE: ${{ github.event.pull_request.base.sha }}
+          HEADSHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          set -eu
+          if [ -n "${BASE:-}" ] && [ -n "${HEADSHA:-}" ]; then
+            RNG="${BASE}..${HEADSHA}"
+          elif [ -n "${BEFORE:-}" ] && [ "${BEFORE}" != "0000000000000000000000000000000000000000" ]; then
+            RNG="${BEFORE}..${AFTER}"
+          else
+            # push pertama / branch baru: periksa seluruh riwayat, bukan diam-diam lolos
+            RNG="HEAD"
+          fi
+          echo "memeriksa rentang: $RNG"
+          python -X utf8 vault/scripts/prepush_check.py --range "$RNG"

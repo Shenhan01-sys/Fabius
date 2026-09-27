@@ -17,24 +17,15 @@ hasil boleh **mengutip** angka dari sini, tidak pernah menghitung ulang.
 
 ## Bagian
 
-- [[01 - Test Commands]] — registry 8 perintah + jumlah terukur 27 Sep (39 default / 63 fork)
+- [[01 - Test Commands]] — registry 10 perintah + jumlah terukur 27 Sep (39 default / 63 fork)
 - [[T2 - Anchor Verify]] — trail dibaca ulang dari chain tanpa kunci & tanpa gas: 11/11 cocok
 - [[T3 - Execution Suite]] — 18 test jalur eksekusi: plafon dipotong, bukan diminta izin
 - [[T4 - x402 Fork Suite]] — 9 test terhadap proxy kanonis yang ter-deploy di 97
-- [[T5 - Integrity Harness]] — check_links / vendor / manifest / check_garbled: kesehatan dokumen
-- [[T6 - Clean Clone Evidence]] ← tulis penjelasannya
+- [[T5 - Integrity Harness]] — check_links / hub_shape / vendor / manifest: kesehatan dokumen
+- [[T6 - Clean Clone Evidence]] — 4/4 jalur pemeriksaan hidup dari clone bersih; tesnya yang
+- [[T7 - Pre-Push Gate]] — gerbang atribusi sebelum push (self-test 6/6; `--all` = 1/393) dan
 
 <!-- di atas: append-only oleh scripts/sync_vault.py; gloss tulisan tangan utuh -->
-
-```dataview
-LIST FROM #testing SORT file.name ASC
-```
-```dataview
-LIST FROM #testing SORT file.name ASC
-```
-```dataview
-LIST FROM #testing SORT file.name ASC
-```
 ```dataview
 LIST FROM #testing SORT file.name ASC
 ```
@@ -42,8 +33,4 @@ LIST FROM #testing SORT file.name ASC
 ## Terkait
 
 - [[06-Results/00 - Hub Results]] · [[Quick-Reference]] · [[Conventions]]
-
-```dataview
-LIST FROM #testing SORT file.name ASC
-```
 

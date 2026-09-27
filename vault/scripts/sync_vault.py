@@ -138,13 +138,17 @@ def hub_body(hub_path, parts):
         if not any(os.path.exists(c) for c in cands):
             print(f"  ! hub menunjuk berkas yang tidak ada ({hub_path}): {t}")
     body = ["## Bagian", ""] + lines_out
-    body += ["", "<!-- di atas: append-only oleh scripts/sync_vault.py; gloss tulisan tangan utuh -->",
-             "", "```dataview", f"LIST FROM #{tag} SORT file.name ASC", "```", ""]
+    tail = ["", "<!-- di atas: append-only oleh scripts/sync_vault.py; gloss tulisan tangan utuh -->"]
+    if text and "```dataview" not in text:
+        # HANYA kalau hub belum punya blok dataview. Versi sebelumnya selalu menempel satu blok baru
+        # padahal pola penggantinya berhenti DI DEPAN blok lama -> tiap run meninggalkan salinan
+        # `LIST FROM #...` tambahan; hub Testing akhirnya punya 6 blok.
+        tail += ["", "```dataview", f"LIST FROM #{tag} SORT file.name ASC", "```"]
     if text is None:
         text = (f"---\ntags: [hub]\n---\n\n# {os.path.dirname(hub_path)}\n\n"
                 "_(dibuat `sync_vault.py` — tulis paragraf pembuka: lapisan ini apa dan apa yang "
                 "BUKAN dia)_\n")
-    blk = "\n".join(body)
+    blk = "\n".join(body + tail) + "\n"
     if block:
         new = text[:block.start()] + blk.rstrip("\n") + "\n" + text[block.end():]
     else:

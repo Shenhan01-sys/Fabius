@@ -19,16 +19,6 @@ order nyata ke venue utama, menjanjikan return.
 - [[A4 - Trust Gating and Real-Money Rules]] — kapan agen boleh menyentuh uang, berapa, dan kenapa metriknya harapan bersih bukan win-streak
 
 <!-- di atas: append-only oleh scripts/sync_vault.py; gloss tulisan tangan utuh -->
-
-```dataview
-LIST FROM #agen SORT file.name ASC
-```
-```dataview
-LIST FROM #agen SORT file.name ASC
-```
-```dataview
-LIST FROM #agen SORT file.name ASC
-```
 ```dataview
 LIST FROM #agen SORT file.name ASC
 ```
@@ -36,8 +26,4 @@ LIST FROM #agen SORT file.name ASC
 ## Terkait
 
 - [[Quick-Reference]] · [[Index]] · [[Conventions]]
-
-```dataview
-LIST FROM #agen SORT file.name ASC
-```
 

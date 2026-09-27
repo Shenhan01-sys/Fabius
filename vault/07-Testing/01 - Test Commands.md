@@ -22,10 +22,12 @@ berupa junction lokal.
 | 6 | `python -X utf8 tools/verify_vendor.py` | 4/4 identik dengan manifest @ commit pin | vendor tidak disunat, **dari dalam clone** |
 | 7 | `python -X utf8 vault/scripts/check_links.py` | `Broken: 0` | graf vault terhubung, tidak ada halaman invisible |
 | 8 | `python -X utf8 _research/check_garbled.py` *(workspace — di luar clone Fabius)* | 0 CJK/fullwidth/BOM di jalur yang diperiksa | teks masih terbaca di terminal Windows |
+| 9 | `python -X utf8 vault/scripts/prepush_check.py --self-test` | 6/6 kasus benar | detektor atribusi masih menangkap polanya |
+| 10 | `python -X utf8 vault/scripts/prepush_check.py` — **sebelum setiap push** | `0 commit pada origin/master..HEAD -> lolos` | tidak ada commit yang akan dikirim membawa atribusi AI |
 
-Baris 4–7 adalah **satu-satunya** yang bisa dijalankan orang lain tanpa punya apa pun dariku.
-Baris 8 dan `_research/*` lain adalah alat workspace: kutulis sebagai bukti cara kerjaku, bukan
-sebagai sesuatu yang bisa direproduksi juri dari clone (aturan di [[Conventions]]).
+Baris 4–7 dan 9–10 adalah yang bisa dijalankan orang lain tanpa punya apa pun dariku (9–10 cuma
+membaca git lokal). Baris 8 dan `_research/*` lain adalah alat workspace: kutulis sebagai bukti cara
+kerjaku, bukan sebagai sesuatu yang bisa direproduksi juri dari clone (aturan di [[Conventions]]).
 
 ## Keluaran asli (dipotong, tidak dirapikan)
 
@@ -56,6 +58,9 @@ Ran 4 test suites in 4.47s (15.20s CPU time): 63 tests passed, 0 failed, 0 skipp
   dimain-ulang; `validAfter` ditegakkan.
 - ❌ Tidak ada satu pun angka di atas yang mengatakan **agen kami untung**. 39/63 = perilaku
   kontrak, bukan hasil pasar.
+- ❌ Baris 9–10 menjaga **atribusi commit**, bukan membuktikan klaim produk: `--all` pada 27 Sep
+  menemukan tepat **1** commit bermasalah dari **393** (`08cb049`) dan itu **ditinggalkan secara
+  sadar** — menghapusnya berarti menulis ulang 147 hash ([[00-Overview/03 - Decisions]] F-D22).
 - ❌ Profil fork memakai `--fork-url bscTestnet` = **publicnode**. Perintah warisan yang menunjuk
   drpc/`data-seed-prebsc-*` tidak bisa menjalankan bukti ini (terukur: `Unknown block`, sertifikat).
 

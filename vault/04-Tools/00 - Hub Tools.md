@@ -21,23 +21,9 @@ berbahaya dari alat yang gagal keras.
 - [[TL7 - measurement harness]] — backtest · whale_sweep · flow_test, dan pager statistik
 
 <!-- di atas: append-only oleh scripts/sync_vault.py; gloss tulisan tangan utuh -->
-
-```dataview
-LIST FROM #perkakas SORT file.name ASC
-```
-```dataview
-LIST FROM #perkakas SORT file.name ASC
-```
-```dataview
-LIST FROM #perkakas SORT file.name ASC
-```
 ```dataview
 LIST FROM #perkakas SORT file.name ASC
 ```
 
 ## Terkait
-
-```dataview
-LIST FROM #perkakas SORT file.name ASC
-```
 

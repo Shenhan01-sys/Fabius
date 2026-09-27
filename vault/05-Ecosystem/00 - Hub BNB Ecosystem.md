@@ -17,16 +17,6 @@ Setiap halaman di sini menyebut apa yang **belum**: hosting endpoint, penemuan o
 - [[03 - Discovery Gap]] — bagaimana agen lain menemukan kami (dan apa yang belum bisa)
 
 <!-- di atas: append-only oleh scripts/sync_vault.py; gloss tulisan tangan utuh -->
-
-```dataview
-LIST FROM #ekosistem SORT file.name ASC
-```
-```dataview
-LIST FROM #ekosistem SORT file.name ASC
-```
-```dataview
-LIST FROM #ekosistem SORT file.name ASC
-```
 ```dataview
 LIST FROM #ekosistem SORT file.name ASC
 ```
@@ -34,8 +24,4 @@ LIST FROM #ekosistem SORT file.name ASC
 ## Terkait
 
 - [[Quick-Reference]] · [[Index]] · [[Conventions]]
-
-```dataview
-LIST FROM #ekosistem SORT file.name ASC
-```
 

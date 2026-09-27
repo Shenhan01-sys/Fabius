@@ -7,8 +7,11 @@ tags: [testing, "T6"]
 **Bagian dari:** [[07-Testing/00 - Hub Testing]]
 **Perintah:** `python -X utf8 _research/probe_clone_paths.py` *(workspace — dia yang meng-clone,
 bukan bagian clone)*
-**Dijalankan:** 27 Sep 2026 ±12:25 WIB terhadap HEAD `304fe4f` (clone lokal ke direktori kosong,
-`PYTHONIOENCODING=utf-8`, env `ANCHOR_ADDRESS`/`AGENT_ADDRESS`/`AGENT_PRIVATE_KEY`/`RPC_URL` dibuang)
+**Dijalankan:** 27 Sep 2026 ±13:45 WIB terhadap HEAD `f12b781` (clone lokal ke direktori kosong,
+`PYTHONIOENCODING=utf-8`, env `ANCHOR_ADDRESS`/`AGENT_ADDRESS`/`AGENT_PRIVATE_KEY`/`RPC_URL`
+dibuang). Commit itu hasil **penulisan ulang berkah**: `5e4468f` → `1f0faec` karena pesan aslinya
+membawa trailer atribusi AI yang dicabut hari yang sama, dan dua turunannya ikut berganti hash —
+lihat F-D22 di [[00-Overview/03 - Decisions]] dan gerbangnya di [[07-Testing/T7 - Pre-Push Gate]].
 
 ## Keluaran
 

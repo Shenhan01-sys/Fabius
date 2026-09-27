@@ -19,16 +19,6 @@ hanya maju (aliran wallet) diperlakukan sebagai aset yang bisa hilang — karena
 - [[D5 - Record Schemas]] — field tiap rekaman + riwayat skema 1→4; tanpa ini hash tidak bisa dihitung ulang orang lain
 
 <!-- di atas: append-only oleh scripts/sync_vault.py; gloss tulisan tangan utuh -->
-
-```dataview
-LIST FROM #data SORT file.name ASC
-```
-```dataview
-LIST FROM #data SORT file.name ASC
-```
-```dataview
-LIST FROM #data SORT file.name ASC
-```
 ```dataview
 LIST FROM #data SORT file.name ASC
 ```
@@ -36,8 +26,4 @@ LIST FROM #data SORT file.name ASC
 ## Terkait
 
 - [[Quick-Reference]] · [[Index]] · [[Conventions]]
-
-```dataview
-LIST FROM #data SORT file.name ASC
-```
 

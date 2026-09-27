@@ -38,6 +38,12 @@ ditiru.
   itu ia append-only, dan pemulihannya tercatat di `scripts/restore_hub_glosses.py` supaya
   "alat kami merusak dokumen kami sendiri" tidak perlu ditemukan dua kali.
 
+- **Sebelum SETIAP push: kabari builder, lalu jalankan**
+  `python -X utf8 vault/scripts/prepush_check.py`. Keluar non-zero = perbaiki pesan commitnya dulu,
+  jangan push. Alasannya konkret: dua commit sempat membawa trailer atribusi AI ke repo PUBLIK dan
+  tidak ada satu pun pemeriksaan yang menegurnya; dan aturan yang cuma hidup di `~/.qwen` laptop
+  hilang saat mesin diganti, sedangkan yang ada di repo ikut ter-clone + ikut dijalankan Actions
+  ([[07-Testing/T7 - Pre-Push Gate]]).
 - **Commit bukan tempat kredit alat.** Author = builder; tidak ada `Co-Authored-By:` AI dan
   tidak ada "dibangun bersama" siapa pun di pesan commit (F-D22 di [[00-Overview/03 - Decisions]]).
   Kalau peran alat perlu dicatat, itu isi dokumen - bukan metadata yang dibaca orang sebagai klaim

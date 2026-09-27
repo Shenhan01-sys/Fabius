@@ -16,16 +16,6 @@ dikalibrasi untuk pembaca luar; di sana angkanya hidup.
 - [[03 - Form Fields]]
 
 <!-- di atas: append-only oleh scripts/sync_vault.py; gloss tulisan tangan utuh -->
-
-```dataview
-LIST FROM #submission SORT file.name ASC
-```
-```dataview
-LIST FROM #submission SORT file.name ASC
-```
-```dataview
-LIST FROM #submission SORT file.name ASC
-```
 ```dataview
 LIST FROM #submission SORT file.name ASC
 ```
@@ -33,8 +23,4 @@ LIST FROM #submission SORT file.name ASC
 ## Terkait
 
 - [[Quick-Reference]] · [[Index]] · [[Conventions]]
-
-```dataview
-LIST FROM #submission SORT file.name ASC
-```
 

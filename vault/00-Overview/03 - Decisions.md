@@ -280,5 +280,17 @@ Konsekuensi yang diterima sadar: satu commit lama (`08cb049`) tetap menampilkan 
 suatu hari rentang 147 commit itu jadi murah (mis. riwayat di-squash untuk submission), yang
 tersisa tinggal menghapusnya sekali lagi.
 
+**Tambahannya hari itu juga: pager global dicabut, penegakan pindah ke repo.** Percobaan pertama
+menegakkan aturan ini dengan *session hook* global (`~/.qwen/settings.json` -> `hooks.PreToolUse`).
+Path perintahnya kutulis berkutip; shell di mesin ini mengirim kutip itu sebagai bagian dari nama
+berkas, python keluar dengan kode 2, dan karena 2 = "blokir", **semua** tool tulis/terminal sesi itu
+tersumbat — bukan cuma guardnya yang mati, kerjanya juga. Builder menyuruh mencabutnya. Sekarang:
+aturan di `~/.qwen/QWEN.md` (instruksi), `vault/scripts/prepush_check.py` (perintah yang bisa
+dijalankan siapa pun; `--self-test` 6/6; `--all` pada 393 commit menemukan tepat 1 pelanggaran =
+`08cb049`, yang memang ditinggalkan sadar), dan `.github/workflows/attribution-guard.yml` (jalan di
+server tiap push). Pelajaran yang lebih umum dari soal atribusi: **gerbang penegak aturan harus gagal
+dengan cara yang tidak melumpuhkan pekerjaan**, dan ia diuji lewat jalur nyata tempat dia dipanggil —
+bukan cuma lewat logikanya.
+
 **Terkait:** [[00-Overview/05 - Corrections]] · [[Conventions]] §Turunan ·
-[[09-Inbox/Session-2026-09-27-siang]]
+[[07-Testing/T7 - Pre-Push Gate]] · [[09-Inbox/Session-2026-09-27-siang]]
