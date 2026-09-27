@@ -4,6 +4,8 @@ tags: [perkakas, hub]
 
 # Tools
 
+**Sumber:** `04-Tools/`
+
 Satu catatan per perkakas: apa yang ia cetak, apa yang ia **tolak** lakukan, dan bug yang sudah
 pernah ia hasilkan. Kaidah yang diulang di semua halaman sini: alat yang gagal diam-diam lebih
 berbahaya dari alat yang gagal keras.
@@ -19,6 +21,18 @@ berbahaya dari alat yang gagal keras.
 - [[TL7 - measurement harness]] — backtest · whale_sweep · flow_test, dan pager statistik
 
 <!-- di atas: append-only oleh scripts/sync_vault.py; gloss tulisan tangan utuh -->
+
+```dataview
+LIST FROM #perkakas SORT file.name ASC
+```
+```dataview
+LIST FROM #perkakas SORT file.name ASC
+```
+```dataview
+LIST FROM #perkakas SORT file.name ASC
+```
+
+## Terkait
 
 ```dataview
 LIST FROM #perkakas SORT file.name ASC

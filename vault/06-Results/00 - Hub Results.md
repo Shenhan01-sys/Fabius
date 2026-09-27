@@ -4,6 +4,8 @@ tags: [hasil, hub]
 
 # Results
 
+**Sumber:** `06-Results/`
+
 Tempat angka tinggal. Dua jenis halaman di sini: **ambang** (apa yang harus dilewati, ditulis
 sebelum hasil) dan **vonis** (apa yang terjadi). Halaman pra-registrasi tidak boleh diedit setelah
 hasil keluar — koreksi lewat halaman baru, supaya urutannya bisa dipertanggungjawabkan.
@@ -19,6 +21,20 @@ hasil keluar — koreksi lewat halaman baru, supaya urutannya bisa dipertanggung
 - [[07 - Matured Outcomes]] — hasil pertama prediksi yang di-anchor
 
 <!-- di atas: append-only oleh scripts/sync_vault.py; gloss tulisan tangan utuh -->
+
+```dataview
+LIST FROM #hasil SORT file.name ASC
+```
+```dataview
+LIST FROM #hasil SORT file.name ASC
+```
+```dataview
+LIST FROM #hasil SORT file.name ASC
+```
+
+## Terkait
+
+- [[Quick-Reference]] · [[Index]] · [[Conventions]]
 
 ```dataview
 LIST FROM #hasil SORT file.name ASC

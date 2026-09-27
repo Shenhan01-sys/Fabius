@@ -13,8 +13,13 @@ bisa dijalankan orang yang sama sekali tidak percaya kami.
 ## Keluaran
 
 ```text
+  ! anchorCount() = 17 tapi hanya 11 baris yang terpelacak di ['direction-20260924Z.jsonl', 'direction-20260925.jsonl']
+     -> yang diperiksa di bawah adalah baris yang TERPELACAK, bukan seluruh isi kontrak. Sisanya
+        keputusan siklus awal, sebelum format rekaman ini ada; belum diurutkan (P6b).
 verify : 11 keputusan dari 2 berkas | agen 0x4bb30E3b3bc22082c1935fE3bE7c07448e69c862
-kontrak: 0xdd162afb5f5f92d5092f845a93660e3b38259330 | anchorCount() di chain = 17 | rpc https://bsc-testnet.drpc.org
+kontrak: 0xDD162AFB5F5f92d5092f845A93660e3B38259330 | anchorCount() di chain = 17 | rpc https://bsc-testnet.drpc.org
+
+roster : getAgent() -> handler 0x4bb30e3b3bc22082c1935fe3be7c07448e69c862 aktif=True | countByAgent = 17  (dijawab kontrak, bukan oleh kami)
 
   MARSCOINUSDT@perp      cocok  blok_waktu=1790280380 verdict=0 id=0x1826f4dcb0c21645…
   GENIUSUSDT@perp        cocok  blok_waktu=1790280383 verdict=1 id=0x7defe9e31f66aa3b…
@@ -38,6 +43,13 @@ kontrak: 0xdd162afb5f5f92d5092f845a93660e3b38259330 | anchorCount() di chain = 1
 - ✅ Split yang terbaca: `verdict=0` = **Enter**, `verdict=1` = **Abstain** (urutan enum di
   `contracts/DecisionAnchor.sol`). Dari 11 yang terpelacak: **2 Enter** (dua-duanya MARSCOIN short —
   persis dua peristiwa yang dinilai [[04-Tools/TL5 - ledger]]) dan **9 Abstain**.
+- ✅ Baris `roster :` dijawab **kontrak**, bukan oleh kami: `getAgent()` menunjuk handler = alamat
+  agen, `aktif=True`, `countByAgent()` = 17 = `anchorCount()`. Ini yang membuat alamat boleh datang
+  dari `deployments/97.json` tanpa mengubah verifier jadi kepercayaan buta pada repo — berkas repo
+  harus bisa dibantah, dan inilah bantahannya.
+- ✅ Perintah ini jalan **dari clone bersih** (0 kunci, 0 gas, tanpa `data/`): 4/4 di
+  [[07-Testing/T6 - Clean Clone Evidence]]. Sebelumnya ia **gagal** di clone karena `AGENT_ADDRESS`
+  cuma ada di `.agent.env` — lihat [[00-Overview/05 - Corrections]].
 - ⚠️ Chain vs repo **tidak sama banyak**, dan ini lubang yang kuukur, bukan kusimpulkan:
   `anchorCount()` = **17** (3 Enter + 14 Abstain, dari `countByVerdict`) sedangkan verifier membaca
   **11** keputusan (2 Enter + 9 Abstain) dari 2 berkas. 6 entri — termasuk 1 Enter — ada di chain tanpa

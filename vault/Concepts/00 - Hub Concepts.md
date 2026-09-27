@@ -20,9 +20,22 @@ vault**, tempatnya di [[Conventions]], bukan di sini.
 - [[Point-in-Time vs Retro-updatable]] — data terkunci vs data yang bisa disusulkan; mana yang boleh
 - [[Lookahead Bound]] — kaidah satu arah: hasil negatif di bawah lookahead tetap kredibel, positif
 - [[Cost Is Fixed]] — ongkos per transaksi tidak ikut mengecil saat modal mengecil
-- [[Conventions]] · [[06-Results/00 - Hub Results]] · [[Index]]
 
 <!-- di atas: append-only oleh scripts/sync_vault.py; gloss tulisan tangan utuh -->
+
+```dataview
+LIST FROM #concept SORT file.name ASC
+```
+```dataview
+LIST FROM #concept SORT file.name ASC
+```
+```dataview
+LIST FROM #concept SORT file.name ASC
+```
+
+## Terkait
+
+- [[Conventions]] · [[06-Results/00 - Hub Results]] · [[Index]]
 
 ```dataview
 LIST FROM #concept SORT file.name ASC

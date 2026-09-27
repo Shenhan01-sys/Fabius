@@ -11,6 +11,7 @@ tags: [testing, "T5"]
 python -X utf8 vault/scripts/check_links.py
 python -X utf8 tools/verify_vendor.py
 python -X utf8 universe/record_wallet_flow.py --report
+python -X utf8 vault/scripts/hub_shape.py
 python -X utf8 _research/check_garbled.py
 ```
 
@@ -19,7 +20,7 @@ python -X utf8 _research/check_garbled.py
 ## Keluaran
 
 ```text
-berkas .md: 77 · target unik: 77
+berkas .md: 79 · target unik: 79
 Broken: 0
 Tanpa penunjuk (orphan): 0
 Folder tanpa hub: 0
@@ -36,11 +37,11 @@ upstream github.com/coinbase/x402 @ dd927a26cfefc98c24b3ec38b3a8f204dad0c60d
 ```
 
 ```text
-total halaman: 90 · tanpa YAML: 0 · YAML tanpa `tags:`: 0
+total halaman: 92 · tanpa YAML: 0 · YAML tanpa `tags:`: 0
 ```
 
-Dua angka berkas yang berbeda itu **bukan pertentangan**: `check_links` menghitung 77 (isi `_archive/`,
-`Templates/`, `Sessions/` memang dikecualikan dari graf), `structure_report` menghitung 90 karena ia
+Dua angka berkas yang berbeda itu **bukan pertentangan**: `check_links` menghitung 79 (isi `_archive/`,
+`Templates/`, `Sessions/` memang dikecualikan dari graf), `structure_report` menghitung 92 karena ia
 melihat semua berkas `.md` di disk. Yang boleh dikutip sebagai "vault terhubung" hanya yang pertama.
 Menyebut salah satu tanpa menyebut definisinya adalah cara tercepat membuat dua halaman tidak pernah
 lagi cocok.

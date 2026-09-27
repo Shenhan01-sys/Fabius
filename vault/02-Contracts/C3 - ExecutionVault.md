@@ -26,6 +26,13 @@ swap, bukan dari angka yang agen tulis; PnL dibukukan di kontrak dan boleh negat
   sekarang ada test sendiri yang memegangnya.
 
 **Detail:** bug yang sudah dikoreksi dicatat di komentar kontrak (bukan dihapus) supaya pembaca
-mengerti kenapa urutannya penting. Deploy & posisi nyata: [[08-Backlog/01 - Backlog]] P1.
+mengerti kenapa urutannya penting.
+
+**Status 27 Sep: ter-deploy dan pernah dipakai.** `ExecutionVault`
+`0x2743cD33C8790437594E119289838F35c0d1d290` di 97, cap harian 5 unit / per posisi 1 unit
+(`setCaps` tx nyata), dan **dua round-trip nyata** sudah melewatinya: `openLong` gas 258.008/295.443,
+`close` 123.216/150.576, realized **−59 bps** keduanya — dibaca dari event `Closed`, bukan
+hitungan kami (`decisions/execution-trail.jsonl`). Yang tetap belum: venue pasar sungguhan dan
+keputusan yang dihasilkan siklus otomatis (dua posisi ini memakai hash keputusan 24 Sep).
 
 **Terkait:** [[02-Contracts/C4 - DemoPair and DemoAsset]] · [[Quick-Reference]]

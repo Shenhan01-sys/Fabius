@@ -85,11 +85,11 @@ memblokir "bukti" yang butuh modal: F-D16 di [[00-Overview/03 - Decisions]].
 
 | komponen (rancangan 26 Sep) | status 27 Sep |
 |---|---|
-| `execution.py` — buka/tutup posisi nyata | **belum ada**; yang ada `tools/exec_deploy.py` = men-deploy saja (dan berhenti sendiri karena guard saldo) |
+| `execution.py` — buka/tutup posisi nyata | **ada: `tools/execute_live.py`** (27 Sep). Menolak membuka posisi kalau `decisionHash`-nya tidak ada di `DecisionAnchor`, dan menolak `ABSTAIN`. Dua round-trip nyata: −59 bps per putaran |
 | `risk_cap.py` — plafon harian, 1 posisi paralel, kill-switch, berhenti kalau ledger belum menilai | **sebagian di kontrak**: `dailyCap`, `maxPositionQuote`, `HARD_CEILING`, `killSwitch`, `AlreadyOpen`, `NoAnchorHash` ([[02-Contracts/C3 - ExecutionVault]]) |
 | `settlement.py` — tiap posisi = transaksi nyata, saldo dibaca ulang dari chain | **belum**; arah desainnya sudah: `openPositionOf()` + event `Closed` dengan `realizedQuote` dan gas terpakai |
 | `metering.py` — bayar-per-keputusan, abstain gratis, rugi = kredit | **sebagian**: x402 menagih per keputusan ([[04-Tools/TL6 - x402 gate and client]]); abstain-gratis & kredit **belum** diimplementasikan |
-| `trust.py` — kelayakan real-trade (n≥20, net>0, drop-best-fold, BH) dan menampilkan **berapa lagi yang kurang** | **belum ada** — dan memang tidak ada gunanya sebelum P1 menghasilkan posisi nyata |
+| `trust.py` — kelayakan real-trade (n≥20, net>0, drop-best-fold, BH) dan menampilkan **berapa lagi yang kurang** | **belum ada.** P1 sudah jalan, jadi alasan "nunggu posisi nyata" sudah tidak berlaku: yang tersisa cuma keputusan apakah gerbangnya dipasang sebelum demo atau sesudahnya |
 
 ## Yang diputuskan builder (27 Sep)
 

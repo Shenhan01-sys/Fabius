@@ -102,8 +102,13 @@ def hub_body(hub_path, parts):
     tag = tag or os.path.dirname(hub_path).split("-", 1)[-1].lower().replace(" ", "-")
     listed = set()
     lines_out = []
-    if text:
-        for m in re.finditer(r"^-\s*\[\[([^\]|]+)(?:\|[^\]]*)?\]\]([^\n]*)$", text, flags=re.M):
+    # SATU blok saja. Versi sebelumnya memindai seluruh berkas sehingga bullet `## Terkait`
+    # diseret masuk ke daftar bagian, dan mengganti sampai blok dataview sehingga heading
+    # `## Terkait` tertimpa. Keduanya: alat yang menulis ulang lebih banyak dari yang ia pahami.
+    block = re.search(r"^## Bagian\n(.*?)(?=^##\s|^```|\Z)", text or "", flags=re.M | re.S)
+    if block:
+        for m in re.finditer(r"^-\s*\[\[([^\]|]+)(?:\|[^\]]*)?\]\]([^\n]*)$",
+                             block.group(1), flags=re.M):
             name = m.group(1).strip()
             listed.add(os.path.basename(name))
             lines_out.append(f"- [[{name}]]{m.group(2).rstrip()}")
@@ -139,7 +144,11 @@ def hub_body(hub_path, parts):
         text = (f"---\ntags: [hub]\n---\n\n# {os.path.dirname(hub_path)}\n\n"
                 "_(dibuat `sync_vault.py` — tulis paragraf pembuka: lapisan ini apa dan apa yang "
                 "BUKAN dia)_\n")
-    new = re.sub(r"## Bagian.*?(?=```\ndataview|\Z)", "\n".join(body) + "\n", text, flags=re.S)
+    blk = "\n".join(body)
+    if block:
+        new = text[:block.start()] + blk.rstrip("\n") + "\n" + text[block.end():]
+    else:
+        new = text.rstrip() + "\n\n" + blk
     return new
 
 
