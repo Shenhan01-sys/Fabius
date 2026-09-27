@@ -56,8 +56,11 @@ penulisan ulang sejarah. Ini produknya, bukan caranya menjual.
 
 ## Uji di Fabius
 
-Yang sudah terukur dan menunjukkan gerbang bekerja **melawan** usulan penilai: Jev menjawab `short`
-untuk kandidat yang `bar < 720`; keputusannya tetap `flat`, dan itu tercetak
+Yang sudah terukur dan menunjukkan gerbang bekerja **melawan** usulan penilai: pada run 25 Sep Jev
+menjawab `short` untuk kandidat yang `bar < 720`; keputusannya tetap `flat`, dan itu tercetak.
+Catatan jujur: kode sekarang membuang kandidat itu **sebelum** model ditanya
+(`tools/direction.py:205`, `:372`), jadi batasnya tetap benar tapi contohnya tidak bisa
+direproduksi dari clone hari ini
 ([[01-Agent/A3 - One-Way Gates]]; [[01-Agent/01 - Asset Classes and Seats]] §5). Contoh kedua:
 `security_gate` 5/5 kandidat membalas,
 4 `OK` + 1 `UNMEASURED`, dan yang `UNMEASURED` **tidak** dihitung bersih (§F).

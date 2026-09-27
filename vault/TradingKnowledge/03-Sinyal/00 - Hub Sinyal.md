@@ -71,8 +71,8 @@ Peta lengkap statusnya: [[GAP1 - Matriks Metode x Tahap]] dan
 - [[O4 - Active Addresses dan Pemakaian Gas]] — alamat bukan manusia; kita punya bukti sendiri
 - [[O5 - Whale dan Kohor Smart Money]] — catatan terpenting di subtree ini: kohor harus per-kolam,
   panel vendor tercemar, dan alat skor kita belum bisa dipercaya
-- [[O6 - Konsentrasi Holder Bundler dan LP Lock]] — satu-satunya keluarga yang sudah jadi ambang
-  di `tools/`, tapi ambangnya diputuskan, bukan diuji
+- [[O6 - Konsentrasi Holder Bundler dan LP Lock]] — satu-satunya keluarga on-chain yang sudah jadi
+  ambang di `tools/`, tapi ambangnya diputuskan, bukan diuji
 - [[O7 - Token Unlock dan Vesting]] — tekanan yang diantisipasi, bukan yang mengejutkan
 - [[O8 - MEV dan Sandwich]] — kerugian yang tidak muncul di laporan mana pun milik kita
 

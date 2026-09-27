@@ -32,12 +32,15 @@ panjang memberi gross lebih besar tapi sampelnya sedikit dan world-nya berubah d
 ## Cara pakai yang diklaim
 
 Klaim praktisi: analisis di timeframe besar untuk arah, entry di timeframe kecil ("multi-timeframe
-confluence"), dan "whale bermain swing, bukan scalping". Yang terakhir ini bukan omong kosong dan
-sudah diuji di sini: pada panel smart money, dugaan builder **benar soal horizon** — arah hasil
-berbalik di 30 hari sementara 4 jam–7 hari negatif; itu terukur, tetapi horison 30 hari adalah
-justru tempat seleksi label bekerja (lihat [[Concepts/Lookahead Bound]] dan
-[[06-Results/06 - Pre-registration Horizon]]). Kesimpulan yang boleh diambil: horizon mengubah
-jawaban; bukan "makin panjang makin benar".
+confluence"), dan "whale bermain swing, bukan scalping". Kalimat terakhir itu **bukan** sesuatu yang
+boleh kami tulis sebagai sudah terjawab. Yang terjawab di repo ini hanya satu arah: pada horison
+pendek (4 j – 7 hari) mengikuti panel smart money **rugi** (§F: −10,4 bps/jam, dan horison 24 j
+0/12 lolos untuk aturan arah kita). Angka tempat hasil whale tampak berbalik di 30 hari berasal dari
+`decisions/whale-sweep-90d.json` — artefak yang **diblokir §H** (`cost_bps_applied = 0.0`, `p_boot`
+identik belum terjelaskan) dan halaman sumbernya melarang kalimat "ada edge di 30 hari"
+([[06-Results/06 - Pre-registration Horizon]]). Jadi yang benar: **horizon mengubah jawaban**, dan
+dugaan builder soal "swing, bukan scalping" tetap **hipotesis** sampai Uji A (prospektif) selesai —
+bukan kesimpulan yang sudah diukur.
 
 ## Butuh data
 
@@ -45,9 +48,9 @@ jawaban; bukan "makin panjang makin benar".
 |---|---|---|
 | bar 1 jam ≥ 2.400 untuk horizon 4 j dan 24 j | `ADA-TAPI` | Aster 9.599 bar ≈ 400 hari — §A; hanya aset ber-kontrak perp |
 | bar 4 jam / 1 hari (timeframe besar) | `ADA-TAPI` | yang ditarik jalur arah hanya `1h`; interval lain belum diambil, jadi filter HTF tidak ada sebagai aturan |
-| penanda "bar berjalan dibuang" | `ADA` | `tools/bars.py` mengembalikan bar selesai; `tools/direction.py` menyebutnya di `feats()` |
+| penanda "bar berjalan dibuang" | `ADA-TAPI` | pembuangan terjadi **saat fetch** (`tools/bars.py:113` → `t + step <= now`), bukan saat dibaca: kalau deret datang dari cache berumur, bar terakhir cache memang sudah selesai *saat ditulis* tapi sudah basi — `tools/direction.py` tidak memeriksa ulang, ia cuma mencatat `t_last` |
 | funding berinterval 4 jam (cocok dengan horizon) | `ADA-TAPI` | kebetulan yang dicatat sebagai kebetulan; histori per aset tidak bisa ditarik mundur — §A/§C |
-| riwayat jam rekaman (untuk efek sesi/jendela) | `ADA-TAPI` | `manifest` mencatat gap; satu jam yang bolong hilang permanen — §B |
+| riwayat jam rekaman (untuk efek sesi/jendela) | `ADA-TAPI` | `manifest` mencatat gap antar-tarikan; satu jam yang bolong **tidak bisa diminta kembali** — turunan dari §B ("yang lewat = hilang") |
 
 ## Uji di Fabius
 
@@ -89,8 +92,9 @@ angka tentang keputusan 4 jam. Perintah audit silang (belum ditulis): bandingkan
 ## Tingkat bukti
 
 `T1` untuk non-overlap dan larangan bocor antar-bar (praktik riset yang benar, ditegakkan kode kami) ·
-`T3` untuk "hasil bergantung horizon" — terukur di data kami sendiri, dengan flag `TERCEMAR` untuk
-horizon 30 hari (seleksi label; lihat [[Concepts/Lookahead Bound]]) · untuk klaim "efek sesi jam
+`T3` **khusus** untuk "jawaban berubah ketika horizon diubah" — yang terukur adalah sisi pendeknya
+(−10,4 bps/jam pada panel, §F; aturan arah 0/12 lolos di 24 j, §F). Horizon panjang **tidak** dapat
+tangga apa pun dari catatan ini: angkanya ada di artefak yang diblok §H · untuk klaim "efek sesi jam
 bekerja di crypto": belum diuji sama sekali.
 
 ## Boleh dibaca, dilarang dibaca

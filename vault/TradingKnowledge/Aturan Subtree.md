@@ -53,15 +53,24 @@ Kerangka: `Templates/Template - Metode.md` (dipakai `01 02 03 05 06 07`) dan
 `Templates/Template - Setup.md` (dipakai `04`). Gerbangnya:
 `python -X utf8 vault/scripts/tk_check.py` → exit non-zero kalau ada bagian yang hilang.
 
-## Disiplin klaim — tiga aturan yang tidak bisa ditawar di subtree ini
+## Disiplin klaim — empat aturan yang tidak bisa ditawar di subtree ini
 
-1. **Angka Fabius hanya dari [[Fakta Terukur]].** Angka lain yang menyebut produk ini harus ditulis
-   *(belum diukur)*. Kalau butuh angka yang tidak ada di lembar itu, usulkan perintahnya, jangan
-   karang hasilnya.
+1. **Angka "keadaan hidup" hanya dari [[Fakta Terukur]].** Yang berubah antar-run (jumlah baris
+   rekaman, `anchorCount`, umur, streak, credit) wajib diambil dari lembar itu — dan lembar itu
+   sendiri menyimpan perintah baca-ulangnya. Angka lain yang menyebut produk ini ditulis
+   *(belum diukur)*.
+   **Kecualian yang sah, dan sengaja:** angka **hasil uji** boleh dikutip langsung dari halaman yang
+   memikulnya (`06-Results/*`, `02-Contracts/*`, `03-Data/*`) asal **nama halaman dan perintah yang
+   mencetaknya disebut di kalimat itu juga**. Aturan ini meniru lembar fakta sendiri — §A/§D/§F
+   mengutip halaman, bukan sebaliknya. Yang dilarang adalah angka tanpa tempat: "sekitar 40 %",
+   "beberapa kolam", "riset menunjukkan".
 2. **"Fabius memakai X" hanya kalau `tools/` membuktikannya** — sebut file-nya. Kalau belum ada
    kodenya, tulis `TIDAK ADA` di tabel `## Butuh data`. Tidak ada keadaan "mungkin sudah".
 3. **Klaim pihak ketiga butuh pemiliknya.** "Riset menunjukkan…" tanpa paper = `T0`. Tulis
    `diklaim oleh <siapa>`, bukan `diketahui bahwa`.
+4. **Turunan harus bertanda.** Selisih atau rata dari angka yang sudah ada (mis. `+1,5` dan
+   `−146,3` → selisih **148 bps**; `59 − 30` → komponen kurva **±29 bps**) boleh ditulis dengan kata
+   **aritmetika**, supaya tidak terbaca sebagai pengukuran kedua.
 
 Satu lompatan yang harus tetap tertutup: catatan di subtree ini **tidak pernah** menaikkan tingkat
 bukti apa pun. Yang menaikkan bukti adalah run (`tools/backtest.py`, `tools/ledger.py`,

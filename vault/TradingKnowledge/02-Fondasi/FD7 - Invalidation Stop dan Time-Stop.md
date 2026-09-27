@@ -48,8 +48,9 @@ diekspresikan dalam fill nyata, bukan level yang dimaksud.
 ## Uji di Fabius
 
 Yang terukur: dua prediksi yang jatuh tempo **kedua-duanya** keluar di horizon (time-stop), dengan
-hasil **+1,5 bps** dan **−146,3 bps** net (§F) — dan dua titik berbeda dua menit berlawanan 148 bps,
-yang artinya aturan kami tidak membedakan keduanya. Tiga putaran rantai ditutup manual, rata-rata
+hasil **+1,5 bps** dan **−146,3 bps** net (§F) — keduanya keluar dalam **12 menit** satu sama lain
+(18:51Z dan 19:03Z) dan berselisih **148 bps** (aritmetika §F), yang artinya aturan kami tidak
+membedakan keduanya. Tiga putaran rantai ditutup manual, rata-rata
 **−59,0 bps** (§F). `tools/ledger.py` menulis `AMBIGU` kalau stop dan target tersentuh di bar yang
 sama — pilihan yang tidak boleh diambil kemudian.
 

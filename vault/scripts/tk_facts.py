@@ -33,6 +33,12 @@ SHEET = os.path.join(TK, "Fakta Terukur.md")
 PRODUK = re.compile(r"(?i)\b(fabius|kami|perekam|rekaman|universe|wallet-flow|dune|gmgn|aster|"
                     r"hyperliquid|geckoterminal|goplus|gdelt|maker|snapshot|tools/|contracts/|"
                     r"decisions/|baris|kolam|kohor|anchor|vault eksekusi|lapangan)\b")
+# Klaim "sudah diukur" adalah kelas yang paling mahal salahnya, dan justru di situ whitelist
+# bilangan kecil (0-200) membisu: 37 baris, 13 di antaranya, 90 baris, 65 snapshot, 148 bps -
+# semuanya lolos karena angkanya "kecil". Lintasan kedua ini menuntut setiap angka pada baris yang
+# mengaku terukur, tanpa memandang besarannya.
+UKUR = re.compile(r"(?i)\b(terukur|diukur|terverifikasi|dibaca ulang|sudah dihitung|sudah diuji|"
+                  r"dijalankan|dicetak)\b")
 # Angka harus berdiri sendiri: `x402` (nama protokol) dan `EIP-712` bukan klaim jumlah, tapi `\d`
 # biasa akan mengambil "402"-nya dan melaporkan hantu.
 NUM = re.compile(r"(?<![A-Za-z0-9_])\d[\d.,]*\d|(?<![A-Za-z0-9_])\d(?![A-Za-z0-9_])")
@@ -96,7 +102,8 @@ def main():
         hits = []
         lines = claim_lines(io.open(p, encoding="utf-8").read())
         for i, line in enumerate(lines, 1):
-            if not PRODUK.search(line):
+            produk, klaim = bool(PRODUK.search(line)), bool(UKUR.search(line))
+            if not (produk or klaim):
                 continue
             probe = HEX.sub("", line)
             for m in NUM.finditer(probe):
@@ -105,9 +112,11 @@ def main():
                     f = float(v)
                 except ValueError:
                     continue
-                if f in SMALL or f in TAHUN or v in ok or m.group(0) in ok:
+                if v in ok or m.group(0) in ok or f in TAHUN:
                     continue
-                hits.append((i, m.group(0), line.strip()[:96]))
+                if f in SMALL and not klaim:
+                    continue        # konstanta rumus: lewat, kecuali barisnya mengaku terukur
+                hits.append((i, m.group(0), ("KLAIM-TERUKUR  " if klaim else "") + line.strip()[:88]))
         if hits:
             total += len(hits)
             print(f"\n{rel}")

@@ -21,7 +21,9 @@ meme sungguhan tidak ikut terwakili. Angka tengahnya sudah kami ukur dua kali da
 
 ```
 dampak(size, liq)  ~ size / liq                     # pendekatan orde satu; di x*y=k membesar non-linear
-kapasitas_keluar   : ukuran keluar <= 1 % likuiditas pool   # gerbang 6, ikut seat_blockers & di-hash
+kapasitas_keluar   : ukuran keluar <= 1 % likuiditas pool   # DIHITUNG + DICETAK sebagai angka
+                     #      yang menegakkan gerbang ⑥ adalah lantai likuiditas pool, bukan cap ini:
+                     #      ia tidak membandingkan ukuran apa pun, jadi jangan dibaca sebagai rem
 net_bps            = gross_bps - fee - slippage - gas - dampak
 stop_mungkin       : kontrak dasar mengizinkan penjualan  AND  ada likuiditas saat kamu datang
 ```

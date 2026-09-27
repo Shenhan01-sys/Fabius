@@ -90,7 +90,7 @@ metode. Metode individual ada di [[00 - Hub Sinyal]].
 | Unlock & MEV (`O7 O8`) | keputusan (hazard) | `TIDAK-ADA` | BELUM | uang | bukan "nice to have": tanpa `O8` kita tidak tahu siapa yang mengambil bagian dari fill kita |
 | Sentimen & narasi (`M1 M2 M3 M4 M5`) | analisis | `ADA-TAPI` | BELUM | jam-proses | berkas GDELT hidup (§C); tapi sentimen terbit setelah harga bergerak → hanya boleh mengurangi ([[EV4 - Point-in-Time dan Riwayat yang Tidak Bisa Disusulkan]]) |
 | Quant relatif-value (`QT5 QT6 QT7`) | strategi | `TIDAK-ADA` sebagian besar | BELUM | uang + izin | butuh dua kaki, shorting/pinjam aset, dan major yang **ditolak** `STABLE_BASES` (§E) |
-| Evaluasi (`QT1 QT2 QT3 QT4`, `EV*`) | penilaian | `ADA` | SEBAGIAN | jam-proses | ini yang sudah kami bangun dan yang paling terbukti di repo |
+| Evaluasi (`QT1 QT2 QT3 QT4`, `EV*`) | penilaian | `ADA` | SEBAGIAN | jam-proses | keluarga yang mekanismenya **punya run** di repo — bukan peringkat, lihat kolom "Diuji" |
 
 ## Tingkat bukti
 

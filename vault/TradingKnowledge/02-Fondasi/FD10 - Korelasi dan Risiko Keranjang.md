@@ -42,7 +42,7 @@ likuiditas BNB + satu posisi di perhatian.
 | return per aset pada jam yang sama (untuk matriks korelasi) | `ADA-TAPI` | 9.599 bar 1 jam per simbol ber-perp (§A); cache `tools/bars.py` — **tidak ada satu pun kode yang menghitung korelasi** |
 | plafon yang menjumlah eksposur | `ADA` | `dailyCap` §E menjumlah notional per hari; ia tidak bertanya apakah dua posisi satu taruhan |
 | satu posisi per aset (bukan per taruhan) | `ADA` | `AlreadyOpen` keyed per token di `contracts/ExecutionVault.sol` |
-| pembedaan aset yang bisa dipilih (bukan likuiditas stablecoin) | `ADA` | `STABLE_BASES` / pasangan G disaring — §E, [[01-Agent/01 - Asset Classes and Seats]] |
+| pembedaan aset yang bisa dipilih (bukan likuiditas stablecoin) | `ADA` | `STABLE_BASES` menyaring base stablecoin/wrapped (USDT/USDC/BUSD/FDUSD/DAI/TUSD/USD1/USDD/USDE + BTCB/WBNB/BNB/ETH) dari daftar yang bisa dipilih — §E, [[01-Agent/01 - Asset Classes and Seats]] |
 | penanda `risk-off` lintas pasar (DXY, indeks, spread) | `TIDAK-ADA` | tidak ada sumber Makro di repo; satu-satunya narasi eksternal adalah berkas GDELT (§C) |
 | korelasi funding/OI lintas aset | `TIDAK-ADA` | funding & OI hanya pembacaan saat ini, tanpa histori per aset — §C |
 | risiko satu-pasokan-data (sumber × jaringan) | `ADA-TAPI` | terukur: `api.binance.com` 451 dan Bybit 403 di runner; OKX/Bitget terpotong TLS di laptop — §C |

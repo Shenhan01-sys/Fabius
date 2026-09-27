@@ -9,9 +9,9 @@ sesudahnya [[PL5 - Mengeksekusi dan Keluar]]
 **Sumber:** `tools/direction.py`, `tools/decide.py`, `tools/judge.py` · [[01-Agent/A2 - Decision Spine]] ·
 [[01-Agent/A3 - One-Way Gates]]
 
-**Ringkas:** Sebuah pembacaan menjadi keputusan hanya kalau ia memuat enam hal: **arah, ukuran,
-invalidation, horizon, dan rezim keluar**. Kurang satu pun, itu masih opini — dan opini tidak bisa
-dinilai, tidak bisa di-anchor, dan tidak bisa disalahkan. Fabius menambahkan dua aturan struktur:
+**Ringkas:** Sebuah pembacaan menjadi keputusan hanya kalau ia memuat enam hal: **arah, harga
+masuk, ukuran, invalidation, horizon, dan rezim keluar**. Kurang satu pun, itu masih opini — dan
+opini tidak bisa dinilai, tidak bisa di-anchor, dan tidak bisa disalahkan. Fabius menambahkan dua aturan struktur:
 `ABSTAIN` adalah hasil yang sah (bukan kegagalan), dan setiap komponen penilai hanya boleh
 **mengurangi** — model LLM berdiri di bawah data, tidak di atasnya
 ([[Concepts/One-Way Gate]]).
@@ -43,7 +43,11 @@ dan memberi bentuk yang bisa diaudit: arah ditentukan **data kami sendiri**, mod
 memveto atau mengecilkan; kalau model bilang arah berbeda dari data, hasilnya turun ke status lebih
 rendah dan keyakinannya dipotong — bukan posisi dibuka ([[04-Tools/TL1 - judge]]). Bukti perilaku,
 bukan niat: saat model menjawab `short` untuk kandidat yang riwayat bar-nya di bawah ambang,
-keputusannya tetap `flat` dan itu tercetak di keluaran ([[01-Agent/A3 - One-Way Gates]]).
+keputusannya tetap `flat` — **terukur pada run 25 Sep**, sebelum penyaring dipasang; hari ini
+kandidat di bawah `MIN_BARS_TINY` sudah dibuang sebelum pertanyaan dibuat
+(`tools/direction.py:205`, `:372`), jadi perilaku "model dibatasi gerbang" masih benar tapi
+contohnya tidak bisa diulang dari kode sekarang
+([[01-Agent/A3 - One-Way Gates]], [[01-Agent/01 - Asset Classes and Seats]]).
 
 ## Butuh data
 

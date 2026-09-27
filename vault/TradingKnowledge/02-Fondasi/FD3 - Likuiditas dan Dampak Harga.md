@@ -40,9 +40,9 @@ yang bagus dan tetap tidak dapat kursi kalau keluar tidak terjamin.
 | kebutuhan | status Fabius | bukti / batas |
 |---|---|---|
 | likuiditas pool (USD) per kandidat | `ADA-TAPI` | kolom `liquidity` baris universe; itu **TVL pool**, bukan jadwal order di harga — proxy, bukan kedalaman |
-| ambang kapasitas keluar yang men veto | `ADA` | `MIN_LIQ_USD` 50.000 dan `exit-size <= 1 %` likuiditas; ditegakkan `tools/direction.py` (`seat_blockers`, ikut di-hash) — [[Fakta Terukur]] §E |
+| ambang kapasitas keluar yang men-veto | `ADA-TAPI` | yang **ditegakkan** hanya lantai likuiditas pool (`MIN_LIQ_USD` 50.000) lewat `seat_blockers` + di-hash — §E. Angka "≤ 1 % likuiditas" **dihitung dan dicetak** (`exit_cap_1pct_liq_usd`) tapi tidak membandingkan ukuran apa pun, jadi ia bukan rem ([[04-Tools/TL2 - direction]]) |
 | order book L2 / jadwal bid-ask | `TIDAK-ADA` | tidak ada jalur di repo ini — §C |
-| spread nyata di venue meme sungguhan | `TIDAK-ADA` | tidak ada venue produksi; yang terukur hanya spread kurva+fee di chain 97 — §D |
+| spread nyata di venue meme sungguhan | `TIDAK-ADA` | tidak ada venue produksi; komponen ongkos yang terukur di chain 97 hanyalah **kurva x·y=k + fee 30 bps** — bukan spread, karena tidak ada buku untuk membaca bid/ask — §D |
 | dampak harga pada ukuran > 1 unit | `TIDAK-ADA` | yang pernah dijalankan cuma posisi 1 unit — §D/§F |
 | keterjualannya token (honeypot / `can_not_sell`) | `ADA-TAPI` | gerbang ④ `tools/security_gate.py`: 5/5 kandidat membalas, 4 `OK` + 1 `UNMEASURED` — §F; status itu milik **token spot**, bukan jaminan posisi bisa ditutup |
 

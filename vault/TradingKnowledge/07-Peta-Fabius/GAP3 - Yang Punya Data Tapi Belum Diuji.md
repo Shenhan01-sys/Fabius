@@ -69,8 +69,9 @@ supaya bisa dibuktikan ulang ([[EV5 - Reproduksibilitas dan Pra-Registrasi]]).
 
 ## Tingkat bukti
 
-`T3` untuk klaim "bahannya ada" (semua nomor berkas di atas bisa dibaca dari clone) · `T0` untuk
-klaim apa pun bahwa salah satunya akan menghasilkan edge — belum ada satu pun yang diuji.
+`T1` untuk klaim "bahannya ada" (peta keadaan — tiap nomor berkas bisa dibaca dari clone, tapi itu
+**baca**, bukan **run**; `T3` di lapisan ini disimpan untuk hasil uji, lihat [[EV1 - Tingkat Bukti]]) ·
+`T0` untuk klaim apa pun bahwa salah satunya akan menghasilkan edge — belum ada satu pun yang diuji.
 
 ## Boleh dibaca, dilarang dibaca
 

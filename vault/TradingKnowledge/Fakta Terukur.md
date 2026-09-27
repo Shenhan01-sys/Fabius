@@ -49,9 +49,12 @@ tentang "dompet pintar".
 
 | hal | angka | sumber / cara baca ulang |
 |---|---|---|
-| baris snapshot universe | **65 baris**, melintasi **empat semantik skema** (tanpa kunci → 2 → 3 → 4) | [[03-Data/D5 - Record Schemas]]; `python -X utf8 vault/scripts/dump_schemas.py` (ia melaporkan **pergeseran** dan itu memang benar) |
+| baris snapshot universe | **penghitungnya bertambah tiap jam** — 65 saat [[03-Data/D5 - Record Schemas]] ditulis, 68 di `universe/manifest.txt` pada hari yang sama. Yang tetap: deretnya melintasi **empat semantik skema** (tanpa kunci → 2 → 3 → 4) | baca ulang: `python -X utf8 vault/scripts/dump_schemas.py` (ia melaporkan **pergeseran**, dan itu memang benar) + baris pertama `universe/manifest.txt` |
 | verifikasi sha256 per baris | **60 dari 62 lolos**; 2 baris tidak dapat dihitung ulang dan pemicunya belum diketahui | `universe/write_universe_manifest.py` → [[06-Results/03 - Not Yet Proven]] #21 |
 | konsekuensi untuk analisis | setiap uji wajib menyebut **nomor skema**: `survivable_count` skema 2 **tidak sebanding** dengan skema 3 | aturan di [[03-Data/D5 - Record Schemas]] |
+| lubang penggabungan sumber | satu jendela terukur (23 Sep, 03:00Z, **90 baris**): **37** baris tidak punya satu pun field perilaku, dan **13** di antaranya gugur *tanpa satu pun alasan risiko*; join GeckoTerminal↔GMGN hanya mempertemukan **3 dari 40** baris pool — dan melebarkan `market/rank` (100/200/500) **tidak** mengubahnya | [[06-Results/02 - Thresholds]] · [[06-Results/03 - Not Yet Proven]] #12 |
+| akibat yang sudah ditanggung | `tools/decide.py` memulangkan **dua daftar** (`risk_vetoes` vs `data_gaps`) dan `ENTER` mensyaratkan keduanya kosong — jadi "ditolak" dan "tidak bisa dinilai" sudah terpisah di kode, bukan di niat | `tools/decide.py` |
+| umur kandidat (diukur 28 Sep pada snapshot `2026-09-27T08:02:51Z`, skema 4, 140 baris) | **121 baris berumur < 24 jam**, 19 baris ≥ 24 jam, 0 tanpa umur → `survivable_count` **15**, `fully_evaluated_count` **1**. Alasan penolakan pada jendela itu: `age<threshold` 121 · `trending_without_demand` 77 · `liq<threshold` 76 · `top10>45 %` 15 · `lock<threshold` 5 · `bundler>30 %` 3 · `no_liquidity` 2 | dibaca dari `universe/bsc-universe.jsonl` baris terakhir; alatnya: `python -X utf8 tools/screen_universe.py --windows` |
 
 ## B. Bidang ⑦ — aliran dompet (rekaman kami sendiri)
 
@@ -138,11 +141,21 @@ sudah tertulis. Cara mengujinya ada di [[07-Peta-Fabius/GAP2 - Uji Setiap Veto T
 | jalur eksekusi nyata | 3 putaran chain, **WR 0 %**, net −59,0 bps rata-rata — dan itu memang **ongkos**, bukan sinyal (pool kami sendiri tanpa arus luar) | `tools/winlog.py` |
 | `\|acf\|` MARSCOIN | 0,075 → **zona abu-abu** (0,05–0,10 = belum tahu) | [[06-Results/03 - Not Yet Proven]] |
 | `security_gate` pada kandidat arah | 5/5 membalas: 4 `OK` + 1 `UNMEASURED` (`pPOLY is_honeypot=None` tidak dihitung bersih) | [[04-Tools/TL3 - security_gate]] |
+| **corong penyaringan vs hasil** (sudah dihitung!) | kohort **lolos** n=52: mean **+148,0** · median **+35,9** · 42,3 % negatif · **kohort ditolak** n=713: mean **+353,7** · median **−44,4** · 53,0 % negatif. Per alasan (mean/median bps): `age<thr` +360,2/−44,4 (n=704) · `liq<thr` +817,1/−407,2 (n=318) · `trending_without_demand` +49,5/0,0 (n=105) · `top10>45 %` +26,3/+13,2 (n=91) · **`bundler>30 %` −44,7/−16,2 (n=55)** · `lock<thr` −20,6/+21,7 (n=17) · `holders<thr` −1344,5/−0,5 (n=4). Keluarga tes 105, BH α 0,10, **5 lolos** | `python -X utf8 tools/screen_universe.py` → `tools/out/screen_report.json` (765 pasangan forward, 545 token). **`out/` di-gitignore**: artefaknya tidak ada di clone, perintahnya ada |
+
+**Cara membaca baris corong itu, dan apa yang dilarang darinya.** `n` per alasan **saling tumpang
+tindih** — 704 + 318 + 105 + 91 + 55 + 17 + 4 = **1.294** untuk 713 token yang ditolak, karena satu
+token boleh kena beberapa veto sekaligus. Jadi angka antar-alasan **tidak bisa dibandingkan satu
+sama lain**; yang sebanding hanya dua kohort teratas (lolos vs ditolak), dan itu pun mean-nya
+digerakkan ekor (`best_bps` **+213.686,5** untuk satu token). Report itu sendiri mencetak batasnya:
+"bukan trade yang bisa dieksekusi · tanpa slippage nyata · tanpa ukuran posisi · bukan prediksi
+return" — dan `constants` di dalamnya masih `RT_COST_BPS = 20.0` (P10), jadi angka itu bukan
+"setelah ongkos kita".
 
 ## G. Keadaan hidup saat halaman ini ditulis (28 Sep 2026)
-
 ```
 python -X utf8 tools/anchor.py --verify   -> anchorCount() = 19 | 13 baris terpelacak | 13/13 COCOK
+python -X utf8 tools/verdict_counts.py    -> countByVerdict: Enter 4 / Abstain 15  (4 + 15 = 19)
 python -X utf8 tools/winlog.py            -> PAPER n=2 WR 50,0 % net rata2 -72,4 bps (total -144,8)
                                              CHAIN n=3 WR 0,0 % net rata2 -59,0 bps (total -177,0)
                                              streak chain: 3 KALAH | terpanjang menang 0

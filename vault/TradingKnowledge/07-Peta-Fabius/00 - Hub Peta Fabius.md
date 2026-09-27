@@ -6,9 +6,9 @@ tags: [tk-peta, hub]
 
 **Sumber:** `vault/TradingKnowledge/07-Peta-Fabius/`
 
-Lapisan tempat pengetahuan berubah jadi keputusan — atau berhenti. Enam lapisan lain boleh salah
-hitung; halaman-halaman di sini tidak boleh, karena isinya dipakai untuk memilih pekerjaan
-berikutnya dan untuk menolak pekerjaan yang menarik. Semua angkanya menunjuk
+Lapisan tempat pengetahuan berubah jadi keputusan — atau berhenti. Enam lapisan lain boleh
+kurang lengkap; halaman-halaman di sini **paling mahal kalau salah hitung**, karena isinya dipakai
+untuk memilih pekerjaan berikutnya dan untuk menolak pekerjaan yang menarik. Semua angkanya menunjuk
 [[Fakta Terukur]]; semua nomor pekerjaannya menunjuk [[08-Backlog/01 - Backlog]].
 
 Satu hal yang harus diketahui pembaca baru: **tenggat proyek ini 30 Sep 23:59 WIB.** Itu membuat

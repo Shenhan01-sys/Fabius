@@ -39,8 +39,8 @@ ujinya memakai ongkos dan alat skor yang sama.
 | ongkos terukur satu nilai untuk semua jalur | `ADA-TAPI` | 59 bps terukur vs 20 bps warisan — [[Fakta Terukur]] §D, itu persoalan P10 |
 | alat skor ⑦ yang sehat | `TIDAK-ADA` (alatnya ada, angkanya belum layak) | §H di lembar yang sama — P11 |
 | hasil jatuh tempo `n ≥ 20` | `TIDAK-ADA` | seri sekarang: PAPER n=2, CHAIN n=3 (G) |
-| perekaman funding per jam | `TIDAK-ADA` tapi bisa dimulai sekarang | kelas T2 di [[GAP4 - Yang Tidak Bisa Diuji Karena Data]] — P13 |
-| spesifikasi swing/zona tunggal | `TIDAK-ADA` | kelas T3 — P14 |
+| perekaman funding per jam | `TIDAK-ADA` tapi bisa dimulai sekarang | kelas K2 di [[GAP4 - Yang Tidak Bisa Diuji Karena Data]] — P13 |
+| spesifikasi swing/zona tunggal | `TIDAK-ADA` | kelas K3 — P14 |
 
 ## Uji di Fabius
 
@@ -49,17 +49,18 @@ jalankan tadi":
 
 | prioritas | ID | apa yang selesai terlihat sebagai | bayar |
 |---|---|---|---|
-| 1 | **P10** — satu model ongkos | `tools/backtest.py` dan `tools/ledger.py` memakai angka yang sama; deret lama dihitung ulang dan perbedaannya dicatat di [[06-Results/04 - Negative Results]] (satu "MENANG +1,5 bps" jadi ≈ −37,5 bps kalau ongkos terukur dipakai) | `nol` |
+| 1 | **P10** — satu model ongkos | `tools/backtest.py` dan `tools/ledger.py` memakai angka yang sama; deret lama dihitung ulang dan dicatat di [[06-Results/04 - Negative Results]] — satu "MENANG +1,5 bps" menjadi **≈ −37,5 bps** *(aritmetika di atas §D + §F; belum dihitung ulang oleh alat — justru itu isi P10)* | `nol` |
 | 2 | **P11** — mekanika `maker_ledger` | blok REM SEHAT di [[Fakta Terukur]] §H lolos: median `\|net\|` masuk akal, arti `is_open_or_close` ditetapkan dengan baris mentah, MTM token hilang pesimistis | `nol` |
 | 3 | **P13** — rekam funding + OI per jam | satu berkas `universe/*` baru + manifest umur, dimulai **sekarang** supaya kalender bekerja | `nol` + `kalender` |
-| 4 | **P12** — uji tujuh veto | `decisions/veto-calibration-<UTC>.json` + tujuh baris keputusan di [[06-Results/02 - Thresholds]] (dipertahankan/dicabut/belum teruji) | `jam-proses` |
-| 5 | **P14** — spesifikasi swing/zona/gap | satu bagian di `Concepts/` + satu fungsi yang dipakai semua alat uji | `jam-proses` |
+| 4 | **P12** — uji tujuh veto | **sebagian sudah dihitung**: `tools/screen_universe.py` mencetak kohort lolos vs ditolak + outcome per alasan (§F) — dan arahnya tidak mendukung veto. Yang masih kurang = `tools/veto_study.py`: ongkos **59 bps**, median + bootstrap, satu baris verdik per veto di [[06-Results/02 - Thresholds]] (dipertahankan/dicabut/belum teruji), dan **nama tiap tes yang lolos BH ditulis** — report sekarang mencetak `passed: 5` tanpa menyebut lima yang mana | `jam-proses` |
+| 5 | **P14** — spesifikasi swing/zona/gap | satu **catatan baru** di `Concepts/` + satu fungsi yang dipakai semua alat uji | `jam-proses` |
 | 6 | **P15** — aliran ⑦ sebagai gerbang **turun-saja** | keputusan tercatat per kejadian (`SEARAH` / `KONTRA` / `TAK ADA DATA`) + evaluasi di `winlog`; **tidak pernah** menaikkan keyakinan | `jam-proses`, menahan P11 |
 | 7 | keluarga sinyal baru (`S3`, `S5`, `S7` dengan null yang benar) | uji per keluarga + artefak | `kalender` untuk sampel |
 | — | `uang`: L2/tick, likuidasi bursa, on-chain valuasi, unlock | tidak masuk sebelum submission; lihat kolom "mengubah keputusan?" di [[GAP4 - Yang Tidak Bisa Diuji Karena Data]] | `uang` |
 
-Empat yang pertama **tidak butuh data baru dan tidak butuh kalender**. Dengan tenggat 30 Sep, itu
-satu-satunya bagian daftar ini yang boleh dijanjikan.
+Tiga yang pertama (P10, P11, P13) **tidak butuh data baru** — tapi hanya **P10 dan P11** yang bisa
+*selesai* tanpa menunggu kalender (P13 mulai hari ini, barunya baru terasa nanti). Dengan tenggat
+30 Sep, itulah satu-satunya bagian daftar ini yang boleh dijanjikan.
 
 ## Batas dan mode gagal
 
@@ -75,15 +76,17 @@ satu-satunya bagian daftar ini yang boleh dijanjikan.
 
 ## Tingkat bukti
 
-`T3` untuk daftar dan angkanya (semua menunjuk [[Fakta Terukur]] atau berkas nyata) · `T0` untuk
-perkiraan "berapa lama" — tidak ada satu pun butir di atas yang pernah kami jalankan dari awal ke
-akhir.
+`T1` untuk daftar dan angkanya (peta keadaan: semua menunjuk [[Fakta Terukur]] atau berkas nyata —
+membaca daftar bukan `T3`) · `T0` untuk perkiraan "berapa lama" — tidak ada satu pun butir di atas
+yang pernah kami jalankan dari awal ke akhir.
 
 ## Boleh dibaca, dilarang dibaca
 
-- **Boleh:** "empat perbaikan pertama tidak butuh data baru dan tidak butuh waktu pasar; sesudah
-  itu, yang tersisa dibayar kalender."
-- **Dilarang:** "roadmap kami akan selesai sebelum submission" (yang selesai hanya P10–P13) ·
+- **Boleh:** "tiga perbaikan pertama tidak butuh data baru; dua di antaranya (P10, P11) masih bisa
+  selesai sebelum tenggat, yang ketiga (P13) baru bernilai setelah kalender berjalan."
+- **Dilarang:** "roadmap kami akan selesai sebelum submission" (yang bisa *selesai* tinggal **P10 dan
+  P11**; P13 dimulai hari itu tapi bayarnya kalender, dan P12/P14/P15 butuh jam-proses yang tidak ada
+  lagi sebelum tenggat) ·
   "kalau P15 selesai, sinyal whale ikut menaikkan keyakinan" (ia **hanya boleh menurunkan** —
   [[Concepts/One-Way Gate]]).
 

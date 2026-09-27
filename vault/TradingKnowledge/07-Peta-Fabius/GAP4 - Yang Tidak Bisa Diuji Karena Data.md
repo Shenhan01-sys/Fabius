@@ -70,7 +70,8 @@ yang jawabannya "veto" — dan itu justru urutan yang paling sering terjadi di p
 
 ## Tingkat bukti
 
-`T3` untuk daftar kelengkapan (tiap barisnya menunjuk berkas/angka di [[Fakta Terukur]]) · `T0`
+`T1` untuk daftar kelengkapan (peta keadaan: tiap barisnya menunjuk berkas/angka di
+[[Fakta Terukur]] — **bukan** `T3`, karena membaca berkas bukan menjalankan uji) · `T0`
 untuk setiap pernyataan bahwa metode yang terkunci di sini akan berguna setelah datanya ada.
 
 ## Boleh dibaca, dilarang dibaca
