@@ -61,6 +61,7 @@ hasil keluar — koreksi lewat halaman baru, supaya urutannya bisa dipertanggung
   dengan P(≥+500) 3,7 %** (vs pool 39,8 %). Catatan penting: bar kami = deret transaksi, jadi ini
   ADAPTASI; `04-Setup` (7 persona) memang belum punya satu pun perintah alat, dan Fibonacci tidak
   punya catatan sendiri - dia disebut 15 catatan sebagai konsep.
+- [[16 - Harga Keluar yang Hilang]] - yang memotong halaman 15: pada kohort token muda (mean +450,8) hanya **19,4 %** kejadian punya baris harga keluar (547/2.814; **2.267 hilang**); memberi yang hilang nilai seburuk p05 teramati (-2.000, yang memang sudah di lantai) membalik mean ke **-1.562,8**, dan `break-even = 0`. Untuk memecoin, "tidak ada transaksi lagi 30 menit kemudian" bukan lubang data - itu beritanya.
 - [[09 - Whale Cluster Test]] ← tulis penjelasannya
 - [[10 - Evidence Stack]] ← tulis penjelasannya
 

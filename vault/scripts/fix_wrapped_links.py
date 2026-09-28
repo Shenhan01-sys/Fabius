@@ -1,52 +1,77 @@
 # -*- coding: utf-8 -*-
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
 """Sambung tautan yang terbelah baris di SELURUH vault (alat perbaikan, bukan gerbang).
 
-Gerbangnya tetap `check_links.py` - dia yang menemukan korbannya. Alat ini yang membereskan,
-dan dulunya hanya memindai `TradingKnowledge` sementara yang paling sering kusunting ada di
-`06-Results`/`00-Overview`. Konservatif: hanya menggabung bila baris membuka `[[` tanpa menutup
-`]]`, dan baris berikutnya bukan bullet/tabel/heading/kutipan.
+Gerbangnya tetap `check_links.py` - dia yang menemukan korbannya; alat ini yang membereskan.
+Dulunya penyapu seperti ini hanya memindai `TradingKnowledge` padahal yang paling sering kusunting
+ada di `06-Results`/`00-Overview` - jadi kelas kesalahan yang sama kutambal manual tiga kali dalam
+sehari (halaman 10, F-D31, halaman 15).
 
-Ini ketiga kalinya hari ini aku menambal kasus yang sama manual (halaman 10, F-D31, halaman 15).
-Alat `fix_tk_wrapped_links.py` lama hanya memindai `TradingKnowledge`, padahal yang paling sering
-kusunting adalah `06-Results` dan `00-Overview`. Jadi: cakupan diperluas, dan batas aman dipasang -
-hanya menyambung bila baris berikutnya adalah LANJUTAN tanpa tanda `-`/`|` di awal (baris tabel
-dan bullet tidak boleh dimakan).
+Konservatif: hanya menggabung bila baris MEMBUKA `[[` tanpa menutupnya, dan baris berikutnya bukan
+bullet/tabel/heading/kutipan. Pemeriksaan setelah jalan bukan "berkas menyusut" (menyambung baris
+tanpa indentasi mengganti \\n dengan satu spasi = panjang sama), tapi "tidak ada lagi penyebabnya".
+
+Dipakai:  python -X utf8 vault/scripts/fix_wrapped_links.py
 """
 import io
 import os
 import re
 
-V = r"C:\Users\hansg\HansProject\Bnb-Indonesia-Hackathon\Fabius\vault"
-POLA = re.compile(r"\[\[[^\]]*\n[^\]]*\]\]")
-ubah = 0
-for root, _, fs in os.walk(V):
-    if "_archive" in root:
-        continue
-    for f in fs:
-        if not f.endswith(".md"):
-            continue
-        p = os.path.join(root, f)
-        s = io.open(p, encoding="utf-8", newline="").read()
-        nl = "\r\n" if "\r\n" in s else "\n"
-        L = s.split(nl)
-        out, i, kena = [], 0, 0
-        while i < len(L):
-            g = L[i]
-            # hanya gabung kalau baris ini MENUTUP setengah wikilink dan baris berikut melanjutkannya
-            while i + 1 < len(L) and g.count("[[") > g.count("]]") and L[i + 1].strip() \
-                    and not L[i + 1].lstrip().startswith(("-", "|", "#", ">", "!", " ")) \
-                    and "]" not in g.split("[[")[-1]:
-                g = g + " " + L[i + 1].strip()
-                i += 1
-                kena += 1
-            out.append(g)
+V = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))     # .../vault
+AWAL = ("-", "|", "#", ">", "!", "```")
+POLA = re.compile(r"\[\[[^\]]*$")
+BATAS_JOIN = 6
+
+
+def terbuka(l):
+    return bool(POLA.search(l)) and l.count("[[") > l.count("]]")
+
+
+def boleh_sambung(l):
+    s = l.strip()
+    return bool(s) and not s.startswith(AWAL)
+
+
+def satu(p):
+    s = io.open(p, encoding="utf-8", newline="").read()
+    nl = "\r\n" if "\r\n" in s else "\n"
+    L = s.split(nl)
+    out, i, kena = [], 0, 0
+    while i < len(L):
+        g, naik = L[i], 0
+        while i + 1 < len(L) and terbuka(g) and boleh_sambung(L[i + 1]) and naik < BATAS_JOIN:
+            g = g + " " + L[i + 1].strip()
             i += 1
-        if kena:
-            baru = nl.join(out)
-            assert len(baru) < len(s), p          # menyambung baris = berkas sedikit menyusut
-            io.open(p, "w", encoding="utf-8", newline="").write(baru)
-            print("sambung %-52s (%d join)" % (os.path.relpath(p, V), kena))
-            ubah += 1
-print("berkas disentuh: %d" % ubah)
+            naik += 1
+            kena += 1
+        out.append(g)
+        i += 1
+    if not kena:
+        return 0
+    baru = nl.join(out)
+    sisa = sum(1 for x in baru.split(nl) if terbuka(x))
+    if sisa:
+        raise SystemExit("MASIH ADA %d baris membuka [[ tanpa menutup di %s - periksa manual, "
+                         "jangan dipaksa" % (sisa, os.path.relpath(p, V)))
+    assert baru.count("[[") == s.count("[[") and baru.count("]]") == s.count("]]"), p
+    io.open(p, "w", encoding="utf-8", newline="").write(baru)
+    return kena
+
+
+def main():
+    ubah = join = 0
+    for root, dirs, fs in os.walk(V):
+        dirs[:] = [d for d in dirs if d not in ("_archive", ".git")]
+        for f in fs:
+            if not f.endswith(".md"):
+                continue
+            k = satu(os.path.join(root, f))
+            if k:
+                print("sambung %-54s (%d join)" % (os.path.relpath(os.path.join(root, f), V), k))
+                ubah += 1
+                join += k
+    print("selesai: %d join di %d berkas" % (join, ubah))
+
+
+if __name__ == "__main__":
+    main()

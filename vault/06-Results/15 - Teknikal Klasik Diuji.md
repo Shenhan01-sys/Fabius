@@ -45,6 +45,10 @@ searah sama. Ini bukan "tehniknya salah secara umum"; ini **instrumen kita**: ki
 setelah smart-money bergerak, jadi "price baru menembus tertinggi" itu sudah puncak, dan
 "retrace 0,5" di token yang baru lahir satu jam adalah pisau jatuh.
 
+## 1b. Satu hal yang membatalkan kesimpulan di atasnya
+
+Angka `+218,0` untuk pool dan `+450,8` untuk kohort token muda dipotong oleh [[06-Results/16 - Harga Keluar yang Hilang]]: di kohort muda **80,6 % kejadian tidak punya satu pun baris harga keluar**, dan persentil-5 dari yang teramati sudah menyentuh lantai winsor (-2.000 bps). Mean itu angka korban selamat, bukan harapan. Karena itu urutan yang benar adalah **P33 (perbaiki pengukuran keluar) lalu P32 (teknikal di bar OHLC)**, bukan sebaliknya.
+
 ## 2. Batas yang menahan halaman ini
 
 - **Bar kami bukan bar.** `technic_lab` memakai deret harga TRANSAKSI (peristiwa), bukan OHLC 1h/4h
