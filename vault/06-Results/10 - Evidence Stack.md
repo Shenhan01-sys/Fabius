@@ -114,7 +114,7 @@ sendiri.
 
 | № | batas | angka |
 |---|---|---|
-| 1 | **Kami baru bisa menilai 12,7 % dari kandidat** | 807 dari ~6.373 kejadian terukur; 5.085 dibuang karena tidak ada harga ≤10 menit sebelum beli, 481 karena tidak ada harga keluar |
+| 1 | **Yang bisa dinilai 807 dari 11.631 beli = 6,9 %** (12,7 % dari kandidat) | corong penuh run `081806Z`: 11.631 beli → **5.258** dibuang karena tumpang tindih dengan beli lain di token yang sama (< 1 horison) → **6.373** kandidat → **5.085** tanpa harga ≤10 m sebelum beli + **481** tanpa harga keluar → **807** |
 | 2 | Satu jendela, satu rezim | umur rekaman 43 jam; belum ada hari kedua |
 | 3 | Panel pilihan vendor | maker = yang ditampilkan GMGN; kerumunan tak terlihat = batas bawah |
 | 4 | Bukan PnL | belum ada fill nyata, belum ada biaya keluar, belum ada ukuran posisi; ini probabilitas 30 menit |
@@ -122,6 +122,25 @@ sendiri.
 
 Baris 1 itulah yang P17 kerjakan; tanpa dia, angka di halaman ini tetap jadi statistik di antara
 yang masih kelihatan akhirnya.
+
+## 4b. Sumur harga: dua sumber, dan satu kejadian hanya boleh pakai satu
+
+Alat sekarang membaca dua deret: `px` (GMGN, harga pool saat tarik) dan `wp` (DexScreener, pantau
+2 jam dari P17). Aturannya bukan "mana yang ada", karena **dua venue berbeda ±0,16 %–0,40 % pada
+menit yang sama** (empat sampel pertama, `tools/prices.py --report`) - 400 bps itu seukuran seluruh
+efek di §1, jadi mencampur sumber dalam satu kejadian menciptakan angka yang tidak ada di pasar
+mana pun. Yang berlaku: **masuk dan keluar wajib satu sumber**; kalau tidak ada satu pun sumber yang
+mengcover kedua ujung, kejadian itu dibuang dan dihitung.
+
+Nilai `wp` belum bisa dirasakan: rekaman pantau baru **123 baris pada satu stempel** (rentang
+0,00 jam) karena rantai perekam di GitHub masih menjalankan workflow lama - ia baru menetes setelah
+commit-nya sampai ke default branch. Simulasi atas data yang ada (`_research/sim_watch_value.py`):
+**83,9 %** kejadian beli punya kemunculan token yang sama ≤ 2 jam sebelumnya, jadi batas 12,7 % itu
+bukan batas pasar - itu batas sambungan kita.
+
+Run `--px both` saat ini memberi **`rows_sha256` identik** dengan mode baku (`0x9f31f56bb76acf…`):
+menambah sumber tidak menggeser satu angka pun, persis seperti yang seharusnya terjadi saat sumber
+keduanya belum berisi.
 
 ## 5. Apakah ini mengubah gerbang Fabius? Belum - dan itu keputusan, bukan kelambatan
 

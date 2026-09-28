@@ -37,6 +37,8 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(HERE)
 sys.path.insert(0, HERE)
 import costs  # noqa: E402
+import prices as PR  # noqa: E402  (satu tempat untuk deret harga &
+#                                          aturan SATU sumber per kejadian)
 import flow_cluster_test as FC  # noqa: E402  (satu definisi outcome + statistik untuk semua uji aliran)
 
 for _s in (sys.stdout, sys.stderr):
@@ -50,6 +52,7 @@ FLOW = os.path.join(ROOT, "universe", "wallet-flow.jsonl")
 MIN = 60
 FEATURES = ["cluster_ge2", "cluster_ge3", "repeat_maker", "money_spread", "buy_usd_ge_1k",
             "no_exit_flow", "fresh_token", "wide_flow"]
+ORDER = {"gmgn": (PR.SRC_GMGN,), "both": (PR.SRC_GMGN, PR.SRC_WATCH)}
 
 
 def canon(o):
@@ -96,30 +99,38 @@ def window_slice(rows, ts, lo, hi):
     return [rows[i] for i in range(bisect.bisect_left(ts, lo), bisect.bisect_right(ts, hi))]
 
 
-def build_events(tx, pxs, horizon, window):
+def build_events(tx, sources, horizon, window, order):
+    """Kejadian yang bisa dinilai: SATU sumber untuk kedua ujung (lihat tools/prices.py).
+
+    Corongnya dicetak lengkap tiga-tiganya, karena versi pertama alat ini menyembunyikan yang
+    paling besar: kejadian yang dibuang karena BELI-nya berdekatan (< horison) dengan beli lain
+    pada token yang sama. Itu bukan "tidak ada sinyal", itu belum sempat jadi uji.
+    """
     H, W = horizon * MIN, window * MIN
-    ev, dropped = [], {"tanpa_px_masuk": 0, "tanpa_px_keluar": 0}
+    ev, dropped = [], {"tumpang_tindih_j": 0, "tanpa_px_masuk": 0, "tanpa_px_keluar": 0,
+                       "tidak_ada_px_sama_sekali": 0}
     for tk, rows in tx.items():
-        ps = pxs.get(tk) or []
-        if not ps:
+        ada = any(sources.get(nm, {}).get("rows", {}).get(tk) for nm in order)
+        if not ada:
+            for b in rows:
+                if b["buy"]:
+                    dropped["tidak_ada_px_sama_sekali"] += 1
             continue
-        pts = [p[0] for p in ps]
         buys = [r for r in rows if r["buy"]]
         taken = []
         for b in buys:
             t = b["t"]
             if any(abs(t - x) < H for x in taken):
+                dropped["tumpang_tindih_j"] += 1
                 continue
-            i = bisect.bisect_right(pts, t) - 1
-            if i < 0 or t - pts[i] > 10 * MIN:
-                dropped["tanpa_px_masuk"] += 1
+            nm, p0, p1 = PR.pick_source(sources, tk, t, horizon, order)
+            if nm is None:
+                # bedakan sebabnya: tidak ada harga SEBELUM beli, atau tidak ada harga KELUAR
+                pre_ok = any(PR.pre(sources[nm2]["rows"].get(tk) or [], t) is not None
+                             for nm2 in order if sources.get(nm2, {}).get("rows", {}).get(tk))
+                dropped["tanpa_px_masuk" if not pre_ok else "tanpa_px_keluar"] += 1
                 continue
-            p0 = ps[i][1]
-            out = [q for tt, q in ps if t + H - 15 * MIN <= tt <= t + H + 15 * MIN]
-            if not out:
-                dropped["tanpa_px_keluar"] += 1
-                continue
-            net = round(10000.0 * (FC.med(out) - p0) / p0 - costs.rt_cost(), 1)
+            net = round(10000.0 * (p1 - p0) / p0 - costs.rt_cost(), 1)
             win = window_slice(rows, [r["t"] for r in rows], t - W, t)
             wb = [r for r in win if r["buy"]]
             wsn = [r for r in win if not r["buy"]]
@@ -128,7 +139,7 @@ def build_events(tx, pxs, horizon, window):
             usd_s = sum(r["u"] for r in wsn)
             top = max((r["u"] for r in wb), default=0.0)
             first = rows[0]["t"]
-            ev.append({"tk": tk, "t": t, "net_bps": net, "n_maker": len(makers),
+            ev.append({"tk": tk, "t": t, "net_bps": net, "sumber": nm, "n_maker": len(makers),
                        "usd_b": round(usd_b, 2), "usd_s": round(usd_s, 2),
                        "cluster_ge2": len(makers) >= 2,
                        "cluster_ge3": len(makers) >= 3,
@@ -171,10 +182,13 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--horizon", type=int, default=30)
     ap.add_argument("--window", type=int, default=15)
+    ap.add_argument("--px", default="gmgn", choices=("gmgn", "both"), help="gmgn = hanya harga rekaman sendiri (baku); both = pantau DexScreener boleh jadi cadangan (tetap satu sumber per kejadian)")
     a = ap.parse_args()
     rt = costs.rt_cost()
-    tx, pxs = load()
-    ev, dropped = build_events(tx, pxs, a.horizon, a.window)
+    tx, _ = load()
+    sources = PR.load_all()
+    order = ORDER[a.px]
+    ev, dropped = build_events(tx, sources, a.horizon, a.window, order)
     ntok = len({e["tk"] for e in ev})
     print("bahan: %d kejadian terukur pada %d token | ongkos %.1f bps (%s) | horison %d m | jendela %d m"
           % (len(ev), ntok, rt, costs.cost_basis(), a.horizon, a.window))
@@ -199,6 +213,20 @@ def main():
               % (r["fitur"], r["token"], r["n"], r["median_selisih_bps"],
                  "[%+.0f; %+.0f]" % (r["ci_lo"], r["ci_hi"]), r["proporsi_positif"], r["p"],
                  "LOLOS" if r["fitur"] in lulus else "-"))
+    print("\nsumur harga (satu kejadian = satu sumber, `tools/prices.py`):")
+    for nm in sorted({e.get("sumber") for e in ev}):
+        one = [e for e in ev if e.get("sumber") == nm]
+        r = _pair(one, lambda e: e.get("cluster_ge2"), "K>=2 @%s" % nm)
+        if r.get("status"):
+            print("   %-6s %7d kejadian  token=%d n=%d  %s"
+                  % (nm, len(one), r["token"], r["n"], r["status"]))
+        else:
+            print("   %-6s %7d kejadian  token=%-4d n=%-4d med %+9.1f CI [%+.0f; %+.0f] p=%.4f"
+                  % (nm, len(one), r["token"], r["n"], r["median_selisih_bps"], r["ci_lo"],
+                     r["ci_hi"], r["p"]))
+    dl = PR.delta_report(sources)
+    print("   selisih dua sumber pada menit yang sama: %s" % (json.dumps(dl, sort_keys=True)
+          if dl.get("n") else "belum ada pasangan cukup"))
     st = _pair(ev, lambda e: sum(1 for f in lulus if e.get(f)) >= 2, "stack>=2")
     print("\ntumpukan aspek yang LULUS uji sendiri (>=2 menyala bersamaan), vs 0-1 di token sama:")
     if st.get("status"):
@@ -209,7 +237,8 @@ def main():
                  st["proporsi_positif"], st["p"],
                  "LOLOS BH" if st["fitur"] in FC.bh([(st["fitur"], st["p"])]) else "tidak"))
     out = {"dibuat_utc": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
-           "horizon_menit": a.horizon, "window_menit": a.window, "cost_bps_rt": rt,
+           "horizon_menit": a.horizon, "window_menit": a.window, "sumber_px": list(order),
+           "cost_bps_rt": rt,
            "cost_basis": costs.cost_basis(), "kejadian": len(ev), "token": ntok, "sensor": dropped,
            "frekuensi": {f: sum(1 for e in ev if e.get(f)) for f in FEATURES},
            "rows": rows, "lulus_bh": sorted(lulus), "stack": st,
