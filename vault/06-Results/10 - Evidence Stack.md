@@ -168,8 +168,19 @@ signifikansinya sama, jadi kerumunan **bukan** artefak baris yang diulang. Nilai
 (+393,4) adalah pembacaan pada dataset 43 jam; dataset ini sudah 49 jam dan efeknya mengecil ke
 +334,8 - itu justru berita baik: angkanya bergerak bersama data, bukan tersandera satu run.
 
+Konsekuensinya untuk sebuah agen yang harus **bertindak**, bukan cuma mencatat - terukur pada
+41.119 baris yang sama: umur "harga kini" kami adalah **8,7 menit (median)**, **42 menit di p90**,
+dan **2,6 jam pada maksimumnya**. Jadi saat alat kami berkata "harga dalam 10 menit terakhir",
+itu berarti harga yang **kita lihat** dalam 10 menit terakhir, bukan harga yang **terjadi** dalam
+10 menit terakhir - 45,7 % dari harga kami lebih tua dari itu di pasar. Ini tidak membatalkan uji
+berpasangan (kedua ujung pakai aturan yang sama, di token yang sama), tapi membatalkan satu kalimat
+yang lebih ambisius: **horison keputusan 30 menit tidak bisa ditebus dengan feeder berumur 42 menit
+di ekornya.**
+
 Yang sekarang jadi syarat, bukan pilihan: outcome yang dijual publik harus diukur pada sumur yang
-**berdetak sendiri** (`wp` dari P17), dan itu P23.
+**berdetak sendiri** (`wp` dari P17), dan itu P23. Perekam `px` juga harus ikut membawa waktu
+transaksinya (`ttx`) supaya konsumen bisa menyaring kesegaran - itu P24, dan berkas datanya sudah
+memiliki bahan bakunya (`tx.t`), jadi ini pekerjaan satu baris, bukan satu hari.
 
 ## 5. Apakah ini mengubah gerbang Fabius? Belum - dan itu keputusan, bukan kelambatan
 
