@@ -759,3 +759,48 @@ Tanpa itu Fabius adalah agen yang pintar menolak - persis yang dilarang builder.
 
 **Terkait:** [[08-Backlog/02 - Epik Alasan Masuk]] · [[06-Results/13 - Apakah Tidak Trading Itu Gratis]] · [[06-Results/14 - Buku Paper]] · [[06-Results/12 - Harga Masuk yang Benar]] ·
 [[TradingKnowledge/QT2 - Backtesting yang Jujur]] · [[TradingKnowledge/FD5 - Expectancy Bukan Win Rate]] · [[00-Overview/01 - Briefing]] · [[Concepts/Unmeasured Is Not Clean]]
+
+
+## F-D34 — [7] jadi perilaku agen, garis darah data rantai diperbaiki, dan satu angka outage-ku salah · 28 Sep 2026
+
+**Tiga hal dalam satu keputusan, karena satu akar: yang kami klaim harus yang kami JALANKAN.**
+
+1. **[7] = perilaku, bukan lagi hasil studi.** `tools/flow_gate.py` menanya aliran ⑦ untuk tiap
+   kandidat dan hanya boleh MENURUNKAN: `VETO` bila >=2 maker berbeda menjual dalam 15 m atau
+   USD jual >= 1,5x USD beli (satu-satunya klaim ⑦ yang lolos BH: P(>=+500) 33,9 % -> 22,5 %,
+   harapan winso +82,7 -> +162,3). `TAK ADA DATA` (berkas > 20 menit basi, atau token tak dikenal)
+   TIDAK diperlakukan sebagai bersih - ia dicatat di `why`, di `rec["flow"]`, dan ikut
+   `gatesHash`. Kerumunan BELI tidak dipasang sebagai sinyal masuk: dibatalkan F-D30 dan kalah dari
+   control acak. Self-test-nya menangkap bug miliknya sendiri: cache `_load` bertanda
+   `(mtime, size)` mengembalikan isi LAMA saat berkas ditulis ulang dengan panjang identik ->
+   tanda cache kini menggabungkan 2 KB terakhir berkas.
+2. **Garis darah data rantai ⑦.** Run #15 `failure` 13:15:36Z (langkah sambung-rantai lama, 404),
+   #16 (antrean sejak 08:59Z, checkout pra-perbaikan) lalu tidak bisa push karena commit-ku naik
+   setelah ia checkout -> konflik di EKOR `wallet-flow.jsonl`, berkas yang ditulis mesin tiap
+   3,4 menit. Aku sendiri mengalami konflik itu dua kali hari ini dan memanggilnya "nasib rebase";
+   bagi runner itu kegagalan permanen. Perbaikan: `.gitattributes` (`universe/*.jsonl merge=union`,
+   `manifest merge=ours` - dan TANPA wildcard `*.json merge=union`, karena JSON hasil union tidak
+   bisa di-parse), loop `rebase --abort` + `reset --hard origin/<branch>` lalu lanjut, plus langkah
+   "Teriak kalau kita buta push" supaya bentuk kegagalan ini MERAH, bukan sunyi.
+3. **Angka outage-ku sendiri salah, dan ini bagian yang paling layak dicatat.** Klaimku
+   "bolong 3 jam 19 menit" berasal dari (a) `origin/master` yang kubaca dari **remote-tracking ref
+   basi** dan (b) `time.mktime` yang mem-parse header `Date: ... GMT` sebagai waktu lokal (WIB,
+   +7 jam). Yang terukur sesudah `git fetch` ulang: rantai **sehat 11:43 -> 13:12Z** (+150-240
+   baris transaksi tiap 3,4 menit), lalu bolong **13:12Z -> 15:11Z = ~2 jam**, dan pulih oleh
+   watchdog: run #17 menulis lagi (manifest origin 15:11:22Z -> 15:14:47Z). Jadi kekeliruan
+   "Stale Local Copy" yang sudah kubayar 27 Sep, 28 Sep pagi, dan 28 Sep sore terjadi LAGI -
+   kali ini di alat diagnostikku sendiri, beberapa menit setelah kutulis memorinya.
+
+**Bukti P22 yang asli (bukan `force`)** ada di log watchdog #3:
+`STATUS=basi umur=114.0m rantai_jalan=1 force=0 -> "aliran basi TAPI ada 1 rantai in_progress ->
+biarkan yang jalan selesai."` - dia tidak menumpuk rantai ke dua di atas rantai yang masih hidup,
+lalu dispatch berikutnya (#17) melanjutkan perekaman setelah #16 dibatalkan.
+
+**Yang belum.** `wp` (ticker yang berdetak sendiri) masih menunggu rantai #17 menyentuh langkah
+pantau - tanpa itu P23/P26/E4 tidak bisa dijalankan; dan veto [7] yang baru terpasang belum punya
+satu pun keputusan nyata di `decisions/` yang menunjukkannya (baris pertama muncul di siklus
+berikutnya, bukan ditulis dari sini).
+
+**Terkait:** [[03-Data/D2 - Wallet Flow]] · [[06-Results/13 - Apakah Tidak Trading Itu Gratis]] ·
+[[06-Results/14 - Buku Paper]] · [[Concepts/One-Way Gate]] · [[Concepts/Unmeasured Is Not Clean]] ·
+[[Concepts/Stale Local Copy]] · [[08-Backlog/01 - Backlog]] P15/P22/P31.7

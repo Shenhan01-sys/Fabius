@@ -52,6 +52,13 @@ disusulkan, jadi ia diperlakukan sebagai aset yang menetes tiap jam.
   5 panggilan/siklus; 24 jam akan jadi 927 token = 31 panggilan). Barisnya `{"k":"wp",...}` di
   `universe/watch-prices.jsonl` - berisi `priceUsd`, likuiditas, FDV, volum, dan **jumlah
   beli/jual dalam 1 jam dari venue**, yaitu jawaban atas "tidak ada riwayat" di atas.
+- **Garis darah berkas data (28 Sep):** ekor `wallet-flow.jsonl` ditulis mesin tiap 3,4 menit,
+  jadi commit manusia ke berkas yang sama = mesin itu konflik tiap siklus. Kini
+  `.gitattributes` memakai `merge=union` untuk `universe/*.jsonl` dan `merge=ours` untuk
+  `*-manifest.txt`, dan loop perekam memulihkan dirinya (`rebase --abort` + `reset --hard
+  origin/<branch>`) lalu MENGERIAK kalau 3x push gagal. Sengaja tidak ada `*.json merge=union`:
+  JSON hasil union tidak bisa di-parse, dan artefak keputusan harus bertabrakan, bukan diam-diam
+  digabung.
 - Jangan ulangi kesalahan 27 Sep: jumlah baris di **disk lokalmu** bukan keadaan sistem —
   `git fetch` dulu ([[Concepts/Stale Local Copy]]).
 
