@@ -643,3 +643,41 @@ hidup.**
 
 **Terkait:** [[06-Results/12 - Harga Masuk yang Benar]] · [[06-Results/11 - Pra-Registrasi Hari Kedua]] · [[TradingKnowledge/Fakta Terukur]] §B/§F · [[08-Backlog/01 - Backlog]] P18/P24/P25 ·
 [[TradingKnowledge/EV2 - Jebakan Backtest]] · [[Concepts/Unmeasured Is Not Clean]]
+
+
+## F-D31 — Yang kami punya hari ini adalah rem, bukan gas; dan itu ditulis sebagai hasil, bukan sebagai malu · 28 Sep 2026
+
+Builder menantang dengan pertanyaan yang benar: *"kalau dia cuma tahu kapan jangan masuk, apa
+bedanya dengan tidak trading?"* Kubawa pertanyaan itu ke data dengan **ukuran yang cocok ke bentuk
+datanya** (median selama ini menyesatkan: payoff 30 menit di universe ini miring kanan ekstrem),
+dan dua hal keluar.
+
+1. **"Tidak trading" tidak gratis.** Harapan yang di-winsor (±2.000 bps) dari posisi 30 menit di
+   universe yang disajikan feed ini = **+82,7 bps**, dengan **P(net ≥ +500 bps) = 33,9 %** dan
+   p90 = +8.854 bps, walau median −58,9 (persis ongkos). Jadi menolak membuka posisi memang
+   meninggalkan sesuatu di meja - tapi itu milik **universe feed**, bukan hasil seleksi kami, dan
+   menyebutnya edge kami = bohong.
+2. **Kami belum punya penyaring yang menaikkan angka itu.** Tidak ada satu pun aspek aliran yang
+   lolos BH ke arah naik. Yang lolos BH justru **turun**: kerumunan jual dalam 15 menit
+   memangkas P(≥+500) dari 33,9 % → **20,3–22,5 %** (Fisher p=0,003–0,02). Dan kerumunan beli
+   adalah waktu **keluar** (berpasangan −313 CI [−1041; −11]), bukan waktu masuk. Hipotesis cermin
+   yang kubangun sendiri pagi ini - "kalau beli ramai meramalkan turun, jual ramai pasti meramalkan
+   naik" - **gugur**: `jual_2` = −690 bps vs baseline.
+
+**Diputuskan.**
+
+- Gerbang ⑧ dibangun di atas apa yang benar-benar terbukti: **kerumunan jual = VETO/JANGAN masuk;
+  kerumunan beli = sinyal keluar untuk posisi yang sudah dipegang.** Bukan `SEARAH` (masuk bersama
+  whale). Dua-duanya tetap satu arah: ia hanya boleh **mengurangkan** posisi, tidak pernah
+  menambah keyakinan ([[Concepts/One-Way Gate]]).
+- **Tidak ada klaim "kami tahu kapan masuk" di materi apa pun.** Halaman 13 menyimpan pertanyaannya
+  apa adanya. Yang belum diukur (siklus hidup pool: umur, likuiditas, volum 1 jam, rasio
+  beli/jual per jam) jadi **P26**, dan itu satu-satunya jalur yang masuk akal ke "gas" - bukan
+  aspek maker yang sudah kami keringkan hari ini.
+- Metode yang ikut berubah: **laporan berikutnya wajib menyebut ukuran tengah DAN ukuran ekor**
+  (median, P≥500 bps, mean winsorized). Median saja membuat strategi lottery-like terbaca mati, dan
+  mean saja membuatnya terbaca hidup.
+
+**Terkait:** [[06-Results/13 - Apakah Tidak Trading Itu Gratis]] · [[06-Results/12 - Harga Masuk yang Benar]] · [[TradingKnowledge/FD5 - Expectancy Bukan Win Rate]] ·
+[[TradingKnowledge/FD6 - Ukuran Posisi]] · [[08-Backlog/01 - Backlog]] P25/P26 ·
+[[Concepts/One-Way Gate]] · [[Concepts/Unmeasured Is Not Clean]]

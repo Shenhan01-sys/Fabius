@@ -141,7 +141,7 @@ mengcover kedua ujung, kejadian itu dibuang dan dihitung.
 
 Nilai `wp` belum bisa dirasakan: rekaman pantau baru **123 baris pada satu stempel** (rentang
 0,00 jam) karena rantai perekam di GitHub masih menjalankan workflow lama - ia baru menetes setelah
-commit-nya sampai ke default branch. Simulasi atas data yang ada (`_research/sim_watch_value.py`):
+commit-nya sampai ke default branch. Simulasi atas data yang ada (`tools/watch_value_sim.py`):
 **83,9 %** kejadian beli punya kemunculan token yang sama ≤ 2 jam sebelumnya, jadi batas 12,7 % itu
 bukan batas pasar - itu batas sambungan kita.
 

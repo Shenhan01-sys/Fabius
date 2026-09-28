@@ -43,6 +43,12 @@ hasil keluar — koreksi lewat halaman baru, supaya urutannya bisa dipertanggung
   BH; pada 908 kejadian `--px txevent` malah **−491,4 bps, CI [−1319; −205]**, cuma 30,5 % positif.
   Spesifikasi yang hidup dikunci di sini: `--halaman 12`, `spec_sha256=0x6f69e100...`,
   `t_kunci` 09:38:44Z, syarat 12 jam rekaman baru. Hipotesis fade **tidak dijual**.
+- [[13 - Apakah Tidak Trading Itu Gratis]] - jawaban terukur untuk "apa gunanya kalau cuma tahu
+  jangan masuk": tidak trading **tidak gratis** (harapan winso **+82,7 bps/posisi**, **33,9 %**
+  kejadian naik ≥+500 bps dalam 30 m, walau median −58,9) - **tapi tidak ada aspek aliran kami yang
+  menaikkan peluang itu di atas baseline**. Yang lolos BH justru penurunan: `jual_2/3/bersih`
+  menurunkan P(≥+500) ke **20,3–22,5 %** -> **veto masuk**; `beli_2` = waktu **keluar** (berpasangan
+  −313 CI [−1041; −11]). Yang belum bisa dijawab: kapan boleh masuk.
 - [[09 - Whale Cluster Test]] ← tulis penjelasannya
 - [[10 - Evidence Stack]] ← tulis penjelasannya
 

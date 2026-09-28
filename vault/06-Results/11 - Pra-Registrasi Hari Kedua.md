@@ -63,7 +63,7 @@ salah satu itu diubah, run-nya bukan replikasi dan harus ditulis sebagai eksplor
 
 ## Kenapa 12 jam, dan kenapa bukan "besok"
 
-`_research/sim_watch_value.py` mengukur: **83,9 %** beli punya kemunculan token yang sama ≤ 2 jam
+`tools/watch_value_sim.py` mengukur: **83,9 %** beli punya kemunculan token yang sama ≤ 2 jam
 sebelumnya, jadi 12 jam rekaman baru sudah cukup untuk mengubah cakupan dari 12,7 % jadi puluhan
 persen - dengan satu syarat: perekam pantau (`universe/record_watch_prices.py`) harus jalan di
 rantai GitHub, dan itu butuh commit-nya sampai ke default branch. **Kunci ini dipasang sebelum itu**,
