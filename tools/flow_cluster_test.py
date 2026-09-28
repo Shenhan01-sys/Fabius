@@ -213,6 +213,21 @@ def kof(b, t, W):
     return len({m for tt, m, _ in b if t - W <= tt <= t and m})
 
 
+def bucket_of(k, ks):
+    """KELAS KUMULATIF, bukan nilai persis.
+
+    Versi pertama menyimpan kejadian di bucket `k` hanya kalau `k` kebetulan ada di daftar (1,2,3,5).
+    Akibatnya, diukur hari ini: (a) label "K>=2" salah - yang terukur adalah "TEPAT 2 dompet";
+    (b) 53 dari 2.592 kejadian (2,0 %) dengan K=4 atau K>=6 DIBUANG - persis kerumunan paling padat
+    yang paling ingin kita tahu. Sekarang satu kejadian masuk ke semua kelas ">=kk" yang dia penuhi;
+    acuannya tetap "tepat satu maker". Kelas jadi bersarang (K>=3 subset dari K>=2), jadi angka
+    antar-baris TIDAK boleh dijumlahkan dan tumpang tindih itu harus disebut.
+    """
+    if k == 1:
+        return [1]
+    return [kk for kk in ks if k >= kk]
+
+
 def collect(buys, px, horizon, window, ks, entry="tx"):
     H, W = horizon * MIN, window * MIN
     buckets = {k: [] for k in set(ks) | {1}}
@@ -229,7 +244,8 @@ def collect(buys, px, horizon, window, ks, entry="tx"):
             if any(abs(t - x) < H for x in taken):
                 continue
             k = kof(bl, t, W)
-            if k not in buckets:
+            kelas = bucket_of(k, ks)
+            if not kelas:
                 continue
             skip["calon_diuji"] += 1
             if entry == "px":
@@ -247,12 +263,14 @@ def collect(buys, px, horizon, window, ks, entry="tx"):
                 continue
             p1 = med(out)
             tail = [q for tt, q in ps if t < tt <= t + H]
-            buckets[k].append({"tk": tk, "t": t, "K": k,
-                               "net_bps": round(10000.0 * (p1 - p0) / p0 - costs.rt_cost(), 1),
-                               "gross_bps": round(10000.0 * (p1 - p0) / p0, 1),
-                               "x2": any(q >= 2 * p0 for q in tail),
-                               "x4": any(q >= 4 * p0 for q in tail),
-                               "half": any(q <= 0.5 * p0 for q in tail)})
+            ev = {"tk": tk, "t": t, "K": k,
+                  "net_bps": round(10000.0 * (p1 - p0) / p0 - costs.rt_cost(), 1),
+                  "gross_bps": round(10000.0 * (p1 - p0) / p0, 1),
+                  "x2": any(q >= 2 * p0 for q in tail),
+                  "x4": any(q >= 4 * p0 for q in tail),
+                  "half": any(q <= 0.5 * p0 for q in tail)}
+            for kk in kelas:
+                buckets[kk].append(dict(ev, kelas=kk))
             taken.append(t)
     weather = []
     for tk, ps in px.items():

@@ -21,9 +21,10 @@ hasil keluar — koreksi lewat halaman baru, supaya urutannya bisa dipertanggung
 - [[07 - Matured Outcomes]] — hasil pertama prediksi yang di-anchor
 - [[08 - Carry Study]] — veto funding kena 0 dari 2.963 settlement; 0 dari 12 uji arah lolos BH;
   carry 1,3–2,2 bps/hari vs round-trip 59 bps
-- [[09 - Whale Cluster Test]] — run pertama (06:05Z) tidak memisahkan & 80,6 % tersensor; run
-  06:22Z dengan satu sumber harga + **berpasangan di dalam token yang sama**: K≥2 median selisih
-  **+508 bps**, CI [+8; +1.191], lolos BH — K≥3/K≥5 tidak. Bukti pertama, bukan PnL
+- [[09 - Whale Cluster Test]] — berpasangan **di dalam token yang sama**, kelas kumulatif: K≥2
+  median selisih **+363,6 bps**, CI **[+0; +772]**, lolos BH. Dua koreksi di dalamnya: run
+  06:05Z memakai dua sumber harga (rasio px/tx 0,946) dan label "K≥2" awalnya bucket **eksak**
+  (+508 bps untuk "tepat 2 dompet"). Bukti pertama bahwa kerumunan memisahkan, bukan PnL
 
 <!-- di atas: append-only oleh scripts/sync_vault.py; gloss tulisan tangan utuh -->
 ```dataview

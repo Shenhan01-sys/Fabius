@@ -51,9 +51,56 @@ Dijalankan ulang dengan **satu sumber harga (`px` di kedua ujung), horison 30 m,
 | kohor K≥5 | 76 | −45,7 | 48,7 % | 35,5 % | **0,0054** |
 | cuaca (semua `px→px`) | 17.508 | −59,0 | 24,3 % | 12,3 % | — |
 
+## Koreksi 06:3xZ — label "K≥2" pada dua tabel di atas salah, dan itu mengubah angka
+
+`collect()` versi pertama menyimpan kejadian ke bucket **hanya kalau nilai `k` persis ada di daftar
+`(1, 2, 3, 5)`**. Jadi yang kutulis sebagai "K≥2" sebenarnya **"tepat 2 dompet"**, dan kejadian dengan
+4 maker atau ≥6 maker **dibuang** — diukur: **53 dari 2.592** (2,0 %) hilang, termasuk kerumunan
+paling padat yang justru paling ingin kita lihat. Diperbaiki jadi kelas kumulatif (`bucket_of`).
+
+Definisi `K` yang benar dan dipakai sekarang:
+
+```
+K(token T, waktu t) = |{ maker berbeda m : m membeli T pada [t-15 menit, t] }|
+```
+`satu kejadian = satu transaksi beli dari rekaman ⑦, non-overlap per token;`
+`K=1` (tepat satu dompet) adalah acuannya; `K>=2/3/5` bersarang (K>=5 di dalam K>=3 di dalam K>=2).
+
+Hasil dengan kelas yang benar (horizon 30 m, `px` di kedua ujung, jendela K 15 m):
+
+| kelas | token berpasangan | n | median selisih net | CI 95 % | % positif | p | BH |
+|---|---|---|---|---|---|---|---|
+| **K≥2** | **83** | **215** | **+363,6 bps** | **[+0; +772]** | 58,1 % | 0,0101 | **YA** |
+| K≥3 | 62 | 127 | +7,6 | [−222; +772] | 54,3 % | 0,1875 | tidak |
+| K≥5 | 33 | 64 | +864,4 | [+43; +4.148] | 64,1 % | 0,0164 | YA |
+
+Tanpa pairing (kohor vs "cuaca" dan vs K=1, n naik karena K=4/≥6 tidak dibuang lagi):
+
+| kelas | n | median net | % posisi positif | % ≥20× | Fisher vs K=1 |
+|---|---|---|---|---|---|
+| pembanding K=1 | 370 | −59,0 | 32,4 % | 13,5 % | — |
+| K≥2 | 437 | −56,5 | **48,3 %** | 32,7 % | 0,00000 |
+| K≥3 | 267 | −58,9 | 46,4 % | 32,2 % | 0,00023 |
+| K≥5 | 130 | **+263,9** | 52,3 % | 40,8 % | 0,00005 |
+| cuaca (semua `px→px`) | 17.508 | −59,0 | 24,3 % | 12,3 % | — |
+
+**Cara membacanya, dan ini yang paling penting di halaman ini:** tiga kelas itu **bersarang**, jadi
+mereka bukan tiga replikasi. Pola "yang lulus di ujung lebar dan di ujung sempit, yang tengah gagal"
+bukan bukti hubungan monoton antara kerumunan dan hasil - itu tanda beberapa kejadian menggerakkan
+median pada n kecil. Satu-satunya angka yang boleh berdiri sebagai uji adalah yang terluas
+(**K≥2: +363,6 bps, CI [+0; +772]**), dan batas bawahnya ** nol**, bukan positif.
+
+Karena itu kalimat yang benar masih seperti semula, hanya lebih kecil: *ada satu kondisi kerumunan
+yang memisahkan probabilitas hasil setelah ongkos nyata pada rekaman point-in-time kami* — **bukan**
+"semakin banyak whale semakin benar", dan belum "profit".
+
 ## Dan yang menentukan: berpasangan DI DALAM token yang sama
 
-Tabel di atas masih bisa dibeli oleh nasib satu ticker — token yang ramai dibeli memang token yang
+Tabel berikut adalah run 06:22Z dengan **bucket EKSAK** — artinya kolom "K≥2" di bawah memuat
+hanya kejadian dengan **tepat 2 dompet**, dan K=4/K≥6 dibuang. Angkanya +508,2 sudah **digantikan**
+oleh tabel koreksi di atas (+363,6). Dibiarkan terbaca karena dialah yang pertama kali membuat
+pertanyaan ini punya jawaban: tabel tanpa pairing masih bisa dibeli oleh nasib satu ticker — token
+yang ramai dibeli memang token yang
 sedang naik dan yang harganya terus kami pull. Jadi dibandingkan **hanya pada token yang
 memproduksi kedua kelas** (selisih net terhadap median K=1 token yang sama; median + bootstrap
 4.000; BH lintas K):

@@ -1,0 +1,161 @@
+{
+ "batas": [
+  "K dari feed kami sendiri = batas bawah: maker yang tidak muncul di jendela itu tidak dihitung, jadi K terkecil pun bisa sebenarnya lebih besar",
+  "panel = pilihan GMGN (smartmoney/kol) -> tercemar retrospektif, §B",
+  "horizon 60 m karena jendela px kami median 27 m; 240 m hanya punya ~479 token",
+  "harga keluar = median px dalam ±15 m; kalau token keluar dari sorotan sebelum horizon, ia TIDAK DIUJI, bukan dinilai nol",
+  "ini uji satu jendela rekaman (±36 jam): bukan pengganti Uji A prospektif"
+ ],
+ "berpasangan_dalam_token": [
+  {
+   "berpasangan": true,
+   "ci_hi": 771.7,
+   "ci_lo": 0.1,
+   "kelompok": "K>=2",
+   "median_selisih_bps": 363.6,
+   "n": 215,
+   "p_sign": 0.0101,
+   "proporsi_selisih_positif": 58.1,
+   "token": 83
+  },
+  {
+   "berpasangan": true,
+   "ci_hi": 771.7,
+   "ci_lo": -221.9,
+   "kelompok": "K>=3",
+   "median_selisih_bps": 7.6,
+   "n": 127,
+   "p_sign": 0.1875,
+   "proporsi_selisih_positif": 54.3,
+   "token": 62
+  },
+  {
+   "berpasangan": true,
+   "ci_hi": 4148.0,
+   "ci_lo": 42.9,
+   "kelompok": "K>=5",
+   "median_selisih_bps": 864.4,
+   "n": 64,
+   "p_sign": 0.0164,
+   "proporsi_selisih_positif": 64.1,
+   "token": 33
+  }
+ ],
+ "cost_basis": "measured-own-venue",
+ "cost_bps_rt": 59.0,
+ "dibuat_utc": "2026-09-28T06:57:59Z",
+ "dua_keluarga_tes": {
+  "fisher_proporsi_positif": {
+   "kohor K>=2": 3e-06,
+   "kohor K>=3": 0.000231,
+   "kohor K>=5": 5.2e-05
+  },
+  "mannwhitney_per_kelompok": {
+   "kohor K>=2": 0.0,
+   "kohor K>=3": 0.0,
+   "kohor K>=5": 0.0
+  }
+ },
+ "horizon_menit": 30,
+ "lolos_bh": [
+  "kohor K>=2",
+  "kohor K>=3",
+  "kohor K>=5"
+ ],
+ "lolos_bh_fisher_proporsi": [
+  "kohor K>=2",
+  "kohor K>=3",
+  "kohor K>=5"
+ ],
+ "lolos_bh_terpasang": [
+  "K>=2",
+  "K>=5"
+ ],
+ "rasio_satuan_px_terhadap_tx": 0.9456813074111583,
+ "rows": [
+  {
+   "K": 1,
+   "ci_hi": -59.0,
+   "ci_lo": -66.0,
+   "kelompok": "pembanding K=1",
+   "mean_net_bps": 204.6,
+   "median_net_bps": -59.0,
+   "n": 370,
+   "p_fisher_proporsi_positif": null,
+   "p_mannwhitney_vs_K1": null,
+   "p_sign": 1.0,
+   "proporsi_harga_diam": 10.8,
+   "proporsi_net_ge_2000bps": 13.5,
+   "proporsi_net_positif": 32.4
+  },
+  {
+   "K": 2,
+   "ci_hi": 174.8,
+   "ci_lo": -59.0,
+   "kelompok": "kohor K>=2",
+   "mean_net_bps": 5660.2,
+   "median_net_bps": -56.5,
+   "n": 437,
+   "p_fisher_proporsi_positif": 3e-06,
+   "p_mannwhitney_vs_K1": 0.0,
+   "p_sign": 0.778,
+   "proporsi_harga_diam": 13.7,
+   "proporsi_net_ge_2000bps": 32.7,
+   "proporsi_net_positif": 48.3
+  },
+  {
+   "K": 3,
+   "ci_hi": 148.0,
+   "ci_lo": -59.0,
+   "kelompok": "kohor K>=3",
+   "mean_net_bps": 6457.2,
+   "median_net_bps": -58.9,
+   "n": 267,
+   "p_fisher_proporsi_positif": 0.000231,
+   "p_mannwhitney_vs_K1": 0.0,
+   "p_sign": 0.8896,
+   "proporsi_harga_diam": 10.1,
+   "proporsi_net_ge_2000bps": 32.2,
+   "proporsi_net_positif": 46.4
+  },
+  {
+   "K": 5,
+   "ci_hi": 1458.8,
+   "ci_lo": -59.0,
+   "kelompok": "kohor K>=5",
+   "mean_net_bps": 10068.6,
+   "median_net_bps": 263.9,
+   "n": 130,
+   "p_fisher_proporsi_positif": 5.2e-05,
+   "p_mannwhitney_vs_K1": 0.0,
+   "p_sign": 0.3306,
+   "proporsi_harga_diam": 6.2,
+   "proporsi_net_ge_2000bps": 40.8,
+   "proporsi_net_positif": 52.3
+  },
+  {
+   "ci_hi": -59.0,
+   "ci_lo": -59.0,
+   "kelompok": "cuaca (semua px)",
+   "mean_net_bps": 987.0,
+   "median_net_bps": -59.0,
+   "n": 17508,
+   "p_sign": 1.0,
+   "proporsi_harga_diam": 0.0,
+   "proporsi_net_ge_2000bps": 12.3,
+   "proporsi_net_positif": 24.3
+  }
+ ],
+ "rows_sha256": "0x80cf5cd88cb00aafc61aad5a6424e75c0175d53337c0e45d4532b4baa466c734",
+ "skip": {
+  "calon_diuji": 6373,
+  "tidak_ada_px_keluar": 481,
+  "tidak_ada_px_masuk": 5085,
+  "tidak_ada_px_sama_sekali": 0
+ },
+ "sumber_harga_masuk": "px",
+ "token_dengan_px": 1813,
+ "tx_dibaca": 11631,
+ "verdict": "ADA: MW kohor K>=2, kohor K>=3, kohor K>=5 | FISHER kohor K>=2, kohor K>=3, kohor K>=5",
+ "window_menit": 15
+}
