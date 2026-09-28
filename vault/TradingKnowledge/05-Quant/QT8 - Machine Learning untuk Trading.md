@@ -53,7 +53,7 @@ hipotesis model mana pun jauh lebih besar daripada data yang membatasinya.
 | fitur numerik pada jam keputusan | `ADA-TAPI` | hanya rasio yang kami punya (`ret24_pct`, `atr_pct`, `acf_abs`, `funding_4h`) — `tools/direction.py`; kolom volum belum pernah dipakai jadi fitur |
 | label horizon tetap | `ADA` | `tools/backtest.py` menghitung forward return 4/24 bar (§F) |
 | sampel independen dalam jumlah memadai | `ADA-TAPI` | 12 aset ber-kontrak perp dengan `n>=20` per aturan — §E/§F; untuk model beratus parameter, ini bukan sampel, ini anekdot |
-| histori funding/OI sebagai fitur | `TIDAK-ADA` | §C |
+| histori funding/OI sebagai fitur | `ADA-TAPI` | Bybit `/v5/market/funding/history` **200 baris = 66,3 hari** dan OKX `funding-rate-history` **33,0 hari**, dua-duanya tanpa kunci, interval **8 jam** — [[Fakta Terukur]] §A.5 (diukur 28 Sep dari laptop ini, BELUM dari runner). 8 jam bukan fitur per-bar: tetap veto rezim, bukan sinyal |
 | tick/L2 untuk fitur mikrostruktur | `TIDAK-ADA` | §C |
 | jalur latih-evaluasi (split, simpan bobot, reproduksi) | `TIDAK-ADA` | tidak ada satu pun baris kode latih di repo ini |
 

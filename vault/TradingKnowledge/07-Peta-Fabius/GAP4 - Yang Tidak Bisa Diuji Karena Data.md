@@ -21,7 +21,7 @@ tidak bisa diturunkan dari bidang yang ada. Tiga kelas yang tidak boleh dicampur
 | kelas | arti | contoh |
 |---|---|---|
 | **K1 bidang hilang** | tidak ada jalurnya sama sekali | order book L2, delta agresor, level likuidasi |
-| **K2 histori hilang** | jalurnya ada sekarang, masa lalunya tidak bisa diminta | ⑦ (jendela lihat 8–13 menit, paging diabaikan server), funding per jam |
+| **K2 histori hilang** | jalurnya ada sekarang, masa lalunya tidak bisa diminta, atau bisa tapi sempit | ⑦ (jendela lihat 8–13 menit, paging diabaikan server) = K2 murni; funding/OI turun jadi **K2-sebagian** sejak 28 Sep: 66,3 hari ke belakang, per 8 jam (§A.5) |
 | **K3 definisi hilang** | datanya bisa dihitung, tapi "apa yang diukur" belum disepakati siapa pun | order block, "struktur pasar", narasi mana yang "kuat" |
 
 Penamaannya `K` (kelas), bukan `T`, supaya tidak bertabrakan dengan tingkat bukti `T0`–`T3` di

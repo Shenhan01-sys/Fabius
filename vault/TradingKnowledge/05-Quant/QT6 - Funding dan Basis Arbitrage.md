@@ -37,7 +37,7 @@ Besaran terukur **satu pembacaan pada satu waktu** (§A, funding per 4 jam): BNB
 (mark 778,45 · OI 7.832) · ETH `+0,0100 %` · SOL `−0,0020 %` · HYPE `−0,0018 %` · DOGE `+0,0044 %`.
 Rentang lintas aset yang terbaca: −0,0020 … +0,0100 % per 4 jam. Aritmetika lugasnya: ETH
 +0,0100 %/interval × 6 interval/hari ≈ 0,06 %/hari — **kalau** interval itu berulang, dan itu tidak
-bisa kami periksa: histori funding per aset yang bisa ditarik mundur `TIDAK-ADA` (§C). Angka
+bisa kami periksa: histori funding per aset kini `ADA-TAPI` (Bybit 66,3 hari per 8 jam, §A.5) - resolusinya 8 jam, sementara horizon uji kami 1 j dan 4 j. Angka
 +0,06 %/hari bukan yield yang bisa dijanjikan; dia contoh satuan, bukan prospek.
 
 Pembanding silang: Hyperliquid membalas BNB `0,004781 %/jam` dengan OI 65.047 (§A). Intervalnya
@@ -56,7 +56,7 @@ run di repo ini yang menghasilkan angka carry teruji.
 | kebutuhan | status Fabius | bukti / batas |
 |---|---|---|
 | funding + OI terkini, lintas aset | `ADA` | Aster `premiumIndex`/`openInterest` 608 kontrak; Hyperliquid 234 perp — §A |
-| histori funding per aset | `TIDAK-ADA` | §C → tidak ada satu pun uji surut yang sah; §F menyebut ini batas yang masih tersisa |
+| histori funding per aset | `ADA-TAPI` | Bybit `…/funding/history` **66,3 hari** dan OKX **33,0 hari**, keduanya **interval 8 jam**, tanpa kunci — [[Fakta Terukur]] §A.5 (laptop, belum runner). Uji surut carry jadi mungkin pada horison harian; **tidak** pada fitur per-bar 1 j/4 j, jadi §F masih benar soal gerbang carry-nya — yang berubah cuma ambang "bisa diuji apa tidak" |
 | harga spot kaki pertama | `ADA-TAPI` | GeckoTerminal/DexScreener memberi likuiditas & deret pendek (§A/§C), bukan buku order |
 | eksekusi dua kaki bersamaan | `TIDAK-ADA` | jalur eksekusi kami satu kaki, spot, di pool demo ([[02-Contracts/C4 - DemoPair and DemoAsset]]) |
 | margin/likuidasi di venue pihak ketiga | `TIDAK-ADA` | tidak ada akun, tidak ada batas, tidak ada angka — *(belum diukur)* |
@@ -98,8 +98,8 @@ gerbang yang memakainya (§E) — data tersedia bukan bukti metode.
 ## Boleh dibaca, dilarang dibaca
 
 - **Boleh:** "kami bisa melihat funding 4-jam di 608 kontrak BNB-native dan memakainya untuk
-  menolak posisi; histori funding tidak tersedia sehingga carry tidak bisa diuji surut, dan dua kaki
-  tidak punya jalur eksekusi di repo ini."
+  menolak posisi; histori funding baru ±66 hari dan per 8 jam (§A.5), jadi uji surut carry hanya
+  mungkin pada horison harian - dan dua kaki tetap tidak punya jalur eksekusi di repo ini."
 - **Dilarang:** "Fabius menghasilkan yield dari funding" · kalimat penjual "+X % per hari" tanpa
   *kalau* (bukan angka kami, dan tidak pernah kami ukur) · "delta-netral berarti tanpa risiko" ·
   menyamakan pembacaan per-jam Hyperliquid dengan pembacaan per-4-jam Aster.

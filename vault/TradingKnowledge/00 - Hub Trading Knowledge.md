@@ -80,6 +80,8 @@ mindmap
 - [[Fakta Terukur]] — LEMBAR KUNCI: kedalaman data, ongkos 59 bps, ambang yang berlaku, hasil
   negatif, dan daftar alat yang angkanya belum boleh dikutip
 - [[Glossary-TK]] — istilah lintas catatan, satu baris tiap istilah
+- [[Sumber dan Jangkauan]] — status jujur tiap sumber di `Resources.txt`: mana yang dibaca (tidak
+  ada), mana yang diprobe (penyedia data), dan mana yang ternyata mengubah rencana (P13)
 - [[Templates/Template - Metode|kerangka catatan metode]] — bentuk yang ditegakkan
   `vault/scripts/tk_check.py`
 - [[Templates/Template - Setup|kerangka catatan setup]] — resep kombinasi, dengan bagian wajib

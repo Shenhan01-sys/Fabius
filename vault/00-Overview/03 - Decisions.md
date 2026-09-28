@@ -370,3 +370,39 @@ lintas-basis tanpa menyebut itu.
 
 **Terkait:** [[Concepts/Cost Is Fixed]] · [[07-Testing/01 - Test Commands]] baris 11–12 ·
 [[TradingKnowledge/02-Fondasi/FD4 - Ongkos Perdagangan]] · [[TradingKnowledge/Fakta Terukur]] §D
+
+## F-D25 — Matriks egress punya tanggal kedaluwarsa; P13 jadi penyedotan, bukan perekaman · 28 Sep 2026
+
+Builder bertanya: *"kamu sudah fetching data dari sources ini semua belum? (kecuali YouTube)"* —
+sambil menunjuk `vault/TradingKnowledge/Resources.txt`. Jawabannya dua bagian, dan bagian keduanya
+mengubah rencana.
+
+**Satu:** tidak ada yang dibaca dari daftar itu. Itu daftar **tempat belajar** (kanal YouTube, blog,
+kursus, forum), bukan sumber data, dan lapisan ini sengaja tidak dibangun dari sana: 99 catatan
+memakai dua transkrip sebagai daftar topik + rekaman kami sendiri sebagai fakta + pengetahuan pasar
+standar yang **dibukukan sebagai `T1`** atau "pengetahuan standar — tidak ada rujukannya di repo
+ini". Membaca Investopedia tidak menaikkan tangga apa pun; hanya run yang menaikkan (F-D23).
+Ditulis di [[TradingKnowledge/Sumber dan Jangkauan]].
+
+**Dua:** bagian daftar yang berupa **penyedia data** saya probe (28 Sep 02:03–02:06Z, tanpa kunci,
+setiap panggilan diulang sampai 3x). Hasilnya membatalkan klaim vault sendiri: `api.binance.com`
+`200` (dicatat `451 restricted location` pada 24 Sep), Bybit dan OKX `200` dengan body nyata,
+`data.binance.vision` `200`. Yang tetap tidak bisa: Hyblock (timeout), Glassnode/CryptoQuant (`401`
+= butuh akun, jadi `TIDAK-ADA` bukan `MATI-DARI-MESIN-INI`), Coinglass (`404` di path yang **saya**
+tebak — itu bukan bukti kematian layanannya, dan tidak boleh ditulis begitu). Yang paling penting:
+**histori funding/OI bisa disedot tanpa kunci** — Bybit `funding/history` **66,3 hari** per 8 jam,
+OKX 33,0 hari, Binance `openInterestHist` **20,8 hari** per 1 jam ([[TradingKnowledge/Fakta Terukur]] §A.5).
+
+**Diputuskan.** (1) **P13 diubah bentuk**: dari "rekam per jam dan tunggu 30 hari kalender" menjadi
+"sedot mundur ±66 hari sekarang, baru rekam untuk ketebalan" — uji carry horison harian sekarang
+mungkin dikerjakan dalam sisa tenggat. (2) **Setiap baris `MATI-DARI-MESIN-INI` wajib menyebut
+tanggal baca**, dan `sumber × jaringan` diperluas menjadi `sumber × jaringan × waktu`: 18 catatan
+yang mengutip "histori funding tidak ada" dikoreksi lewat
+`vault/scripts/patch_funding_history.py`, dan probe-nya ditinggalkan di workspace
+(`_research/probe_tk_sources.py`, `_research/probe_cex_depth.py`) supaya bisa diketuk ulang.
+(3) **Batas yang tetap berlaku:** funding 8 jam bukan fitur per-bar 1 j/4 j; order book/tick/
+likuidasi tetap tidak ada; dan angka ini baru divalidasi dari **satu** jaringan — runner belum.
+
+**Terkait:** [[TradingKnowledge/Sumber dan Jangkauan]] · [[TradingKnowledge/Fakta Terukur]] §A.5/§C ·
+[[08-Backlog/01 - Backlog]] P13 · [[06-Results/03 - Not Yet Proven]] baris 15 ·
+[[03-Data/01 - Dataset]]

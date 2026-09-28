@@ -54,7 +54,7 @@ Terukur dan dibaca 28 Sep 2026 ([[Fakta Terukur]] §A/§C):
 | Berkas GDELT | tema + nada artikel | jalur berkas mentah yang hidup dari mesin ini (§C) — bukan deret harga | tanpa key |
 | Dune | riwayat transaksi + agregat aliran | `dex.trades` BSC; **lag ±1 jam**; kredit terbaca; dialek **Trino** | API key + kredit |
 
-Yang `TIDAK-ADA` sama sekali (§C): order book L2, tick/footprint, heatmap likuidasi, histori funding
+Yang tetap `TIDAK-ADA` (§C): order book L2, tick/footprint, heatmap likuidasi. Yang berubah 28 Sep: histori funding
 per aset yang bisa ditarik mundur, jadwal unlock/vesting, MVRV/SOPR/NUPL, exchange reserve. Yang
 `MATI-DARI-MESIN-INI` per jaringan (§C): `api.binance.com` → `451 restricted location` dan Bybit →
 `403 CloudFront country` di runner; OKX funding dan Bitget contracts `200` di runner tapi **terpotong

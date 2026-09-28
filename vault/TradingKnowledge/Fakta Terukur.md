@@ -87,6 +87,17 @@ sifat sebuah sumber, melainkan sifat **sumber + jaringan tempat kamu bertanya**.
 
 - Jalur yang hidup di **kedua** jaringan: GMGN, GeckoTerminal, DexScreener, GoPlus, Hyperliquid,
   CoinGecko, berkas GDELT.
+- **Yang "mati" pada 24 Sep hidup lagi pada 28 Sep - dan itu membatalkan satu rencana.** Dibaca dari
+  laptop ini 28 Sep 02:03–02:06Z (`_research/probe_tk_sources.py` + `_research/probe_cex_depth.py`,
+  tiap panggilan diulang sampai 3x sebelum divonis): `api.binance.com` **200**,
+  `fapi.binance.com` histori OI **200**, Bybit funding history **200**, OKX funding history **200**,
+  `data.binance.vision` (listing S3) **200**. Yang tetap tidak bisa dipakai: **Hyblock**
+  (`URLError` timeout 42,5 s), **Coinglass** (`404` di dua path yang *saya* tebak - itu path salah,
+  bukan layanan mati, jadi tidak boleh ditulis sebagai bukti kematiannya), **Glassnode** `401` dan
+  **CryptoQuant** `401` = **hidup tapi butuh akun** → statusnya `TIDAK-ADA`, bukan
+  `MATI-DARI-MESIN-INI`.
+  Pelajarannya bukan "CEX ternyata hidup", tapi: matriks egress ini adalah properti
+  **sumber × jaringan × waktu**, dan klaim kita berumur empat hari. Baca ulang sebelum mengutip §C.
 - **GDELT DOC API**: `429` di dua jaringan (laptop dengan jeda 6 detik **dan** runner GitHub) →
   klaim lama "cuma butuh pacing" resmi **dicabut**. Yang hidup: jalur berkas mentah
   (`data.gdeltproject.org/gdeltv2/lastupdate.txt` → GKG) dengan TLS sah di kedua jaringan.
@@ -94,8 +105,27 @@ sifat sebuah sumber, melainkan sifat **sumber + jaringan tempat kamu bertanya**.
 - **CryptoPanic**: `403` tanpa akun, di laptop **dan** runner — bukan soal jaringan, soal akun
   ([[06-Results/03 - Not Yet Proven]] baris 8).
 - Yang **tidak** kami punya sama sekali: order book L2, footprint/tick, heatmap likuidasi,
-  histori funding per-aset yang bisa ditarik mundur, jadwal unlock/vesting, MVRV/SOPR/NUPL,
-  exchange reserve. Status tiap metode di `03-Sinyal/` memakai enum di [[Aturan Subtree]].
+  jadwal unlock/vesting, MVRV/SOPR/NUPL, exchange reserve. Status tiap metode di `03-Sinyal/`
+  memakai enum di [[Aturan Subtree]]. *(Dulu baris ini juga menyebut "histori funding per-aset";
+  itu gugur 28 Sep - lihat §A.5.)*
+
+### A.5 Histori yang ternyata bisa disedot TANPA kunci (diukur 28 Sep 02:06Z, laptop ini)
+
+| sumber | apa yang diberikan | kedalaman terukur | interval | batas |
+|---|---|---|---|---|
+| Bybit `/v5/market/funding/history` | funding BNBUSDT per peristiwa settlement | **200 baris = 66,3 hari** (23 Jul → 28 Sep) | **8 jam** | field-nya `fundingRate` + `fundingRateTimestamp` (versi pertama probe saya menebak `fundingTimestamp` dan `KeyError` - itu bug probe, bukan server) |
+| OKX `/api/v5/public/funding-rate-history` | funding BNB-USDT-SWAP | **100 baris = 33,0 hari** | **8 jam** | `limit=100` per panggilan; paging dengan `after` belum dicoba |
+| Binance `futures/data/openInterestHist` | histori OI UM per simbol | **500 baris = 20,8 hari** | 1 jam | jendela tetap 30 hari ke belakang per API-nya |
+| Binance `/api/v3/klines` | bar spot 1 jam | 1.000 bar = **41,6 hari** | 1 jam | **lebih dangkal** dari Aster (9.599) → bukan pengganti, cuma pelengkap |
+| `data.binance.vision` (S3) | listing arsip harian | `200`, 1.000 objek tercantum untuk satu prefix | harian | parsing tanggal arsipnya belum saya bereskan; **jangan dikutip sebagai "arsip lengkap"** |
+
+**Kenapa ini penting, dan apa yang TIDAK berubah.** Yang berubah cuma **satu** hal: histori funding
+tidak lagi `TIDAK-ADA` - ia `ADA-TAPI` (8 jam, ±66 hari, tanpa kunci). Karena itu **P13 tidak perlu
+menunggu 30 hari kalender**: yang perlu ditulis itu penyedot mundur, bukan perekam baru. Yang TIDAK
+berubah: intervalnya **8 jam**, sementara `NEED_BARS` kami dan horizon uji kami 1 jam dan 4 jam -
+jadi funding dari jalur ini tetap tidak bisa jadi fitur per-bar; ia tetap veto rezim, bukan sinyal.
+Dan order book/tick/likuidasi tetap tidak ada di daftar ini. `MATI-DARI-MESIN-INI` untuk CEX di §C
+sekarang harus dibaca sebagai "pernah, pada 24 Sep", bukan keadaan.
 
 ## D. Ongkos — satu-satunya bagian yang sudah kami ukur sendiri
 

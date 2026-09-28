@@ -1,0 +1,73 @@
+Berikut daftar platform terbaik untuk belajar semua topik yang kita bahas sejauh ini (Technical Analysis, SMC/ICT, On-chain, Quant Trading, Risk Management, Value Investing ala Buffett, dll). Saya bagi berdasarkan kategori biar mudah.1. YouTube (Gratis & Paling Praktis)Topik
+Channel Recommended
+Keterangan
+SMC / ICT / Price Action
+The Trading Channel, ICT (Michael Huddleston), Humbled Trader, Cassius Trading
+Penjelasan Order Block, FVG, Liquidity sangat jelas
+Technical Analysis Klasik
+TradingRush, Rayner Teo, The Chart Guys
+Fibonacci, Support Resistance, Chart Patterns
+Crypto On-chain & Futures
+CryptoQuant, Glassnode, Crypto Banter, DataDash
+Exchange flow, funding rate, liquidation
+Quant & Algo Trading
+QuantPy, Part Time Larry, Coding Jesus, Robot Wealth
+Python, backtesting, quant mindset
+Value Investing / Buffett
+The Swedish Investor, New Money, Warren Buffett Archive
+Surat Buffett + prinsip value
+
+2. Website & Blog (Gratis + Berkualitas)Berkshire Hathaway Official → Surat tahunan Buffett (paling autentik)
+Investopedia → Penjelasan dasar indikator & konsep
+TradingView Ideas & Education → Banyak contoh chart real
+QuantInsti Blog → Algo trading & quant (ada free e-book)
+Robot Wealth → Quant systematic trading (sangat bagus)
+BabyPips → Forex/crypto basic sampai intermediate (gratis)
+Glassnode Insights / CryptoQuant Blog → On-chain analysis
+
+3. Platform Kursus (Berbayar & Gratis)Platform
+Fokus
+Level
+Catatan
+QuantConnect
+Algo & Quant Trading
+Intermediate–Advanced
+Free tier + community bagus
+Quantra (QuantInsti)
+Algo, ML, Quant
+Beginner–Advanced
+Banyak course praktis
+TradingView
+Charting + Education
+Semua
+Free + Premium
+Coursera / edX
+Quant Finance, Machine Learning
+Intermediate
+Ada specialisasi Columbia, dll
+Udemy
+SMC, Fibonacci, Crypto Trading
+Beginner
+Murah, sering diskon
+ICT Mentorship (resmi)
+Smart Money Concept
+Advanced
+Berbayar, sangat detail
+
+4. Komunitas & ForumReddit: r/algotrading, r/quant, r/CryptoCurrency, r/ValueInvesting
+Discord: QuantConnect Discord, berbagai SMC/ICT server, Freqtrade community
+TradingView Community → Ide & diskusi chart
+GitHub → Awesome-quant, quant-trading repos (kode + resource)
+
+5. Data & Tools Praktis (Belajar sambil Pakai)TradingView → Charting utama
+Coinglass / Hyblock → Liquidation heatmap, OI, Funding
+Glassnode / CryptoQuant → On-chain metrics
+Dune Analytics → Custom on-chain query
+Binance / Bybit Academy → Materi crypto trading gratis
+
+6. Rekomendasi Urutan Belajar di PlatformDasar → BabyPips + TradingView + YouTube (Rayner Teo / TradingRush)
+SMC & Price Action → YouTube ICT + The Trading Channel
+On-chain & Futures → Glassnode + Coinglass + CryptoQuant
+Quant / Algo → QuantConnect + QuantInsti free materials + GitHub
+Mindset & Value → Surat Buffett (Berkshire site) + The Intelligent Investor
+

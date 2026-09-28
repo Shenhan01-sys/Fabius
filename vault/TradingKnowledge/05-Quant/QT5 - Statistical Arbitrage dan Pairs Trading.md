@@ -50,7 +50,7 @@ kaki kedua terisi.
 | bar 1 jam dua kaki untuk aset ber-kontrak perp | `ADA` | Aster 9.599 bar ≈ 400 hari untuk BNB/ETH/SOL/DOGE/HYPE dkk — §A |
 | kaki **pendek** yang bisa dieksekusi | `TIDAK-ADA` | tidak ada jalur pinjam-aset/short di repo ini; pairs tanpa kaki kedua = spekulasi arah berganti nama |
 | order book L2 / harga bid-ask sungguhan | `TIDAK-ADA` | §C — konvergensi tipis tidak bisa ditangkap tanpa tahu sisi mana yang terisi |
-| histori funding kedua kaki | `TIDAK-ADA` | §C; carry adalah bagian dari PnL pairs, bukan catatan kaki |
+| histori funding kedua kaki | `ADA-TAPI` | Bybit `/v5/market/funding/history` **200 baris = 66,3 hari** dan OKX `funding-rate-history` **33,0 hari**, dua-duanya tanpa kunci, interval **8 jam** — [[Fakta Terukur]] §A.5 (diukur 28 Sep dari laptop ini, BELUM dari runner). 8 jam bukan fitur per-bar: tetap veto rezim, bukan sinyal; carry tetap bagian dari PnL pairs, bukan catatan kaki |
 | kandidat mayor/peg sebagai pasangan | `ADA-TAPI` | `STABLE_BASES` menolak USDT/USDC/BUSD/FDUSD/DAI/TUSD/USD1/USDD/USDE + BTCB/WBNB/BNB/ETH sebagai **aset yang bisa dipilih** (`vault/06-Results/02 - Thresholds.md`) — pasangan paling "bersih" justru bukan kandidat |
 | ongkos dua kaki | `ADA-TAPI` | satu round-trip di venue kami **59 bps** terukur (§D); empat kaki untuk dua round-trip → kami belum pernah mengukur angka itu *(belum diukur)* |
 
@@ -92,7 +92,7 @@ aset, dan kaki pendeknya tidak tersedia (`T0` untuk setiap kalimat yang menyirat
 
 - **Boleh:** "Fabius bisa menghitung spread dan half-life antara dua aset ber-kontrak perp dari bar
   miliknya sendiri, tapi tidak bisa memperdagangkan pasangan itu karena tidak punya kaki pendek,
-  tidak punya order book, dan tidak punya histori funding."
+  tidak punya order book; histori funding ada tapi 8 jam (§A.5), jadi uji surut carry terbatas."
 - **Dilarang:** "kami menjalankan stat-arb" · "pairs trading low-risk karena market-neutral"
   (netral terhadap arah ≠ netral terhadap risiko kaki) · "stablecoin pair = yield gratis".
 

@@ -44,7 +44,7 @@ likuiditas BNB + satu posisi di perhatian.
 | satu posisi per aset (bukan per taruhan) | `ADA` | `AlreadyOpen` keyed per token di `contracts/ExecutionVault.sol` |
 | pembedaan aset yang bisa dipilih (bukan likuiditas stablecoin) | `ADA` | `STABLE_BASES` menyaring base stablecoin/wrapped (USDT/USDC/BUSD/FDUSD/DAI/TUSD/USD1/USDD/USDE + BTCB/WBNB/BNB/ETH) dari daftar yang bisa dipilih — §E, [[01-Agent/01 - Asset Classes and Seats]] |
 | penanda `risk-off` lintas pasar (DXY, indeks, spread) | `TIDAK-ADA` | tidak ada sumber Makro di repo; satu-satunya narasi eksternal adalah berkas GDELT (§C) |
-| korelasi funding/OI lintas aset | `TIDAK-ADA` | funding & OI hanya pembacaan saat ini, tanpa histori per aset — §C |
+| korelasi funding/OI lintas aset | `ADA-TAPI` | funding ±66 hari per 8 jam, OI ±20,8 hari per 1 jam (§A.5) — cukup untuk korelasi antar-aset besar, tidak untuk lintas siklus meme |
 | risiko satu-pasokan-data (sumber × jaringan) | `ADA-TAPI` | terukur: `api.binance.com` 451 dan Bybit 403 di runner; OKX/Bitget terpotong TLS di laptop — §C |
 
 ## Uji di Fabius

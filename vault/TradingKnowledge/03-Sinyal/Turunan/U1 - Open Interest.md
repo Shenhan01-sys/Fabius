@@ -41,7 +41,7 @@ punya sumber di repo ini.
 | kebutuhan | status Fabius | bukti / batas |
 |---|---|---|
 | OI **spot** saat ini, aset ber-perp | `ADA-TAPI` | Aster `openInterest` untuk **608 kontrak** (§A); pembacaan 28 Sep: BNB OI 7.832 dengan mark 778,45 · Hyperliquid `metaAndAssetCtxs` 234 perp, BNB OI 65.047 |
-| histori OI (syarat ΔOI) | `TIDAK-ADA` | tidak ada sumber yang bisa ditarik mundur; yang tersisa hanya OI yang **kami** simpan per siklus (`funding_and_oi()` di `tools/direction.py` menyimpan `oi` ke baris kandidatnya) — sparse, ≤5 kandidat/siklus |
+| histori OI (syarat ΔOI) | `ADA-TAPI` | Binance `futures/data/openInterestHist` 500 baris per 1 jam = 20,8 hari ke belakang (§A.5, belum diverifikasi dari runner); selain itu ada juga OI yang **kami** simpan per siklus (`funding_and_oi()` di `tools/direction.py` menyimpan `oi` ke baris kandidatnya) — sparse, ≤5 kandidat/siklus |
 | ΔOI sebagai fitur uji | `TIDAK-ADA` | `tools/backtest.py` mengulang aturan **harga** saja; OI tidak masuk |
 | OI untuk memecoin spot-only / pool baru | `TIDAK-ADA` | tidak ada kontrak perp = tidak ada OI; dan deretnya mentok 1.000 bar (§A) |
 | OI per pihak (long vs short) | `TIDAK-ADA` | venue tidak memberi pembagian ini di jalur kita |
@@ -78,7 +78,7 @@ sejak hari ia mulai disimpan.
 ## Tingkat bukti
 
 `T1` untuk definisi dan mekanismenya · `T0` untuk tabel bacaan 2×2 sebagai aturan prediktif · untuk
-Fabius: **belum diuji, dan belum bisa diuji** — tidak ada histori OI di repo; hasil negatif 12/12
+Fabius: **belum diuji** — jendela histori OI baru 20,8 hari (§A.5), jauh di bawah `NEED_BARS`; hasil negatif 12/12
 (§F) adalah hasil aturan harga, bukan aturan OI.
 
 ## Boleh dibaca, dilarang dibaca

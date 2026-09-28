@@ -50,7 +50,7 @@ Tidak ada pemilik klaim yang menyediakan angka kerugian per order untuk venue ka
 | log shortfall kuotasi vs eksekusi per order | `TIDAK-ADA` | venue eksekusi kami adalah **pool demo sendiri** (kurva x·y=k + fee 30 bps) → round-trip **59 bps** (§D) |
 | kerugian nyata pada jalur eksekusi kami | `ADA-TAPI` | §D: realized **−59 bps** per putaran dari event `Closed`; §F menyebut sebabnya eksplisit: itu **ongkos kurva di pool kami sendiri tanpa arus luar**, bukan ekstraksi pihak ketiga |
 | harga gas untuk memperkirakan `biaya_penyerang` | `ADA-TAPI` | §D: 0,10 gwei **testnet 97** live (guard lama memakai floor 1 gwei → menolak karena plafon sendiri); mainnet belum diukur |
-| riwayat funding/OI sebagai proksi aktivitas bot | `TIDAK-ADA` | §C: histori funding per-aset yang bisa ditarik mundur tidak kami punya |
+| riwayat funding/OI sebagai proksi aktivitas bot | `ADA-TAPI` | §A.5 — tapi proksi "bot aktif" dari funding per 8 jam itu lemah: resolusinya lebih kasar daripada peristiwa yang mau dijelaskan |
 
 ## Uji di Fabius
 
