@@ -4,6 +4,13 @@ tags: [results]
 
 # 09 - Whale Cluster Test
 
+> **DICABUT 28 Sep 09:4xZ - lihat [[06-Results/12 - Harga Masuk yang Benar]].**
+> Efek yang halaman ini klaim hidup di **sisi harga masuk**, bukan di pasar: pada kejadian yang sama
+> persis, mengganti `px` (harga transaksi lama yang di-stamp waktu kami menarik) dengan harga
+> transaksi itu sendiri mengubah **+93,0 bps (p=0,0066) menjadi +0,1 (p=0,53)**, dan tidak ada
+> aspek yang lolos BH. Angka di bawah dibiarkan utuh karena **urutan bagaimana kami sampai ke sana**
+> adalah bagian dari hasilnya - tapi tidak satu pun dari angka itu boleh dikutip sebagai bukti.
+
 **Sumber:** `tools/flow_cluster_test.py` → `decisions/flow-cluster-20260928T060500Z.json`
 (`rows_sha256=0x9db0a0adcb5d77…`) · dijalankan 28 Sep 2026 ±06:05Z
 

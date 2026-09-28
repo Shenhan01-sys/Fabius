@@ -21,21 +21,30 @@ hasil keluar — koreksi lewat halaman baru, supaya urutannya bisa dipertanggung
 - [[07 - Matured Outcomes]] — hasil pertama prediksi yang di-anchor
 - [[08 - Carry Study]] — veto funding kena 0 dari 2.963 settlement; 0 dari 12 uji arah lolos BH;
   carry 1,3–2,2 bps/hari vs round-trip 59 bps
-- [[09 - Whale Cluster Test]] — berpasangan **di dalam token yang sama**, kelas kumulatif: K≥2
-  median selisih **+393,4 bps**, CI **[+5; +1012]**, p=0,0008, lolos BH. Tiga koreksi di dalamnya:
-  run 06:05Z memakai dua sumber harga (rasio px/tx 0,946), label "K≥2" awalnya bucket **eksak**
-  (+508 bps untuk "tepat 2 dompet"), dan nilainya bergeser lagi setelah `px` didedup
-  (5.355 baris berbagi stempel waktu). Bukti pertama bahwa kerumunan memisahkan, bukan PnL
-- [[10 - Evidence Stack]] — compounding yang diuji, bukan dihitung: **lima** aspek aliran memisahkan
-  sendirian (kerumunan ≥2/≥3, maker berulang, sebaran dana, USD ≥1k), dua tidak (tanpa jual-banding-
-  beli, aliran lebar). Tumpukan **≥2 aspek lulus = +481 bps CI [+23; +977]**; kombinasi terkuat
-  "≥2 dompet DAN uang tidak dari satu dompet" **+748,8 CI [+12; +1574]**. `fresh_token` (+7.708)
-  DIBUANG sebagai artefak kebijakan pull kami sendiri. Yang menahan: cuma **12,7 %** kejadian bisa
-  dinilai (6,9 % dari semua beli), satu jendela 43 jam
+- 🔴 **[[09 - Whale Cluster Test]] - DICABUT oleh [[12 - Harga Masuk yang Benar]]**: K>=2
+  +393,4 CI [+5; +1012] p=0,0008 hidup di sisi **harga masuk**, bukan di pasar. Isi halaman
+  dibiarkan (urutan koreksinya +508 -> +363,6 -> +393,4 adalah bagian dari hasilnya).
+- 🔴 **[[10 - Evidence Stack]] - DICABUT oleh [[12 - Harga Masuk yang Benar]]**. Semua angkanya
+  (lima aspek lulus sendiri, tumpukan +481 CI [+23; +977], kombinasi +748,8) memakai `px`
+  sebagai **harga masuk**, dan harga itu tangga beku: di kejadian yang sama, pairing yang sama,
+  hanya sumur harga yang berganti, **+93,0 (p=0,0066) menjadi +0,1 (p=0,53)**; pada harga
+  peristiwa tidak ada aspek yang lolos BH. Yang tetap berdiri dari halaman ini justru yang
+  dibuang: `fresh_token` +7.708 adalah artefak kebijakan pull kami sendiri.
 - [[11 - Pra-Registrasi Hari Kedua]] - halaman yang bisa **membatalkan** 09 dan 10: parameter
   dikunci (sha256 blok spesifikasi + `t_kunci` 06:13:38Z), hanya kejadian setelah kunci yang
   dinilai, dan `tools/day2_replicate.py` menolak mencetak angka sampai rekaman baru >= 12 jam.
-  Dijuji: sunting spesifikasinya -> `exit=1` ("yang berubah bukan datanya, aturan mainnya")
+  Dijuji: sunting spesifikasinya -> `exit=1` ("yang berubah bukan datanya, aturan mainnya").
+  **Sejak F-D30: MOOT untuk keputusan produk** - `sumber_harga: gmgn` di dalamnya memakai harga
+  masuk yang terbukti cacat instrumen; run-nya nanti dicatat sebagai demonstrasi efek hantu.
+- [[12 - Harga Masuk yang Benar]] - **yang membatalkan 09 dan 10**, dan sebabnya: `px` kami
+  bukan ticker (71,7 % baris mengulang nilai; umur median harga 8,7 menit, p90 42 menit),
+  kejadian berkerumun punya deret yang lebih segar, dan kesegaran itu masuk ke **definisi
+  keuntungan**. Pada `tx->tx`: `cluster_ge2` **+0,3 CI [-7; +516] p=0,35**, nol aspek lolos
+  BH; pada 908 kejadian `--px txevent` malah **−491,4 bps, CI [−1319; −205]**, cuma 30,5 % positif.
+  Spesifikasi yang hidup dikunci di sini: `--halaman 12`, `spec_sha256=0x6f69e100...`,
+  `t_kunci` 09:38:44Z, syarat 12 jam rekaman baru. Hipotesis fade **tidak dijual**.
+- [[09 - Whale Cluster Test]] ← tulis penjelasannya
+- [[10 - Evidence Stack]] ← tulis penjelasannya
 
 <!-- di atas: append-only oleh scripts/sync_vault.py; gloss tulisan tangan utuh -->
 ```dataview

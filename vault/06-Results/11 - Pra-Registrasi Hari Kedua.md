@@ -6,7 +6,13 @@ tags: [hasil]
 
 **Bagian dari:** [[06-Results/00 - Hub Results]]
 **Alat:** `tools/day2_replicate.py` · kunci: `decisions/prereg-day2-lock.json`
-**Status:** ⏳ **TERKUNCI SEBELUM HASIL DILIHAT** - alatnya menolak mencetak angka apa pun sampai
+**Status per 28 Sep 09:4xZ:** 🔁 **MOOT UNTUK KEPUTUSAN PRODUK.** Spesifikasi di halaman ini TIDAK
+kusunting dan tidak akan kusunting (alatnya menolak - itu memang gunanya), tapi yang diujinya sudah
+diketahui cacat instrumennya: `sumber_harga: gmgn` memakai `px` yang harga masuknya bisa berumur
+8,7 menit (median). Run nanti dicatat sebagai demonstrasi efek hantu, bukan sebagai gerbang. Klaim
+yang hidup dikunci terpisah di [[06-Results/12 - Harga Masuk yang Benar]] (`--halaman 12`).
+
+**Status asli:** ⏳ **TERKUNCI SEBELUM HASIL DILIHAT** - alatnya menolak mencetak angka apa pun sampai
 syarat umur data terpenuhi, dan menolak jalan kalau spesifikasi ini diedit setelah dikunci.
 
 **Ringkas:** halaman 09 dan 10 berisi angka yang bagus. Keduanya lahir dari satu jendela 43 jam yang

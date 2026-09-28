@@ -1,0 +1,34 @@
+{
+ "aspek_lulus_28Sep": [
+  "cluster_ge2",
+  "cluster_ge3",
+  "repeat_maker",
+  "money_spread",
+  "buy_usd_ge_1k"
+ ],
+ "dibuat_utc": "2026-09-28T09:49:59Z",
+ "parameter_terkunci": {
+  "data_replikasi": "HANYA kejadian dengan t > t_kunci",
+  "halaman_spesifikasi": "12",
+  "harga_keluar": "median t_tx pada t+[H-15m, H+15m]",
+  "harga_masuk": "harga transaksi terakhir dengan t_tx <= t (umur 0 - ini harga yang bisa didapat)",
+  "horison_menit": "30",
+  "jendela_menit": "15",
+  "kalau_gagal": "hipotesis kerumunan (dua arah sekali pun) dicabut; ⑧ tidak dipasang",
+  "koreksi": "Benjamini-Hochberg alpha 0.10, dihitung DI DALAM run replikasi",
+  "non_overlap": "1 per horison per token",
+  "ongkos_bps_roundtrip": "59.0",
+  "pasangan": "berpasangan dalam token yang sama (acuan = kejadian yang tidak memicu aspek)",
+  "statistik": "median + bootstrap 4000 (seed 20260928) + tanda-uji eksak satu arah",
+  "sumber_harga": "txevent",
+  "syarat_umur_jam": "12",
+  "uji_kedua": "money_spread",
+  "uji_ketiga": "stack_ge2",
+  "uji_primer": "cluster_ge2",
+  "vonis_replikasi": "median > 0 DAN CI bawah > 0 DAN p < 0,05 sesudah BH dalam run itu"
+ },
+ "spec_sha256": "0x6f69e1003a7ed15552ffc8b576a21e5e48fa02be0ec577cb359314187a169099",
+ "spesifikasi": "vault/06-Results/12 - Harga Masuk yang Benar.md",
+ "t_kunci": 1790588324,
+ "t_kunci_iso": "2026-09-28T09:38:44Z"
+}

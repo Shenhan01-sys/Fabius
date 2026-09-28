@@ -593,3 +593,53 @@ mulai sesudah melihat konsekuensinya, dan itu persis yang dikunci untuk dicegah.
 
 **Terkait:** [[06-Results/11 - Pra-Registrasi Hari Kedua]] · [[06-Results/09 - Whale Cluster Test]] ·
 [[06-Results/10 - Evidence Stack]] · [[TradingKnowledge/EV5 - Reproduksibilitas dan Pra-Registrasi]]
+
+
+## F-D30 — Efek kerumunan yang kami terbitkan adalah artefak harga masuk; halaman 09/10 dicabut · 28 Sep 2026
+
+**Apa yang memicunya.** Setelah `px` terbukti tangga beku (71,7 % barisnya mengulang nilai; umur
+median harga 8,7 menit), satu pertanyaan menyusul: berapa banyak dari "+393,4 bps K≥2" yang berasal
+ dari **kerumunan**, dan berapa banyak dari **fakta bahwa kerumunan punya lebih banyak transaksi
+ sehingga deret harga kami lebih segar**? Jawabannya diukur dengan mengganti SATU hal - sumber harga
+ masuk - pada kejadian dan pairing yang sama persis (`tools/entry_decomposition.py`, 557 kejadian,
+ 58 token berpasangan, `rows_sha256=0x2c96b4f17374c8…`):
+
+| harga masuk → keluar | median selisih K≥2 | CI 95 % | % positif | p |
+|---|---|---|---|---|
+| `px → px` **(yang kami terbitkan)** | **+93,0** | [+1; +825] | 59,6 % | 0,0066 |
+| `tx → px` (masuk = harga transaksi itu sendiri) | **+0,1** | [−14; +198] | 50,0 % | 0,53 |
+| `tx → tx` (kedua ujung harga peristiwa) | **+0,3** | [−7; +516] | 51,7 % | 0,35 |
+| `px → tx` | +815,4 | [+5; +1760] | 62,4 % | 0,0006 |
+
+Pada harga peristiwa **tidak ada satu aspek pun yang lolos BH**. Dan pada populasi yang lebih besar
+(`evidence_stack --px txevent`, 908 kejadian) arahnya justru negatif: `cluster_ge2` = **−491,4 CI
+[−1319; −205]**, 30,5 % positif. Dua himpunan, dua jawaban - nol dan negatif - dan keduanya menolak
+klaim kami.
+
+**Kenapa gerbang yang kupunya tidak menangkap ini.** Semua gerbangku memeriksa **bentuk** (tautan,
+lebar baris, angka yatim, hash baris) dan **keselaman waktu** (point-in-time, anti-lookahead). Yang
+bocor adalah **asal angka**: harga masuk yang valid secara waktu tapi tidak valid secara
+perdagangan - kamu tidak bisa membeli di harga yang sudah lewat. Itu tidak bisa dites oleh gerbang
+bentuk mana pun. Pelajaran yang kubayar dengan efek terbaikku sendiri: **satu-satunya gerbang yang
+menangkap kelas kesalahan ini adalah mengganti satu hal pada satu waktu dan melihat apakah efeknya
+hidup.**
+
+**Diputuskan.**
+
+1. [[06-Results/09 - Whale Cluster Test]] dan [[06-Results/10 - Evidence Stack]] diberi penanda
+   **DICABUT** di kepalanya; isinya tidak dihapus - urutan bagaimana kami sampai ke sana adalah
+   bagian dari hasilnya, dan itulah yang membuat halaman 12 bisa diperiksa orang.
+2. Gerbang ⑧ **tidak** dipasang dan **tidak** akan dibangun di atas kerumunan sebagai sinyal beli.
+3. Hipotesis "kerumunan = jangan masuk" (fade) TIDAK dijual: itu hipotesis baru dari satu jendela
+   49 jam, dan ia berhak atas kunci sendiri sebelum ada yang menyebutnya temuan.
+4. Spesifikasi lama di halaman 11 **tidak kusunting** - alat penolaknya akan mati, dan memang untuk
+   itu ia dibuat. Statusnya jadi **moot untuk keputusan produk** (yang diuji sudah diketahui cacat
+   instrumennya). Klaim yang hidup dikunci terpisah: halaman 12, `decisions/prereg-honest-lock.json`.
+5. **P25** dibuka: semua uji lain yang memakai `px` di salah satu ujungnya (`carry_study`,
+   `screen_universe`/funnel, `maker_ledger`, `out/*`) harus diperlakukan sama curiganya dan diulang
+   pada harga peristiwa.
+6. Perekam ikut diperbaiki agar kelas kesalahan ini tidak terulang: `px` kini membawa `ttx`
+   (skema 2) - "kapan harga terjadi" terpisah dari "kapan kami melihatnya".
+
+**Terkait:** [[06-Results/12 - Harga Masuk yang Benar]] · [[06-Results/11 - Pra-Registrasi Hari Kedua]] · [[TradingKnowledge/Fakta Terukur]] §B/§F · [[08-Backlog/01 - Backlog]] P18/P24/P25 ·
+[[TradingKnowledge/EV2 - Jebakan Backtest]] · [[Concepts/Unmeasured Is Not Clean]]

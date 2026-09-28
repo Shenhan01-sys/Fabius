@@ -4,6 +4,13 @@ tags: [results]
 
 # 10 - Evidence Stack
 
+> **DICABUT 28 Sep 09:4xZ - lihat [[06-Results/12 - Harga Masuk yang Benar]].**
+> Efek yang halaman ini klaim hidup di **sisi harga masuk**, bukan di pasar: pada kejadian yang sama
+> persis, mengganti `px` (harga transaksi lama yang di-stamp waktu kami menarik) dengan harga
+> transaksi itu sendiri mengubah **+93,0 bps (p=0,0066) menjadi +0,1 (p=0,53)**, dan tidak ada
+> aspek yang lolos BH. Angka di bawah dibiarkan utuh karena **urutan bagaimana kami sampai ke sana**
+> adalah bagian dari hasilnya - tapi tidak satu pun dari angka itu boleh dikutip sebagai bukti.
+
 **Sumber:** `tools/evidence_stack.py` → `decisions/evidence-stack-20260928T073717Z.json`
 (`rows_sha256=0x9f31f56bb76acf…`) · bahan: rekaman ⑦ + `px` kami sendiri · ongkos dari
 `tools/costs.py` (59 bps, `measured-own-venue`)

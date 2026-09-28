@@ -57,7 +57,7 @@ import record_bsc_universe as rec  # noqa: E402  SATU sumber bentuk permintaan +
 
 FLOW = os.path.join(HERE, "wallet-flow.jsonl")
 MANIFEST = os.path.join(HERE, "wallet-flow-manifest.txt")
-SCHEMA = 1
+SCHEMA = 2   # 2 = baris `px` membawa `ttx`; 1 = bentuk lama (tanpa umur harga)
 ROUTES = {"sm": "/v1/user/smartmoney", "kol": "/v1/user/kol"}
 LIMIT = 100
 # Demo key publik perekam (record_bsc_universe.py:64). Dibandingkan lewat SALINAN bernama, bukan
@@ -115,6 +115,52 @@ def normalize(src, row):
             "g": [str(x) for x in tags][:4]}
 
 
+def px_rows(prices, now):
+    """Baris harga: apa yang kami LIHAT (`t`) dan kapan harganya TERJADI (`ttx`).
+
+    Ini jawaban untuk P18/P24 (terukur 28 Sep): 71,7 % baris `px` hanya mengulang nilai sebelumnya,
+    dan umur harga sebenarnya adalah median 8,7 menit / p90 42 menit / maks 2,6 jam. Setelah `ttx`
+    ikut tersimpan, alat bisa menyaring "harga yang terjadi <= 10 menit" alih-alih "harga yang kita
+    lihat <= 10 menit" - dua kalimat yang selama ini kami tukar tanpa bilang.
+
+    `ttx == 0` berarti sumber mengirim waktu yang tidak masuk akal (lebih baru dari tarikan kami,
+    skew jam vendor). Ditandai, bukan dipercaya: konsumen boleh menolak baris ber-`ttx` 0.
+    """
+    out = []
+    for tk, v in sorted(prices.items()):
+        p, y, ttx = v
+        out.append({"k": "px", "t": int(now), "tk": tk, "y": y, "p": p,
+                    "ttx": int(ttx) if 0 < int(ttx) <= int(now) else 0})
+    return out
+
+
+def self_test():
+    """Kunci dua hal yang tidak boleh berubah: `ttx <= t`, dan yang skew jadi 0 (bukan lolos)."""
+    now = 1790000000
+    bahan = [
+        normalize("sm", {"timestamp": now - 40, "base_address": "0xAAA", "price_usd": 1.5,
+                         "maker": "0xM1", "side": "buy", "amount_usd": 10,
+                         "transaction_hash": "h1", "base_token": {"symbol": "A"},
+                         "is_open_or_close": 0}),
+        normalize("sm", {"timestamp": now + 5, "base_address": "0xBBB", "price_usd": 2.0,
+                         "maker": "0xM2", "side": "sell", "amount_usd": 12,
+                         "transaction_hash": "h2", "base_token": {"symbol": "B"},
+                         "is_open_or_close": 0}),
+    ]
+    prices = {}
+    for d in bahan:
+        if d["tk"] and isinstance(d["p"], (int, float)) and d["p"]:
+            prices[d["tk"]] = (float(d["p"]), d["y"], d["t"])
+    px = px_rows(prices, now)
+    by = {r["tk"]: r for r in px}
+    assert by["0xaaa"]["ttx"] == now - 40, by["0xaaa"]
+    assert by["0xbbb"]["ttx"] == 0, ("transaksi 'masa depan' harus ditandai 0", by["0xbbb"])
+    assert all(r["ttx"] == 0 or r["ttx"] <= r["t"] for r in px), px
+    assert all(r["t"] == now and r["k"] == "px" and r["p"] > 0 for r in px), px
+    print("self-test px OK: normal=%d | skew->0=%d | semua ttx<=t | schema %d"
+          % (by["0xaaa"]["ttx"] == now - 40, by["0xbbb"]["ttx"] == 0, SCHEMA))
+
+
 def pull(src, path, hdr, seen):
     st, body = rec.get(rec.gmgn_url(path, chain="bsc", limit=str(LIMIT)), hdr)
     now = int(time.time())
@@ -128,8 +174,8 @@ def pull(src, path, hdr, seen):
         if d["h"] and d["h"] not in seen:
             new.append(d)
         if d["tk"] and isinstance(d["p"], (int, float)) and d["p"]:
-            prices[d["tk"]] = (float(d["p"]), d["y"])
-    px = [{"k": "px", "t": now, "tk": tk, "y": v[1], "p": v[0]} for tk, v in sorted(prices.items())]
+            prices[d["tk"]] = (float(d["p"]), d["y"], d["t"])
+    px = px_rows(prices, now)
     pl = {"k": "pull", "s": src, "t": now, "http": st, "n": len(lst),
           "new": len(new), "mk": len({r["m"] for r in rows}),
           "tk": len(prices),
@@ -247,7 +293,12 @@ def main():
     ap.add_argument("--pulls", type=int, default=2, help="berapa kali menarik per proses (loop dgn jarak)")
     ap.add_argument("--gap", type=int, default=300, help="detik antar tarikan")
     ap.add_argument("--report", action="store_true", help="cetak keadaan berkas saja, jangan tarik")
+    ap.add_argument("--self-test", action="store_true",
+                    help="uji bentuk baris px (ttx<=t, skew ditandai 0) tanpa menyentuh jaringan")
     a = ap.parse_args()
+    if a.self_test:
+        self_test()
+        return
 
     seen, prev_sha, n, first_t, last_t = load_seen()
     want = read_manifest_tail()          # dibaca SEBELUM manifest ditimpa run ini

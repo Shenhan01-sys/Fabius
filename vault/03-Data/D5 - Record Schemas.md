@@ -28,6 +28,7 @@ menghitung ulang hash dari clone butuh tahu field mana yang ikut dan mana yang t
 | `universe_size` | jumlah baris hasil penggabungan | ya |
 | `survivable_count` | yang tidak kena veto | ya |
 | `fully_evaluated_count` | yang tidak kena veto **dan** tidak punya blind spot | ya |
+| **skema 2 (28 Sep): baris `px` membawa `ttx`** | `t` = waktu kami menarik; `ttx` = waktu transaksi yang menghasilkan harga itu (`0` bila vendor mengirim waktu yang lebih baru dari tarikan - ditandai, bukan dipercaya). Ini jawaban P18/P24: sebelum ada `ttx`, "harga ≤ 10 menit" yang kami jamin berarti "yang kami lihat ≤ 10 menit", padahal umur median harga 8,7 menit dan p90 42 menit. Konsumen boleh menolak `ttx=0`; `t` lama tidak berubah, jadi artefak dan seri yang sudah ada tetap terbaca |
 | `gt_rows` / `gt_rows_with_gmgn_fields` | diagnosa penggabungan GeckoTerminal↔GMGN; kalau 0, penggabungan gagal **tanpa error** | ya |
 | `top_reasons` | tally alasan penolakan | ya |
 | `rows` | isi baris per token | ya |

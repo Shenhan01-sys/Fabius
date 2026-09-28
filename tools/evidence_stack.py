@@ -52,7 +52,9 @@ FLOW = os.path.join(ROOT, "universe", "wallet-flow.jsonl")
 MIN = 60
 FEATURES = ["cluster_ge2", "cluster_ge3", "repeat_maker", "money_spread", "buy_usd_ge_1k",
             "no_exit_flow", "fresh_token", "wide_flow"]
-ORDER = {"gmgn": (PR.SRC_GMGN,), "both": (PR.SRC_GMGN, PR.SRC_WATCH)}
+import tx_prices as TP  # noqa: E402  (deret harga PERISTIWA: umur 0, satu ukuran kedua ujung)
+ORDER = {"gmgn": (PR.SRC_GMGN,), "both": (PR.SRC_GMGN, PR.SRC_WATCH),
+         "txevent": (TP.SRC_TX,)}
 
 
 def canon(o):
@@ -182,12 +184,14 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--horizon", type=int, default=30)
     ap.add_argument("--window", type=int, default=15)
-    ap.add_argument("--px", default="gmgn", choices=("gmgn", "both"), help="gmgn = hanya harga rekaman sendiri (baku); both = pantau DexScreener boleh jadi cadangan (tetap satu sumber per kejadian)")
+    ap.add_argument("--px", default="gmgn", choices=("gmgn", "both", "txevent"), help="gmgn = hanya harga rekaman sendiri (baku); both = pantau DexScreener boleh jadi cadangan (tetap satu sumber per kejadian)")
     a = ap.parse_args()
     rt = costs.rt_cost()
     tx, _ = load()
-    sources = PR.load_all()
     order = ORDER[a.px]
+    sources = PR.load_all()
+    if TP.SRC_TX in order:
+        sources[TP.SRC_TX] = TP.load_tx_series()
     ev, dropped = build_events(tx, sources, a.horizon, a.window, order)
     ntok = len({e["tk"] for e in ev})
     print("bahan: %d kejadian terukur pada %d token | ongkos %.1f bps (%s) | horison %d m | jendela %d m"
@@ -236,7 +240,9 @@ def main():
               % (st["token"], st["n"], st["median_selisih_bps"], st["ci_lo"], st["ci_hi"],
                  st["proporsi_positif"], st["p"],
                  "LOLOS BH" if st["fitur"] in FC.bh([(st["fitur"], st["p"])]) else "tidak"))
-    out = {"dibuat_utc": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
+    jumlah = {nm: {"baris": sources[nm]["n_row"], "token": len(sources[nm]["rows"]),
+                  "dilebur": sources[nm]["merged"]} for nm in order if nm in sources}
+    out = {"sumur": jumlah, "dibuat_utc": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
            "horizon_menit": a.horizon, "window_menit": a.window, "sumber_px": list(order),
            "cost_bps_rt": rt,
            "cost_basis": costs.cost_basis(), "kejadian": len(ev), "token": ntok, "sensor": dropped,

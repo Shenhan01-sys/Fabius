@@ -1,0 +1,381 @@
+{
+ "batas": [
+  "hanya kejadian yang punya kedua sumur (bias selektif: token yang cukup panas untuk muncul di px DAN punya transaksi di jendela keluar)",
+  "satu jendela ~49 jam, satu rezim",
+  "belum ada fill nyata; harga peristiwa bukan harga yang kami dapat untuk ukuran posisi apa pun"
+ ],
+ "cost_bps_rt": 59.0,
+ "dibuat_utc": "2026-09-28T09:45:47Z",
+ "horizon_menit": 30,
+ "kejadian": 557,
+ "lolos_bh_A_px_px": [
+  "cluster_ge2",
+  "money_spread"
+ ],
+ "lolos_bh_B_tx_tx": [],
+ "maxage_menit": 10,
+ "rows": [
+  {
+   "aspek": "cluster_ge2",
+   "ci_hi": 825.2,
+   "ci_lo": 1.1,
+   "harga": "A_px_px",
+   "median_selisih_bps": 93.0,
+   "n": 178,
+   "p": 0.0066,
+   "proporsi_positif": 59.6,
+   "token": 58
+  },
+  {
+   "aspek": "cluster_ge2",
+   "ci_hi": 198.2,
+   "ci_lo": -13.8,
+   "harga": "D_tx_px",
+   "median_selisih_bps": 0.1,
+   "n": 178,
+   "p": 0.5299,
+   "proporsi_positif": 50.0,
+   "token": 58
+  },
+  {
+   "aspek": "cluster_ge2",
+   "ci_hi": 1759.7,
+   "ci_lo": 4.8,
+   "harga": "C_px_tx",
+   "median_selisih_bps": 815.4,
+   "n": 178,
+   "p": 0.0006,
+   "proporsi_positif": 62.4,
+   "token": 58
+  },
+  {
+   "aspek": "cluster_ge2",
+   "ci_hi": 515.7,
+   "ci_lo": -6.6,
+   "harga": "B_tx_tx",
+   "median_selisih_bps": 0.3,
+   "n": 178,
+   "p": 0.354,
+   "proporsi_positif": 51.7,
+   "token": 58
+  },
+  {
+   "aspek": "cluster_ge3",
+   "ci_hi": 1181.8,
+   "ci_lo": -4.1,
+   "harga": "A_px_px",
+   "median_selisih_bps": 50.0,
+   "n": 121,
+   "p": 0.1015,
+   "proporsi_positif": 56.2,
+   "token": 55
+  },
+  {
+   "aspek": "cluster_ge3",
+   "ci_hi": 332.5,
+   "ci_lo": -196.1,
+   "harga": "D_tx_px",
+   "median_selisih_bps": 0.2,
+   "n": 121,
+   "p": 0.5,
+   "proporsi_positif": 50.4,
+   "token": 55
+  },
+  {
+   "aspek": "cluster_ge3",
+   "ci_hi": 1677.6,
+   "ci_lo": -4.9,
+   "harga": "C_px_tx",
+   "median_selisih_bps": 243.3,
+   "n": 121,
+   "p": 0.0727,
+   "proporsi_positif": 57.0,
+   "token": 55
+  },
+  {
+   "aspek": "cluster_ge3",
+   "ci_hi": 1157.2,
+   "ci_lo": -394.1,
+   "harga": "B_tx_tx",
+   "median_selisih_bps": 0.3,
+   "n": 121,
+   "p": 0.5,
+   "proporsi_positif": 50.4,
+   "token": 55
+  },
+  {
+   "aspek": "repeat_maker",
+   "ci_hi": 527.7,
+   "ci_lo": -242.9,
+   "harga": "A_px_px",
+   "median_selisih_bps": 0.1,
+   "n": 120,
+   "p": 0.5363,
+   "proporsi_positif": 50.0,
+   "token": 52
+  },
+  {
+   "aspek": "repeat_maker",
+   "ci_hi": 105.8,
+   "ci_lo": -615.4,
+   "harga": "D_tx_px",
+   "median_selisih_bps": -0.2,
+   "n": 120,
+   "p": 0.6078,
+   "proporsi_positif": 49.2,
+   "token": 52
+  },
+  {
+   "aspek": "repeat_maker",
+   "ci_hi": 1746.1,
+   "ci_lo": 0.8,
+   "harga": "C_px_tx",
+   "median_selisih_bps": 184.6,
+   "n": 120,
+   "p": 0.0274,
+   "proporsi_positif": 59.2,
+   "token": 52
+  },
+  {
+   "aspek": "repeat_maker",
+   "ci_hi": 335.5,
+   "ci_lo": -362.6,
+   "harga": "B_tx_tx",
+   "median_selisih_bps": 4.6,
+   "n": 120,
+   "p": 0.1577,
+   "proporsi_positif": 55.0,
+   "token": 52
+  },
+  {
+   "aspek": "money_spread",
+   "ci_hi": 773.2,
+   "ci_lo": 0.2,
+   "harga": "A_px_px",
+   "median_selisih_bps": 39.6,
+   "n": 144,
+   "p": 0.0184,
+   "proporsi_positif": 59.0,
+   "token": 54
+  },
+  {
+   "aspek": "money_spread",
+   "ci_hi": 298.2,
+   "ci_lo": -8.0,
+   "harga": "D_tx_px",
+   "median_selisih_bps": 1.9,
+   "n": 144,
+   "p": 0.2799,
+   "proporsi_positif": 52.8,
+   "token": 54
+  },
+  {
+   "aspek": "money_spread",
+   "ci_hi": 1571.8,
+   "ci_lo": 0.1,
+   "harga": "C_px_tx",
+   "median_selisih_bps": 122.7,
+   "n": 144,
+   "p": 0.0184,
+   "proporsi_positif": 59.0,
+   "token": 54
+  },
+  {
+   "aspek": "money_spread",
+   "ci_hi": 281.7,
+   "ci_lo": -0.2,
+   "harga": "B_tx_tx",
+   "median_selisih_bps": 6.3,
+   "n": 144,
+   "p": 0.0782,
+   "proporsi_positif": 56.2,
+   "token": 54
+  },
+  {
+   "aspek": "buy_usd_ge_1k",
+   "ci_hi": 791.3,
+   "ci_lo": -13.2,
+   "harga": "A_px_px",
+   "median_selisih_bps": 11.7,
+   "n": 88,
+   "p": 0.1204,
+   "proporsi_positif": 56.8,
+   "token": 44
+  },
+  {
+   "aspek": "buy_usd_ge_1k",
+   "ci_hi": 15.0,
+   "ci_lo": -546.4,
+   "harga": "D_tx_px",
+   "median_selisih_bps": -0.6,
+   "n": 88,
+   "p": 0.7721,
+   "proporsi_positif": 46.6,
+   "token": 44
+  },
+  {
+   "aspek": "buy_usd_ge_1k",
+   "ci_hi": 1621.2,
+   "ci_lo": -23.8,
+   "harga": "C_px_tx",
+   "median_selisih_bps": 4.3,
+   "n": 88,
+   "p": 0.1204,
+   "proporsi_positif": 56.8,
+   "token": 44
+  },
+  {
+   "aspek": "buy_usd_ge_1k",
+   "ci_hi": 5.1,
+   "ci_lo": -1767.0,
+   "harga": "B_tx_tx",
+   "median_selisih_bps": -17.7,
+   "n": 88,
+   "p": 0.8313,
+   "proporsi_positif": 45.5,
+   "token": 44
+  },
+  {
+   "aspek": "no_exit_flow",
+   "ci_hi": 1.5,
+   "ci_lo": -4.1,
+   "harga": "A_px_px",
+   "median_selisih_bps": -3.0,
+   "n": 223,
+   "p": 0.9297,
+   "proporsi_positif": 45.3,
+   "token": 43
+  },
+  {
+   "aspek": "no_exit_flow",
+   "ci_hi": 5.5,
+   "ci_lo": -2.7,
+   "harga": "D_tx_px",
+   "median_selisih_bps": 1.3,
+   "n": 223,
+   "p": 0.2109,
+   "proporsi_positif": 52.9,
+   "token": 43
+  },
+  {
+   "aspek": "no_exit_flow",
+   "ci_hi": 0.5,
+   "ci_lo": -5.0,
+   "harga": "C_px_tx",
+   "median_selisih_bps": -3.7,
+   "n": 223,
+   "p": 0.9697,
+   "proporsi_positif": 43.9,
+   "token": 43
+  },
+  {
+   "aspek": "no_exit_flow",
+   "ci_hi": 6.7,
+   "ci_lo": -4.0,
+   "harga": "B_tx_tx",
+   "median_selisih_bps": -0.1,
+   "n": 223,
+   "p": 0.5533,
+   "proporsi_positif": 49.8,
+   "token": 43
+  },
+  {
+   "aspek": "fresh_token",
+   "ci_hi": 22285.1,
+   "ci_lo": 6031.3,
+   "harga": "A_px_px",
+   "median_selisih_bps": 12675.4,
+   "n": 59,
+   "p": 0.0,
+   "proporsi_positif": 88.1,
+   "token": 59
+  },
+  {
+   "aspek": "fresh_token",
+   "ci_hi": 6906.4,
+   "ci_lo": 2030.3,
+   "harga": "D_tx_px",
+   "median_selisih_bps": 4499.0,
+   "n": 59,
+   "p": 0.0,
+   "proporsi_positif": 81.4,
+   "token": 59
+  },
+  {
+   "aspek": "fresh_token",
+   "ci_hi": 44144.4,
+   "ci_lo": 18131.6,
+   "harga": "C_px_tx",
+   "median_selisih_bps": 22638.2,
+   "n": 59,
+   "p": 0.0,
+   "proporsi_positif": 91.5,
+   "token": 59
+  },
+  {
+   "aspek": "fresh_token",
+   "ci_hi": 17656.7,
+   "ci_lo": 6601.8,
+   "harga": "B_tx_tx",
+   "median_selisih_bps": 12005.8,
+   "n": 59,
+   "p": 0.0,
+   "proporsi_positif": 83.1,
+   "token": 59
+  },
+  {
+   "aspek": "wide_flow",
+   "ci_hi": 406.3,
+   "ci_lo": -0.1,
+   "harga": "A_px_px",
+   "median_selisih_bps": 1.6,
+   "n": 48,
+   "p": 0.0967,
+   "proporsi_positif": 60.4,
+   "token": 27
+  },
+  {
+   "aspek": "wide_flow",
+   "ci_hi": 221.0,
+   "ci_lo": -0.3,
+   "harga": "D_tx_px",
+   "median_selisih_bps": 1.3,
+   "n": 48,
+   "p": 0.1562,
+   "proporsi_positif": 58.3,
+   "token": 27
+  },
+  {
+   "aspek": "wide_flow",
+   "ci_hi": 451.4,
+   "ci_lo": -4.8,
+   "harga": "C_px_tx",
+   "median_selisih_bps": 0.3,
+   "n": 48,
+   "p": 0.3327,
+   "proporsi_positif": 54.2,
+   "token": 27
+  },
+  {
+   "aspek": "wide_flow",
+   "ci_hi": 880.7,
+   "ci_lo": -0.2,
+   "harga": "B_tx_tx",
+   "median_selisih_bps": 2.2,
+   "n": 48,
+   "p": 0.0967,
+   "proporsi_positif": 60.4,
+   "token": 27
+  }
+ ],
+ "rows_sha256": "0x2c96b4f17374c8b9f01ef48fb3ea01e15ac4b019451da1b0616d178e27dd0b55",
+ "sensor": {
+  "tanpa_keluar_px": 669,
+  "tanpa_keluar_tx": 968,
+  "tanpa_masuk_px": 6161,
+  "tanpa_masuk_tx": 0
+ },
+ "simpulan": "efek positif pada A tidak bertahan ketika harga masuk = harga transaksi itu sendiri (B/D); yang kami terbitkan mengukur kesegaran pengamatan, bukan pasar",
+ "token": 217,
+ "window_menit": 15
+}

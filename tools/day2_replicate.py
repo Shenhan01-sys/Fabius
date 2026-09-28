@@ -33,6 +33,7 @@ sys.path.insert(0, HERE)
 import evidence_stack as ES  # noqa: E402  (build_events + _pair: SATU implementasi uji)
 import flow_cluster_test as FC  # noqa: E402
 import prices as PR  # noqa: E402
+import tx_prices as TP  # noqa: E402  (deret harga peristiwa)
 
 SPEC = os.path.join(ROOT, "vault", "06-Results", "11 - Pra-Registrasi Hari Kedua.md")
 LOCK = os.path.join(ROOT, "decisions", "prereg-day2-lock.json")
@@ -47,10 +48,11 @@ for _s in (sys.stdout, sys.stderr):
         pass
 
 
-def read_spec():
-    if not os.path.exists(SPEC):
-        raise SystemExit("tidak ada %s - spesifikasi harus ada sebelum alat ini boleh jalan" % SPEC)
-    s = io.open(SPEC, encoding="utf-8", errors="replace").read()
+def read_spec(spec_path=SPEC):
+    if not os.path.exists(spec_path):
+        raise SystemExit("tidak ada %s - spesifikasi harus ada sebelum alat ini boleh jalan"
+                         % spec_path)
+    s = io.open(spec_path, encoding="utf-8", errors="replace").read()
     m = re.search(r"```text\n(.*?)\n```", s, re.S)
     if not m:
         raise SystemExit("blok ```text spesifikasi tidak ditemukan di halaman 11")
@@ -120,12 +122,22 @@ def verdict(r):
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--status", action="store_true", help="hanya: terkunci kapan, berapa jam lagi")
+    ap.add_argument("--halaman", default="11", choices=("11", "12"),
+                    help="11 = spesifikasi lama (harga px, sudah DIKUNCI 28 Sep 08:30Z); "
+                         "12 = spesifikasi jujur (harga peristiwa). Masing-masing punya berkas "
+                         "kunci sendiri - mengedit yang satu tidak mengubah yang lain.")
     a = ap.parse_args()
-    kv, sha = read_spec()
+    if a.halaman == "12":
+        spec = os.path.join(ROOT, "vault", "06-Results", "12 - Harga Masuk yang Benar.md")
+        lock_p = os.path.join(OUT_DIR, "prereg-honest-lock.json")
+        prefix = "day2h"
+    else:
+        spec, lock_p, prefix = SPEC, LOCK, "day2"
+    kv, sha = read_spec(spec)
     umur_butuh = int(kv["syarat_umur_jam"])
     now = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())
 
-    if not os.path.exists(LOCK):
+    if not os.path.exists(lock_p):
         if a.status:
             print("BELUM DIKUNCI - jalankan tanpa --status untuk mengunci sekarang.")
             return
@@ -135,19 +147,20 @@ def main():
         assert 1_700_000_000 < t_kunci < 2_000_000_000, "t_kunci bukan detik Unix: %d" % t_kunci
         lock = {"dibuat_utc": now, "spec_sha256": sha, "t_kunci": t_kunci,
                 "t_kunci_iso": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime(t_kunci)),
-                "spesifikasi": os.path.relpath(SPEC, ROOT).replace("\\", "/"),
+                "spesifikasi": os.path.relpath(spec, ROOT).replace("\\", "/"),
                 "parameter_terkunci": kv, "aspek_lulus_28Sep": ASPEK_LULUS}
         os.makedirs(OUT_DIR, exist_ok=True)
-        json.dump(lock, io.open(LOCK, "w", encoding="utf-8", newline="\n"), indent=1,
+        json.dump(lock, io.open(lock_p, "w", encoding="utf-8", newline="\n"), indent=1,
                   sort_keys=True, ensure_ascii=False)
         print("TERKUNCI %s" % sha)
         print("t_kunci = %s (stempel aliran terakhir saat mengunci)" % lock["t_kunci_iso"])
         print("syarat replikasi: rekaman baru >= %d jam SETELAH t_kunci, lalu jalankan ulang."
               % umur_butuh)
         print("Tidak ada satu pun angka hasil yang dicetak - itu memang bagian dari alat ini.")
+        print("kunci: decisions/%s" % os.path.basename(lock_p))
         return
 
-    lock = json.load(io.open(LOCK, encoding="utf-8"))
+    lock = json.load(io.open(lock_p, encoding="utf-8"))
     if lock.get("spec_sha256") != sha:
         raise SystemExit("SPESIFIKASI DIUBAH SETELAH DIKUNCI (%s != %s). Tidak ada hasil: "
                          "yang berubah bukan datanya, aturan mainnya."
@@ -167,9 +180,13 @@ def main():
         return
 
     H, W = int(kv["horison_menit"]), int(kv["jendela_menit"])
-    order = (PR.SRC_WATCH,) if kv["sumber_harga"] == "watch" else (PR.SRC_GMGN,)
+    order = {"watch": (PR.SRC_WATCH,), "gmgn": (PR.SRC_GMGN,), "txevent": (TP.SRC_TX,)}[
+        kv["sumber_harga"]]
     tx, _ = ES.load()
-    ev, dropped = ES.build_events(tx, PR.load_all(), H, W, order)
+    sources = PR.load_all()
+    if TP.SRC_TX in order:
+        sources[TP.SRC_TX] = TP.load_tx_series()
+    ev, dropped = ES.build_events(tx, sources, H, W, order)
     ev = [e for e in ev if e["t"] > t_kunci]
     ntok = len({e["tk"] for e in ev})
     print("bahan replikasi: %d kejadian pada %d token (semuanya SETELAH t_kunci) | sensor %s"
@@ -197,21 +214,23 @@ def main():
     ps = FC.bh([(r["fitur"], r["p"]) for r in rows if r.get("p") is not None])
     lulus = sum(1 for r in rows if r["vonis"] == "REPLIKASI")
     if lulus == 0:
-        vonis = ("TIDAK ADA REPLIKASI - halaman 09 dan 10 DICABUT dari klaim (aturan halaman 11 "
-                 "baris terakhir)")
+        vonis = ("TIDAK ADA REPLIKASI - klaim pada halaman yang diuji DICABUT (aturan halaman "
+                 "%s baris terakhir)" % a.halaman)
     elif rows[0]["vonis"] == "REPLIKASI":
         vonis = "uji_primer replikasi - kandidat gerbang ⑧ boleh diusulkan ke P15 (turun saja)"
     else:
         vonis = ("uji_primer gagal tapi uji kedua/ketiga replikasi - yang hidup STRUKTUR DANA, "
                  "halaman 09 diturunkan statusnya")
-    out = {"dibuat_utc": now, "spec_sha256": sha, "t_kunci": t_kunci, "rekaman_baru_jam": round(baru_jam, 2),
+    out = {"dibuat_utc": now, "halaman_spesifikasi": a.halaman, "spec_sha256": sha,
+           "t_kunci": t_kunci, "rekaman_baru_jam": round(baru_jam, 2),
            "horizon_menit": H, "window_menit": W, "kejadian": len(ev), "token": ntok,
            "rows": rows, "lolos_bh_dalam_run": sorted(ps), "vonis": vonis,
            "batas": ["satu jendela rezim mungkin masih sama dengan jendela saat spesifikasi ditulis",
                      "belum ada fill nyata; outcome = probabilitas 30 menit, bukan PnL",
                      "maker = yang ditampilkan feed vendor: kerumunan = batas bawah"]}
     os.makedirs(OUT_DIR, exist_ok=True)
-    p = os.path.join(OUT_DIR, "day2-%s.json" % time.strftime("%Y%m%dT%H%M%SZ", time.gmtime()))
+    p = os.path.join(OUT_DIR, "%s-%s.json" % (prefix, time.strftime("%Y%m%dT%H%M%SZ",
+                                               time.gmtime())))
     json.dump(out, io.open(p, "w", encoding="utf-8", newline="\n"), indent=1, sort_keys=True,
               ensure_ascii=False)
     print("\nVONIS: %s" % vonis)
