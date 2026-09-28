@@ -32,6 +32,7 @@ Artefak: decisions/flow-cluster-<UTC>.json (+ rows_sha256)
 from __future__ import annotations
 
 import argparse
+import bisect
 import hashlib
 import io
 import json
@@ -144,6 +145,64 @@ def sign_p(k, n):
     return 0.5 * math.erfc(z / math.sqrt(2.0))
 
 
+def mann_whitney_p(a, b):
+    """p satu arah: distribusi `a` bergeser NAIK terhadap `b` (kohor vs maker-tunggal).
+
+    Aproksimasi normal dengan koreksi seri setara (ties). n=39 vs n=2.566 tidak butuh eksak, dan
+    ties besar di sini (harga "diam") justru membuat aproksimasi lebih berhati-hati: ties
+    dikoreksi di penyebut, bukan diabaikan.
+    """
+    na, nb = len(a), len(b)
+    if na < 5 or nb < 5:
+        return None
+    allv = sorted((x, 0) for x in a) + sorted((x, 1) for x in b)
+    ranks, i, tie_groups = {}, 0, []
+    vals = [v for v, _ in allv]
+    while i < len(vals):
+        j = i
+        while j + 1 < len(vals) and vals[j + 1] == vals[i]:
+            j += 1
+        avg = (i + j) / 2.0 + 1.0
+        for k in range(i, j + 1):
+            ranks.setdefault(vals[k], []).append(avg)
+        if j > i:
+            tie_groups.append(j - i + 1)
+        i = j + 1
+    ra = sum(sum(ranks[v]) for v in a)
+    mu = na * (na + nb + 1) / 2.0
+    n = na + nb
+    tie_corr = sum(t ** 3 - t for t in tie_groups) / 12.0
+    var = na * nb / 12.0 * ((n + 1) - tie_corr / (n * (n - 1.0)))
+    if var <= 0:
+        return None
+    z = (ra - mu) / math.sqrt(var)
+    return 0.5 * math.erfc(z / math.sqrt(2.0)) if z > 0 else 1.0 - 0.5 * math.erfc(-z / math.sqrt(2.0))
+
+
+def fisher_p(a_pos, a_n, b_pos, b_n):
+    """Eksak satu arah "proporsi positif di A lebih besar dari di B" (hipergeometrik, lgamma)."""
+    from math import lgamma
+
+    def lchoose(n, k):
+        if k < 0 or k > n:
+            return float("-inf")
+        return lgamma(n + 1) - lgamma(k + 1) - lgamma(n - k + 1)
+
+    tot_pos, tot_n = a_pos + b_pos, a_n + b_n
+    if tot_pos == 0 or tot_n == 0 or a_n == 0 or b_n == 0:
+        return None
+
+    def p_of(x):
+        return math.exp(lchoose(a_n, x) + lchoose(b_n, tot_pos - x) - lchoose(tot_n, tot_pos))
+
+    lo, hi = max(0, tot_pos - b_n), min(a_n, tot_pos)
+    obs = p_of(a_pos)
+    if obs <= 0:
+        return None
+    tail = sum(p_of(x) for x in range(lo, hi + 1) if p_of(x) <= obs * (1 + 1e-9) and x >= a_pos)
+    return min(1.0, tail / sum(p_of(x) for x in range(lo, hi + 1)))
+
+
 def bh(pairs, alpha=0.10):
     o = sorted(pairs, key=lambda kv: kv[1])
     m = len(o)
@@ -154,15 +213,17 @@ def kof(b, t, W):
     return len({m for tt, m, _ in b if t - W <= tt <= t and m})
 
 
-def collect(buys, px, horizon, window, ks):
+def collect(buys, px, horizon, window, ks, entry="tx"):
     H, W = horizon * MIN, window * MIN
     buckets = {k: [] for k in set(ks) | {1}}
-    skip = {"tidak_ada_px_sama_sekali": 0, "tidak_ada_px_keluar": 0, "calon_diuji": 0}
+    skip = {"tidak_ada_px_sama_sekali": 0, "tidak_ada_px_keluar": 0, "calon_diuji": 0,
+            "tidak_ada_px_masuk": 0}
     for tk, bl in buys.items():
         ps = px.get(tk) or []
         if not ps:
             skip["tidak_ada_px_sama_sekali"] += 1
             continue
+        ts_list = [tt for tt, _ in ps]
         taken = []
         for t, m, p0 in bl:
             if any(abs(t - x) < H for x in taken):
@@ -171,6 +232,15 @@ def collect(buys, px, horizon, window, ks):
             if k not in buckets:
                 continue
             skip["calon_diuji"] += 1
+            if entry == "px":
+                # SATU sumber harga untuk kedua ujung. Versi pertama memakai `p` transaksi untuk
+                # masuk dan `px` pool untuk keluar - dan median rasionya 0,946 (terukur), artinya
+                # tiap posisi mulai dengan handicap ~5 % yang bukan bagian dari pasar mana pun.
+                i = bisect.bisect_right(ts_list, t) - 1
+                if i < 0 or t - ts_list[i] > 10 * MIN:
+                    skip["tidak_ada_px_masuk"] += 1
+                    continue
+                p0 = ps[i][1]
             out = [q for tt, q in ps if t + H - 15 * MIN <= tt <= t + H + 15 * MIN]
             if not out:
                 skip["tidak_ada_px_keluar"] += 1
@@ -195,7 +265,7 @@ def collect(buys, px, horizon, window, ks):
     return buckets, skip, weather
 
 
-def report(label, ev, ps_list=None):
+def report(label, ev, ps_list=None, quiet=False):
     if len(ev) < 6:
         print("  %-16s %6d  sampel tidak cukup - TIDAK DIUJI (bukan nol)" % (label, len(ev)))
         return None
@@ -215,14 +285,50 @@ def report(label, ev, ps_list=None):
            "proporsi_net_ge_2000bps": round(100.0 * sum(1 for v in xs if v >= 2000) / len(xs), 1),
            "proporsi_harga_diam": round(100.0 * frozen / len(xs), 1),
            "p_sign": round(p, 4)}
-    print("  %-16s %6d med %+8.1f  CI %s  mean %+9.1f  >0 %5.1f%%  >=20x %5.1f%%  diam %5.1f%%  p %.4f"
-          % (label, len(xs), row["median_net_bps"],
-             ("[%+.0f; %+.0f]" % (lo, hi)) if lo is not None else "[ - ; - ]",
-             row["mean_net_bps"], row["proporsi_net_positif"],
-             row["proporsi_net_ge_2000bps"], row["proporsi_harga_diam"], p))
+    if not quiet:
+        print("  %-16s %6d med %+8.1f  CI %s  mean %+9.1f  >0 %5.1f%%  >=20x %5.1f%%  diam %5.1f%%  p %.4f"
+              % (label, len(xs), row["median_net_bps"],
+                 ("[%+.0f; %+.0f]" % (lo, hi)) if lo is not None else "[ - ; - ]",
+                 row["mean_net_bps"], row["proporsi_net_positif"],
+                 row["proporsi_net_ge_2000bps"], row["proporsi_harga_diam"], p))
     if ps_list is not None:
         ps_list.append((label, p))
     return row
+
+
+def paired(buckets, ks):
+    """Bandingkan K=1 vs K>=k HANYA pada token yang memproduksi keduanya.
+
+    Tanpa ini, "kohor lebih sering positif" bisa berarti apa pun: token yang ramai dibeli memang
+    token yang sedang naik dan yang harganya terus kami pull. Di dalam token yang sama, pertanyaan
+    "apakah kerumunan menambah probabilitas" punya jawaban yang tidak bisa diborong oleh nasib
+    satu ticker.
+    """
+    base = {}
+    for e in buckets.get(1) or []:
+        base.setdefault(e["tk"], []).append(e)
+    out = []
+    for k in ks:
+        d, toks = [], set()
+        for e in buckets.get(k) or []:
+            peers = base.get(e["tk"]) or []
+            if not peers:
+                continue
+            d.append(e["net_bps"] - med([q["net_bps"] for q in peers]))
+            toks.add(e["tk"])
+        if len(d) < 6:
+            out.append({"kelompok": "K>=%d" % k, "berpasangan": True, "n": len(d),
+                        "status": "TIDAK ADA TOKEN BERPASANGAN"})
+            continue
+        lo, hi = boot_median(d)
+        wins = sum(1 for v in d if v > 0)
+        out.append({"kelompok": "K>=%d" % k, "berpasangan": True, "token": len(toks), "n": len(d),
+                    "median_selisih_bps": round(med(d), 1),
+                    "ci_lo": None if lo is None else round(lo, 1),
+                    "ci_hi": None if hi is None else round(hi, 1),
+                    "proporsi_selisih_positif": round(100.0 * wins / len(d), 1),
+                    "p_sign": round(sign_p(wins, len(d)), 4)})
+    return out
 
 
 def main():
@@ -230,6 +336,9 @@ def main():
     ap.add_argument("--horizon", type=int, default=60, help="menit")
     ap.add_argument("--window", type=int, default=30, help="menit untuk menghitung maker berbeda")
     ap.add_argument("--ks", default="2,3,5")
+    ap.add_argument("--entry", default="px", choices=("px", "tx"),
+                    help="sumber harga masuk; 'px' = satu sumber untuk kedua ujung (baku), "
+                         "'tx' = harga transaksi (punya offset ~5 % vs px - untuk perbandingan)")
     a = ap.parse_args()
     ks = sorted({int(x) for x in a.ks.split(",") if x.strip().isdigit()})
     rt = costs.rt_cost()
@@ -248,28 +357,85 @@ def main():
               "JANGAN baca tabel di bawah sebagai hasil." % ratio)
         return
 
-    print("aturan: K maker berbeda dalam %d m | horizon %d m | non-overlap per token | "
-          "kepala = median + bootstrap, bukan mean\n" % (a.window, a.horizon))
-    buckets, skip, weather = collect(buys, px, a.horizon, a.window, ks)
-    rows, ps = [], []
+    print("aturan: K maker berbeda dalam %d m | horizon %d m | harga masuk = %s | "
+          "non-overlap per token | kepala = median + bootstrap, bukan mean\n"
+          % (a.window, a.horizon, a.entry))
+    buckets, skip, weather = collect(buys, px, a.horizon, a.window, ks, a.entry)
+    rows, ps, ps_f = [], [], []
+    ref = [e["net_bps"] for e in (buckets.get(1) or [])]
+    ref_pos = sum(1 for e in (buckets.get(1) or []) if e["net_bps"] > 0)
+    print("  %-16s %6s %9s %-19s %8s %8s %8s %8s %9s %9s"
+          % ("kelompok", "n", "median", "CI 95 % median", ">0", ">=20x", "diam",
+             "p_satu", "p_MW vs K1", "p_Fisher"))
     for k in sorted(buckets):
+        ev = buckets[k]
         lab = "pembanding K=1" if k == 1 else "kohor K>=%d" % k
-        r = report(lab, buckets[k], None if k == 1 else ps)
-        if r:
-            r["K"] = k
-            rows.append(r)
-    rw = report("cuaca (semua px)", [{"net_bps": v} for v in weather]) if weather else None
+        r = report(lab, ev, None, quiet=True)
+        if not r:
+            print("  %-16s %6d  sampel tidak cukup - TIDAK DIUJI (bukan nol)" % (lab, len(ev)))
+            rows.append({"kelompok": lab, "K": k, "n": len(ev), "status": "SAMPEL TIDAK CUKUP"})
+            continue
+        pmw = pfish = None
+        if k != 1:
+            xs = [e["net_bps"] for e in ev]
+            pmw = mann_whitney_p(xs, ref)
+            pfish = fisher_p(sum(1 for v in xs if v > 0), len(xs), ref_pos, len(ref))
+            if pmw is not None:
+                ps.append((lab, pmw))
+            if pfish is not None:
+                ps_f.append((lab, pfish))
+        print("  %-16s %6d %9.1f %-19s %7.1f%% %7.1f%% %7.1f%% %8.4f %9s %9s"
+              % (lab, r["n"], r["median_net_bps"],
+                 "[%+.0f; %+.0f]" % (r["ci_lo"], r["ci_hi"]) if r["ci_lo"] is not None else "[ - ; - ]",
+                 r["proporsi_net_positif"], r["proporsi_net_ge_2000bps"], r["proporsi_harga_diam"],
+                 r["p_sign"],
+                 ("%.5f" % pmw) if pmw is not None else "-",
+                 ("%.5f" % pfish) if pfish is not None else "-"))
+        r["kelompok"], r["K"] = lab, k
+        r["p_mannwhitney_vs_K1"] = None if pmw is None else round(pmw, 6)
+        r["p_fisher_proporsi_positif"] = None if pfish is None else round(pfish, 6)
+        rows.append(r)
+    rw = report("cuaca (semua px)", [{"net_bps": v} for v in weather], quiet=True) if weather else None
     if rw:
+        rw["kelompok"] = "cuaca (semua px)"
         rows.append(rw)
+        print("  %-16s %6d %9.1f %-19s %7.1f%% %7.1f%% %7.1f%% %8.4f %9s %9s"
+              % ("cuaca (semua px)", rw["n"], rw["median_net_bps"],
+                 "[%+.0f; %+.0f]" % (rw["ci_lo"], rw["ci_hi"]), rw["proporsi_net_positif"],
+                 rw["proporsi_net_ge_2000bps"], rw["proporsi_harga_diam"], rw["p_sign"], "-", "-"))
 
     lolos = bh(ps)
+    lolos_f = bh(ps_f)
+    pr = paired(buckets, ks)
+    ps_p = [("K>=%d" % k, r["p_sign"]) for k, r in zip(ks, pr) if r.get("p_sign") is not None]
+    lolos_p = bh(ps_p)
+    print("\n  berpasangan DALAM TOKEN YANG SAMA (buang confound 'token ramai memang sedang naik'):")
+    print("  %-16s %6s %6s %9s %-19s %8s %8s %s"
+          % ("kelompok", "token", "n", "med selisih", "CI 95 %", ">0", "p_sign", "lolos BH"))
+    for k, r in zip(ks, pr):
+        if r.get("status"):
+            print("  %-16s %6s %6d  %s" % (r["kelompok"], "-", r["n"], r["status"]))
+            continue
+        lab = "K>=%d" % k
+        print("  %-16s %6d %6d %9.1f %-19s %7.1f%% %8.4f %s"
+              % (lab, r["token"], r["n"], r["median_selisih_bps"],
+                 "[%+.0f; %+.0f]" % (r["ci_lo"], r["ci_hi"]) if r["ci_lo"] is not None else "[ - ; - ]",
+                 r["proporsi_selisih_positif"], r["p_sign"],
+                 "YA" if lab in lolos_p else "-"))
+    c_uji = skip["calon_diuji"] or 1
     out = {"dibuat_utc": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
-           "horizon_menit": a.horizon, "window_menit": a.window, "cost_bps_rt": rt,
+           "horizon_menit": a.horizon, "window_menit": a.window, "sumber_harga_masuk": a.entry,
+           "cost_bps_rt": rt,
            "cost_basis": costs.cost_basis(), "rasio_satuan_px_terhadap_tx": ratio,
            "tx_dibaca": n_buy, "token_dengan_px": len(px), "skip": skip,
-           "rows": rows, "lolos_bh": sorted(lolos),
-           "verdict": ("TIDAK ADA KELOMPOK KOHOR YANG LOLOS BH" if not lolos
-                       else "ADA: " + ", ".join(sorted(lolos))),
+           "rows": rows, "berpasangan_dalam_token": pr, "lolos_bh_terpasang": sorted(lolos_p),
+           "lolos_bh": sorted(lolos), "lolos_bh_fisher_proporsi": sorted(lolos_f),
+           "dua_keluarga_tes": {"mannwhitney_per_kelompok": {k: round(v, 6) for k, v in ps},
+                                "fisher_proporsi_positif": {k: round(v, 6) for k, v in ps_f}},
+           "verdict": ("TIDAK ADA KELOMPOK KOHOR YANG LOLOS BH (dua keluarga tes)"
+                       if not (lolos or lolos_f) else
+                       "ADA: MW " + (", ".join(sorted(lolos)) or "-") +
+                       " | FISHER " + (", ".join(sorted(lolos_f)) or "-")),
            "batas": ["K dari feed kami sendiri = batas bawah: maker yang tidak muncul di jendela "
                      "itu tidak dihitung, jadi K terkecil pun bisa sebenarnya lebih besar",
                      "panel = pilihan GMGN (smartmoney/kol) -> tercemar retrospektif, §B",

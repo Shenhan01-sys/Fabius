@@ -32,7 +32,47 @@ kepala = median + bootstrap 4.000 (seed tetap) + tanda-uji eksak + BH α 0,10 li
 
 `verdict: TIDAK ADA KELOMPOK KOHOR YANG LOLOS BH`
 
+## Revisi 28 Sep 06:22Z — run di atas memakai dua sumber harga, dan itu membatalkannya
+
+`_cek_satuan()` (baru) mengukur median `px / p_transaksi` = **0,946 pada 11.336 pasangan**: run
+pertama memasukkan harga dari baris transaksi dan mengeluarnya dari baris `px` — dua timbangan
+berbeda, jadi setiap posisi mulai dengan handicap ±5 % yang tidak berasal dari pasar mana pun.
+Selain itu horizon 60 m memaksa sensor 80,6 % padahal jendela `px` kami sendiri median 27 menit.
+
+Dijalankan ulang dengan **satu sumber harga (`px` di kedua ujung), horison 30 m, jendela K 15 m**
+→ `decisions/flow-cluster-20260928T062246Z.json` (`rows_sha256=0xf35c542d90530b…`), sensor tinggal
+**4,3 %** (3.913 kandidat lain tetap disebut: dibuang karena tidak ada `px` ≤10 menit sebelum beli):
+
+| kelompok | n | median net | % posisi positif | % ≥20× | Fisher vs K=1 |
+|---|---|---|---|---|---|
+| pembanding K=1 | 377 | −59,1 | 32,4 % | 14,1 % | — |
+| kohor K≥2 | 174 | **+81,0** (CI [−59; +642]) | **51,7 %** | **33,9 %** | **0,00001** |
+| kohor K≥3 | 93 | −59,0 | 39,8 % | 20,4 % | 0,109 |
+| kohor K≥5 | 76 | −45,7 | 48,7 % | 35,5 % | **0,0054** |
+| cuaca (semua `px→px`) | 17.508 | −59,0 | 24,3 % | 12,3 % | — |
+
+## Dan yang menentukan: berpasangan DI DALAM token yang sama
+
+Tabel di atas masih bisa dibeli oleh nasib satu ticker — token yang ramai dibeli memang token yang
+sedang naik dan yang harganya terus kami pull. Jadi dibandingkan **hanya pada token yang
+memproduksi kedua kelas** (selisih net terhadap median K=1 token yang sama; median + bootstrap
+4.000; BH lintas K):
+
+| kelompok | token berpasangan | n | median selisih net | CI 95 % | % selisih positif | p | lolos BH |
+|---|---|---|---|---|---|---|---|
+| **K≥2** | **56** | 91 | **+508,2 bps** | **[+8; +1.191]** | **62,6 %** | **0,0103** | **YA** |
+| K≥3 | 35 | 50 | −39,7 | [−1.003; +330] | 46,0 % | 0,760 | tidak |
+| K≥5 | 23 | 35 | −143,0 | [−1.996; +2.186] | 45,7 % | 0,750 | tidak |
+
+**Ini hal pertama di proyek yang memisahkan hasil setelah ongkos nyata, pada desain yang membuang
+confound paling mahal, dan tetap hidup setelah koreksi multipel.** Bentuknya juga tidak enak
+diceritakan, dan justru itu sebabnya boleh dipercaya: efeknya ada pada "dua atau lebih", **bukan**
+"makin banyak whale makin benar" — K≥3 dan K≥5 tidak terkonfirmasi.
+
 ## Tiga hal yang boleh dikatakan dari sini
+
+*(angka di tiga butir pertama adalah run 06:05Z — dua sumber harga, horizon 60 m — dibiarkan terbaca
+sebagai sejarah; yang berdiri sekarang adalah tabel `px`/`px` 30 m dan uji berpasangan di atas.)*
 
 1. **Kehadiran satu pembeli berlabel > rata-rata pool.** 39,5 % vs 30,8 % posisi positif — +8,7 pp.
    Ini bukan "whale pintar"; ini mekanisme: kami mencatat transaksi pada token yang *sedang*
