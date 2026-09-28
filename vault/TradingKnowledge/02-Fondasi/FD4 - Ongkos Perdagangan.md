@@ -31,7 +31,7 @@ Komponen dan keadaan angkanya di repo ini:
 | ambang efektif warisan | gross > **40 bps** | konsekuensi 2× dari baris di atas — §D/§E |
 | ongkos tetap ±$0,05 bolak-balik pada posisi $1 | butuh **+5 %** untuk balik modal | estimasi mainnet — **belum diukur di repo ini** — §D |
 | gas testnet 97 | live **0,10 gwei**; guard lama memakai floor **1 gwei** | terukur; guard menolak karena plafon sendiri — §D |
-| funding/carry | gerbang: `> 0,05 %/4 j` menolak posisi | wired di `tools/direction.py` — §A |
+| funding/carry | **pemutus rezim**: `> 0,05 %/4 j` menolak posisi baru (0 kejadian terukur, F-D26) | wired di `tools/direction.py` — §A |
 
 ## Cara pakai yang diklaim
 

@@ -46,7 +46,7 @@ Carry sekecil itu tidak membayar ongkos masuk-keluar: delta-netral berarti
 | periode funding | `ADA-TAPI` | 4 jam di Aster (§A); Hyperliquid membalas per jam (BNB 0,004781 %/jam) — dua venue, dua periodisitas: menggabungkannya dalam satu kolom deret = salah (§C) |
 | histori funding per aset | `ADA-TAPI` | Bybit `/v5/market/funding/history` **200 baris = 66,3 hari** dan OKX `funding-rate-history` **97,7 hari**, dua-duanya tanpa kunci, interval **8 jam** — [[Fakta Terukur]] §A.5 (diukur 28 Sep dari laptop ini, BELUM dari runner). 8 jam bukan fitur per-bar: tetap veto rezim, bukan sinyal | "histori funding per-aset yang bisa ditarik mundur" tidak kami punya |
 | harga spot/indeks untuk menghitung basis sendiri | `TIDAK-ADA` | yang kami punya harga perp (kline) dan `markPrice`; indeks resmi venue tidak direkam |
-| gerbang keputusan yang memakainya | `ADA` | `tools/direction.py`: `\|funding\|` > 0,05 %/4 jam → tolak posisi, karena biayanya lebih besar dari edge yang kami klaim (§A) |
+| gerbang keputusan yang memakainya | `ADA` | `tools/direction.py`: `\|funding\|` > 0,05 %/4 jam → tolak posisi baru - **perannya pemutus rezim, bukan prediktor dan bukan gerbang keamanan**: 0 kejadian dari 2.963 settlement, dan 0 dari 12 uji arah lolos BH (§A.5, F-D26) |
 | funding venue lain untuk kontrol silang | `MATI-DARI-MESIN-INI` | OKX funding membalas `200` di runner tapi **terpotong TLS di laptop** (§C) |
 
 ## Uji di Fabius
@@ -83,7 +83,8 @@ harga, dan hasilnya negatif 12/12 (§F). Gerbang funding sudah ikut diuji 28 Sep
 
 ## Boleh dibaca, dilarang dibaca
 
-- **Boleh:** "Fabius menolak kandidat yang funding-nya di atas 0,05 %/4 jam karena biaya carry
+- **Boleh:** "Fabius menolak posisi BARU kalau funding melewati 0,05 %/4 jam - itu pemutus rezim, bukan klaim prediktif: 0 kejadian dari 2.963 settlement dan 0 dari 12 uji arah lolos BH "
+  "(F-D26). Versi lama kalimat ini - bahwa penolakan itu karena biaya carry
   melampaui edge yang kami klaim; gerbang ini belum pernah diuji terhadap hasil karena histori
   funding tidak ada."
 - **Dilarang:** "hasil 12/12 menguji seluruh aturan agen" (funding tidak ikut) · "funding tinggi =

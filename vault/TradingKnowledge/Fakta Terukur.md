@@ -21,7 +21,7 @@ menang** ([[Conventions]] §1).
 | sumber | apa yang diberikan | kedalaman / isi | kunci | peran |
 |---|---|---|---|---|
 | Aster `fapi/v1/klines` | OHLCV perp BNB-native | **9.599 bar 1 jam ≈ 400 hari** | tanpa API key | harga forward untuk backtest & penilaian ⑦ |
-| Aster `premiumIndex` + `openInterest` | funding + OI | **608 kontrak** (`Meme` 61, `AI` 42); funding per 4 jam: BNB +0,0000 % (mark 778,45 · OI 7.832) · ETH +0,0100 % · SOL −0,0020 % · HYPE −0,0018 % · DOGE +0,0044 % | tanpa key | wired di `tools/direction.py`: funding > 0,05 %/4 j → tolak posisi |
+| Aster `premiumIndex` + `openInterest` | funding + OI | **608 kontrak** (`Meme` 61, `AI` 42); funding per 4 jam: BNB +0,0000 % (mark 778,45 · OI 7.832) · ETH +0,0100 % · SOL −0,0020 % · HYPE −0,0018 % · DOGE +0,0044 % | tanpa key | pemutus rezim, BUKAN gerbang keamanan: `\|funding\| > 0,05 %/4 j` menolak posisi baru. Terukur 0/2.963 kejadian dalam 97 hari (F-D26) |
 | Hyperliquid `candleSnapshot` | OHLCV (chain sendiri, bukan BNB) | 5.001 bar ≈ 208 hari | tanpa key | pembanding silang |
 | Hyperliquid `metaAndAssetCtxs` | funding + OI | **234 perp**; BNB OI 65.047, funding 0,004781 %/jam | tanpa key | kontrol silang untuk baris Aster |
 | GMGN `token_kline` | OHLCV per token | mentok **1.000 bar ≈ 41,6 hari**; **0 bar untuk token gas** | privat | tidak cukup untuk walk-forward |

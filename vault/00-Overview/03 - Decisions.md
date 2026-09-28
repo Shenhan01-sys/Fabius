@@ -406,3 +406,42 @@ likuidasi tetap tidak ada; dan angka ini baru divalidasi dari **satu** jaringan 
 **Terkait:** [[TradingKnowledge/Sumber dan Jangkauan]] · [[TradingKnowledge/Fakta Terukur]] §A.5/§C ·
 [[08-Backlog/01 - Backlog]] P13 · [[06-Results/03 - Not Yet Proven]] baris 15 ·
 [[03-Data/01 - Dataset]]
+
+## F-D26 — Veto funding tetap ada tapi berganti nama: pemutus rezim, bukan gerbang keamanan · 28 Sep 2026
+
+P16 menawarkan tiga jalan untuk `FUNDING_EXTREME = 0,05 %/4 jam` di `tools/direction.py`: turunkan
+ambangnya, biarkan apa adanya, atau pindah aset uji. Yang memutuskan bukan selera, tapi angka yang
+baru ada:
+
+- **0 dari 2.963** settlement (6 basis × 66–97 hari, Bybit + OKX) melewatinya. Maksimum yang terlihat
+  **0,0256 %/8 jam** ≈ 0,0128 %/4 jam — ambangnya ±4× di atas apa pun yang pernah terjadi di jendela itu.
+- **0 dari 12 uji** arah 24 jam dari funding ekstrem lolos BH (median + bootstrap + binomial;
+  [[06-Results/08 - Carry Study]] §B). Jadi **menurunkan ambang supaya gerbangnya "pernah menyala"
+  berarti memilih angka dari noise** - persis yang dilarang [[TradingKnowledge/QT4 - Overfitting dan Validasi]]
+  dan [[TradingKnowledge/EV2 - Jebakan Backtest]].
+- Dan yang paling menentukan: kandidat kita yang sebenarnya (memecoin BSC) **tidak punya funding
+  sama sekali**. Gerbang ini tidak akan pernah menimbang satu pun aset yang benar-benar kita
+  perdagangkan - jadi menyebutnya "keamanan" selalu salah, bukan cuma sekarang ketahuan salah.
+
+**Diputuskan: tetap ada, ambangnya tidak diubah, namanya diganti.** Yang benar dipertahankan adalah
+peran yang tidak butuh prediktabilitas: **pemutus rezim**. Kalau funding pernah melewati empat kali
+maksimum yang pernah kami lihat, kita tidak lagi berada di dunia tempat semua ambang lain dipilih,
+dan menolak posisi baru saat itu adalah keputusan yang benar tanpa perlu jadi sinyal - sama pola
+pikirnya dengan `killSwitch` ([[02-Contracts/C3 - ExecutionVault]]). Tidak ada satu pun angka yang
+diubah; yang berubah adalah klaim yang menempel padanya.
+
+**Yang ikut dikoreksi karena ini.** Delapan tempat di `TradingKnowledge/` menyebut gerbang ini sebagai
+penolak posisi "karena biaya" (`Fakta Terukur` §A, `FD4`, `PL3`, `PL4`, `ST2`, `QT6`, `U2`×2);
+semuanya kini berbunyi *pemutus rezim* + angka 0/2.963. Sekali-jalan:
+`vault/scripts/relabel_funding_gate.py`.
+
+**Yang tetap terbuka, dan tidak boleh dilupakan.** Satu gerbang lagi bernasib sama: `MIN_VOL_OVER_LIQ`
+0,10 dan empat ambang universe lain masih **diputuskan, bukan diuji** terhadap hasil - itu P12, dan
+corongnya (`tools/screen_universe.py`) sudah membandingkan kohort dengan arah yang **melawan**
+nilai veto kita. Kalau seorang reviewer cuma diberi satu kalimat dari halaman ini: veto yang tidak
+pernah menyala bukan perlindungan; ia asuransi yang tagihannya nol dan manfaatnya belum pernah
+terpakai - dan kita harus bilang begitu, bukan menghapusnya diam-diam saat ada yang bertanya.
+
+**Terkait:** [[06-Results/08 - Carry Study]] · [[03-Data/D6 - Funding and OI History]] ·
+[[TradingKnowledge/Fakta Terukur]] §A/§F · [[08-Backlog/01 - Backlog]] P12/P16 ·
+[[Concepts/One-Way Gate]] · [[TradingKnowledge/U2 - Funding Rate dan Basis]]

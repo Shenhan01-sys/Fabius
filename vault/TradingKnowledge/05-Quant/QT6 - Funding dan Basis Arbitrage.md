@@ -30,7 +30,7 @@ Funding sebagai **dua hal berbeda** yang sering dicampur:
 | sebagai | berarti | dipakai di Fabius sebagai |
 |---|---|---|
 | yield | sisi long membayar sisi short saat kontrak premium | **tidak dipakai sebagai yield** — tidak ada jalur eksekusinya |
-| biaya | posisi long di aset yang premium membayar terus | gerbang: `\|funding\| > 0,05 %/4 jam` → **tolak posisi** (`tools/direction.py`, §A) |
+| biaya | posisi long di aset yang premium membayar terus | pemutus rezim: `\|funding\| > 0,05 %/4 jam` → **tolak posisi baru** (`tools/direction.py`, §A; 0 kejadian terukur, F-D26) |
 | sinyal kerumunan | funding ekstrem = sisi yang sama berdesakan | dipakai hanya sebagai alasan menolak, bukan memilih arah |
 
 Besaran terukur **satu pembacaan pada satu waktu** (§A, funding per 4 jam): BNB `+0,0000 %`

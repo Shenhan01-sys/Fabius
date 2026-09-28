@@ -56,7 +56,7 @@ contohnya tidak bisa diulang dari kode sekarang
 | bar ≥ 720 sebagai hak dinilai | `ADA` | `MIN_BARS_TINY=720`; di bawah itu kursi gugur — [[Fakta Terukur]] §A |
 | gerbang keamanan ④ (bisa dijual / honeypot) | `ADA-TAPI` | 4 status; `UNMEASURED` **mencabut hak kursi**, tidak dihitung bersih — [[04-Tools/TL3 - security_gate]] |
 | gerbang kapasitas keluar ⑥ (likuiditas vs ukuran) | `ADA` | ikut `seat_eligible` + `seat_blockers`, dan **di-hash** — [[Fakta Terukur]] §E |
-| funding sebagai penolak posisi | `ADA` | funding > 0,05 %/4 j tolak posisi (biaya > edge yang kami klaim) — §A |
+| funding sebagai penolak posisi | `ADA` | **pemutus rezim**, bukan prediktor: > 0,05 %/4 j menolak posisi baru; 0 dari 2.963 settlement melewatinya (§A.5, F-D26) |
 | `confidence` model yang terkalibrasi | `TIDAK-ADA` | pembandingnya belum ada: apakah `confidence` tinggi → hit-rate tinggi, belum terukur — [[06-Results/03 - Not Yet Proven]] #2 |
 | harga nyata untuk menyimpulkan ukuran | `ADA-TAPI` | mark price venue, bukan pasar meme sungguhan — [[Fakta Terukur]] §D |
 

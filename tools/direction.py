@@ -72,7 +72,15 @@ NEED_BARS = 2400            # 5-fold walk-forward (vault/06-Results/02 - Thresho
 MIN_BARS_TINY = 720         # 30 hari: cukup utk fitur, TIDAK cukup utk klaim edge
 ACF_EFFICIENT = 0.05        # |acf| di bawah ini = mendekati jalan acak (asset_efficiency.py:29)
 ACF_STRUCTURED = 0.10       # >= ini = pola terukur; di antaranya = belum tahu
-FUNDING_EXTREME = 0.0005    # 0,05% per 4 jam = biaya carry/teknik terlalu mahal
+FUNDING_EXTREME = 0.0005    # 0,05% per 4 jam. PERANNYA PEMUTUS REZIM, bukan gerbang keamanan dan
+                            # bukan sinyal: 0 dari 2.963 settlement (Bybit+OKX, 6 basis, 66-97 hari)
+                            # melewatinya, maksimum yang terlihat 0,0256%/8 jam, dan 0 dari 12 uji
+                            # arah 24 jam lolos BH. Mematikan posisi BARU saat funding 4x di atas
+                            # apa pun yang pernah kami lihat itu benar tanpa perlu prediktif.
+                            # Menurunkan ambangnya supaya "pernah menyala" = memilih angka dari noise.
+                            # Keputusan + angkanya: vault/00-Overview/03 - Decisions.md F-D26 dan
+                            # vault/06-Results/08 - Carry Study.md. Memecoin (kandidat kita yang
+                            # sebenarnya) tidak punya funding: gerbang ini tidak menimbang mereka.
 RISK_SAFE = 0.005            # 0,5% ekuitas per posisi saat tidak yakin
 RISK_WARM = 0.010            # 1% (korpus lama: BASE_RISK 1%, CONVICTION 0,5-1,5%)
 LIQ_MIN_USD = 50_000        # vault/01-Agent/01 - Asset Classes and Seats.md §3 (syarat kursi ⑥) <- vault/06-Results/02 - Thresholds.md

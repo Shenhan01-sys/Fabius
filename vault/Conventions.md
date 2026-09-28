@@ -49,6 +49,15 @@ ditiru.
      diperbaiki (sebelumnya ia palsu kalau cwd-nya salah).
   Prosedur yang mengikat: **setelah `sync_vault.py` menulis, baca `git diff -- vault`** dan pastikan
   yang keluar hanya penambahan. Satu gerbang hijau bukan bukti tidak ada yang rusak.
+  3. **Kelas yang sama ketiga kalinya, 28 Sep, dan ini paling murahan:**
+     `io.open(p, "w").write(io.open(p).read().replace(...))` — `"w"` mengosongkan berkas SEBELUM
+     argumennya dievaluasi, sehingga `relabel_funding_gate.py` versi pertama **mengosongkan 7 berkas**
+     (0 byte). Tidak ada gerbang yang menjerit: `check_links.py` malah `Broken: 0` karena berkas yang
+     kosong tidak punya tautan. Diselamatkan `git checkout --`. Bentuk yang benar: baca dulu ke
+     variabel, lalu tulis; dan dua assert setelahnya (`len(after) >= len(before)`,
+     `os.path.getsize(p) > 0`). Aturan praktisnya: **skrip penulis massal harus berjalan dengan
+     `git status` bersih sebelum dan `git diff --stat` yang masuk akal sesudah** — kalau diff
+     memperlihatkan penghapusan besar yang tidak kamu minta, itu bukan "bagian dari pekerjaan".
 
 - **Sebelum SETIAP push: kabari builder, lalu jalankan**
   `python -X utf8 vault/scripts/prepush_check.py`. Keluar non-zero = perbaiki pesan commitnya dulu,

@@ -49,7 +49,7 @@ dicari pendukungnya.
 |---|---|---|
 | bar 1 jam ≥ 2.400 untuk menguji sebuah fitur | `ADA-TAPI` | Aster 9.599 bar, tetapi hanya aset **ber-kontrak perp** — [[Fakta Terukur]] §A |
 | bar ≥ 720 untuk sekadar "layak dinilai" | `ADA-TAPI` | `MIN_BARS_TINY=720` = 30 hari: layak dinilai, **tidak** layak diklaim sebagai edge — §A |
-| funding + OI sebagai fitur hidup | `ADA-TAPI` | terpasang di `tools/direction.py` (funding > 0,05 %/4 j menolak posisi); **historinya sekarang ada** (`universe/funding-history.jsonl`, 8 jam × 97 hari — [[03-Data/D6 - Funding and OI History]]) tapi tetap bukan per-bar — §A.5 |
+| funding + OI sebagai fitur hidup | `ADA-TAPI` | terpasang di `tools/direction.py` sebagai **pemutus rezim** (funding > 0,05 %/4 j menolak posisi; 0 kejadian terukur, F-D26); **historinya sekarang ada** (`universe/funding-history.jsonl`, 8 jam × 97 hari — [[03-Data/D6 - Funding and OI History]]) tapi tetap bukan per-bar — §A.5 |
 | tick / L2 / footprint | `TIDAK-ADA` | §C — seluruh keluarga order-flow berhenti di `T1` |
 | aliran dompet point-in-time | `ADA-TAPI` | 100 transaksi/panggilan, jendela 8–13 menit, tanpa riwayat — §B |
 | narasi (tema + nada) ikut ter-hash | `ADA-TAPI` | jalur berkas GDELT hidup; belum diuji sebagai prediktor — §C |
