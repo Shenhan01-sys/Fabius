@@ -78,10 +78,8 @@ di-fit, `n >= 20` non-overlap, gross di atas 59 bps, drop-best-fold, BH α 0,10 
 
 ## Tingkat bukti
 
-`T1` untuk mekanisme funding/basis (standar produk derivatif) · `T0` untuk "funding ekstrem
-memprediksi reversal" · **tidak ada `T3` di keluarga ini**: yang teruji di repo ini hanya aturan
-harga, dan hasilnya negatif 12/12 (§F) — gerbang funding tidak ikut diuji karena historinya tidak
-ada. Status gerbang carry: **ADA tapi belum diuji** — bukan lolos, bukan gagal: belum.
+`T1` untuk mekanisme funding/basis (standar produk derivatif) · `T2` untuk "carry tinggi memprediksi penurunan" sebagai klaim literatur (*Crypto Carry*, BIS WP 1087, [[Sumber dan Jangkauan]] #1) · `T0` untuk funding ekstrem sebagai pemicu reversal per-bar · **tidak ada `T3` di keluarga ini**: yang teruji di repo ini hanya aturan
+harga, dan hasilnya negatif 12/12 (§F). Gerbang funding sudah ikut diuji 28 Sep begitu historinya punya kita: **0 dari 2.963** settlement melewatinya, dan **0 dari 12** uji arah 24 jam lolos BH → [[06-Results/08 - Carry Study]]. Status gerbang carry: diuji, belum memberi apa pun — dan ambangnya sendiri mungkin tidak akan pernah menyala di aset ini.
 
 ## Boleh dibaca, dilarang dibaca
 

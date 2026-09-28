@@ -90,7 +90,7 @@ butuh jalur data funding historis yang tidak ada (§C).
 
 ## Tingkat bukti
 
-`T1` untuk kerangka cash-and-carry/basis (pengetahuan standar pasar) · **belum diuji sebagai
+`T2` untuk kerangka cash-and-carry/basis di crypto: Schmeling/Schrimpf/Todorov, *Crypto Carry*, BIS WP 1087 (2023) - metadatanya dan abstraknya dibaca 28 Sep ([[Sumber dan Jangkauan]] #1); angka mereka (basis >10%/tahun) BUKAN angka kita (funding kita 1,3–2,2 bps/hari, [[06-Results/08 - Carry Study]] §C) · **belum teruji sebagai
 strategi** di repo ini, dan tidak ada angka §F untuk jalur carry · `T0` untuk setiap kalimat yang
 menyebut yield yang bisa kami panen. Yang terukur hanyalah **datanya**: pembacaan funding §A dan
 gerbang yang memakainya (§E) — data tersedia bukan bukti metode.

@@ -52,7 +52,7 @@ Run yang bentuknya sudah benar: `tools/backtest.py` — ambang diimpor, 12 aset,
 
 ## Tingkat bukti
 
-`T3` untuk semua mode gagal di catatan ini (masing-masing punya artefak: anomali `p_boot`, "12/12", F-D16 yang belum tercapai); `T1` untuk pilihan statistik itu sendiri — BH, α 0,10, `MIN_SAMPLES=20` tidak kami uji lawan alternatif, hanya diwarisi dan dicatat asalnya.
+`T3` untuk semua mode gagal di catatan ini (masing-masing punya artefak: anomali `p_boot`, "12/12", F-D16 yang belum tercapai); `T2` untuk pilihan statistik itu sendiri - koreksi selection-bias atas jumlah tes ada literatur terkenalnya (Bailey & López de Prado, *Deflated Sharpe Ratio*, SSRN `10.2139/ssrn.2460551`, [[Sumber dan Jangkauan]] #3) dan tidak kami reproduksi — BH, α 0,10, `MIN_SAMPLES=20` tidak kami uji lawan alternatif, hanya diwarisi dan dicatat asalnya.
 
 ## Boleh dibaca, dilarang dibaca
 

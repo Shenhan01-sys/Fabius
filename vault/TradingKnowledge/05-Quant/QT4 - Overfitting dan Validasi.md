@@ -91,7 +91,7 @@ pada run yang sama ([[06-Results/02 - Thresholds]]).
 
 ## Tingkat bukti
 
-`T1` untuk konsep N_eff / DSR / PBO (nama dari literatur, tidak kami reproduksi) · `T3` untuk
+`T2` untuk konsep N_eff / DSR / PBO - ada literaturnya dan metadatenya kami cocokkan 28 Sep: Bailey & López de Prado, *The Deflated Sharpe Ratio*, SSRN `10.2139/ssrn.2460551` ([[Sumber dan Jangkauan]] #3); tidak kami reproduksi · `T3` untuk
 praktik "ambang diimpor, bukan di-fit" plus tiga varian kontrol yang benar-benar dijalankan dan
 angkanya ada di §F · flag `NEGATIF` untuk hasil instance itu.
 

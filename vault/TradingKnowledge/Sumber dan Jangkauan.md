@@ -57,6 +57,34 @@ sini, halaman itu pintu angkanya.
 - **`QT12 - Stack Data dan Perkakas`**: daftar "mati dari mesin ini"-nya harus dibaca dengan
   tanggal; matriks egress ini berubah dalam empat hari.
 
+## Referensi yang benar-benar dibaca (28 Sep 2026)
+
+Aturan [[Aturan Subtree]] #3: klaim pihak ketiga butuh pemiliknya. Enam alamat di bawah **dipanggil
+sendiri** hari ini dan metadatanya cocok dengan yang tercantum; itu menaikkan catatan yang
+mengutipnya dari `T1` (praktik umum, tidak teruji oleh kami) ke `T2` (ada literatur, **tidak kami
+reproduksi**). Bukan `T3` - `T3` hanya untuk angka dari run kita sendiri.
+
+| # | rujukan | alamat / DOI | apa yang dia pegang di lapisan ini |
+|---|---|---|---|
+| 1 | Schmeling, Schrimpf, Todorov — *Crypto Carry*, BIS Working Paper 1087 (2023) | `https://www.bis.org/publ/work1087.htm` | abstraknya dibaca: carry crypto rata-rata **> 10 %/tahun**, puncak ±**60 %**, digerakkan permintaan ritel akan leverage + modal arbitrase yang langka, dan **carry tinggi memprediksi crash**. Rujukan untuk [[U2 - Funding Rate dan Basis]], [[QT6 - Funding dan Basis Arbitrage]], [[U3 - Level Likuidasi dan Cascade]] |
+| 2 | Bollen, Mao, Zeng — *Twitter mood predicts the stock market* (2010; J. Computational Science 2(1), 2011, hlm. 1–8) | arXiv `1010.3003` | satu-satunya klaim "sentimen sosial **memprediksi**" yang punya uji terkenal; dipakai di [[M2 - Sentimen Sosial dan Ekstraksi LLM]] bersama batasnya (efek kecil, pasar lain, replikasi lemah) |
+| 3 | Bailey & López de Prado — *The Deflated Sharpe Ratio: Correcting for Selection Bias, Backtest Overfitting and Non-Normality* | SSRN `10.2139/ssrn.2460551` | dasar [[QT4 - Overfitting dan Validasi]] dan [[EV3 - Signifikansi dan Multiple Testing]]: Sharpe hasil pencarian tidak boleh dilaporkan sebagai estimasi tanpa mengurangi jumlah tes — tepat lubang `passed: 5` tanpa nama di [[06-Results/08 - Carry Study]] / P12 |
+| 4 | Park & Irwin — *What do we know about the profitability of technical analysis?*, J. Economic Surveys (2007); kawannya yang bebas-snooping SSRN `10.2139/ssrn.722264` (2005) | DOI `10.1111/j.1467-6419.2007.00519.x` | alamat rujukan keluarga `S*`/`I*`: profitabilitas analisis teknikal **sudah disurvei** dan hasilnya tidak satu-arah. Kami memakai keberadaannya sebagai alamat, bukan mengutip kesimpulannya kata-per-kata |
+| 5 | Carta & Conversano — *Practical Implementation of the Kelly Criterion*, Frontiers in Applied Math. & Statistics (2020) | DOI `10.3389/fams.2020.577050` | penyangga [[FD6 - Ukuran Posisi]]: Kelly penuh berlebihan di dunia nyata; fraksional karena estimasi salah, bukan karena rendah hati |
+| 6 | MacLean, Thorp, Zhao, Ziemba — *How Does the Fortune's Formula Kelly Capital Growth Model Perform?* (2011) · Busseti, Ryu, Boyd — *Risk-Constrained Kelly Gambling* (2016) | DOI `10.3905/jpm.2011.37.4.096` · `10.3905/joi.2016.25.3.118` | untuk kalimat "Kelly optimal **kalau** probabilitasnya benar; tidak ada yang benar itu" |
+
+**Konfrontasi yang harus disebut, bukan dihindari.** Rujukan #1 bilang carry crypto **> 10 % per
+tahun**; alat kami ([[06-Results/08 - Carry Study]] §C) mengukur funding per 8 jam di Bybit/OKX dan
+mendapat **1,3–2,2 bps/hari ≈ 5–8 % per tahun**. Itu dua hal berbeda: mereka **basis futures-spot**
+yang diannualkan (termasuk 2021 saat leverage ritel meluap), kami **funding rate** pada 97 hari
+terakhir. Literatur tidak membatalkan angka kami dan sebaliknya — yang mereka bagikan cuma namanya.
+Catatan mana pun yang memakai #1 wajib menulis yang mana yang dimaksud.
+
+**Cara mematahkan tabel ini (jangan percaya halaman ini):** tiap baris bisa dipanggil ulang —
+`https://api.crossref.org/works/<doi>`, `https://arxiv.org/abs/1010.3003`,
+`https://www.bis.org/publ/work1087.htm`. Kalau metadata di halaman sumber tidak cocok dengan baris
+ini, barisnya yang dicabut.
+
 ## Batas halaman ini
 
 - Ini **bukan** klaim bahwa metode di lapisan ini sudah diverifikasi terhadap literatur. Sebagian

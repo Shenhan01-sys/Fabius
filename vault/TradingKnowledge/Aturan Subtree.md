@@ -67,7 +67,10 @@ Kerangka: `Templates/Template - Metode.md` (dipakai `01 02 03 05 06 07`) dan
 2. **"Fabius memakai X" hanya kalau `tools/` membuktikannya** — sebut file-nya. Kalau belum ada
    kodenya, tulis `TIDAK ADA` di tabel `## Butuh data`. Tidak ada keadaan "mungkin sudah".
 3. **Klaim pihak ketiga butuh pemiliknya.** "Riset menunjukkan…" tanpa paper = `T0`. Tulis
-   `diklaim oleh <siapa>`, bukan `diketahui bahwa`.
+   `diklaim oleh <siapa>`, bukan `diketahui bahwa`. **`T2` butuh alamat yang dicocokkan, bukan nama
+   yang kedengarannya pintar**: judul/DOI/penerbit harus bisa dipanggil ulang dan tercatat di
+   [[Sumber dan Jangkauan]] (referensi yang benar-benar dibaca 28 Sep ada di sana, beserta
+   konfrontasi angka mereka vs angka kami). Kalau alamatnya tidak bisa diverifikasi, turun ke `T1`.
 4. **Turunan harus bertanda.** Selisih atau rata dari angka yang sudah ada (mis. `+1,5` dan
    `−146,3` → selisih **148 bps**; dua fee 30 bps berkomposisi → `1 − (1 − 0,003)² = 59,9 bps`, yang
    menjelaskan kenapa 59 bps yang terukur itu hampir seluruhnya fee) boleh ditulis, dengan kata

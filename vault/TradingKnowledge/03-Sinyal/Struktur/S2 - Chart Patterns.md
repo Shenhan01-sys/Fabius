@@ -91,8 +91,7 @@ angka apa pun darinya tidak kami kutip** karena tidak bisa dijalankan dari clone
 
 ## Tingkat bukti
 
-`T2` untuk klaim "pernah diukur secara algoritmik di pasar lain" (ada literatur, tidak kami
-reproduksi, tidak kami kutip angkanya) · `T1` untuk kegunaan sebagai bahasa/deskripsi · `T0` untuk
+`T2` untuk klaim "pernah diukur secara algoritmik di pasar lain" - alamatnya: Park & Irwin, *What do we know about the profitability of technical analysis?*, J. Economic Surveys 2007, DOI `10.1111/j.1467-6419.2007.00519.x`, dan kawannya yang bebas-snooping SSRN `10.2139/ssrn.722264` ([[Sumber dan Jangkauan]] #4); metadatanya kami cocokkan, kesimpulannya tidak kami kutip kata-per-kata dan tidak kami reproduksi · `T1` untuk kegunaan sebagai bahasa/deskripsi · `T0` untuk
 klaim prediktif yang beredar di komunitas · untuk Fabius: **belum diuji**, tidak ada detektornya.
 
 ## Boleh dibaca, dilarang dibaca

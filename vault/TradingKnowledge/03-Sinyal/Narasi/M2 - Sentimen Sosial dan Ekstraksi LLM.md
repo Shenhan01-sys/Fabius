@@ -77,7 +77,7 @@ Urutan yang sah, dan langkah 1 tidak boleh dilewat:
 
 ## Tingkat bukti
 
-`T0` untuk klaim vendor bahwa skor sentimen memprediksi harga · `T1` untuk pola kerja
+`T0` untuk klaim vendor bahwa skor sentimen memprediksi harga · `T2` untuk klaim "mood sosial punya isi prediktif" di pasar lain: Bollen/Mao/Zeng, *Twitter mood predicts the stock market*, arXiv `1010.3003` (J. Computational Science 2011) —metadata dicocokkan 28 Sep, efeknya kecil dan tidak pernah kami replikasi ([[Sumber dan Jangkauan]] #2) · `T1` untuk pola kerja
 "ekstraksi → agregasi → uji" · untuk Fabius: **jalur numerik ada (GDELT berkas) tapi belum teruji**
 (baris 8), jalur teks tidak ada, dan penilai LLM yang ada belum melewati kontrol negatif di data
 kami sendiri.

@@ -79,8 +79,7 @@ Yang belum dan diperlukan supaya ukuran jadi keputusan, bukan kebetulan:
 
 ## Tingkat bukti
 
-`T3` untuk perilaku plafon kontrak (teruji suite) · `T1` untuk fixed fractional / Kelly fraksional /
-vol targeting sebagai kerangka · untuk Fabius: **kebijakan ukuran belum diuji** — tidak ada
+`T3` untuk perilaku plafon kontrak (teruji suite) · `T2` untuk fixed fractional / Kelly fraksional / vol targeting sebagai kerangka - ada literaturnya dan metadatanya dicocokkan 28 Sep: Carta & Conversano 2020, DOI `10.3389/fams.2020.577050`; MacLean/Thorp/Zhao/Ziemba 2011, DOI `10.3905/jpm.2011.37.4.096`; Busseti/Ryu/Boyd 2016, DOI `10.3905/joi.2016.25.3.118` ([[Sumber dan Jangkauan]] #5-6) · untuk Fabius: **kebijakan ukuran belum diuji** — tidak ada
 expectancy positif pada `n >= 20` yang bisa dimasukkan ke rumus apa pun (§E/§F).
 
 ## Boleh dibaca, dilarang dibaca

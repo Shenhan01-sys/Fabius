@@ -95,8 +95,7 @@ fold terbaik dibuang, lolos BH α 0,10 (§D/§E, F-D16).
 ## Tingkat bukti
 
 `T3 NEGATIF` untuk aturan arah `gap SMA24 ±1 % + ret24` — sudah kami uji di data sendiri dan hasilnya
-melawan klaimnya ([[Fakta Terukur]] §F) · `T1` untuk MA sebagai peringkas tren dan filter rezim
-(dipakai luas, tidak kami uji dalam peran itu) · `T0` untuk "golden cross membeli masa depan".
+melawan klaimnya ([[Fakta Terukur]] §F) · `T2` untuk MA sebagai peringkas tren dan filter rezim - disurvei di literatur (Park & Irwin 2007, DOI `10.1111/j.1467-6419.2007.00519.x`, [[Sumber dan Jangkauan]] #4) dan tidak kami reproduksi dalam peran itu · `T0` untuk "golden cross membeli masa depan".
 
 ## Boleh dibaca, dilarang dibaca
 
