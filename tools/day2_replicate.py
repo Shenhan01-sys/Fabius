@@ -71,6 +71,13 @@ def read_spec():
 
 
 def last_flow_stamp():
+    """Stempel terakhir di SALINAN LOKAL - dan itu persis yang menipu kami dua kali (27 & 28 Sep).
+
+    Umur aliran menentukan kapan alat ini boleh bicara. Salinan yang basi membuat jam replikasi
+    terbaca salah arah, jadi penjaga ini membandingkan dengan commit data terbaru di `origin/*` dan
+    BERTERIA kalau bedanya > 10 menit. Vonis tetap dihitung dari berkas lokal - itu satu-satunya
+    berkas yang bisa dibaca utuh - tapi pembacanya tahu kalau tanahnya gompal.
+    """
     t = 0
     for ln in io.open(FLOW, encoding="utf-8", errors="replace"):
         ln = ln.strip()
@@ -83,6 +90,23 @@ def last_flow_stamp():
         x = int(d.get("t") or 0)
         if x > t:
             t = x
+    try:
+        import subprocess
+        for ref in ("origin/master", "origin/HEAD"):
+            r = subprocess.run(["git", "log", "-1", "--format=%ct", ref, "--",
+                                "universe/wallet-flow.jsonl"], cwd=ROOT, capture_output=True,
+                               text=True)
+            tok = int((r.stdout or "0").strip() or 0) if r.returncode == 0 else 0
+            if not tok:
+                continue
+            if tok > t + 600:
+                print("PERINGATAN: salinan lokal BASI - %s punya commit data %.0f MENIT lebih baru "
+                      "dari stempel terakhir %s. Jam dan vonis di bawah dihitung dari berkas yang "
+                      "basi itu: jalankan `git pull` sebelum mempercayainya."
+                      % (ref, (tok - t) / 60.0, os.path.basename(FLOW)))
+            break
+    except Exception as e:
+        print("(penjaga salinan basi tidak bisa jalan: %r - keadaan lokal TIDAK terverifikasi)" % e)
     return t
 
 

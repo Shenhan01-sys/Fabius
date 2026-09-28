@@ -576,6 +576,16 @@ kalau gagal        09 dan 10 DICABUT dari klaim, bukan "diperluas dengan penjela
 mainnya"*. Dalam keadaan normal ia mencetak **"BELUM SAH - kurang 12.0 jam"** dan **nol angka
 hasil**. Ketiadaan hasil bukan hasil: tidak ada klaim yang bergerak ke dua arah.
 
+**Satu penjaga yang kupasang karena kesalahan sesi ini sendiri.** Umur aliran dibaca dari
+`universe/wallet-flow.jsonl` **lokal** - dan salinan lokal persis yang menipu dua kali di proyek ini
+(27 Sep: 78 commit tertinggal; 28 Sep: 50 commit tertinggal, dan dari angka itulah kesimpulan
+"perekam mati 5 jam" yang salah lahir). Sekarang `last_flow_stamp()` membandingkan stempel lokal
+dengan commit data terbaru di `origin/*` dan mencetak `PERINGATAN: salinan lokal BASI - ... 17 MENIT
+lebih baru ...` sebelum satu baris hasil pun keluar. Vonis tetap dihitung dari berkas lokal (itu
+satu-satunya berkas yang bisa dibaca utuh), tapi pembacanya diberi tahu bahwa tanahnya gompal.
+Terbukti menangkap kasusnya sendiri pada run pertama: peringatan keluar, lalu hilang setelah
+`git pull`.
+
 **Konsekuensi yang harus diterima nanti.** Karena `t_kunci` = 06:13:38Z - yaitu saat rantai ⑦ mati
 (F-D28) - jendela replikasi baru benar-benar berguna kalau perekaman hidup lagi. Kunci ini sengaja
 TIDAK kupasang ulang setelahnya: memindahkan `t_kunci` supaya "cepat sah" berarti memilih titik
