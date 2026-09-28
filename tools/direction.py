@@ -52,6 +52,7 @@ ROOT = os.path.dirname(HERE)
 sys.path.insert(0, HERE)
 
 import bars  # noqa: E402  (tools/bars.py)
+import flow_gate  # noqa: E402  (gerbang [7] sebagai perilaku: kerumunan jual = VETO masuk)
 
 _spec = importlib.util.spec_from_file_location("judge", os.path.join(HERE, "judge.py"))
 judge = importlib.util.module_from_spec(_spec)
@@ -318,6 +319,9 @@ def main():
     ap.add_argument("--no-model", action="store_true")
     ap.add_argument("--no-security", action="store_true",
                     help="lewati gerbang ④ (dipakai hanya untuk uji offline; kandidat jadi UNMEASURED dan kursi ditolak)")
+    ap.add_argument("--no-flow", action="store_true",
+                    help="lewati gerbang ⑦ (kerumunan jual). Tanpa [7] rekaman TIDAK memuat alasan "
+                         "penolakan aliran - jangan dipakai untuk produksi, hanya untuk membandingkan")
     a = ap.parse_args()
 
     ps = perp_symbols()
@@ -436,6 +440,13 @@ def main():
         d = decide_one(r["_f"], r["_fund"], r.get("liq_usd"), m)
         sec = sec_by_base.get(str(r.get("base") or "").upper())
         d = apply_gates(d, sec, r.get("bars"), r.get("liq_usd"))   # gerbang hanya mengurangi
+        # Gerbang [7] - aliran ⑦. Ditempatkan SESUDAH gerbang kursi supaya yang dicatat agen adalah
+        # keadaan terakhir yang benar: [7] hanya boleh menurunkan (flat), tidak pernah menaikkan
+        # `side` yang sudah dimatikan ①/④/⑥. Kalau [7] dijalankan lebih dulu, sebuah veto bisa
+        # "tertelan" oleh gate lain dan tidak pernah muncul di `why` maupun hash-nya.
+        fg = None if a.no_flow else flow_gate.state(r.get("address"))
+        if fg:
+            d = flow_gate.apply(d, fg)
         sh, meta = snap_hash_for(r["symbol"], r["_f"], r["_fund"])
         # Ringkasan ④ yang SESUNGGUHNYA dipakai ikut masuk rekaman (dan jadi decisionHash): tanpa
         # ini, "kami memeriksa honeypot" hanya bisa dipercaya dari log teks.
@@ -446,25 +457,33 @@ def main():
                        "goplus_sha": (sec.get("goplus") or {}).get("_sha"),
                        "tax_sell": (sec.get("tax") or {}).get("tax_sell")}
         rec = {"kind": "direction", "symbol": r["symbol"], "universe_snapshot": snap["sha256"],
-               "data": meta, "decision": d, "model": m, "security": sec_rec}
+               "data": meta, "decision": d, "model": m, "security": sec_rec, "flow": fg}
         dh = "0x" + hashlib.sha256(json.dumps(rec, sort_keys=True, separators=(",", ":")).encode()).hexdigest()
+        # [7] ikut gatesHash: "agen menolak karena kerumunan jual" harus bisa dibuktikan dari
+        # artefak, bukan dari ingatan layar. Yang di-hash keadaan terukurnya (maker_jual, usd,
+        # usia berkas), bukan hanya label statusnya.
         gh = "0x" + hashlib.sha256(json.dumps({"why": d["why"], "regime": d["regime"],
                                                "sellability": d.get("sellability"),
-                                               "seat_eligible": d.get("seat_eligible")},
+                                               "seat_eligible": d.get("seat_eligible"),
+                                               "flow": {k: fg.get(k) for k in
+                                                        ("status", "maker_jual", "usd_jual",
+                                                         "usd_beli", "usia_berkas_menit")}
+                                               if fg else None},
                                               sort_keys=True, separators=(",", ":")).encode()).hexdigest()
         out_rows.append({**rec, "decisionHash": dh, "gatesHash": gh, "snapshotHash": sh})
 
     print(f"{'simbol':14}{'bar':>6}{'|acf|':>8}{'fund4j%':>10}{'model':>9}{'veto':>7}{'4':>11}"
-          f"{'side':>7}{'rezim':>13}{'kursi':>7}{'risk':>7}  alasan")
-    print("-" * 140)
+          f"{'[7]':>9}{'side':>7}{'rezim':>13}{'kursi':>7}{'risk':>7}  alasan")
+    print("-" * 150)
     for o in out_rows:
         d, m, dt = o["decision"], (o.get("model") or {}), o["data"]
         acf = dt.get("acf_abs")
         vp = m.get("veto_prob")
+        fgst = (o.get("flow") or {}).get("status") or "OFF"
         print(f"{o['symbol']:14}{dt['bars']:>6}{(f'{acf:.3f}' if acf is not None else '-'):>8}"
               f"{(dt['funding_4h'] * 100 if dt.get('funding_4h') is not None else 0):>10.4f}"
               f"{str(m.get('side') or '-'):>9}{('-' if vp is None else f'{vp:.2f}'):>7}"
-              f"{str(d.get('sellability') or '-'):>11}"
+              f"{str(d.get('sellability') or '-'):>11}{fgst:>9}"
               f"{d['side']:>7}{d['regime']:>13}"
               f"{('YA' if d.get('seat_eligible') else 'TIDAK'):>7}"
               f"{d.get('risk_pct', 0) * 100:>6.1f}%  {'; '.join(d['why'])[:96]}")

@@ -17,3 +17,17 @@ docs/upstream-8004/** -text
 # tersimpan** - klaim point-in-time yang kupatahkan sendiri, di sisi yang seharusnya paling aman.
 # Dataset tidak punya klaim "verbatim terhadap upstream", jadi tidak ada yang perlu dikunci di
 # sini; yang punya klaim itu cuma vendor x402.
+# Berkas data yang ditulis MESIN tiap siklus, dan hanya bertambah di ekor.
+# Tanpa driver ini, satu commit manusia ke berkas yang sama membuat rantai perekam gagal push
+# selamanya (terukur 28 Sep: aliran ⑦ bolong 3 jam 19 menit karena commit-ku sendiri).
+#   jsonl   -> union: kedua sisi baris dipertahankan; `record_wallet_flow.py` sudah dedupe
+#              by transaction_hash, jadi baris dobel tidak merusak apa pun.
+#   manifest-> ours (driver `true` diaktifkan workflow perekam): berkas ini dibikin ulang dari
+#              nol tiap siklus, jadiMerge apa pun terhadapnya tidak berarti.
+universe/wallet-flow.jsonl  merge=union
+universe/watch-prices.jsonl merge=union
+universe/bsc-universe.jsonl merge=union
+universe/*-manifest.txt     merge=ours
+# CATATAN: TIDAK ada wildcard `*.json merge=union` di sini. Union pada JSON menghasilkan berkas
+# yang tidak bisa di-parse, dan artefak keputusan justru harus bertabrakan kalau dua pihak
+# menulisnya - konflik yang kelihatan lebih baik daripada data korup yang hijau.

@@ -125,6 +125,13 @@ jobs:
         run: |
           git config user.name "wallet-flow-recorder"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          # Driver merge untuk berkas data (lihat .gitattributes). Tanpa ini `merge=ours` di
+          # .gitattributes adalah nama tanpa isi dan konflik tetap konflik.
+          git config merge.ours.driver true
+          # Rekaman LOKAL di luar rantai ini tidak boleh membuat runner gagal push: kalau
+          # rebase berbenturan, buang commit lokal kita (barisnya tetap ada di origin) dan
+          # lanjut - bolong satu siklus lebih baik daripada buta tiga jam seperti 28 Sep.
+          git config pull.rebase true
           END=$(( $(date +%s) + 275*60 ))
           K=0
           while [ "$(date +%s)" -lt "$END" ]; do
@@ -143,12 +150,21 @@ jobs:
               echo "tidak ada baris baru di siklus $K"
             else
               git commit -q -m "wallet flow $(date -u +%Y-%m-%dT%H:%M:%SZ) [skip ci]" || true
+              PUSHED=0
               for t in 1 2 3; do
-                if git -c pull.rebase=true pull --rebase -q origin "$GITHUB_REF_NAME" && git push -q; then
-                  echo "push OK (percobaan $t)"; break
+                if git -c pull.rebase=true pull --rebase -q origin "$GITHUB_REF_NAME" \
+                   && git push -q; then
+                  echo "push OK (percobaan $t)"; PUSHED=1; break
                 fi
-                echo "push gagal, retry $t"; sleep 15
+                echo "push gagal di percobaan $t - reset ke origin dan lanjut"
+                git rebase --abort 2>/dev/null || true
+                git reset --hard -q "origin/$GITHUB_REF_NAME" || true
+                sleep 15
               done
+              if [ "$PUSHED" = "0" ]; then
+                echo "::warning::rantai tidak bisa push 3x berturut - data menumpuk lokal saja."
+                echo "RANTAI_PUSH_BASI=1" >> "$GITHUB_ENV"
+              fi
             fi
             sleep 200
           done
@@ -180,6 +196,13 @@ jobs:
             | gh api -X POST "repos/$GITHUB_REPOSITORY/actions/workflows/$WID/dispatches" --input - \
             && echo "rantai disambung (workflow id $WID, ref $GITHUB_REF_NAME)" \
             || { echo "GAGAL menyambung rantai -> aliran akan bolong sampai watchdog menyalakan"; exit 1; }
+
+      - name: Teriak kalau kita buta push (bukan fail pipeline - data yang ada tetap berharga)
+        if: env.RANTAI_PUSH_BASI == '1'
+        run: |
+          echo "::error::3x push gagal - rantai merekam tapi TIDAK sampai ke origin. Ini bentuk"
+          echo "  kegagalan yang membuat aliran bolong berjam-jam tanpa ada run yang merah."
+          exit 1
 
       - name: Kesehatan aliran
         if: always()
