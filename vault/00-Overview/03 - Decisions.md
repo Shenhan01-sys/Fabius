@@ -722,3 +722,40 @@ apa pun yang kami temukan adalah angka pada subset terburuk (§3e halaman 13).
 **Terkait:** [[06-Results/14 - Buku Paper]] · [[06-Results/13 - Apakah Tidak Trading Itu Gratis]] ·
 [[TradingKnowledge/FD5 - Expectancy Bukan Win Rate]] · [[TradingKnowledge/EV5 - Reproduksibilitas dan Pra-Registrasi]] · [[Concepts/One-Way Gate]] · [[08-Backlog/01 - Backlog]] P29/P30 ·
 [[Concepts/Unmeasured Is Not Clean]]
+
+
+## F-D33 — Prioritas proyek dipindah: mencari "alasan untuk masuk", dan itu jadi epik terpisah · 28 Sep 2026
+
+Builder menutup sesi dengan arahan yang kutulis apa adanya: *"fokus kerjakan alasan untuk masuk itu,
+buat itu menjadi backlog besar, karena itu adalah jantung Fabius."*
+
+Setuju, dan ini alasan kenapa itu bukan sekadar pindah kerja: sepanjang hari ini yang kami perbaiki
+adalah **mesin pembuktian** - data mengalir sendiri, satu bentuk data, ongkos terukur, gerbang bentuk,
+spesifikasi terkunci. Mesin itu sekarang cukup bagus untuk **membatalkan klaimku sendiri dua kali**:
+`+393,4 bps` karena harga masuk beku (F-D30) dan `lock_percent` karena control acak mengalahkannya
+(F-D32). Tapi mesin yang jago membatalkan belum menghasilkan satu pun alasan untuk MEMBUKA posisi.
+Tanpa itu Fabius adalah agen yang pintar menolak - persis yang dilarang builder.
+
+**Diputuskan.**
+
+1. Halaman induk baru: [[08-Backlog/02 - Epik Alasan Masuk]] (P31), berisi kriteria selesai yang
+   **bisa gagal**, perhitungan daya, lima keluarga hipotesis E1-E5, sub-pekerjaan P31.1-P31.6, dan
+   non-goal eksplisit.
+2. **Aturan payung:** tidak ada "aturan masuk" yang boleh diumumkan atau dipasang ke
+   `tools/direction.py` / `tools/decide.py` sebelum ia (a) mengalahkan **control `random + gerbang
+   yang sama`** pada sampel penuh, (b) harapan winso dengan **CI bawah > 0** dan ekor naik pada uji
+   **satu arah**, (c) spesifikasinya **terkunci sebelum** datanya dilihat. Dua klaim yang jatuh hari
+   ini jatuh persis karena dua dari tiga syarat ini dilanggar tanpa kita tahu.
+3. **Daya dinyatakan, bukan diimpi:** ±70-140 posisi untuk memutuskan selisih 200 bps; ±205
+   kejadian per grup untuk kenaikan ekor +10 pp; ±272 posisi (= ±55 hari) kalau pencarian
+   dikunci pada budget kontrak 5/hari. Jadi pencarian jalan dengan budget **dilepas** (paper), dan
+   budget kontrak dipakai sebagai konfirmasi kedua yang terpisah. Yang tidak mungkin, kutulis tidak
+   mungkin.
+4. **Urutan malam ini:** E1 *tenang-setelah-kerumunan* dan E2 *jendela risiko pasar* - bahannya
+   sudah ada di repo. E4 (siklus hidup pool) tidak bisa dikejar sebelum P29 (cakupan), karena dialah
+   yang sudah membuktikan dirinya mati oleh subset terpilih. E5 (buy-the-dip) sudah diuji: SALAH.
+5. Produk tetap berdiri kalau epik ini gagal: rem + eksekusi + bukti tetap hasilnya, dan halaman
+   epik menyimpan E yang mati sebagai hasil, bukan sebagai utang.
+
+**Terkait:** [[08-Backlog/02 - Epik Alasan Masuk]] · [[06-Results/13 - Apakah Tidak Trading Itu Gratis]] · [[06-Results/14 - Buku Paper]] · [[06-Results/12 - Harga Masuk yang Benar]] ·
+[[TradingKnowledge/QT2 - Backtesting yang Jujur]] · [[TradingKnowledge/FD5 - Expectancy Bukan Win Rate]] · [[00-Overview/01 - Briefing]] · [[Concepts/Unmeasured Is Not Clean]]

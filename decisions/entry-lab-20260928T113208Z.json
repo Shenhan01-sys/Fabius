@@ -1,0 +1,39 @@
+{
+ "dibuat_utc": "20260928T11:32:08Z",
+ "hasil": [
+  {
+   "di_atas_control": false,
+   "fisher_ekor": 0.32759015010074066,
+   "h": "e2",
+   "mean_winso": 368.4
+  },
+  {
+   "di_atas_control": false,
+   "fisher_ekor": 0.23934328609881508,
+   "h": "e3_sepi",
+   "mean_winso": 275.6
+  }
+ ],
+ "pool_n": 789,
+ "spec": {
+  "cluster_jendela_menit": 60,
+  "cluster_maker_min": 2,
+  "cluster_usd_min": 500.0,
+  "draws_control": 400,
+  "draws_mean": 4000,
+  "horison_menit": 30,
+  "jendela_menit": 15,
+  "kontrol": "acak-dari-pool-lolos-veto-CI-atas-400-undian",
+  "n_min": 20,
+  "risk_on_jendela_menit": 60,
+  "risk_on_rasio": 1.5,
+  "sepi_maker_maks": 1,
+  "sepi_usd_maks": 250.0,
+  "sumber_harga": "peristiwa (tx)",
+  "ukuran_bnb": 0.01,
+  "versi": "1",
+  "winsor_bps": 2000.0
+ },
+ "spec_sha256": "0x3ecad8428d751aa40619f4dd65c1d3798438eaf5b9e42313e3bf0889c0f1fd8f",
+ "vonis_hidup": []
+}
