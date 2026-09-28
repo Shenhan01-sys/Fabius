@@ -118,7 +118,13 @@ jobs:
             echo "=== siklus $K $(date -u +%H:%M:%SZ) ==="
             python -u universe/record_wallet_flow.py --pulls 1 --gap 0 \
               || echo "rekam gagal di siklus $K - lanjut; satu HTTP jangan mematikan rantai"
-            git add universe/wallet-flow.jsonl universe/wallet-flow-manifest.txt
+            # P17: perpanjang pantauan harga 2 jam ke token yang sudah keluar dari daftar panas.
+            # Tanpa ini 80,6 % kejadian tidak punya harga keluar (diukur tools/flow_cluster_test.py).
+            # Sengaja TIDAK boleh mematikan rantai: kalau DexScreener mati, perekam utama jalan terus.
+            python -u universe/record_watch_prices.py --watch-min 120 --max-batches 6 \
+              || echo "watchPrices gagal di siklus $K - lanjut"
+            git add universe/wallet-flow.jsonl universe/wallet-flow-manifest.txt \
+                    universe/watch-prices.jsonl universe/watch-prices-manifest.txt
             if git diff --cached --quiet; then
               echo "tidak ada baris baru di siklus $K"
             else

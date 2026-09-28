@@ -22,9 +22,16 @@ hasil keluar — koreksi lewat halaman baru, supaya urutannya bisa dipertanggung
 - [[08 - Carry Study]] — veto funding kena 0 dari 2.963 settlement; 0 dari 12 uji arah lolos BH;
   carry 1,3–2,2 bps/hari vs round-trip 59 bps
 - [[09 - Whale Cluster Test]] — berpasangan **di dalam token yang sama**, kelas kumulatif: K≥2
-  median selisih **+363,6 bps**, CI **[+0; +772]**, lolos BH. Dua koreksi di dalamnya: run
-  06:05Z memakai dua sumber harga (rasio px/tx 0,946) dan label "K≥2" awalnya bucket **eksak**
-  (+508 bps untuk "tepat 2 dompet"). Bukti pertama bahwa kerumunan memisahkan, bukan PnL
+  median selisih **+393,4 bps**, CI **[+5; +1012]**, p=0,0008, lolos BH. Tiga koreksi di dalamnya:
+  run 06:05Z memakai dua sumber harga (rasio px/tx 0,946), label "K≥2" awalnya bucket **eksak**
+  (+508 bps untuk "tepat 2 dompet"), dan nilainya bergeser lagi setelah `px` didedup
+  (5.355 baris berbagi stempel waktu). Bukti pertama bahwa kerumunan memisahkan, bukan PnL
+- [[10 - Evidence Stack]] — compounding yang diuji, bukan dihitung: **lima** aspek aliran memisahkan
+  sendirian (kerumunan ≥2/≥3, maker berulang, sebaran dana, USD ≥1k), dua tidak (tanpa jual-banding-
+  beli, aliran lebar). Tumpukan **≥2 aspek lulus = +481 bps CI [+23; +977]**; kombinasi terkuat
+  "≥2 dompet DAN uang tidak dari satu dompet" **+748,8 CI [+12; +1574]**. `fresh_token` (+7.708)
+  DIBUANG sebagai artefak kebijakan pull kami sendiri. Yang menahan: cuma **12,7 %** kejadian bisa
+  dinilai, satu jendela 43 jam
 
 <!-- di atas: append-only oleh scripts/sync_vault.py; gloss tulisan tangan utuh -->
 ```dataview

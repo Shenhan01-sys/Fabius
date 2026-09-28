@@ -2,7 +2,7 @@
 tags: [generated]
 ---
 
-_Auto-Index — 6 halaman · 2026-09-28T07:00Z · dari `vault/scripts/sync_vault.py`_
+_Auto-Index — 6 halaman · 2026-09-28T07:51Z · dari `vault/scripts/sync_vault.py`_
 
 ### 00-Overview (8)
 - [[00-Overview/00 - Hub Overview]]
@@ -54,7 +54,7 @@ _Auto-Index — 6 halaman · 2026-09-28T07:00Z · dari `vault/scripts/sync_vault
 - [[05-Ecosystem/02 - x402 Payment]]
 - [[05-Ecosystem/03 - Discovery Gap]]
 
-### 06-Results (10)
+### 06-Results (11)
 - [[06-Results/00 - Hub Results]]
 - [[06-Results/01 - Claims and Limits]]
 - [[06-Results/02 - Thresholds]]
@@ -65,6 +65,7 @@ _Auto-Index — 6 halaman · 2026-09-28T07:00Z · dari `vault/scripts/sync_vault
 - [[06-Results/07 - Matured Outcomes]]
 - [[06-Results/08 - Carry Study]]
 - [[06-Results/09 - Whale Cluster Test]]
+- [[06-Results/10 - Evidence Stack]]
 
 ### 07-Testing (8)
 - [[07-Testing/00 - Hub Testing]]

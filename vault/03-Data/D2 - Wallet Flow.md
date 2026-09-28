@@ -28,6 +28,17 @@ disusulkan, jadi ia diperlakukan sebagai aset yang menetes tiap jam.
   panel di vault ini wajib punya tanggal run, bukan dianggap tetap. Rekamannya di
   `universe/wallet-flow.jsonl`, berantai lewat `universe/wallet-flow-manifest.txt`
   (sha256 berkas + ekor + `usia_aliran_jam`).
+- **Satu harga per (token, stempel waktu)** — terukur 28 Sep: **5.355 baris `px` berbagi
+  stempel yang sama untuk token yang sama** (±19 % deret kami), karena `smartmoney` dan `kol`
+  melihat pool yang sama dalam satu siklus. Selama duplikat dibiarkan, "harga masuk" ditentukan
+  urutan, bukan data — dan dua alat kami mencetak angka berbeda untuk kejadian identik. Bentuk
+  kanoniknya ada di satu tempat: `flow_cluster_test.dedupe_px()` (median per stempel).
+- **Kontingen `px` kedua (P17):** `universe/record_watch_prices.py` menarik harga lewat
+  **DexScreener** `tokens/v1/bsc/<30 alamat>` (terukur 200 @401 ms, satu panggilan = 30 token)
+  untuk token yang sudah keluar dari daftar panas, jendela **2 jam** (terukur: 136 token pantau =
+  5 panggilan/siklus; 24 jam akan jadi 927 token = 31 panggilan). Barisnya `{"k":"wp",...}` di
+  `universe/watch-prices.jsonl` - berisi `priceUsd`, likuiditas, FDV, volum, dan **jumlah
+  beli/jual dalam 1 jam dari venue**, yaitu jawaban atas "tidak ada riwayat" di atas.
 - Jangan ulangi kesalahan 27 Sep: jumlah baris di **disk lokalmu** bukan keadaan sistem —
   `git fetch` dulu ([[Concepts/Stale Local Copy]]).
 

@@ -445,3 +445,50 @@ terpakai - dan kita harus bilang begitu, bukan menghapusnya diam-diam saat ada y
 **Terkait:** [[06-Results/08 - Carry Study]] · [[03-Data/D6 - Funding and OI History]] ·
 [[TradingKnowledge/Fakta Terukur]] §A/§F · [[08-Backlog/01 - Backlog]] P12/P16 ·
 [[Concepts/One-Way Gate]] · [[TradingKnowledge/U2 - Funding Rate dan Basis]]
+
+## F-D27 — Satu bentuk harga, pantau 2 jam, dan compounding yang harus membuktikan dirinya · 28 Sep 2026
+
+**Apa yang memicunya.** `tools/evidence_stack.py` memberi **+649,8 bps** untuk kejadian yang sama
+persis dengan **+363,6 bps** di `tools/flow_cluster_test.py`. Dua alat yang jujur tidak boleh
+diselesaikan dengan memilih angka yang enak, jadi kukari bedanya: **5.355 baris `px` berbagi
+stempel waktu untuk token yang sama** (±19 % dari deret harga kami), karena `smartmoney` dan `kol`
+melihat pool yang sama dalam satu siklus. Selama duplikat dibiarkan, "harga masuk" ditentukan
+**cara mengurutkan**, bukan oleh data - `.sort()` pada tuple memakai harga sebagai pemecah seri,
+`.sort(key=t)` tidak.
+
+**Diputuskan.**
+
+1. **Satu harga per (token, stempel) = median pada stempel itu.** Bentuk kanoniknya ada di satu
+   tempat (`flow_cluster_test.dedupe_px()`) dan **dipakai oleh kedua alat**, bukan disalin. Setelah
+   itu keduanya sepakat: **K≥2 = +393,4 bps, CI [+5; +1012], p=0,0008** (BH α 0,10). Run kanonik
+   `decisions/flow-cluster-20260928T073714Z.json`.
+2. **Jendela pantau harga jadi 2 jam, bukan 24 jam** - dan itu angka pengukuran, bukan
+   kenyamanan. Builder bertanya "24 jam lama sekali, itu harga live kan?". Ya: `px` sudah menetes
+   gratis tiap ±202 s. Yang bikin 24 jam mahal adalah ukuran pantau, terukur di berkas kami sendiri:
+   **927 token = 31 batch = ±552 panggilan/jam** untuk 24 jam, vs **136 token = 5 batch = 89
+   panggilan/jam** untuk 2 jam lewat `tokens/v1/bsc/<30 alamat>` (terukur 200 @401 ms). Default
+   `universe/record_watch_prices.py` = `--watch-min 120`, disambungkan ke rantai `wallet-flow.yml`
+   sebagai langkah **non-fatal** (kalau DexScreener mati, perekam utama harus tetap jalan).
+3. **Compounding harus membuktikan dirinya sendiri.** Lima aspek lulus uji berpasangan sendirian
+   (kerumunan ≥2/≥3, maker berulang, **sebaran dana**, USD ≥1k); dua tidak ("tidak ada jual" −0,3
+   dan "aliran lebar" +0,5 bps). Tumpukan ≥2 aspek lulus = **+481,0 CI [+23; +977] p=0,0002**, dan
+   yang terkuat bukan "lebih banyak whale" tapi **struktur dana**: `cluster_ge2` **DAN**
+   `money_spread` = **+748,8 CI [+12; +1574] p=0,0010**. Rinciannya
+   [[06-Results/10 - Evidence Stack]].
+4. **`fresh_token` DIBUANG dari bukti, walaupun lolos BH.** +7.708 bps (80,8 % positif) tidak punya
+   mekanisme pasar: "token ini baru muncul di rekaman kami" = "kami baru mulai menarik harganya".
+   Dia mengukur **kebijakan pull kami**, dan menyuntik ±7.000 bps ke kombinasi apa pun yang dia
+   sentuh. Tumpukan diuji ulang tanpanya dan sisanya berdiri sendiri - itu syaratnya, bukan hiasan.
+
+**Yang tidak berubah, dan itu bagian dari keputusan.** Tidak ada satu pun gerbang Fabius yang
+digeser hari ini. Angka di halaman 09/10 berumur satu jendela 43 jam, dan hanya **12,7 %** kejadian
+(807 dari ±6.373 kandidat) yang bisa dinilai sama sekali - 5.085 kehilangan harga ≤10 menit
+**sebelum** beli, 481 kehilangan harga keluar. **P20** mengunci spesifikasi
+(horison 30 m, jendela 15 m, K≥2, `money_spread`, entry `px` kanonik, ongkos 59 bps measured, BH
+α 0,10) **sebelum** data hari kedua dilihat; kalau hari kedua tidak memisahkan, halaman 09 dan 10
+**dicabut**, bukan diperluas dengan penjelasan.
+
+**Terkait:** [[06-Results/09 - Whale Cluster Test]] · [[06-Results/10 - Evidence Stack]] ·
+[[03-Data/D2 - Wallet Flow]] · [[08-Backlog/01 - Backlog]] P17/P19/P20 ·
+[[TradingKnowledge/EV4 - Point-in-Time dan Riwayat yang Tidak Bisa Disusulkan]] ·
+[[TradingKnowledge/EV5 - Reproduksibilitas dan Pra-Registrasi]]

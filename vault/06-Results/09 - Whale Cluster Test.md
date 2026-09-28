@@ -157,7 +157,44 @@ workflow yang sudah ada. Itu yang membuat Fabius akhirnya **tahu kapan dia boleh
 sekarang dia bahkan belum punya hak bilang "whale-nya salah", karena 4 dari 5 kejadian tidak
 kelihatan akhirnya.
 
-Baca ulang: `python -X utf8 tools/flow_cluster_test.py --horizon 60 --window 30 --ks 2,3,5`
+## Koreksi KEDUA 28 Sep 07:37Z — dua alat memberi angka berbeda, dan itu memperbaiki datanya
+
+Angka di dua tabel koreksi sebelumnya bergeser lagi - dan ini bukan perbaikan gaya bahasa, tapi
+perubahan **bentuk data**. Ketika `tools/evidence_stack.py` memberi **+649,8** untuk kejadian yang
+sama persis dengan **+363,6** di halaman ini, kucari penyebabnya alih-alih memilih salah satu:
+**5.355 baris `px` berbagi stempel waktu untuk token yang sama** (±19 % deret harga kami) karena
+`smartmoney` dan
+`kol` melihat pool yang sama dalam satu siklus. Selama duplikat dibiarkan, harga masuk ditentukan
+**urutan sort**, bukan data.
+
+Bentuk kanoniknya sekarang satu tempat (`flow_cluster_test.dedupe_px()`: median per
+token×stempel) dan dipakai kedua alat. Hasilnya untuk horison 30 m / jendela 15 m:
+
+| kelas (akumulatif) | token berpasangan | n | median selisih | CI 95 % | % positif | p | BH |
+|---|---|---|---|---|---|---|---|
+| K≥2 | 83 | 215 | **+393,4** | **[+5; +1012]** | 60,9 % | 0,0008 | **LOLOS** |
+| K≥3 | 62 | 127 | +393,4 | [+0; +1182] | 59,1 % | 0,0252 | **LOLOS** |
+| K≥5 | 33 | 64 | +2.412,0 | [+570; +6.333] | 68,8 % | 0,0018 | **LOLOS** |
+
+Median **absolut**: pembanding K=1 **−59,0** (seharga ongkos - tidak ke mana-mana) vs K≥2
+**+478,6**, K≥3 **+823,2**, K≥5 **+1.725,0**; "% posisi positif" **35,9 %** (K=1) vs **56,3 %**
+(K≥2) vs **27,7 %** cuaca. Nilai sebelumnya **+363,6 CI [+0; +772] p=0,0101** digantikan; dua
+perbaikan hari ini (bucket kumulatif, lalu dedupe) bergerak **ke arah yang sama**, tidak saling
+membatalkan. Sensor ikut berubah bentuk: yang dulu "80,6 % tanpa harga keluar" sekarang terurai
+menjadi **5.085 kandidat tanpa harga MASUK** dan **481 tanpa harga keluar** - hanya **12,7 %**
+(807 dari ~6.373) kejadian yang bisa dinilai sama sekali.
+
+Satu hal yang TIDAK berubah: **`K≥3` di halaman ini (+393,4) bukan angka yang sama dengan
+`cluster_ge3` di [[10 - Evidence Stack]] (+592,6)**, karena acuannya beda - sini lawan **K=1** saja,
+di sana lawan **semua kejadian lain di token yang sama** (termasuk K=2). Untuk K≥2 keduanya jatuh
+pada angka yang sama karena lawan ge2 memang hanya K=1.
+
+**Run kanonik** (dibaca ulang kapan pun): `python -X utf8 tools/flow_cluster_test.py --horizon 30
+--window 15` → `decisions/flow-cluster-20260928T073714Z.json` (`rows_sha256=0xf00c46354dacd1…`);
+varian lintas aspek: `python -X utf8 tools/evidence_stack.py` (lihat
+[[06-Results/10 - Evidence Stack]]). Run 60 menit yang dibatalkan di atas tetap tersimpan di
+`decisions/` sebagai jejak, bukan sebagai hasil.
+
 
 **Terkait:** [[03-Data/D2 - Wallet Flow]] · [[06-Results/04 - Negative Results]] ·
 [[06-Results/06 - Pre-registration Horizon]] · [[TradingKnowledge/O5 - Whale dan Kohor Smart Money]] ·

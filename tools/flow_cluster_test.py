@@ -56,14 +56,33 @@ for _s in (sys.stdout, sys.stderr):
 FLOW = os.path.join(ROOT, "universe", "wallet-flow.jsonl")
 OUT_DIR = os.path.join(ROOT, "decisions")
 MIN = 60
+PX_DUPES = 0   # diisi load(): berapa baris px yang harus dilebur jadi satu harga per stempel
 
 
 def canon(o):
     return json.dumps(o, sort_keys=True, separators=(",", ":"), ensure_ascii=False)
 
 
+def dedupe_px(series):
+    """Kanonik: SATU harga per (token, stempel waktu) = median harga pada stempel itu.
+
+    Kenapa perlu (ditemukan 28 Sep saat dua alat kami memberi angka berbeda untuk kejadian yang
+    sama): perekam menulis beberapa baris `px` dengan `t` yang sama untuk satu token - batch
+    trending datang per sumber, dan `smartmoney` + `kol` melihat pool yang sama di siklus yang
+    sama. Selama duplikat itu dibiarkan, "harga masuk" bergantung pada cara kita MENGURUTKAN
+    (`.sort()` pada tuple ikut memakai harga sebagai pemecah seri; `.sort(key=t)` tidak) - dan dua
+    alat yang jujur menghasilkan dua outcome berbeda. Aturan pembatal ambiguitas harus ada di data,
+    bukan di kebetulan urutan.
+    """
+    by_t = {}
+    for t, p in series:
+        by_t.setdefault(t, []).append(p)
+    out = [(t, med(v)) for t, v in sorted(by_t.items())]
+    return out
+
+
 def load():
-    buys, px = {}, {}
+    buys, pxr = {}, {}
     n = 0
     for ln in io.open(FLOW, encoding="utf-8", errors="replace"):
         ln = ln.strip()
@@ -82,10 +101,14 @@ def load():
         elif d.get("k") == "px":
             p = float(d.get("p") or 0.0)
             if p > 0:
-                px.setdefault(tk, []).append(t if False else (t, p))
-    for d in (buys, px):
-        for tk in d:
-            d[tk].sort()
+                pxr.setdefault(tk, []).append((t, p))
+    px = {}
+    for tk, s in pxr.items():
+        px[tk] = dedupe_px(s)
+    global PX_DUPES
+    PX_DUPES = sum(len(s) - len(px[tk]) for tk, s in pxr.items())
+    for tk in buys:
+        buys[tk].sort()
     return buys, px, n
 
 
