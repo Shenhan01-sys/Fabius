@@ -142,6 +142,35 @@ Run `--px both` saat ini memberi **`rows_sha256` identik** dengan mode baku (`0x
 menambah sumber tidak menggeser satu angka pun, persis seperti yang seharusnya terjadi saat sumber
 keduanya belum berisi.
 
+## 4c. Batas yang ketemu SETELAH halaman ini ditulis: deret harga kami adalah tangga beku
+
+Pembacaan ulang terhadap alatku sendiri (28 Sep 09:19-09:2xZ) menemukan sesuatu yang lebih dalam
+dari semua ambang di §4: baris `px` yang kupakai sebagai "harga" **bukan ticker**. Ia membawa
+`price_usd` dari transaksi terakhir token itu, tapi di-stamp dengan waktu tarikan
+(`universe/record_wallet_flow.py` baris 113 + 132). Tidak ada transaksi baru = nilai lama dengan
+stempel baru. Terukur: **71,7 % baris mengulang nilai sebelumnya**; kalau pengulangan itu dibuang,
+deret menyusut 35.304 → 11.546 baris (−67,3 %).
+
+Ini memukul dua kalimat di halaman ini, dan aku menulis koreksinya, bukan menghapusnya:
+
+- "K=1 **−59,0** (seharga ongkos; tidak ke mana-mana)" - sebagian dari −59 itu adalah **lantai
+  pengukuran**, bukan nasib pasar: harga keluar yang sama persis dengan harga masuk menghasilkan
+  net = −ongkos secara aritmetis. Pada dataset kini "gross persis 0" terjadi 8,1 % (K=1) dan
+  11,0 % (K≥2).
+- "dua venue berbeda 0,16–0,40 %" - ternyata ada kejadian yang lebih besar: pada 25 token irisan,
+  **8 di antaranya diam di GMGN sementara DexScreener bergerak**, dengan selisih nilai sampai
+  ±20 %. Keduanya mengukur benda yang berbeda (harga transaksi terakhir vs harga pool kini).
+
+**Yang tidak berubah - dan ini yang membuat koreksi ini bisa ditanggung.** Efek K≥2 diuji ulang
+pada deret yang **pengulangan nilainya dibuang**: **+353,7 bps, CI [+2; +922], p=0,0009** (61 token,
+n=192) versus **+334,8 CI [+2; +763] p=0,0016** pada deret apa adanya. Arah, besar, dan
+signifikansinya sama, jadi kerumunan **bukan** artefak baris yang diulang. Nilai kanonik di §0/§1
+(+393,4) adalah pembacaan pada dataset 43 jam; dataset ini sudah 49 jam dan efeknya mengecil ke
++334,8 - itu justru berita baik: angkanya bergerak bersama data, bukan tersandera satu run.
+
+Yang sekarang jadi syarat, bukan pilihan: outcome yang dijual publik harus diukur pada sumur yang
+**berdetak sendiri** (`wp` dari P17), dan itu P23.
+
 ## 5. Apakah ini mengubah gerbang Fabius? Belum - dan itu keputusan, bukan kelambatan
 
 Yang berubah: untuk pertama kalinya ada **dua aspek independen** (kerumunan + sebaran dana) yang
