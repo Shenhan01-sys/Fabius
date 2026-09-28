@@ -71,6 +71,34 @@ dan tidak ada yang menaikkan ekor). Kandidat yang masuk akal dan belum diukur: p
 **siklus hidup pool** (umur, likuiditas, volum 1 jam, buys/sells rasio dari `wp`), bukan kerumunan
 maker - dan itu P26, yang butuh rekaman pantau yang sudah berumur.
 
+## 3b. Tiga kebijakan, bukan dua - dan ini jawaban untuk "apa bedanya dengan orang penakut"
+
+`tools/policy_test.py` (horison 30 m, harga peristiwa, ongkos 59 bps sudah dipotong, mean
+winsorized ±2.000, bootstrap 4.000):
+
+| kebijakan | n dipakai | mean winso (CI 95 %) | median | P(≥+500) | total bps |
+|---|---|---|---|---|---|
+| **A** tidak pernah masuk ("orang penakut") | 0 | **0,0** (tetap) | 0,0 | 0,0 % | 0 |
+| **B** masuk semua kejadian feed | 1.174 (100 %) | **+82,7** [+5,0; +159,1] | −58,9 | 33,9 % | 97.091 |
+| **C** B + veto kerumunan jual | 1.014 (86,4 %) | **+162,3** [+80,4; +243,0] | −57,0 | 35,7 % | 164.555 |
+| **D** C + keluar saat kerumunan beli | - | **TIDAK DIUJI** (butuh harga per detik saat keluar) | | | |
+
+Pada horison 60 m arahnya sama, lebih kecil: B **+112,1** → C **+153,6** (+41,5 bps/kejadian,
+10,6 % kejadian dilewati).
+
+Tiga hal yang harus dibaca bersama tabel ini:
+
+- **Yang dibandingkan bukan "Fabius vs tidak trading".** Orang yang tidak berani masuk memilih A,
+  dan A itu **0**, bukan "sama-sama aman". Di universe ini baseline buta (B) sudah **+82,7
+  bps/posisi**; rem kami menaikkan itu ke **+162,3** dengan melewatkan hanya 13,6 % kejadian.
+  Jadi rem yang kami punya **bukan** rasa takut yang dibungkus - ia berbayar, dan terukur.
+- **Tapi B itu milik universe, bukan alpha kami**, dan C pun masih seleksi minus satu arah. Angka
+  +162,3 tidak berarti "Fabius tahu kapan masuk"; ia berarti "Fabius tahu 1 dari 7 jenis posisi
+  yang harus dilewati". Sisanya masih pertanyaan terbuka (§3).
+- **Mean ≠ bisa diambil.** Tanpa kedalaman dan fill, +162,3 bps adalah harapan per kejadian pada
+  harga peristiwa, bukan PnL pada ukuran posisi tertentu. Satu pool $6k yang naik 10x menaikkan
+  mean tanpa pernah bisa kami masuki sebesar itu.
+
 ## 4. Yang menahan halaman ini
 
 Satu jendela 49 jam, satu rezim. Belum ada fill, belum ada kedalaman: P(≥+500 bps) dihitung pada
