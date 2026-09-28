@@ -133,15 +133,20 @@ yang masih kelihatan akhirnya.
 ## 4b. Sumur harga: dua sumber, dan satu kejadian hanya boleh pakai satu
 
 Alat sekarang membaca dua deret: `px` (GMGN, harga pool saat tarik) dan `wp` (DexScreener, pantau
-2 jam dari P17). Aturannya bukan "mana yang ada", karena **dua venue berbeda ±0,16 %–0,40 % pada
-menit yang sama** (empat sampel pertama, `tools/prices.py --report`) - 400 bps itu seukuran seluruh
-efek di §1, jadi mencampur sumber dalam satu kejadian menciptakan angka yang tidak ada di pasar
-mana pun. Yang berlaku: **masuk dan keluar wajib satu sumber**; kalau tidak ada satu pun sumber yang
+2 jam dari P17). Aturannya bukan "mana yang ada". **KOREKSI 28 Sep 21:3xZ:** angka yang kutulis di bawah
+("±0,16 %–0,40 %, empat sampel pertama") salah satu orde besaran. Pada **n=4.022 pasangan** berimpit
+(`|dt| <= 5 m`, `tools/prices.py --report`): median **bertanda +10,1 bps**, tetapi **median absolut
+899 bps**, p5 **−3.884**, p95 **+6.576**, maksimum **+106.724**. Jadi dua sumur ini berbeda puluhan
+persen pada menit yang sama, dan 400 bps tempat efek §1 hidup itu **di bawah** noise-nya. Itu
+membuat aturan satu-sumber justru lebih wajib, dengan alasan yang lebih keras: bukan cuma
+"menciptakan angka yang tidak ada di pasar mana pun", tapi menciptakan angka yang **lebih besar
+dari yang sedang diukur**. Yang berlaku: **masuk dan keluar wajib satu sumber**; kalau tidak ada satu pun sumber yang
 mengcover kedua ujung, kejadian itu dibuang dan dihitung.
 
-Nilai `wp` belum bisa dirasakan: rekaman pantau baru **123 baris pada satu stempel** (rentang
-0,00 jam) karena rantai perekam di GitHub masih menjalankan workflow lama - ia baru menetes setelah
-commit-nya sampai ke default branch. Simulasi atas data yang ada (`tools/watch_value_sim.py`):
+Keadaan `wp` juga berubah sejak halaman ini ditulis: **11.592 baris / 396 token / rentang
+14,22 jam** (28 Sep 21:3xZ) setelah rantai #17/#18 menjalankan definisi baru. Cakupannya per kejadian
+beli (horison 30 m, aturan satu sumber): `gmgn` **49,7 %**, `watch` **6,9 %**, keduanya 6,1 %,
+**tak terpenuhi 49,5 %** - jadi sumur kedua menambah titik pengamatan, bukan mengganti yang lama. Simulasi atas data yang ada (`tools/watch_value_sim.py`):
 **83,9 %** kejadian beli punya kemunculan token yang sama ≤ 2 jam sebelumnya, jadi batas 12,7 % itu
 bukan batas pasar - itu batas sambungan kita.
 
