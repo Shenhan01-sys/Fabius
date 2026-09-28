@@ -122,8 +122,41 @@ def best_pair(rows, want):
     return by
 
 
+def tanpa_harga(t_now, chunk, got):
+    """Token yang BALAS tapi `priceUsd`-nya nol/buruk: bukan harga, bukan juga tidak ada pair.
+
+    Keadaan ketiga ini harus punya nama, kalau tidak ia menghilang di antara dua pencacahan dan
+    laporan 'kehilangan' jadi angka yang enak dibaca tapi tidak tertutup.
+    """
+    out = []
+    for tk in sorted(set(chunk) & set(got)):
+        try:
+            px = float((got[tk][1] or {}).get("priceUsd") or 0.0)
+        except (TypeError, ValueError):
+            px = 0.0
+        if px <= 0:
+            out.append({"k": "wp0", "t": t_now, "tk": tk, "why": "answered-no-price",
+                        "http": 200, "schema": SCHEMA})
+    return out
+
+
+def catatan_ketiadaan(t_now, chunk, got, code):
+    """Baris `wp0` HANYA untuk batch yang balas 200.
+
+    Diisolasi jadi fungsi murni supaya invarian ini bisa diuji tanpa menyentuh jaringan: kegagalan
+    pemanggilan kami tidak boleh berubah menjadi kematian pool. (Kelas kesalahan yang sama, versi
+    tes: penolakan yang 'lulus' karena perintahnya salah ketik.)
+    """
+    if code != 200:
+        return []
+    return [{"k": "wp0", "t": t_now, "tk": tk, "why": "answered-no-pair", "http": code,
+             "schema": SCHEMA} for tk in sorted(set(chunk) - set(got))]
+
+
 def build_rows(t_now, toks, max_batches, sleep_s=0.4):
+    """Kembalikan (baris, tidak_terjawab, panggilan, hilang_tercatat, batch_gagal)."""
     rows, unresolved, calls = [], set(toks), 0
+    hilang, butek = [], 0
     addr_list = sorted(toks)
     for i in range(0, len(addr_list), BATCH):
         if calls >= max_batches:
@@ -132,9 +165,17 @@ def build_rows(t_now, toks, max_batches, sleep_s=0.4):
         code, data = fetch_batch(chunk)
         calls += 1
         if code != 200:
-            print("  ! batch %d -> %s" % (calls, code))
+            # BUKAN bukti ketiadaan: kegagalan kami bukan kematian pool.
+            butek += len(chunk)
+            print("  ! batch %d -> %s (tidak dicatat sebagai kehilangan)" % (calls, code))
             continue
         got = best_pair(data, set(chunk))
+        hilang.extend(catatan_ketiadaan(t_now, chunk, got, code))
+        tanpa = tanpa_harga(t_now, chunk, got)
+        for r in tanpa:
+            if r["tk"] in unresolved:
+                unresolved.discard(r["tk"])
+        hilang.extend(tanpa)
         for tk, (_liq, p) in sorted(got.items()):
             tx = (p.get("txns") or {}).get("h1") or {}
             try:
@@ -142,6 +183,7 @@ def build_rows(t_now, toks, max_batches, sleep_s=0.4):
             except (TypeError, ValueError):
                 px = 0.0
             if px <= 0:
+                unresolved.discard(tk)      # dicatat oleh tanpa_harga()
                 continue
             rows.append({"k": "wp", "t": t_now, "tk": tk, "y": str(
                 (p.get("baseToken") or {}).get("symbol") or "")[:16],
@@ -154,7 +196,9 @@ def build_rows(t_now, toks, max_batches, sleep_s=0.4):
                 "schema": SCHEMA})
             unresolved.discard(tk)
         time.sleep(sleep_s)
-    return rows, sorted(unresolved), calls
+    rows.extend(hilang)
+    rows.sort(key=lambda r: (r["t"], r.get("tk") or ""))
+    return rows, sorted(unresolved), calls, len(hilang), butek
 
 
 def write_manifest(t_now):
@@ -200,7 +244,17 @@ def self_test():
     assert got["0xaaa"][1]["priceUsd"] == "0.6", "salah pair"
     toks, ref = {"0xaaa"}, t
     assert ref < 4e9
-    print("self-test LOLOS (detik, satu baris per token, pair terlikuid menang)")
+    # aturan ketiadaan: 200 = data, bukan-200 = JANGAN catat kematian
+    a = catatan_ketiadaan(t, ["0xaaa", "0xbbb"], {"0xaaa": (1.0, {})}, 200)
+    assert len(a) == 1 and a[0]["tk"] == "0xbbb" and a[0]["k"] == "wp0", a
+    for kode in (429, 403, 0, 500):
+        assert catatan_ketiadaan(t, ["0xaaa", "0xbbb"], {}, kode) == [], kode
+    # keadaan ketiga: balasan tanpa harga harus tetap tercatat, bukan lenyap di antara cacahan
+    buruk = {"0xccc": (0.0, {"priceUsd": "0"})}
+    b = tanpa_harga(t, ["0xccc"], buruk)
+    assert len(b) == 1 and b[0]["why"] == "answered-no-price", b
+    assert tanpa_harga(t, ["0xccc"], {"0xccc": (5.0, {"priceUsd": "0.1"})}) == []
+    print("self-test LOLOS (detik, satu baris per token, pair terlikuid menang, ketiadaan-hanya-bila-200)")
 
 
 def main():
@@ -218,14 +272,17 @@ def main():
     addrs = [tk for tk, _ in toks]
     print("pantau %d menit -> %d token | %d batch dibutuhkan | batas batch %d"
           % (a.watch_min, len(addrs), -(-len(addrs) // BATCH), a.max_batches))
-    rows, unresolved, calls = build_rows(int(time.time()), set(addrs), a.max_batches)
-    print("panggilan %d | token terjawab %d | TIDAK terjawab %d | harga median %.3e"
-          % (calls, len(rows), len(unresolved),
-             (sorted(r["p"] for r in rows)[len(rows) // 2] if rows else 0.0)))
+    rows, unresolved, calls, n_hilang, n_butek = build_rows(int(time.time()), set(addrs),
+                                                            a.max_batches)
+    harga = sorted(r["p"] for r in rows if r["k"] == "wp")
+    print("panggilan %d | harga %d | kehilangan tercatat %d | batch gagal %d | TIDAK terjawab %d | harga median %.3e"
+          % (calls, len(harga), n_hilang, n_butek, len(unresolved),
+             (harga[len(harga) // 2] if harga else 0.0)))
     if unresolved[:5]:
         print("  contoh tidak terjawab: " + ", ".join(x[:10] for x in unresolved[:5]))
-    if not rows:
-        print("tidak ada harga - tidak menulis.")
+    if not harga:
+        print("tidak ada harga - tidak menulis (baris kehilangan juga "
+              "ditunda: tanpa satu pun harga, kita tidak tahu bedanya 'mati' dan 'buta').")
         return
     if a.report:
         print("(--report: %d baris TIDAK ditulis; contoh: %s)"
