@@ -6,6 +6,9 @@ tags: [hasil]
 
 **Bagian dari:** [[06-Results/00 - Hub Results]]
 **Alat:** `tools/day2_replicate.py` · kunci: `decisions/prereg-day2-lock.json`
+**Status per 28 Sep 21:24Z:** ❌ **DIJALANKAN - TIDAK ADA REPLIKASI** (lihat HASIL di bawah).
+Spesifikasi tidak diedit setelah dikunci; sha diverifikasi ulang oleh alatnya sendiri.
+
 **Status per 28 Sep 09:4xZ:** 🔁 **MOOT UNTUK KEPUTUSAN PRODUK.** Spesifikasi di halaman ini TIDAK
 kusunting dan tidak akan kusunting (alatnya menolak - itu memang gunanya), tapi yang diujinya sudah
 diketahui cacat instrumennya: `sumber_harga: gmgn` memakai `px` yang harga masuknya bisa berumur
@@ -41,6 +44,35 @@ uji_ketiga: stack_ge2 (>=2 dari lima aspek lulus 28 Sep menyala bersamaan)
 data_replikasi: HANYA kejadian dengan t > t_kunci (out-of-sample murni, bukan campur)
 syarat_umur_jam: 12
 ```
+
+## HASIL - dijalankan 28 Sep 21:24Z, spesifikasi TIDAK diedit setelah dikunci
+
+`decisions/day2-20260928T212437Z.json` · sha spesifikasi tetap `0x03aa212fccdf5b9f…` (alat menolak
+kalau tidak) · rekaman baru pada saat menilai: **15,12 jam** dari syarat 12 · bahan: **275 kejadian
+pada 158 token, semuanya setelah `t_kunci` 06:13:38Z**
+
+| uji | hasil | syarat | vonis |
+|---|---|---|---|
+| `uji_primer` K≥2 | **SAMPEL TIDAK CUKUP** (n < 12 pasangan) | tiga syarat, n≥20 | gagal |
+| `uji_kedua` `money_spread` | **SAMPEL TIDAK CUKUP** | sama | gagal |
+| `uji_ketiga` stack ≥2 | token=31 n=62 median **+219,2** CI **[−18; +2138]** p=**0,0490** | median>0 ✓ CI bawah>0 ✗ p<0,05 ✓ | **GAGAL** |
+
+**VONIS: TIDAK ADA REPLIKASI.** Sesuai baris terakhir tabel aturan di halaman ini, klaim
+[[06-Results/09 - Whale Cluster Test]] dan [[06-Results/10 - Evidence Stack]] **dicabut** - dan kali
+ini bukan olehku di meja tulis, tapi oleh pengujian yang spesifikasinya sudah terkunci 13 jam
+sebelum datanya ada.
+
+Dua hal yang harus disebut bersama hasil ini:
+
+- **`p = 0,0490` itu nominal "lolos".** Kalau gerbangnya cuma p-value, klaim ini selamat dan
+  melaju ke gerbang ⑧. Yang memotongnya adalah syarat kedua (batas bawah CI harapan > 0) - satu
+  dari tiga syarat itu bekerja persis seperti yang dijanjikan.
+- **Sensor yang paling penting justru di luar vonis:** 8.090 beli dibuang karena tidak ada harga
+  `px` ≤ 10 menit sebelumnya, vs 8.391 karena tumpang tindih. Setelah 15 jam rekaman TAMBAHAN,
+  cakupan sisi masuk **tidak membaik**. Yang membaik adalah sumur kedua (`wp`: 11.426 baris, 109
+  stempel, rentang 14,00 jam - ticker yang benar-benar berdetak). Spesifikasi lama mengunci
+  `sumber_harga: gmgn`, dan aku TIDAK mengubahnya demi hasil; konsekuensinya dicatat sebagai
+  spesifikasi ketiga yang terkunci sendiri ([[08-Backlog/01 - Backlog]] P34).
 
 ## Cara vonis ditulis — dan ini bagian yang mengikat
 

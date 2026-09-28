@@ -804,3 +804,45 @@ berikutnya, bukan ditulis dari sini).
 **Terkait:** [[03-Data/D2 - Wallet Flow]] · [[06-Results/13 - Apakah Tidak Trading Itu Gratis]] ·
 [[06-Results/14 - Buku Paper]] · [[Concepts/One-Way Gate]] · [[Concepts/Unmeasured Is Not Clean]] ·
 [[Concepts/Stale Local Copy]] · [[08-Backlog/01 - Backlog]] P15/P22/P31.7
+
+
+## F-D35 — Replikasi terkunci pertama dijalankan: TIDAK ADA REPLIKASI · 28 Sep 2026 21:24Z
+
+Kunci dipasang 13 jam sebelum datanya ada ([[06-Results/11 - Pra-Registrasi Hari Kedua]],
+`spec_sha256=0x03aa212fccdf5b9f…`, `t_kunci=06:13:38Z`, syarat 12 jam rekaman baru, hanya kejadian
+setelah kunci yang dinilai). Sore ini syaratnya terpenuhi (15,12 jam) dan alatnya jalan tanpa
+sentuhan: `decisions/day2-20260928T212437Z.json`.
+
+Bahan: **275 kejadian pada 158 token, semuanya setelah `t_kunci`**. Hasil per uji:
+
+| uji | angka | tiga syarat (median>0, CI bawah>0, p<0,05) | vonis |
+|---|---|---|---|
+| `uji_primer` K≥2 | SAMPEL TIDAK CUKUP (n<12 pasangan) | - | gagal |
+| `uji_kedua` `money_spread` | SAMPEL TIDAK CUKUP | - | gagal |
+| `uji_ketiga` stack ≥2 | med **+219,2**, CI **[−18; +2138]**, p=**0,0490** | ✓ / **✗** / ✓ | **GAGAL** |
+
+**Vonis sesuai aturan halaman 11 baris terakhir: klaim halaman 09 dan 10 DICABUT** - bukan oleh
+keputusanku di meja tulis, tapi oleh pengujian yang spesifikasinya sudah terkunci sebelum datanya
+ada. Tiga hal yang kupelajari dan harus tertulis:
+
+1. **`p = 0,0490` itu nominal "lolos".** Kalau gerbangnya satu syarat, klaim ini selamat dan
+   melaju ke gerbang ⑧. Yang memotongnya adalah syarat kedua. Gerbang yang benar adalah gerbang
+   yang bisa membuat angka yang enak jadi gagal.
+2. **Spesifikasi tidak kunyunting walaupun godaannya nyata.** Run ini memakai `sumber_harga: gmgn`
+   yang sudah kubatalkan F-D30 sebagai instrumen cacat - artinya dia menguji efek hantu, dan
+   hasilnya (tidak mereplikasi) tetap yang paling benar: kalau hantunya tidak ikut-ikutan muncul
+   di data baru, Artefak-nya memang sesempit itu. Yang ingin kupakai sekarang (`wp`, ticker sungguhan
+   11.426 baris / 14 jam) jadi **spesifikasi ketiga yang dikunci sendiri** (P34), bukan editan
+   pada spesifikasi lama - alatnya akan menolak editan itu, dan itu memang gunanya.
+3. **Cakupan sisi masuk tidak membaik walau 15 jam lebih banyak rekaman** (8.090 beli tanpa `px`
+   ≤ 10 menit). Jadi batas 12,7 % itu bukan soal durasi, tapi soal **sumber**: `px` lahir dari
+   payload daftar panas, sementara `wp` ditarik seragam. Itu memindahkan seluruh agenda
+   "alasan masuk" ke P29/P34, dan meninggalkan satu kalimat untuk submission: **agen kita tahu apa
+   yang tidak boleh dibuka, dan hari ini terbukti mengetahuinya lewat uji yang tidak bisa
+   dibujuk.**
+
+**Terkait:** [[06-Results/11 - Pra-Registrasi Hari Kedua]] · [[06-Results/09 - Whale Cluster Test]] ·
+[[06-Results/10 - Evidence Stack]] · [[06-Results/12 - Harga Masuk yang Benar]] ·
+[[TradingKnowledge/EV5 - Reproduksibilitas dan Pra-Registrasi]] ·
+[[TradingKnowledge/EV3 - Signifikansi dan Multiple Testing]] ·
+[[08-Backlog/01 - Backlog]] P20/P29/P33/P34
