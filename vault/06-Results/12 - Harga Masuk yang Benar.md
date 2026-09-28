@@ -61,6 +61,34 @@ Dua bacaan yang harus disebut bersama tabel ini:
   Dua himpunan (557 yang ber-sumur-dua vs 908 semua) memberi jawaban berbeda: nol vs negatif.
   Yang boleh kukatakan: **tidak ada satu pun dari keduanya yang mendukung klaim kami.**
 
+## 1b. REPLIKASI TERKUNCI - dijalankan 28 Sep 21:45Z, TIDAK ADA REPLIKASI
+
+Kunci dipasang 28 Sep 09:49Z (`spec_sha256=0x6f69e1003a7ed155…`, `t_kunci=09:38:44Z`, syarat 12 jam
+rekaman baru, hanya kejadian setelah kunci yang dinilai). Alat menolak di 11,99 jam dan baru mau
+berjalan di 12,05 jam - pembulatan tidak dipakai sebagai izin. Artefak:
+`decisions/day2h-20260928T214502Z.json`.
+
+| uji (spesifikasi terkunci) | token | n | median selisih | CI 95 % | p satu arah | vonis |
+|---|---|---|---|---|---|---|
+| `uji_primer` K≥2 | 21 | 40 | **−1.518,5** | **[−7.379; −3]** | 0,99 | **GAGAL** |
+| `uji_kedua` `money_spread` | 19 | 34 | −747,9 | [−2.694; +77] | 0,97 | **GAGAL** |
+| `uji_ketiga` stack≥2 | 21 | 40 | −1.124,3 | [−3.310; −3] | 0,99 | **GAGAL** |
+
+Dua hal yang harus dibaca bersama tabel ini, dan yang kedua menahan godaan:
+
+1. **Bukan cuma gagal - arahnya terbalik dan CI-nya tidak menyentuh nol** untuk uji primer dan
+   ketiganya: pada data yang belum pernah dilihat saat spesifikasi ditulis, kerumunan maker diikuti
+   hasil 30 menit yang LEBIH BURUK daripada kejadian sepi di token yang sama.
+2. **Itu TIDAK mengubahnya jadi sinyal fade.** Aturan halaman ini baris terakhir menutup dua arah
+   sekaligus: "hipotesis kerumunan (dua arah sekali pun) dicabut". Membalik tanda setelah melihat
+   hasilnya adalah gerakan yang sama yang sudah membunuh +393,4 pagi tadi - hanya kali ini dengan
+   data yang lebih sedikit (40 pasangan). Kalau fade mau dikejar, ia harus masuk sebagai
+   **spesifikasi baru dengan kuncinya sendiri**, diuji pada rekaman yang belum pernah dilihat.
+
+Sensor run ini juga mengulang tembok yang lain: **7.294 beli dibuang karena tidak ada transaksi
+lanjutan di jendela keluar** (vs 265 yang dinilai). Itulah P33 - di horison 30 menit, sebagian
+besar posisi kita tidak punya harga keluar, dan yang "tidak punya" itu bukan netral: biasanya mati.
+
 ## 2. `fresh_token` tetap artefak, dan kini lebih jelas kenapa
 
 +12.675 s/d +22.638 bps di SEMUA kombinasi harga - termasuk B yang paling jujur. Ini memperkuat

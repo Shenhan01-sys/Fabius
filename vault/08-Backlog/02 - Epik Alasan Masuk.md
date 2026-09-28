@@ -115,6 +115,15 @@ memotong ekor KIRI (kerugian besar) tanpa menaikkan harapan. Kalau benar begitu,
 bunyi *"E2 mengurangi buntut buruk"*, bukan *"E2 menambah harapan"* - dan itu hipotesis baru (E2b)
 dengan kunci sendiri, bukan E2 yang direvisi.
 
+## 3c. Dua vonis terkunci sudah jatuh - dan keduanya NEGATIF
+
+| kunci dipasang | dievaluasi | spesifikasi | hasil |
+|---|---|---|---|
+| 28 Sep 08:30Z (`0x03aa212f…`, `t_kunci` 06:13:38Z, harga `px`) | 21:24Z, 15,12 jam rekaman baru | halaman 11 | 275 kejadian; `uji_primer`/`uji_kedua` SAMPEL TIDAK CUKUP; `uji_ketiga` +219,2 CI [−18; +2138] p=0,0490 -> **GAGAL** (yang memotong: syarat CI bawah, bukan p) |
+| 28 Sep 09:49Z (`0x6f69e100…`, `t_kunci` 09:38:44Z, harga PERISTIWA) | 21:45Z, 12,05 jam (alat menolak di 11,99) | halaman 12 | 265 kejadian; `uji_primer` K≥2 **−1.518,5 CI [−7.379; −3]**; `money_spread` −747,9; `stack≥2` −1.124,3 CI [−3.310; −3] -> **GAGAL, arah terbalik** |
+
+**Vonis epik sejauh ini: kerumunan maker bukan gas, dan belum terbukti rem yang berdiri sendiri di luar `jual_*` yang sudah terukur.** Yang TIDAK boleh dilakukan karena angka terakhir: membalik tanda jadi sinyal fade - aturan halaman 12 menutup dua arah, dan 40 pasangan bukan dasar untuk mengganti teori. Kalau fade dikejar: spesifikasi baru, kunci baru, data yang belum dilihat (P32/P33/P34 tetap jalan lebih dulu).
+
 ## 4. Non-goal eksplisit
 
 - Tidak menaikkan `promote-after` di bawah gerbang F-D16 walau streak tercapai.

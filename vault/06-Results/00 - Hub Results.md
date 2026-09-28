@@ -43,6 +43,10 @@ hasil keluar — koreksi lewat halaman baru, supaya urutannya bisa dipertanggung
   BH; pada 908 kejadian `--px txevent` malah **−491,4 bps, CI [−1319; −205]**, cuma 30,5 % positif.
   Spesifikasi yang hidup dikunci di sini: `--halaman 12`, `spec_sha256=0x6f69e100...`,
   `t_kunci` 09:38:44Z, syarat 12 jam rekaman baru. Hipotesis fade **tidak dijual**.
+  **TERJALAN 28 Sep 21:45Z: TIDAK ADA REPLIKASI** - `uji_primer` K≥2 = median **−1.518,5 bps**
+  CI **[−7.379; −3]** (n=40), `stack≥2` **−1.124,3** CI [−3.310; −3]. Arahnya terbalik dan CI-nya
+  tidak menyentuh nol, tapi aturan halaman itu menutup **dua** arah: fade tidak boleh dijual
+  tanpa kuncinya sendiri. Sensor: 7.294 beli dibuang tanpa harga keluar -> P33.
 - [[13 - Apakah Tidak Trading Itu Gratis]] - jawaban terukur untuk "apa gunanya kalau cuma tahu
   jangan masuk": tidak trading **tidak gratis** (harapan winso **+82,7 bps/posisi**, **33,9 %**
   kejadian naik ≥+500 bps dalam 30 m, walau median −58,9) - **tapi tidak ada aspek aliran kami yang

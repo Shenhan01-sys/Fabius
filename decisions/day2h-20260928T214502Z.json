@@ -1,0 +1,59 @@
+{
+ "batas": [
+  "satu jendela rezim mungkin masih sama dengan jendela saat spesifikasi ditulis",
+  "belum ada fill nyata; outcome = probabilitas 30 menit, bukan PnL",
+  "maker = yang ditampilkan feed vendor: kerumunan = batas bawah"
+ ],
+ "dibuat_utc": "2026-09-28T21:45:00Z",
+ "halaman_spesifikasi": "12",
+ "horizon_menit": 30,
+ "kejadian": 265,
+ "lolos_bh_dalam_run": [],
+ "rekaman_baru_jam": 12.05,
+ "rows": [
+  {
+   "ci_hi": -2.7,
+   "ci_lo": -7379.4,
+   "fitur": "cluster_ge2",
+   "kunci": "uji_primer",
+   "mean_selisih_bps": -51449.7,
+   "median_selisih_bps": -1518.5,
+   "n": 40,
+   "p": 0.9917,
+   "proporsi_positif": 32.5,
+   "token": 21,
+   "vonis": "GAGAL"
+  },
+  {
+   "ci_hi": 77.2,
+   "ci_lo": -2693.7,
+   "fitur": "money_spread",
+   "kunci": "uji_kedua",
+   "mean_selisih_bps": -3643.0,
+   "median_selisih_bps": -747.9,
+   "n": 34,
+   "p": 0.9712,
+   "proporsi_positif": 35.3,
+   "token": 19,
+   "vonis": "GAGAL"
+  },
+  {
+   "ci_hi": -2.7,
+   "ci_lo": -3310.1,
+   "fitur": "stack_ge2",
+   "kunci": "uji_ketiga",
+   "mean_selisih_bps": -13103.8,
+   "median_selisih_bps": -1124.3,
+   "n": 40,
+   "p": 0.9917,
+   "proporsi_positif": 32.5,
+   "token": 21,
+   "vonis": "GAGAL"
+  }
+ ],
+ "spec_sha256": "0x6f69e1003a7ed15552ffc8b576a21e5e48fa02be0ec577cb359314187a169099",
+ "t_kunci": 1790588324,
+ "token": 140,
+ "vonis": "TIDAK ADA REPLIKASI - klaim pada halaman yang diuji DICABUT (aturan halaman 12 baris terakhir)",
+ "window_menit": 15
+}
