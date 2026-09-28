@@ -52,6 +52,12 @@ anggota, atau invalidasi; tanpa tiga hal itu "smart money" adalah merek, bukan m
 1. Pembanding = **arah acak pada token dan jam yang sama**; hold **4 jam** dari baris `px` kami;
    **pisahkan `is_open_or_close=1` vs `=0`** — tiga kontrol yang di §B dinyatakan sebagai satu-satunya
    yang boleh dipakai (bukan "lebih baik dari trader biasa", yang mustahil tanpa kontrol).
+   **Sebagian sudah dijalankan 28 Sep:** `tools/flow_cluster_test.py` memakai pembanding K=1 +
+   "cuaca" (semua `px→px` pada token yang sama). Hasilnya: **kerumunan tidak memisahkan**
+   (K≥2 39,3 % vs K=1 39,5 % posisi positif; K≥5 50 % pada n=24, p=0,58) → **0 lolos BH**;
+   `is_open_or_close` memang tidak ditentukan oleh sisi, jadi ia tidak dipakai sebagai penanda
+   pembukaan. Yang menahan kesimpulan: **80,6 %** kandidat tidak punya harga keluar
+   ([[06-Results/09 - Whale Cluster Test]]) — kolaborasi diuji hanya pada yang akhirnya masih kelihatan.
 2. Satu sampel per (wallet, token, jendela tak tumpang-tindih), `n >= 20` per wallet, BH α 0,10
    **lintas wallet**, fold terbaik dibuang, gross di atas **59 bps** (§D — bukan 20 bps asumsi).
 3. Keanggotaan dicatat dengan timestamp. `tools/flow_signal.py` memisahkan aliran semua maker, maker

@@ -1,0 +1,46 @@
+{
+ "batas": [
+  "K dihitung dari feed kami sendiri: maker yang TIDAK terlihat di jendela itu tidak dihitung - K kami adalah batas bawah",
+  "px = harga pool yang kami tarik per ~2 menit untuk token yang SEDANG panas; token yang keluar dari daftar tidak punya harga keluar -> hilang, bukan nol",
+  "panel maker dipilih vendor (GMGN smartmoney/kol): tercemar retrospektif (§B)",
+  "umur rekaman 35 jam pada run ini: horizon 24 j praktis tidak punya pasangan",
+  "median dan proporsi-ekor dipakai sebagai kepala; mean hanya pembanding"
+ ],
+ "cost_basis": "measured-own-venue",
+ "cost_bps_rt": 59.0,
+ "dibuat_utc": "2026-09-28T05:58:42Z",
+ "horizon_h": 4,
+ "lolos_bh": [],
+ "rows": [
+  {
+   "kelompok": 1,
+   "n": 0,
+   "status": "SAMPEL TIDAK CUKUP"
+  },
+  {
+   "kelompok": 2,
+   "n": 0,
+   "status": "SAMPEL TIDAK CUKUP"
+  },
+  {
+   "kelompok": 3,
+   "n": 0,
+   "status": "SAMPEL TIDAK CUKUP"
+  },
+  {
+   "kelompok": 5,
+   "n": 0,
+   "status": "SAMPEL TIDAK CUKUP"
+  }
+ ],
+ "rows_sha256": "0xd73de7b6dd9333682de8d998d371356a83bcb88d94f9e0c369929174c947b11e",
+ "skip": {
+  "tanpa_beli": 0,
+  "tanpa_px_keluar": 1450,
+  "tanpa_px_masuk": 2895
+ },
+ "tail_target": 4.0,
+ "token_dengan_px": 1813,
+ "tx_dibaca": 24509,
+ "window_menit": 30
+}

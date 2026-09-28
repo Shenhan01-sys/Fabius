@@ -28,6 +28,7 @@ berupa junction lokal.
 | 12 | `python -X utf8 universe/record_funding_history.py --report` | 28 Sep: 5.963 baris tersedia (OKX 97,7 hari · Bybit 66,3 · OI 20,8) | histori funding/OI tanpa kunci, satu-satunya jalur uji carry yang kita punya |
 | 13 | `python -X utf8 tools/carry_study.py` | 28 Sep: veto kena **0/2.963**; **0 dari 12 uji lolos BH**; carry 1,3–2,2 bps/hari | uji carry yang jujur (median + bootstrap + BH), verdict `NETAS` |
 | 14 | `python -X utf8 tools/winlog.py` | 28 Sep: PAPER n=3 WR 0 % (−236,0 rata-rata) · CHAIN n=3 WR 0 % (−59,0) | streak dibaca dua seri terpisah, dan gerbang F-D16 ikut dicetak |
+| 15 | `python -X utf8 tools/flow_cluster_test.py` | 28 Sep: K=1 39,5 % vs K≥2 39,3 % vs K≥5 50,0 % (n=24) posisi positif; cuaca 30,8 % → **0 lolos BH**; **80,6 %** kandidat tanpa harga keluar | hipotesis "kohor whale memperbaiki prediksi" diuji, bukan diasumsikan — dan jawabannya dibatasi sensor, bukan sinyal ([[06-Results/09 - Whale Cluster Test]]) |
 
 Baris 4–7 dan 9–10 adalah yang bisa dijalankan orang lain tanpa punya apa pun dariku (9–10 cuma
 membaca git lokal). Baris 8 dan `_research/*` lain adalah alat workspace: kutulis sebagai bukti cara

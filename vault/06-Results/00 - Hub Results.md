@@ -21,6 +21,9 @@ hasil keluar — koreksi lewat halaman baru, supaya urutannya bisa dipertanggung
 - [[07 - Matured Outcomes]] — hasil pertama prediksi yang di-anchor
 - [[08 - Carry Study]] — veto funding kena 0 dari 2.963 settlement; 0 dari 12 uji arah lolos BH;
   carry 1,3–2,2 bps/hari vs round-trip 59 bps
+- [[09 - Whale Cluster Test]] — kolaborasi maker TIDAK memisahkan (K≥2 39,3 % vs K=1 39,5 %
+  positif; 0 lolos BH), tapi 80,6 % kandidat tidak punya harga keluar: pengukurannya buta di sisi
+  keluar, dan itu yang memblokir pertanyaan "bisa profit tidak"
 
 <!-- di atas: append-only oleh scripts/sync_vault.py; gloss tulisan tangan utuh -->
 ```dataview

@@ -8,9 +8,12 @@ tags: [tk, tk-peta, "GAP3"]
 **Sumber:** [[Fakta Terukur]] §A/§B/§H · [[03-Data/D5 - Record Schemas]] · `tools/` (dibaca 28 Sep 2026)
 
 **Ringkas:** lubang terbesar Fabius bukan kekurangan data, melainkan bahan yang **sudah** kami rekam
-dan tidak pernah ditanya apa-apa. Enam hal di bawah ini sudah ada di repo, tidak butuh langganan,
-tidak butuh jaringan baru — dan tidak satu pun menghasilkan angka yang mengubah keputusan. Halaman
-ini adalah daftar pekerjaan termurah yang belum dikerjakan.
+dan tidak pernah ditanya apa-apa. Diperbarui 28 Sep: dari enam baris di bawah, **tiga sudah dijawab**
+(⑦ diuji → kohor tidak memisahkan; `px` dipakai jadi jangkar keluar → 80,6 % kejadian ternyata
+tersensor; funding diuji → veto 0 kejadian, 0/12 lolos BH) dan ketiganya keluar **negatif**. Sisa
+yang benar-benar belum disentuh: volum, funding per-jam venue sendiri, blok narasi, dan deret
+selektivitas kita sendiri. Halaman ini tetap daftar pekerjaan termurah — hanya saja yang "murah"
+itu sekarang sudah sebagian ditagih, dan tagihannya bukan untung.
 
 ## Definisi yang bisa dihitung
 
@@ -34,8 +37,8 @@ uji terhadap null → baru bicara bobot**.
 
 | # | bahan yang sudah ada | status | apa yang belum ditanyakan | alat | bayar |
 |---|---|---|---|---|---|
-| 1 | **bidang ⑦** — `universe/wallet-flow.jsonl`: run `94aead6` 18:21:16Z = 50.285 baris · 21.907 tx · 452 maker · 1.590 token; ekor terbaru di `universe/wallet-flow-manifest.txt` ([[Fakta Terukur]] §B) | `ADA-TAPI` (tanpa riwayat) | apakah arah keranjang maker pada token X mendahului hasil 4–24 j, dibanding **arah acak pada token & jam yang sama** | `tools/flow_signal.py` ada, **tidak diimpor satu pun alat keputusan**; `tools/maker_ledger.py` belum bisa dipercaya (§H) | nol + jam-proses |
-| 2 | **baris `px`** — harga per `tk` tiap tarikan (ekor `origin/master`: **27.886 baris / 1.607 token**, [[Fakta Terukur]] §B) | `ADA-TAPI` (jangkauan = umur perekam) | bolehkah ia jadi **jangkar hasil** untuk token tanpa perp, menggantikan asumsi harga terakhir | belum ada yang memakainya sebagai yardstick | nol |
+| 1 | **bidang ⑦** — `universe/wallet-flow.jsonl`: run `94aead6` 18:21:16Z = 50.285 baris · 21.907 tx · 452 maker · 1.590 token; ekor terbaru di `universe/wallet-flow-manifest.txt` ([[Fakta Terukur]] §B) | `ADA-TAPI` (tanpa riwayat) | ~~belum ditanyakan~~ **diuji 28 Sep**: apakah kerumunan maker (≥2 dompet berbeda dalam 30 m) meramalkan 60 menit berikutnya | `tools/flow_cluster_test.py` (membaca berkasnya langsung; tetap **tidak diimpor alat keputusan apa pun**) | nol → **0 lolos BH**, tapi **80,6 %** kandidat tanpa harga keluar; sisanya **P17** |
+| 2 | **baris `px`** — harga per `tk` tiap tarikan (ekor `origin/master`: **27.886 baris / 1.607 token**, [[Fakta Terukur]] §B) | `ADA-TAPI` (jangkauan = umur perekam; **median jendela per token cuma 27 menit**) | ~~bolehkah jadi jangkar hasil~~ **sudah dipakai sebagai jangkar keluar** oleh `tools/flow_cluster_test.py` | hasilnya sekaligus menunjukkan batasnya: **3.191 dari 3.958** kejadian tidak punya `px` pada jendela keluar, dan **21,6 %** gross-nya persis 0,0 bps (resolusi) | nol; sisanya **P17 + P18** |
 | 3 | **kolom volum bar** — ikut diparsing `tools/bars.py`; tidak ada satu pun referensi volum di `tools/direction.py` (diperiksa 28 Sep) | `ADA` | apakah volum menambah informasi di atas harga, atau hanya menamai ulang pergerakan yang sama | `I7 - VWAP dan Anchored VWAP`, `V1 - Konfirmasi Volum dan Money Flow` belum punya jalur data | nol |
 | 4 | ~~funding + OI: belum diuji~~ **selesai 28 Sep** — `tools/carry_study.py` atas deret sendiri ([[03-Data/D6 - Funding and OI History]]) | `ADA` | apakah veto carry memprediksi hasil yang lebih buruk | **sudah dijawab:** veto kena **0 dari 2.963** settlement; **0 dari 12 uji** arah 24 jam lolos BH; carry 1,3–2,2 bps/hari → [[06-Results/08 - Carry Study]] | nol |
 | 4b | funding **per jam venue sendiri** (Aster `premiumIndex` per 4 jam) — satu-satunya funding yang bisa menguji ambang kita apa adanya | `TIDAK-ADA` (jalur hidup, belum direkam) | apakah ambang 0,05 %/4 j pernah relevan untuk kandidat kita | butuh perekam baru + **kalender** | nol + kalender |
