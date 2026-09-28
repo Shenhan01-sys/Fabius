@@ -19,6 +19,8 @@ hasil keluar — koreksi lewat halaman baru, supaya urutannya bisa dipertanggung
 - [[05 - Pre-registration Flow]] — uji aliran kerumunan, terkunci sebelum hasil
 - [[06 - Pre-registration Horizon]] — uji horison whale + vonisnya
 - [[07 - Matured Outcomes]] — hasil pertama prediksi yang di-anchor
+- [[08 - Carry Study]] — veto funding kena 0 dari 2.963 settlement; 0 dari 12 uji arah lolos BH;
+  carry 1,3–2,2 bps/hari vs round-trip 59 bps
 
 <!-- di atas: append-only oleh scripts/sync_vault.py; gloss tulisan tangan utuh -->
 ```dataview

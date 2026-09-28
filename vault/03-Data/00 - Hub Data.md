@@ -17,6 +17,8 @@ hanya maju (aliran wallet) diperlakukan sebagai aset yang bisa hilang — karena
 - [[D4 - Dune]] — dialek Trino, kredit terukur, lag BSC ±1 jam
 - [[01 - Dataset]] — universe point-in-time, sha256 per baris, manifest & gap
 - [[D5 - Record Schemas]] — field tiap rekaman + riwayat skema 1→4; tanpa ini hash tidak bisa dihitung ulang orang lain
+- [[D6 - Funding and OI History]] — histori funding (OKX 97,7 hari · Bybit 66,3, per 8 jam) + OI
+  Binance 20,8 hari per 1 jam, 5.963 baris tanpa kunci; ini yang membuat veto funding bisa diuji
 
 <!-- di atas: append-only oleh scripts/sync_vault.py; gloss tulisan tangan utuh -->
 ```dataview

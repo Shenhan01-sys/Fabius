@@ -52,7 +52,7 @@ kalibrasi veto — apakah veto kami memprediksi hasil buruk. Statusnya masih ter
 | penilai bertipe yang bisa dicabut | `ADA` | `tools/judge.py` — rantai provider + `abstain`; keluaran mentah disimpan supaya keputusan bisa direproduksi tanpa model |
 | gerbang satu-arah yang menegakkan peran LLM | `ADA` | [[01-Agent/A3 - One-Way Gates]]; hasilnya ikut di-hash (§E) |
 | fixture kontrol negatif yang tersimpan di repo | `TIDAK-ADA` | belum ada berkas uji veto; tanpa ini klaim "penilai bekerja" tidak bisa diperiksa |
-| kalibrasi veto terhadap hasil | `TIDAK-ADA` | butuh keputusan jatuh tempo dalam jumlah; yang terukur baru n=2 (§F) |
+| kalibrasi veto terhadap hasil | `TIDAK-ADA` | butuh keputusan jatuh tempo dalam jumlah; yang terukur baru n=3, semuanya rugi (§F) |
 | biaya pemakaian | `ADA-TAPI` | biaya per panggilan dicatat di artefak keputusan (`tools/judge.py`); pemakaian kami sendiri *(belum diukur)* |
 
 ## Uji di Fabius

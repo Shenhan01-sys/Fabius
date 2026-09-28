@@ -97,7 +97,7 @@ label, bukan penilaian ini) — lihat [[Concepts/Lookahead Bound]].
 
 - **Boleh:** "kami menutup prediksi dari rekaman yang ter-anchor, memisahkan yang belum jatuh tempo
   dan yang ambigu, dan melaporkan harapan bersih — bukan win rate."
-- **Dilarang:** "win rate kami 50 %" (n=2) · "streak chain 3 kalah berarti sistem membaik di paper" ·
+- **Dilarang:** "win rate kami 50 %" (n=2, dan sudah jadi 0 % di n=3) · "streak chain 3 kalah berarti sistem membaik di paper" ·
   "sistem kami rugi secara statistik" (juga melebihi sampel) · angka dari blok §H
   [[Fakta Terukur]] dikutip sebagai temuan.
 

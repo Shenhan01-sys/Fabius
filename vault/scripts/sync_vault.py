@@ -41,8 +41,14 @@ def sort_key(name):
 
 
 def md_files(folder, recurse=False):
+    # `folder` boleh nama relatif ("03-Data") atau path absolut. Tanpa ini, skrip yang dijalankan
+    # dari `Fabius/` (bukan dari `vault/`) membuat os.walk("03-Data") mengembalikan KOSONG, semua
+    # folder di-skip lewat `if not parts: continue`, dan `sync` melaporkan sukses sambil tidak
+    # menyentuh satu pun hub. Perbaikan yang dijalankan dari direktori yang SALAH harus berbunyi,
+    # bukan terlihat bersih.
+    start = folder if os.path.isabs(folder) else os.path.join(ROOT, folder)
     out = []
-    for cur, dirs, files in os.walk(folder):
+    for cur, dirs, files in os.walk(start):
         dirs[:] = [d for d in dirs if d not in SKIP_DIRS]
         for f in files:
             if f.endswith(".md") and not f.startswith("_"):
@@ -87,7 +93,8 @@ def hub_body(hub_path, parts):
     Jadi sekarang: baris yang sudah ada dibiarkan apa adanya, berkas baru ditambahkan di ujung,
     dan tautan yang berkasnya sudah tidak ada dilaporkan, bukan dihapus diam-diam.
     """
-    text = open(hub_path, encoding="utf-8").read() if os.path.exists(hub_path) else None
+    hub_abs = hub_path if os.path.isabs(hub_path) else os.path.join(ROOT, hub_path.replace("/", os.sep))
+    text = open(hub_abs, encoding="utf-8").read() if os.path.exists(hub_abs) else None
     # Tag dataview diambil dari FRONTMATTER hub (entri pertama selain `hub`), bukan dari nama file.
     # Versi sebelumnya memotong nama file dan menghasilkan `LIST FROM #hub-overview.md` - query yang
     # tidak cocok dengan tag mana pun, jadi peta otomatisnya kosong tanpa pernah bilang kosong.
@@ -107,11 +114,31 @@ def hub_body(hub_path, parts):
     # `## Terkait` tertimpa. Keduanya: alat yang menulis ulang lebih banyak dari yang ia pahami.
     block = re.search(r"^## Bagian\n(.*?)(?=^##\s|^```|\Z)", text or "", flags=re.M | re.S)
     if block:
-        for m in re.finditer(r"^-\s*\[\[([^\]|]+)(?:\|[^\]]*)?\]\]([^\n]*)$",
-                             block.group(1), flags=re.M):
-            name = m.group(1).strip()
-            listed.add(os.path.basename(name))
-            lines_out.append(f"- [[{name}]]{m.group(2).rstrip()}")
+        # Jalankan per-BARIS, jangan per-regex-potongan-kalimat. Versi sebelumnya mengambil hanya
+        # baris yang cocok `- [[nama]]` dan menulis ulang baris itu saja: setiap gloss yang
+        # menyambung ke baris berikutnya (semua hub di vault ini begitu) HILANG, dan alias
+        # `[[nama|label]]` dipotong menjadi `[[nama]]`. Run 28 Sep menghapus 13 baris gloss dari
+        # dua hub sebelum ketahuan. Yang ditulis ulang sekarang adalah blok apa adanya - alat ini
+        # hanya boleh MENAMBAH, tidak pernah memperindah.
+        raw = block.group(1).split("\n")
+        i = 0
+        while i < len(raw):
+            ln = raw[i]
+            m = re.match(r"^\s*-\s*\[\[([^\]]+)\]\]", ln)
+            if not m:
+                i += 1
+                continue
+            inner = m.group(1).split("|")[0].strip()
+            listed.add(os.path.basename(inner))
+            chunk = [ln]
+            j = i + 1
+            while (j < len(raw) and raw[j].strip()
+                   and not re.match(r"^\s*-\s*\[\[", raw[j])
+                   and not raw[j].lstrip().startswith(("<!--", "#", "```"))):
+                chunk.append(raw[j])
+                j += 1
+            lines_out.extend(chunk)
+            i = j
     for p in parts:
         base = os.path.splitext(os.path.basename(p))[0]
         if base == os.path.splitext(os.path.basename(hub_path))[0] or base in listed:
@@ -132,9 +159,11 @@ def hub_body(hub_path, parts):
         # Titik referensi = folder hub itu sendiri, bukan root vault. Versi pertama memeriksa
         # ROOT/<nama>.md sehingga setiap tautan relatif ("01 - Briefing" di dalam 00-Overview)
         # diteriakkan sebagai berkas hilang: 50 baris alarm palsu per run, dan yang asli nanti
-        # tenggelam di antaranya.
-        cands = [os.path.join(ROOT, t + ".md"),
-                 os.path.join(os.path.dirname(hub_path), t + ".md")]
+        # tenggelam di antaranya. Sekarang keduanya diuji terhadap ROOT (bukan cwd) - sama seperti
+        # bug `md_files`, alarm yang bergantung pada direktori jalan adalah alarm yang tidak
+        # akan dipercaya orang saat benar.
+        hdir = os.path.dirname(hub_abs)
+        cands = [os.path.join(ROOT, t + ".md"), os.path.join(hdir, t + ".md")]
         if not any(os.path.exists(c) for c in cands):
             print(f"  ! hub menunjuk berkas yang tidak ada ({hub_path}): {t}")
     body = ["## Bagian", ""] + lines_out
@@ -162,14 +191,19 @@ def sync(write=True):
     for f in folders():
         parts = md_files(f)
         if not parts:
+            print(f"  ! folder {f} tidak menghasilkan halaman - periksa ROOT/Path, jangan diabaikan")
             continue
         hub = hub_of(f) or os.path.join(f, "00 - Hub %s.md" % f.split("-", 1)[-1])
+        # Semua jalur dari sini absolut: `hub_of` mengembalikan path RELATIF terhadap ROOT, dan
+        # `open(hub)` relatif akan membaca/menulis di direktori jalan - termasuk MENCIPTA hub
+        # palsu di cwd kalau cwd-nya bukan vault.
+        hubp = hub if os.path.isabs(hub) else os.path.join(ROOT, hub.replace("/", os.sep))
         new = hub_body(hub, parts)
-        text = open(hub, encoding="utf-8").read() if os.path.exists(hub) else None
+        text = open(hubp, encoding="utf-8").read() if os.path.exists(hubp) else None
         if new != text:
             changed += 1
             if write:
-                open(hub, "w", encoding="utf-8", newline="\n").write(new)
+                open(hubp, "w", encoding="utf-8", newline="\n").write(new)
             print(("sync " if write else "akan sync ") + hub)
     top = md_files(ROOT)
     lines = ["---", "tags: [generated]", "---", "",

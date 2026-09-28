@@ -96,6 +96,7 @@ mindmap
 - [[07-Peta-Fabius/00 - Hub Peta Fabius]] — lapisan keputusan: matriks, lubang, dan urutan kerja
   bernomor backlog
 
+<!-- di atas: append-only oleh scripts/sync_vault.py; gloss tulisan tangan utuh -->
 ## Cara masuk kalau kamu tergesa
 
 | kamu bertanya | mulai dari |

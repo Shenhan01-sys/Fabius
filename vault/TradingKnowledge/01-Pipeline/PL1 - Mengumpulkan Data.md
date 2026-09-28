@@ -52,7 +52,7 @@ penerbit angkanya, dan seberapa dalam dibanding horizon keputusan ([[FD9 - Horiz
 |---|---|---|
 | bar 1 jam ≥ 2.400 untuk aset ber-kontrak perp | `ADA` | Aster 9.599 bar ≈ 400 hari; cap 1.500 bar/panggilan → dalam karena **paging** — [[Fakta Terukur]] §A |
 | bar untuk aset tanpa kontrak perp | `ADA-TAPI` | GMGN `token_kline` mentok 1.000 bar ≈ 41,6 hari; **0 bar** untuk token gas — §A |
-| funding + OI | `ADA-TAPI` | hidup (608 kontrak Aster · 234 Hyperliquid) + **histori bisa disedot mundur**: Bybit 66,3 hari per 8 jam, OKX 33,0, OI Binance 20,8 hari per 1 jam — §A.5; interval 8 jam tetap bukan fitur per-bar |
+| funding + OI | `ADA-TAPI` | hidup (608 kontrak Aster · 234 Hyperliquid) + **histori bisa disedot mundur**: Bybit 66,3 hari per 8 jam, OKX 97,7, OI Binance 20,8 hari per 1 jam — §A.5; interval 8 jam tetap bukan fitur per-bar |
 | order book L2 · tick · footprint · heatmap likuidasi | `TIDAK-ADA` | tidak ada jalurnya di repo ini — §C |
 | aliran transaksi dompet | `ADA` | 100 transaksi/panggilan, jendela lihat 8–13 menit, tanpa riwayat — §B |
 | narasi (tema + nada) | `ADA-TAPI` | jalur berkas mentah GDELT hidup; DOC API 429 di dua jaringan; belum diuji sebagai prediktor — §C |

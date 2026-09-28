@@ -55,10 +55,11 @@ Dua contoh terukur yang membuat halaman ini perlu ada:
 
 1. **Panel whale: WR 69,8 % dan −10,4 bps per jam** (§F). Win rate tinggi + harapan negatif =
    norma, bukan paradoks; yang salah adalah metriknya, pasarnya tidak.
-2. **Dua `Enter` yang jatuh tempo: +1,5 bps dan −146,3 bps net** (§F, n=2). WR-nya 50 % — angka
-   yang terdengar "setengah bagus" — sementara rata-ratanya **−72,4 bps** (aritmetika dari dua angka
-   itu). Satu yang menang bahkan tidak menutup ongkosnya: arahnya benar, pasarnya yang membayar
-   biaya hampir persis nol.
+2. **Tiga `Enter` yang jatuh tempo: +1,5 / −146,3 / −485,3 bps** pada asumsi 20 bps; pada ongkos
+   terukur 59 bps menjadi **−37,5 / −185,3 / −485,3** (§F,
+   [[06-Results/04 - Negative Results]] §5b). WR-nya **0 %**, rata-rata **−236,0 bps**. Ini contoh
+   paling murah di vault ini: satu metrik populer berpindah dari "setengah bagus" ke "nol" hanya
+   karena penggarisnya diganti yang benar — dan tidak ada satu pun pergerakan harga yang berubah.
 
 ## Batas dan mode gagal
 

@@ -52,7 +52,7 @@ terukur adalah `ret24_pct`, `atr_pct`, `acf_abs` (lag 1/6/24), `funding_4h`, `oi
 |---|---|---|
 | OHLCV 1 jam ≥ 2.400 bar | `ADA` | Aster 9.599 bar ≈ 400 hari, dijawab sendiri lewat `tools/bars.py` — §A |
 | fitur yang tersedia di waktu keputusan | `ADA-TAPI` | `acf_abs`/`ret24_pct`/`atr_pct` dihitung dari bar `<= t`; funding & OI hanya **terkini** — §A |
-| histori funding/OI per aset | `ADA-TAPI` | Bybit `/v5/market/funding/history` **200 baris = 66,3 hari** dan OKX `funding-rate-history` **33,0 hari**, dua-duanya tanpa kunci, interval **8 jam** — [[Fakta Terukur]] §A.5 (diukur 28 Sep dari laptop ini, BELUM dari runner). 8 jam bukan fitur per-bar: tetap veto rezim, bukan sinyal |
+| histori funding/OI per aset | `ADA-TAPI` | Bybit `/v5/market/funding/history` **200 baris = 66,3 hari** dan OKX `funding-rate-history` **97,7 hari**, dua-duanya tanpa kunci, interval **8 jam** — [[Fakta Terukur]] §A.5 (diukur 28 Sep dari laptop ini, BELUM dari runner). 8 jam bukan fitur per-bar: tetap veto rezim, bukan sinyal |
 | urutan sentuh dalam bar (untuk tiga-barrier) | `TIDAK-ADA` | tidak ada tick/L2 (§C) |
 | volum per bar | `ADA-TAPI` | ikut `klines`; belum pernah dipakai sebagai fitur apa pun (§A) |
 | normalisasi lintas aset | `ADA-TAPI` | semua fitur kami berupa rasio/return; **tidak** ada fitur berbentuk harga absolut |

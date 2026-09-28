@@ -1,0 +1,135 @@
+{
+ "batas": [
+  "funding interval 8 jam, bukan fitur per-bar 1j/4j",
+  "harga forward = perp Aster; venue funding = Bybit/OKX -> dua dunia berbeda",
+  "n per basis kecil; BH lintas basis, bukan lintas horizon",
+  "median + bootstrap sebagai headline; mean hanya pembanding"
+ ],
+ "carry_bps_per_hari": {
+  "BNB/bybit": 2.21,
+  "BNB/okx": 2.2,
+  "BTC/bybit": 1.4,
+  "BTC/okx": 1.62,
+  "DOGE/bybit": 1.76,
+  "DOGE/okx": 1.98,
+  "ETH/bybit": 1.41,
+  "ETH/okx": 1.32,
+  "SOL/bybit": 1.78,
+  "SOL/okx": 1.48,
+  "XRP/bybit": 1.74,
+  "XRP/okx": 1.8
+ },
+ "cost_basis": "measured-own-venue",
+ "cost_bps_rt": 59.0,
+ "dibuat_utc": "2026-09-28T02:30:54Z",
+ "gate_gross_bps": 118.0,
+ "horizon_h": 24,
+ "rows": [
+  {
+   "base": "BNB",
+   "n": 0,
+   "status": "TIDAK ADA BAR BNBUSDT",
+   "sumber": "okx"
+  },
+  {
+   "base": "BNB",
+   "n": 0,
+   "status": "TIDAK ADA BAR BNBUSDT",
+   "sumber": "bybit"
+  },
+  {
+   "ambang_rate": 0.0001,
+   "base": "BTC",
+   "ci_hi": 36.7,
+   "ci_lo": -155.9,
+   "mean_bps": -80.9,
+   "median_bps": -13.4,
+   "n": 19,
+   "net_mean_bps": -139.9,
+   "p_sign": 0.8204,
+   "sumber": "okx",
+   "wins": 8
+  },
+  {
+   "ambang_rate": 0.0001,
+   "base": "BTC",
+   "ci_hi": 128.4,
+   "ci_lo": -123.0,
+   "mean_bps": -88.7,
+   "median_bps": 60.2,
+   "n": 14,
+   "net_mean_bps": -147.7,
+   "p_sign": 0.6047,
+   "sumber": "bybit",
+   "wins": 7
+  },
+  {
+   "base": "ETH",
+   "n": 0,
+   "status": "TIDAK ADA BAR ETHUSDT",
+   "sumber": "okx"
+  },
+  {
+   "base": "ETH",
+   "n": 0,
+   "status": "TIDAK ADA BAR ETHUSDT",
+   "sumber": "bybit"
+  },
+  {
+   "base": "SOL",
+   "n": 0,
+   "status": "TIDAK ADA BAR SOLUSDT",
+   "sumber": "okx"
+  },
+  {
+   "base": "SOL",
+   "n": 0,
+   "status": "TIDAK ADA BAR SOLUSDT",
+   "sumber": "bybit"
+  },
+  {
+   "base": "DOGE",
+   "n": 0,
+   "status": "TIDAK ADA BAR DOGEUSDT",
+   "sumber": "okx"
+  },
+  {
+   "base": "DOGE",
+   "n": 0,
+   "status": "TIDAK ADA BAR DOGEUSDT",
+   "sumber": "bybit"
+  },
+  {
+   "base": "XRP",
+   "n": 0,
+   "status": "TIDAK ADA BAR XRPUSDT",
+   "sumber": "okx"
+  },
+  {
+   "base": "XRP",
+   "n": 0,
+   "status": "TIDAK ADA BAR XRPUSDT",
+   "sumber": "bybit"
+  }
+ ],
+ "rows_sha256": "0xa52b3dab661dde01eca4e47bb541a8bc739805d6431faed5d417d3302d9eb703",
+ "sumber_funding": "universe/funding-history.jsonl",
+ "threshold": 0.9,
+ "verdict": "NETAS - tidak ada satu pun basis yang net positif dengan ongkos terukur",
+ "veto_hits": {
+  "BNB/bybit": 0,
+  "BNB/okx": 0,
+  "BTC/bybit": 0,
+  "BTC/okx": 0,
+  "DOGE/bybit": 0,
+  "DOGE/okx": 0,
+  "ETH/bybit": 0,
+  "ETH/okx": 0,
+  "SOL/bybit": 0,
+  "SOL/okx": 0,
+  "XRP/bybit": 0,
+  "XRP/okx": 0
+ },
+ "veto_total_hit": 0,
+ "veto_total_n": 2963
+}

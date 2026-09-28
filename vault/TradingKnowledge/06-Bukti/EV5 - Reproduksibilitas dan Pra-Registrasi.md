@@ -30,7 +30,7 @@ Cara mesin memakai lapisan ini — mengevaluasi catatan trading tanpa memberi ca
 | kebutuhan | status Fabius | bukti / batas |
 |---|---|---|
 | anchor chain + verifikasinya | `ADA` | `tools/anchor.py --verify` tanpa kunci, tanpa gas — [[Fakta Terukur]] §G |
-| ledger kertas vs chain yang bisa dicetak ulang | `ADA` | `tools/winlog.py`: PAPER n=2 WR 50 % net rata2 −72,4 bps · CHAIN n=3 WR 0 % −59,0 bps · F-D16 `n>=20` BELUM — §G |
+| ledger kertas vs chain yang bisa dicetak ulang | `ADA` | `tools/winlog.py`: PAPER n=3 WR 0 % net rata2 −236,0 bps · CHAIN n=3 WR 0 % −59,0 bps (sebelum P10 seri paper n=2 WR 50 % −72,4) · F-D16 `n>=20` BELUM — §G |
 | commit ber-timestamp pihak ketiga untuk rekaman | `ADA` | `.github/workflows/` (rantai ⑦ + universe per-jam) — [[03-Data/D2 - Wallet Flow]] |
 | kunci pra-registrasi yang ditegakkan alat | `TIDAK-ADA` | "terkunci" konvensi teks + visibilitas git; menyunting halaman akan TERLIHAT, tapi tidak TERBLOKIR — jujur soal itu |
 | artefak yang dihitung ulang dari clone | `ADA-TAPI` | ada snapshot yang hash-nya tidak bisa dihitung ulang dan pemicunya belum diketahui — yang dijaga adalah angka jujurnya, bukan yang dibulatkan ([[10-Submissions/01 - Claims Cheat Sheet]]; [[07-Testing/T6 - Clean Clone Evidence]]) |

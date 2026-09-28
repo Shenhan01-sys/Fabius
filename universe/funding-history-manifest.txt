@@ -1,0 +1,22 @@
+# funding-history-manifest.txt - ditulis 2026-09-28T02:27:26Z UTC | 5963 baris total | schema 1
+# kolom: jenis sumber basis | jumlah baris | rentang nyata (hari) | tanggal ujung | hash baris terakhir kelompok
+fr   bybit        BNB    baris=200   rentang= 66.3 hari | 2026-07-23 .. 2026-09-28 | interval≈8.0 j | sha 0xdc02020db82c
+fr   bybit        BTC    baris=200   rentang= 66.3 hari | 2026-07-23 .. 2026-09-28 | interval≈8.0 j | sha 0x33569e0a88c5
+fr   bybit        DOGE   baris=200   rentang= 66.3 hari | 2026-07-23 .. 2026-09-28 | interval≈8.0 j | sha 0x088bd046d1dd
+fr   bybit        ETH    baris=200   rentang= 66.3 hari | 2026-07-23 .. 2026-09-28 | interval≈8.0 j | sha 0x6e4ab3d4f495
+fr   bybit        SOL    baris=200   rentang= 66.3 hari | 2026-07-23 .. 2026-09-28 | interval≈8.0 j | sha 0x197c2fd431b4
+fr   bybit        XRP    baris=200   rentang= 66.3 hari | 2026-07-23 .. 2026-09-28 | interval≈8.0 j | sha 0xb566cefe603f
+fr   okx          BNB    baris=294   rentang= 97.7 hari | 2026-06-22 .. 2026-09-28 | interval≈8.0 j | sha 0x4a8383c305e5
+fr   okx          BTC    baris=294   rentang= 97.7 hari | 2026-06-22 .. 2026-09-28 | interval≈8.0 j | sha 0xb874d703dcb9
+fr   okx          DOGE   baris=294   rentang= 97.7 hari | 2026-06-22 .. 2026-09-28 | interval≈8.0 j | sha 0xd1a52e3a702f
+fr   okx          ETH    baris=293   rentang= 97.3 hari | 2026-06-22 .. 2026-09-28 | interval≈8.0 j | sha 0xf3ee1f3861cd
+fr   okx          SOL    baris=294   rentang= 97.7 hari | 2026-06-22 .. 2026-09-28 | interval≈8.0 j | sha 0x0d030d5e11f1
+fr   okx          XRP    baris=294   rentang= 97.7 hari | 2026-06-22 .. 2026-09-28 | interval≈8.0 j | sha 0xa90d95983d85
+oi   binance_oi   BNB    baris=500   rentang= 20.8 hari | 2026-09-07 .. 2026-09-28 | interval≈1.0 j | sha 0xfe786b7d254a
+oi   binance_oi   BTC    baris=500   rentang= 20.8 hari | 2026-09-07 .. 2026-09-28 | interval≈1.0 j | sha 0xbebdc28a912c
+oi   binance_oi   DOGE   baris=500   rentang= 20.8 hari | 2026-09-07 .. 2026-09-28 | interval≈1.0 j | sha 0x05f8711423dd
+oi   binance_oi   ETH    baris=500   rentang= 20.8 hari | 2026-09-07 .. 2026-09-28 | interval≈1.0 j | sha 0x9642c769cbbe
+oi   binance_oi   SOL    baris=500   rentang= 20.8 hari | 2026-09-07 .. 2026-09-28 | interval≈1.0 j | sha 0x37f864b51b6e
+oi   binance_oi   XRP    baris=500   rentang= 20.8 hari | 2026-09-07 .. 2026-09-28 | interval≈1.0 j | sha 0xb4c3cc482396
+# catatan penarikan (yang gagal/hampa, bukan asumsi):
+# -

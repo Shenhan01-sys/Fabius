@@ -38,7 +38,7 @@ ujinya memakai ongkos dan alat skor yang sama.
 |---|---|---|
 | ongkos terukur satu nilai untuk semua jalur | `ADA-TAPI` | 59 bps terukur vs 20 bps warisan — [[Fakta Terukur]] §D, itu persoalan P10 |
 | alat skor ⑦ yang sehat | `TIDAK-ADA` (alatnya ada, angkanya belum layak) | §H di lembar yang sama — P11 |
-| hasil jatuh tempo `n ≥ 20` | `TIDAK-ADA` | seri sekarang: PAPER n=2, CHAIN n=3 (G) |
+| hasil jatuh tempo `n ≥ 20` | `TIDAK-ADA` | seri sekarang: PAPER n=3 WR 0 % (−236,0 rata-rata), CHAIN n=3 (G) |
 | histori funding (Bybit/OKX, tanpa kunci) | `ADA-TAPI` (8 jam, ±66 hari, belum dari runner) | §A.5 — dan ini mengganti bentuk P13: sedot mundur dulu, baru rekam |
 | spesifikasi swing/zona tunggal | `TIDAK-ADA` | kelas K3 — P14 |
 

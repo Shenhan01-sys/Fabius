@@ -84,8 +84,10 @@ terbukti bisa dijalankan dan menghasilkan jawaban minus — bukan bahwa kami jag
 - **Horizon yang "fleksibel"** = kebocoran. Waktu keluar yang dipilih setelah posisi berjalan
   mengubah return menjadi cerita.
 - **`n_min` yang tidak ditetapkan** berujung pada "masih kurang data" selamanya, atau sebaliknya:
-  klaim pada n=2. Yang terukur di kami: dua `Enter` jatuh tempo = +1,5 dan −146,3 bps (§F) — dua
-  titik, bukan kesimpulan.
+  klaim pada n=3. Yang terukur di kami: tiga `Enter` jatuh tempo = +1,5 / −146,3 / −485,3 bps pada
+  asumsi 20 bps, menjadi **−37,5 / −185,3 / −485,3** pada ongkos terukur 59 bps (§F). Dua angka
+  pertama adalah peristiwa yang sama dengan penggaris berbeda - tepat di situ alasan `n_min` **dan**
+  ongkos harus ditetapkan sebelum apa pun dijalankan, bukan setelah tabelnya muncul.
 - **Null sebagai nol** membuat setiap sinyal terlihat hebat di pasar yang sedang naik. Karena itu
   baseline (token, jam) wajib ada di tabel hasil, bukan di catatan kaki.
 - Ini pintu, bukan mesin: melewati QT1 tidak menambah sedikit pun edge.

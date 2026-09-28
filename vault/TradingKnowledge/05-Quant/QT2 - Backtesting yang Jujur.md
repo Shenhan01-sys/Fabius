@@ -58,7 +58,7 @@ yang lebih ramah — fill di close, ongkos opsional, satu baris masuk beberapa t
 | deret 1 jam 400 hari untuk harga forward | `ADA` | Aster 9.599 bar, dijawab sendiri lewat `tools/bars.py` — §A |
 | pembanding silang deret | `ADA` | Hyperliquid 5.001 bar ≈ 208 hari (§A) — chain sendiri, bukan BNB |
 | ongkos nyata per fill di pasar sungguhan | `TIDAK-ADA` | 59 bps kami adalah venue demo x·y=k + fee 30 bps, **bukan** pasar meme — §D |
-| histori funding per aset untuk uji gerbang carry | `ADA-TAPI` | Bybit `/v5/market/funding/history` **200 baris = 66,3 hari** dan OKX `funding-rate-history` **33,0 hari**, dua-duanya tanpa kunci, interval **8 jam** — [[Fakta Terukur]] §A.5 (diukur 28 Sep dari laptop ini, BELUM dari runner). 8 jam bukan fitur per-bar: tetap veto rezim, bukan sinyal — §F masih menyebutnya batas, sekarang batasnya bergeser: ada data, tidak ada interval |
+| histori funding per aset untuk uji gerbang carry | `ADA-TAPI` | Bybit `/v5/market/funding/history` **200 baris = 66,3 hari** dan OKX `funding-rate-history` **97,7 hari**, dua-duanya tanpa kunci, interval **8 jam** — [[Fakta Terukur]] §A.5 (diukur 28 Sep dari laptop ini, BELUM dari runner). 8 jam bukan fitur per-bar: tetap veto rezim, bukan sinyal — §F masih menyebutnya batas, sekarang batasnya bergeser: ada data, tidak ada interval |
 | bar untuk aset tanpa kontrak perp | `ADA-TAPI` | GMGN 1.000 bar ≈ 41,6 hari, 0 bar untuk token gas (§A) → tidak menyentuh `NEED_BARS` |
 | tick / book untuk model fill yang benar | `TIDAK-ADA` | §C |
 

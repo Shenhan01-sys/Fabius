@@ -44,7 +44,7 @@ Carry sekecil itu tidak membayar ongkos masuk-keluar: delta-netral berarti
 |---|---|---|
 | funding **saat ini** per kontrak perp | `ADA` | Aster `premiumIndex` untuk 608 kontrak; bacaan §A: BNB +0,0000 % · ETH +0,0100 % · SOL −0,0020 % · HYPE −0,0018 % · DOGE +0,0044 % per **4 jam** |
 | periode funding | `ADA-TAPI` | 4 jam di Aster (§A); Hyperliquid membalas per jam (BNB 0,004781 %/jam) — dua venue, dua periodisitas: menggabungkannya dalam satu kolom deret = salah (§C) |
-| histori funding per aset | `ADA-TAPI` | Bybit `/v5/market/funding/history` **200 baris = 66,3 hari** dan OKX `funding-rate-history` **33,0 hari**, dua-duanya tanpa kunci, interval **8 jam** — [[Fakta Terukur]] §A.5 (diukur 28 Sep dari laptop ini, BELUM dari runner). 8 jam bukan fitur per-bar: tetap veto rezim, bukan sinyal | "histori funding per-aset yang bisa ditarik mundur" tidak kami punya |
+| histori funding per aset | `ADA-TAPI` | Bybit `/v5/market/funding/history` **200 baris = 66,3 hari** dan OKX `funding-rate-history` **97,7 hari**, dua-duanya tanpa kunci, interval **8 jam** — [[Fakta Terukur]] §A.5 (diukur 28 Sep dari laptop ini, BELUM dari runner). 8 jam bukan fitur per-bar: tetap veto rezim, bukan sinyal | "histori funding per-aset yang bisa ditarik mundur" tidak kami punya |
 | harga spot/indeks untuk menghitung basis sendiri | `TIDAK-ADA` | yang kami punya harga perp (kline) dan `markPrice`; indeks resmi venue tidak direkam |
 | gerbang keputusan yang memakainya | `ADA` | `tools/direction.py`: `\|funding\|` > 0,05 %/4 jam → tolak posisi, karena biayanya lebih besar dari edge yang kami klaim (§A) |
 | funding venue lain untuk kontrol silang | `MATI-DARI-MESIN-INI` | OKX funding membalas `200` di runner tapi **terpotong TLS di laptop** (§C) |

@@ -52,7 +52,7 @@ berapa banyak varian aturan×rezim dicoba sebelum yang satu ini dipilih.
 | deret untuk aset tanpa perp (memecoin spot, peluncuran baru) | `ADA-TAPI` | GMGN mentok 1.000 bar ≈ 41,6 hari; tidak cukup walk-forward — §A |
 | volum per bar (untuk ATR ratio / kedalaman berbasis dolar) | `ADA-TAPI` | ikut `klines`; belum pernah dipakai melabeli rezim |
 | uji stasioneritas (ADF) atau estimasi Hurst | `TIDAK-ADA` | tidak ada satu pun implementasinya di `tools/` |
-| histori funding/OI per aset untuk rezim derivatif | `ADA-TAPI` | Bybit `/v5/market/funding/history` **200 baris = 66,3 hari** dan OKX `funding-rate-history` **33,0 hari**, dua-duanya tanpa kunci, interval **8 jam** — [[Fakta Terukur]] §A.5 (diukur 28 Sep dari laptop ini, BELUM dari runner). 8 jam bukan fitur per-bar: tetap veto rezim, bukan sinyal |
+| histori funding/OI per aset untuk rezim derivatif | `ADA-TAPI` | Bybit `/v5/market/funding/history` **200 baris = 66,3 hari** dan OKX `funding-rate-history` **97,7 hari**, dua-duanya tanpa kunci, interval **8 jam** — [[Fakta Terukur]] §A.5 (diukur 28 Sep dari laptop ini, BELUM dari runner). 8 jam bukan fitur per-bar: tetap veto rezim, bukan sinyal |
 | label rezim eksternal (indeks bull/bear, klasifikasi vendor) | `TIDAK-ADA` | tidak ada sumbernya di repo ini |
 
 ## Uji di Fabius

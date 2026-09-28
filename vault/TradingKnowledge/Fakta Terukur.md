@@ -109,23 +109,25 @@ sifat sebuah sumber, melainkan sifat **sumber + jaringan tempat kamu bertanya**.
   memakai enum di [[Aturan Subtree]]. *(Dulu baris ini juga menyebut "histori funding per-aset";
   itu gugur 28 Sep - lihat §A.5.)*
 
-### A.5 Histori yang ternyata bisa disedot TANPA kunci (diukur 28 Sep 02:06Z, laptop ini)
+### A.5 Histori funding/OI — sekarang PUNYA kami sendiri (`universe/funding-history.jsonl`)
 
-| sumber | apa yang diberikan | kedalaman terukur | interval | batas |
+Ditarik 28 Sep 02:26Z oleh `universe/record_funding_history.py` (tanpa kunci), **5.963 baris / 934 KB**:
+
+| sumber | jenis | baris | rentang nyata | interval |
 |---|---|---|---|---|
-| Bybit `/v5/market/funding/history` | funding BNBUSDT per peristiwa settlement | **200 baris = 66,3 hari** (23 Jul → 28 Sep) | **8 jam** | field-nya `fundingRate` + `fundingRateTimestamp` (versi pertama probe saya menebak `fundingTimestamp` dan `KeyError` - itu bug probe, bukan server) |
-| OKX `/api/v5/public/funding-rate-history` | funding BNB-USDT-SWAP | **100 baris = 33,0 hari** | **8 jam** | `limit=100` per panggilan; paging dengan `after` belum dicoba |
-| Binance `futures/data/openInterestHist` | histori OI UM per simbol | **500 baris = 20,8 hari** | 1 jam | jendela tetap 30 hari ke belakang per API-nya |
-| Binance `/api/v3/klines` | bar spot 1 jam | 1.000 bar = **41,6 hari** | 1 jam | **lebih dangkal** dari Aster (9.599) → bukan pengganti, cuma pelengkap |
-| `data.binance.vision` (S3) | listing arsip harian | `200`, 1.000 objek tercantum untuk satu prefix | harian | parsing tanggal arsipnya belum saya bereskan; **jangan dikutip sebagai "arsip lengkap"** |
+| OKX `funding-rate-history` | funding 6 basis | 1.763 | **97,7 hari** (22 Jun → 28 Sep) | 8 jam |
+| Bybit `funding/history` | funding 6 basis | 1.200 | **66,3 hari** (23 Jul → 28 Sep) | 8 jam |
+| Binance `openInterestHist` | OI + nilai OI | 3.000 | **20,8 hari** (7 Sep → 28 Sep) | 1 jam |
 
-**Kenapa ini penting, dan apa yang TIDAK berubah.** Yang berubah cuma **satu** hal: histori funding
-tidak lagi `TIDAK-ADA` - ia `ADA-TAPI` (8 jam, ±66 hari, tanpa kunci). Karena itu **P13 tidak perlu
-menunggu 30 hari kalender**: yang perlu ditulis itu penyedot mundur, bukan perekam baru. Yang TIDAK
-berubah: intervalnya **8 jam**, sementara `NEED_BARS` kami dan horizon uji kami 1 jam dan 4 jam -
-jadi funding dari jalur ini tetap tidak bisa jadi fitur per-bar; ia tetap veto rezim, bukan sinyal.
-Dan order book/tick/likuidasi tetap tidak ada di daftar ini. `MATI-DARI-MESIN-INI` untuk CEX di §C
-sekarang harus dibaca sebagai "pernah, pada 24 Sep", bukan keadaan.
+Yang TIDAK berubah oleh ini: interval 8 jam tetap bukan fitur per-bar (horizon uji kita 1 j dan
+4 j), jendela OI tetap ±30 hari, dan order book/tick/likuidasi tetap tidak ada. Yang berubah:
+**veto funding bisa diukur** - hasilnya 0 dari 2.963 settlement melewati ambang ([[06-Results/08 - Carry Study]] §A),
+dan satu uji arah 24 jam menghasilkan **0 lolos dari 12 uji** (§B). Baca ulang:
+`python -X utf8 universe/record_funding_history.py --report` lalu `python -X utf8 tools/carry_study.py`.
+
+Sebelum 28 Sep, blok ini mencatat "histori funding per-aset tidak bisa ditarik mundur" (dari probe
+24 Sep). Itu gugur: yang tidak bisa adalah **menarik mundur funding per-jam venue kami sendiri** -
+karena kami belum merekamnya. Rinciannya di [[03-Data/D6 - Funding and OI History]].
 
 ## D. Ongkos — satu-satunya bagian yang sudah kami ukur sendiri
 
@@ -184,6 +186,9 @@ sudah tertulis. Cara mengujinya ada di [[07-Peta-Fabius/GAP2 - Uji Setiap Veto T
 | **hitung ulang 28 Sep (P10, ongkos 59 bps)** | ketiga keputusan paper yang jatuh tempo: **−37,5**, **−185,3**, **−485,3 bps** net → **WR 0 %**; satu-satunya "MENANG" yang pernah kami catat adalah artefak penggaris 20 bps | `python -X utf8 tools/ledger.py` lalu `tools/winlog.py` |
 | jalur eksekusi nyata | 3 putaran chain, **WR 0 %**, net −59,0 bps rata-rata — dan itu memang **ongkos**, bukan sinyal (pool kami sendiri tanpa arus luar) | `tools/winlog.py` |
 | `\|acf\|` MARSCOIN | 0,075 → **zona abu-abu** (0,05–0,10 = belum tahu) | [[06-Results/03 - Not Yet Proven]] |
+| **uji arah dari funding ekstrem (P13 dibalik, 28 Sep)** | **0 dari 12 uji lolos BH** (6 basis × 2 venue, horizon 24 j, ongkos 59 bps); median positif di 4 baris (BTC/bybit +60,2 · ETH/bybit +51,0 · XRP/bybit +54,9 · DOGE/bybit +29,0) tapi CI-nya memotong nol dan mean-nya negatif semua | `python -X utf8 tools/carry_study.py` → [[06-Results/08 - Carry Study]] §B |
+| **veto funding `> 0,05 %/4j`** | **0 dari 2.963 settlement** melewatinya dalam 66–97 hari pada enam basis besar → veto itu tidak pernah punya kesempatan menyala di aset ini (bukan di memecoin, yang memang tidak punya funding) | §A halaman yang sama; bahan: [[03-Data/D6 - Funding and OI History]] |
+| **carry vs ongkos** | 1,3–2,2 bps/hari → **27–45 hari** cuma untuk menutup satu round-trip 59 bps, dengan asumsi arah netral yang tidak ada jalur eksekusinya di repo ini (kaki pendek `TIDAK-ADA`) | §C halaman yang sama |
 | `security_gate` pada kandidat arah | 5/5 membalas: 4 `OK` + 1 `UNMEASURED` (`pPOLY is_honeypot=None` tidak dihitung bersih) | [[04-Tools/TL3 - security_gate]] |
 | **corong penyaringan vs hasil** (sudah dihitung!) | kohort **lolos** n=52: mean **+148,0** · median **+35,9** · 42,3 % negatif · **kohort ditolak** n=713: mean **+353,7** · median **−44,4** · 53,0 % negatif. Per alasan (mean/median bps): `age<thr` +360,2/−44,4 (n=704) · `liq<thr` +817,1/−407,2 (n=318) · `trending_without_demand` +49,5/0,0 (n=105) · `top10>45 %` +26,3/+13,2 (n=91) · **`bundler>30 %` −44,7/−16,2 (n=55)** · `lock<thr` −20,6/+21,7 (n=17) · `holders<thr` −1344,5/−0,5 (n=4). Keluarga tes 105, BH α 0,10, **5 lolos** | `python -X utf8 tools/screen_universe.py` → `tools/out/screen_report.json` (765 pasangan forward, 545 token). **`out/` di-gitignore**: artefaknya tidak ada di clone, perintahnya ada |
 
@@ -211,6 +216,8 @@ python -X utf8 tools/winlog.py            -> PAPER n=3 WR 0,0 % net rata2 -236,0
                                              ! 2 decisionHash dengan net berbeda antar artefak:
                                                (1,5 -> -37,5) dan (-146,3 -> -185,3)  <- ganti ongkos P10
 git fetch origin                          -> lokal 1 commit di depan, 188 di belakang
+                                             (169 pada pembacaan pertama 40 menit sebelumnya -
+                                              penghitung ini bergerak, jangan dikutip sebagai keadaan)
 git log --oneline HEAD..origin/master     -> SEMUANYA commit data ("wallet flow" / "snapshot
                                              universe"): nol commit non-data di antaranya
 ```

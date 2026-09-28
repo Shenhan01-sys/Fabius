@@ -37,6 +37,18 @@ ditiru.
   menulis ulang daftar `## Bagian` dari nol dan menghapus penjelasan buatan tangan di 9 hub. Sejak
   itu ia append-only, dan pemulihannya tercatat di `scripts/restore_hub_glosses.py` supaya
   "alat kami merusak dokumen kami sendiri" tidak perlu ditemukan dua kali.
+  **Kelas yang sama kembali 28 Sep, dengan wajah lain** — dan kedua kali ini `check_links.py` tetap
+  `Broken: 0`, jadi tidak ada gerbang yang menolaknya:
+  1. regex-nya mengambil hanya baris yang cocok `- [[nama]]`, sehingga **baris sambungan gloss**
+     (semua hub kita memakai wrap) hilang dan alias `[[nama|label]]` terpotong jadi `[[nama]]` —
+     13 baris gloss terhapus dari 2 hub sebelum tertangkap oleh `git diff`;
+  2. `md_files("03-Data")` memakai jalur RELATIF terhadap direktori jalan, jadi dijalankan dari
+     `Fabius/` (bukan `vault/`) seluruh folder mengembalikan KOSONG, tiap hub di-skip, dan skrip
+     melapor "1 berkas berubah" seolah sukses. Sekarang jalur selalu di-root ke `ROOT`, folder yang
+     menghasilkan nol halaman **diteriakkan**, dan alarm "hub menunjuk berkas tidak ada" ikut
+     diperbaiki (sebelumnya ia palsu kalau cwd-nya salah).
+  Prosedur yang mengikat: **setelah `sync_vault.py` menulis, baca `git diff -- vault`** dan pastikan
+  yang keluar hanya penambahan. Satu gerbang hijau bukan bukti tidak ada yang rusak.
 
 - **Sebelum SETIAP push: kabari builder, lalu jalankan**
   `python -X utf8 vault/scripts/prepush_check.py`. Keluar non-zero = perbaiki pesan commitnya dulu,

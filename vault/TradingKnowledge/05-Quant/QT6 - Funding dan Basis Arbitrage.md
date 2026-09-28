@@ -56,7 +56,7 @@ run di repo ini yang menghasilkan angka carry teruji.
 | kebutuhan | status Fabius | bukti / batas |
 |---|---|---|
 | funding + OI terkini, lintas aset | `ADA` | Aster `premiumIndex`/`openInterest` 608 kontrak; Hyperliquid 234 perp — §A |
-| histori funding per aset | `ADA-TAPI` | Bybit `…/funding/history` **66,3 hari** dan OKX **33,0 hari**, keduanya **interval 8 jam**, tanpa kunci — [[Fakta Terukur]] §A.5 (laptop, belum runner). Uji surut carry jadi mungkin pada horison harian; **tidak** pada fitur per-bar 1 j/4 j, jadi §F masih benar soal gerbang carry-nya — yang berubah cuma ambang "bisa diuji apa tidak" |
+| histori funding per aset | `ADA` (di repo sendiri) | `universe/funding-history.jsonl`: Bybit **66,3 hari** dan OKX **97,7 hari**, keduanya **interval 8 jam**, tanpa kunci — [[Fakta Terukur]] §A.5 (laptop, belum runner). Uji surut carry jadi mungkin pada horison harian; **tidak** pada fitur per-bar 1 j/4 j, jadi §F masih benar soal gerbang carry-nya — yang berubah cuma ambang "bisa diuji apa tidak" |
 | harga spot kaki pertama | `ADA-TAPI` | GeckoTerminal/DexScreener memberi likuiditas & deret pendek (§A/§C), bukan buku order |
 | eksekusi dua kaki bersamaan | `TIDAK-ADA` | jalur eksekusi kami satu kaki, spot, di pool demo ([[02-Contracts/C4 - DemoPair and DemoAsset]]) |
 | margin/likuidasi di venue pihak ketiga | `TIDAK-ADA` | tidak ada akun, tidak ada batas, tidak ada angka — *(belum diukur)* |

@@ -37,17 +37,20 @@ uji terhadap null → baru bicara bobot**.
 | 1 | **bidang ⑦** — `universe/wallet-flow.jsonl`: run `94aead6` 18:21:16Z = 50.285 baris · 21.907 tx · 452 maker · 1.590 token; ekor terbaru di `universe/wallet-flow-manifest.txt` ([[Fakta Terukur]] §B) | `ADA-TAPI` (tanpa riwayat) | apakah arah keranjang maker pada token X mendahului hasil 4–24 j, dibanding **arah acak pada token & jam yang sama** | `tools/flow_signal.py` ada, **tidak diimpor satu pun alat keputusan**; `tools/maker_ledger.py` belum bisa dipercaya (§H) | nol + jam-proses |
 | 2 | **baris `px`** — harga per `tk` tiap tarikan (ekor `origin/master`: **27.886 baris / 1.607 token**, [[Fakta Terukur]] §B) | `ADA-TAPI` (jangkauan = umur perekam) | bolehkah ia jadi **jangkar hasil** untuk token tanpa perp, menggantikan asumsi harga terakhir | belum ada yang memakainya sebagai yardstick | nol |
 | 3 | **kolom volum bar** — ikut diparsing `tools/bars.py`; tidak ada satu pun referensi volum di `tools/direction.py` (diperiksa 28 Sep) | `ADA` | apakah volum menambah informasi di atas harga, atau hanya menamai ulang pergerakan yang sama | `I7 - VWAP dan Anchored VWAP`, `V1 - Konfirmasi Volum dan Money Flow` belum punya jalur data | nol |
-| 4 | **funding + OI** — live (Aster 608 kontrak / Hyperliquid 234 perp, §A) + **histori** Bybit 66,3 hari per 8 jam, OI Binance 20,8 hari per 1 jam (§A.5); veto funding > 0,05 %/4 j sudah wired di `tools/direction.py` | `ADA-TAPI` (historinya 8 jam, bukan per-bar) | apakah veto carry itu memprediksi hasil yang lebih buruk, atau cuma mahal secara estetika | butuh histori funding per jam → mulai rekam sekarang (baris 4 bawah) | nol untuk merekam, kalender untuk menguji |
+| 4 | ~~funding + OI: belum diuji~~ **selesai 28 Sep** — `tools/carry_study.py` atas deret sendiri ([[03-Data/D6 - Funding and OI History]]) | `ADA` | apakah veto carry memprediksi hasil yang lebih buruk | **sudah dijawab:** veto kena **0 dari 2.963** settlement; **0 dari 12 uji** arah 24 jam lolos BH; carry 1,3–2,2 bps/hari → [[06-Results/08 - Carry Study]] | nol |
+| 4b | funding **per jam venue sendiri** (Aster `premiumIndex` per 4 jam) — satu-satunya funding yang bisa menguji ambang kita apa adanya | `TIDAK-ADA` (jalur hidup, belum direkam) | apakah ambang 0,05 %/4 j pernah relevan untuk kandidat kita | butuh perekam baru + **kalender** | nol + kalender |
 | 5 | **blok `gdelt`** (skema 4) — dibaca `tools/decide.py::gdelt_context` dan **masuk ke kalimat konteks model**, tidak ke angka | `ADA` | apakah konteks berita mengubah kualitas keputusan sama sekali, atau hanya membuat alasannya lebih panjang | tidak ada kontrol "dengan vs tanpa" | nol |
-| 6 | **deret pilihan kita sendiri** — `universe_size` / `survivable_count` / `fully_evaluated_count` / `top_reasons` per snapshot (65 baris [[03-Data/D5 - Record Schemas]]) | `ADA` | seberapa selektif kita sebenarnya, dan apakah selektivitas itu bergerak seiring pasar atau seiring kegagalan penggabungan sumber | belum ada satu grafik/angka publik pun dari deret ini | nol |
+| 6 | **deret pilihan kita sendiri** — `universe_size` / `survivable_count` / `fully_evaluated_count` / `top_reasons` per snapshot (satu baris per jam; jumlah baris bertambah terus, lihat `universe/manifest.txt`) | `ADA` | seberapa selektif kita sebenarnya, dan apakah selektivitas itu bergerak seiring pasar atau seiring kegagalan penggabungan sumber | belum ada satu grafik/angka publik pun dari deret ini | nol |
 
 Dua catatan yang menahan diri supaya tidak menjual harapan:
 
-- **Yang direkam 4 dan 6 baru bernilai setelah punya umur.** Memulai perekaman funding per jam hari
+- **Yang direkam 4b dan 6 baru bernilai setelah punya umur.** Memulai perekaman funding per jam hari
   ini berarti uji carry bisa dijalankan nanti, bukan besok. Itu harga yang benar untuk dibayar
   (`kalender`), dan satu-satunya cara keluar dari "veto estetik".
-- **Hasil dari enam hal ini kemungkinan besar negatif.** Riwayat kami sendiri ([[Fakta Terukur]] §F):
-  aturan arah rugi di 12/12 aset, panel whale menang 69,8 % dari waktu tapi −10,4 bps per jam.
+- **Hasil dari enam hal ini kemungkinan besar negatif - dan yang pertama sudah menagih ramalan itu.**
+  Carry diuji 28 Sep: **0 dari 12 uji lolos BH**, verdict `NETAS`
+  ([[06-Results/08 - Carry Study]]). Riwayat lainnya ([[Fakta Terukur]] §F): aturan arah rugi di
+  12/12 aset, panel whale menang 69,8 % dari waktu tapi −10,4 bps per jam.
   Nilai pengujian bukan pada "menemukan edge", tapi pada **memberhentikan** aturan yang sekarang
   diam-diam ikut memutuskan.
 

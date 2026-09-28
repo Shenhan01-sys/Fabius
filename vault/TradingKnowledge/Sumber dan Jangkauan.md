@@ -40,7 +40,7 @@ membatalkan rencana kita.
 | Binance / Bybit / OKX | **`200` semua**, dengan body nyata | **membatalkan baris §C** yang mencatatnya mati per 24 Sep |
 | GitHub API (awesome-quant) | `200` | tidak kita pakai sebagai sumber metode; tidak menaikkan bukti apa pun |
 
-Angka kedalamannya (funding `66,3 hari` per 8 jam dari Bybit, `33,0 hari` dari OKX, OI `20,8 hari`
+Angka kedalamannya (funding `66,3 hari` per 8 jam dari Bybit, `97,7 hari` dari OKX, OI `20,8 hari`
 per 1 jam dari Binance, bar spot `41,6 hari`) ada di **[[Fakta Terukur]] §A.5** - jangan disalin ke
 sini, halaman itu pintu angkanya.
 

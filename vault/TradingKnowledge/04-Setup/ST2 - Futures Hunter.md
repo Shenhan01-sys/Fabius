@@ -37,7 +37,7 @@ sekali di repo ini. Ini bukan rencana yang tertunda; ini daftar lubang.
 |---|---|---|
 | OHLC 1 jam ≥ 2.400 bar | `ADA-TAPI` | Aster 9.599 bar ≈ 400 hari, hanya aset ber-kontrak perp ([[Fakta Terukur]] §A) |
 | funding **terkini** per kontrak | `ADA` | `premiumIndex` 608 kontrak; wired di `tools/direction.py`: funding > 0,05 %/4 j → **tolak posisi** (§A) |
-| funding **historis** yang bisa ditarik mundur | `ADA-TAPI` | §A.5: Bybit 66,3 hari / OKX 33,0 hari per 8 jam — uji funding mungkin, tapi bukan per-bar |
+| funding **historis** yang bisa ditarik mundur | `ADA-TAPI` | §A.5: Bybit 66,3 hari / OKX 97,7 hari per 8 jam — uji funding mungkin, tapi bukan per-bar |
 | OI terkini | `ADA-TAPI` | `openInterest` terbaca per kontrak (§A); apakah seri historisnya bisa ditarik mundur **tidak terdokumentasi** — jawab dengan panggilan, bukan dengan optimisme |
 | level & nominal likuidasi | `TIDAK-ADA` | §C: tidak ada jalur data likuidasi |
 | heatmap likuidasi | `TIDAK-ADA` | §C; yang memilikinya adalah vendor, dan vendor bukan jalur repo ini |

@@ -86,8 +86,12 @@ GROSS sampai diuji ulang (§H).
 - **Ongkos membuat horizon pendek lebih sulit, bukan lebih netral.** Semakin pendek hold, semakin
   besar bagian ongkos yang dipaksa tertutup oleh pergerakan kecil.
 - **Funding bukan bonus, dia harga tiket.** Carry dibayar per interval selama posisi hidup, dan
-  gerbang kami memveto di `0,05 %/4 j` — tapi historinya tidak ada (§C), jadi uji kami hari ini
-  **tidak pernah** membayar carry.
+  gerbang kami memveto di `0,05 %/4 j` — dan sejak 28 Sep historinya ADA (97 hari, interval 8 jam,
+  [[03-Data/D6 - Funding and OI History]]): hasilnya **veto itu kena 0 dari 2.963 settlement** di
+  enam basis besar, dan uji arah 24 jam dari funding ekstrem **0 lolos dari 12 uji**
+  ([[06-Results/08 - Carry Study]]). Yang masih belum terukur: memecoin (tidak punya funding sama
+  sekali) dan funding per-jam venue kami sendiri. Dan apa pun hasil ujinya, jalur Fabius yang
+  sekarang - satu kaki, spot, tanpa posisi pendek - **tidak pernah** membayar carry.
 - **Ongkos berkorelasi dengan rezim.** Spread melebar dan dampak membesar justru saat sinyal
   paling menarik ([[FD8 - Volatilitas]], [[FD3 - Likuiditas dan Dampak Harga]]). Memakai satu angka
   ongkos untuk semua keadaan adalah optimisme yang rapi.

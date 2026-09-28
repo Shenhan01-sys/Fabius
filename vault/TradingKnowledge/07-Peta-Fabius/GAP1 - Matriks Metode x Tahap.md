@@ -82,7 +82,7 @@ metode. Metode individual ada di [[00 - Hub Sinyal]].
 | VWAP (`I7`) | analisis | `ADA-TAPI` | BELUM | jam-proses | butuh volum yang benar; VWAP anchored = tuas overfit kalau anchor dipilih setelah hasil |
 | Volum dasar & money flow (`V1`) | analisis | `ADA-TAPI` | BELUM | jam-proses | belum satu pun alat kami memakai kolom volum; risiko wash-trade nyata di BSC |
 | Profil volum / delta / L2 (`V2 V3 V4 V5`) | analisis | `TIDAK-ADA` | BELUM | uang | butuh tick atau order book; tanpa itu "volume profile" kami adalah histogram bar — boleh disebut, tidak boleh dijual |
-| Turunan: OI & funding live (`U1 U2`) | keputusan (veto) | `ADA` | SEBAGIAN | kalender | veto funding > 0,05 %/4 j sudah wired (§A); **carry belum diuji** karena historinya tidak ada |
+| Turunan: OI & funding live + histori (`U1 U2`) | keputusan (veto) | `ADA` | **SEBAGIAN → diuji 28 Sep: 0/12 lolos BH, veto kena 0/2.963** | kalender (untuk funding per-jam venue sendiri) | hasil lengkapnya [[06-Results/08 - Carry Study]]; yang belum tersentuh = memecoin, yang tidak punya funding |
 | Likuidasi & rasio posisi (`U3 U4`) | analisis | `TIDAK-ADA` | BELUM | uang | klaimnya spesifik pada data yang tidak bisa kita baca |
 | On-chain valuasi (`O1 O2 O3 O4`) | analisis | `TIDAK-ADA` | BELUM | uang + jam-proses | Dune bisa merakit sebagian; untuk aset berumur 3 hari metriknya tidak terdefinisi — dan itu kasus utama kita |
 | Kohor dompet (`O5`) | keputusan (bobot) | `ADA-TAPI` | BELUM | jam-proses + kalender | bahan ada, alat skornya belum bisa dipercaya (§H) — **lubang nomor satu kita** |
