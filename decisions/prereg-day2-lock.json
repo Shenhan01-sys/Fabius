@@ -1,0 +1,31 @@
+{
+ "aspek_lulus_28Sep": [
+  "cluster_ge2",
+  "cluster_ge3",
+  "repeat_maker",
+  "money_spread",
+  "buy_usd_ge_1k"
+ ],
+ "dibuat_utc": "2026-09-28T08:30:38Z",
+ "parameter_terkunci": {
+  "data_replikasi": "HANYA kejadian dengan t > t_kunci (out-of-sample murni, bukan campur)",
+  "harga_keluar": "median px pada t+[H-15m, H+15m]",
+  "harga_masuk": "px <= t, tidak lebih tua dari 10 menit",
+  "horison_menit": "30",
+  "jendela_menit": "15",
+  "koreksi": "Benjamini-Hochberg alpha 0.10, dihitung DI DALAM run replikasi (bukan diwarisi)",
+  "non_overlap": "1 per horison per token",
+  "ongkos_bps_roundtrip": "59.0",
+  "pasangan": "berpasangan dalam token yang sama (acuan = kejadian yang tidak memicu aspek)",
+  "statistik": "median + bootstrap 4000 (seed 20260928) + tanda-uji eksak satu arah",
+  "sumber_harga": "gmgn",
+  "syarat_umur_jam": "12",
+  "uji_kedua": "money_spread (beli terbesar <= 60% dari USD beli di jendela)",
+  "uji_ketiga": "stack_ge2 (>=2 dari lima aspek lulus 28 Sep menyala bersamaan)",
+  "uji_primer": "cluster_ge2 (>=2 maker berbeda dalam jendela)"
+ },
+ "spec_sha256": "0x03aa212fccdf5b9f82b94c43110940e840e7dc27c7f8b9afde4ae459fcba602c",
+ "spesifikasi": "vault/06-Results/11 - Pra-Registrasi Hari Kedua.md",
+ "t_kunci": 1790576018,
+ "t_kunci_iso": "2026-09-28T06:13:38Z"
+}

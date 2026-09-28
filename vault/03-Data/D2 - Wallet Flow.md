@@ -18,8 +18,21 @@ disusulkan, jadi ia diperlakukan sebagai aset yang menetes tiap jam.
 - Field yang disimpan: maker (dompet), `base_address`, side, `is_open_or_close`, `buy_cost_usd`,
   `price_usd`, `timestamp`, `transaction_hash`, `maker_info.tags` — tag panel ikut disimpan karena
   **keanggotaan panel adalah pilihan GMGN**, dan itu bias yang harus bisa ditunjuk.
-- Cadence: cron per-jam tidak cukup → **rantai yang men-dispatch dirinya sendiri** (loop ~4,6 jam,
-  commit tiap ±4 menit) + `schedule` penyelamat. Dua pagar: anti-tumpang-tindih & batas umur 40 jam.
+- Cadence: loop ±4,6 jam, commit tiap ±4 menit. Versi pertama (25–26 Sep) ditulis sebagai
+  **"rantai yang menghidupi dirinya sendiri"**: `workflow_dispatch` di akhir + `schedule`
+  penyelamat di berkas yang sama. **Klaim itu salah dan baru ketahuan 28 Sep 08:2xZ** - dua sebab,
+  keduanya mekanis: (1) langkah sambung-rantai memanggil `.../workflows/<id>/dispatch` padahal
+  endpoint REST-nya `.../dispatches` dengan body `{"ref":…,"inputs":{…}}` → 404 → **dispatch-diri
+  tidak pernah berhasil sekali pun**; yang menghidupi rantai selama ini cuma cron. (2) cron yang
+  sama + `cancel-in-progress: true` = tiap tembakan per-jam **membatalkan** rantai yang sedang
+  merekam - terukur run #11/#12/#13 `conclusion=cancelled` pada jarak yang persis mengikuti jadwal
+  cron. Jadi penyelamatnya membunuh pasiennya, dan daftar run tetap terlihat "hidup tiap jam".
+- Bentuk sekarang: `schedule` **dihapus** dari workflow perekam, `cancel-in-progress: false`
+  (yang macet dipotong `timeout-minutes: 330`, bukan dibatalkan), dan penyelamat pindah ke
+  `.github/workflows/wallet-flow-watchdog.yml` (cron per-30 menit, grup concurrency sendiri).
+  Yang ditanya watchdog bukan "kapan terakhir run" tapi **"berapa umur
+  `universe/wallet-flow-manifest.txt`"** - untuk bidang tanpa riwayat, umur berkas adalah satu-satunya
+  tanda hidup yang tidak bisa berbohong.
 - `cancel-in-progress: true` dan `actions: write` bukan hiasan: tanpanya satu jalanan menggantung
   mengantrikan sisanya, dan dispatch-diri gagal diam-diam (terukur, `conclusion=failure`).
 - Status 27 Sep 03:5x WIB (= 26 Sep 20:5xZ), dari `python -X utf8 _research/panel_stats.py`:

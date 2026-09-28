@@ -492,3 +492,77 @@ digeser hari ini. Angka di halaman 09/10 berumur satu jendela 43 jam, dan hanya 
 [[03-Data/D2 - Wallet Flow]] · [[08-Backlog/01 - Backlog]] P17/P19/P20 ·
 [[TradingKnowledge/EV4 - Point-in-Time dan Riwayat yang Tidak Bisa Disusulkan]] ·
 [[TradingKnowledge/EV5 - Reproduksibilitas dan Pra-Registrasi]]
+
+
+## F-D28 — Tanda kehidupan yang benar untuk bidang ⑦ adalah umur berkasnya, bukan daftar run · 28 Sep 2026
+
+Bidang ⑦ berhenti menetes: commit aliran terakhir di origin `2026-09-28T06:13:38Z`
+(`generated_utc` manifest), rantai #14 `failure` di 06:17:03Z, dan tidak ada run sesudahnya.
+Jam rujukan = header server GitHub (08:24:37Z), jadi lubangnya ±2 jam 10 menit - dan untuk bidang
+yang **tidak bisa disusulkan**, itu 2 jam 10 menit yang hilang permanen.
+
+Dua cacat mekanis, keduanya punyaku, keduanya lolos pengamatan berhari-hari karena **yang kubaca
+adalah tanda yang salah**:
+
+1. **Dispatch-diri tidak pernah berhasil sekali pun.** Langkah "Sambung rantai" memanggil
+   `.../actions/workflows/<id>/dispatch`; endpoint REST yang benar `.../dispatches` dengan body
+   `{"ref": …, "inputs": {…}}` (diperiksa ke dokumentasi, bukan ditebak). Hasilnya 404 → langkah
+   gagal → rantai berhenti. "Rantai yang menghidupi dirinya sendiri" ternyata cuma jalan selama
+   cron sedang murah hati, dan tidak ada yang sadar karena **kehadiran run** disalahartikan sebagai
+   **kemajuan data**.
+2. **Penyelamat membunuh pasien.** `schedule: 17 * * * *` tinggal di berkas yang sama dengan
+   rantainya, dan `cancel-in-progress: true` membuat tiap tembakan per-jam MEMBATALKAN rantai yang
+   sedang merekam. Terukur: run #11 (15:38Z), #12 (19:45Z), #13 (23:01Z) semuanya
+   `conclusion=cancelled`, berjarak persis mengikuti jadwal cron. Daftar run terlihat "hidup tiap
+   jam"; yang terlihat sebenarnya adalah rantai yang dihidupkan-lagi tiap kali dibunuh.
+
+**Diputuskan.** `schedule` dihapus dari workflow perekam; `cancel-in-progress: false` (yang macet
+dipotong `timeout-minutes: 330`, yang tidak menyentuh rantai lain); penyelamat pindah ke berkas
+terpisah `.github/workflows/wallet-flow-watchdog.yml` dengan grup concurrency sendiri, cron per-30
+menit, dan satu pertanyaan: **berapa umur `universe/wallet-flow-manifest.txt`?** > 25 menit dan
+tidak ada rantai `in_progress` → dispatch; kalau dispatch gagal, ia menendang `::error::` supaya
+merah. Untuk bidang tanpa riwayat, umur berkas adalah satu-satunya tanda yang tidak bisa berbohong.
+
+**Metodenya juga dikoreksi.** Bacaan awal ku ("mati 5 jam") berasal dari `git log -- <berkas>` di
+salinan lokal yang ternyata 50 commit tertinggal. Sudah pernah membayar di proyek ini (27 Sep,
+[[Concepts/Stale Local Copy]]), dan tetap terjadi lagi. Aturan yang sekarang kutulis: **setiap
+"hidup/mati" dinyatakan setelah `git fetch` + sumber pihak ketiga**, bukan dari working copy.
+
+**Yang belum terbukti.** Bahwa watchdog benar-benar menyalakan rantai - itu hanya bisa terjadi di
+dalam Actions dengan `GITHUB_TOKEN` sungguhan, dan butuh commit ini sampai ke default branch (P22).
+Menulis YAML yang sah bukan klaim bahwa jalur dispatch-nya hidup.
+
+**Terkait:** [[03-Data/D2 - Wallet Flow]] · [[TradingKnowledge/Fakta Terukur]] §G ·
+[[08-Backlog/01 - Backlog]] P22 · [[Concepts/Stale Local Copy]] · [[00-Overview/04 - Run It]]
+
+## F-D29 — Halaman 11 memegang hak veto atas halaman 09 dan 10 · 28 Sep 2026
+
+Angka terbaik kita (+393,4 bps K≥2; +748,8 bps kerumunan×sebaran dana) lahir dari **satu jendela
+43 jam**. Satu jendela tidak bisa membuktikan dua kali, dan menambah halaman penjelasan ke angka
+yang tidak mereplikasi itu bukan analisis - itu pengejaran.
+
+**Diputuskan:** parameter replikasi **dikunci sebelum satu pun angka replikasi dilihat**, dan
+kuncinya adalah alat, bukan niat.
+
+```text
+kunci              decisions/prereg-day2-lock.json  (dibuat 2026-09-28T08:30:38Z)
+spec_sha256        0x03aa212fccdf5b9f82b94c43110940e840e7dc27c7f8b9afde4ae459fcba602c
+t_kunci            2026-09-28T06:13:38Z (stempel aliran terakhir saat mengunci)
+syarat             rekaman baru >= 12 jam SETELAH t_kunci; HANYA kejadian t > t_kunci yang dinilai
+vonis              median > 0 DAN batas bawah CI 95 % > 0 DAN p satu arah < 0,05 sesudah BH di
+                   dalam run itu - tiga-tiganya, untuk uji_primer cluster_ge2
+kalau gagal        09 dan 10 DICABUT dari klaim, bukan "diperluas dengan penjelasan"
+```
+
+**Yang diuji, bukan dipercaya.** Sunting satu digit di blok spesifikasi setelah dikunci →
+`tools/day2_replicate.py` keluar dengan `exit=1` dan pesan *"yang berubah bukan datanya, aturan
+mainnya"*. Dalam keadaan normal ia mencetak **"BELUM SAH - kurang 12.0 jam"** dan **nol angka
+hasil**. Ketiadaan hasil bukan hasil: tidak ada klaim yang bergerak ke dua arah.
+
+**Konsekuensi yang harus diterima nanti.** Karena `t_kunci` = 06:13:38Z - yaitu saat rantai ⑦ mati
+(F-D28) - jendela replikasi baru benar-benar berguna kalau perekaman hidup lagi. Kunci ini sengaja
+TIDAK kupasang ulang setelahnya: memindahkan `t_kunci` supaya "cepat sah" berarti memilih titik
+mulai sesudah melihat konsekuensinya, dan itu persis yang dikunci untuk dicegah.
+
+**Terkait:** [[06-Results/11 - Pra-Registrasi Hari Kedua]] · [[06-Results/09 - Whale Cluster Test]] ·
+[[06-Results/10 - Evidence Stack]] · [[TradingKnowledge/EV5 - Reproduksibilitas dan Pra-Registrasi]]

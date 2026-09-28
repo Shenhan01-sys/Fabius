@@ -228,11 +228,20 @@ python -X utf8 tools/winlog.py            -> PAPER n=3 WR 0,0 % net rata2 -236,0
                                              gerbang F-D16: n>=20 -> BELUM (kurang 17)
                                              ! 2 decisionHash dengan net berbeda antar artefak:
                                                (1,5 -> -37,5) dan (-146,3 -> -185,3)  <- ganti ongkos P10
-git fetch origin                          -> lokal 1 commit di depan, 188 di belakang
-                                             (169 pada pembacaan pertama 40 menit sebelumnya -
-                                              penghitung ini bergerak, jangan dikutip sebagai keadaan)
+git fetch origin + rebase                 -> 28 Sep 08:2xZ: 0 di belakang, 8 di depan
+                                             (pembacaan PAGI: "1 di depan, 188 di belakang";
+                                              penghitung ini bergerak - jangan dikutip sebagai
+                                              keadaan, jalankan perintahnya)
 git log --oneline HEAD..origin/master     -> SEMUANYA commit data ("wallet flow" / "snapshot
                                              universe"): nol commit non-data di antaranya
+universe/wallet-flow-manifest.txt         -> generated_utc 2026-09-28T06:13:38Z; TIDAK ADA commit
+                                             aliran setelah itu (jam rujukan: header server GitHub
+                                             08:24:37Z) -> BIDANG ⑦ MATI ~2 jam 10 menit
+python -X utf8 tools/day2_replicate.py --status
+                                          -> terkunci 08:30:38Z | spec 0x03aa212fccdf5b9f |
+                                             t_kunci 06:13:38Z | "BELUM SAH - kurang 12.0 jam"
+                                             (alatnya menolak mencetak angka; sunting spesifikasi
+                                             setelah dikunci -> exit 1, itu diuji, bukan dipercaya)
 ```
 
 `19 vs 13` itu lubang yang tercatat (P6b di [[08-Backlog/01 - Backlog]]), bukan keberhasilan.

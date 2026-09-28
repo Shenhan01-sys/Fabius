@@ -31,7 +31,11 @@ hasil keluar — koreksi lewat halaman baru, supaya urutannya bisa dipertanggung
   beli, aliran lebar). Tumpukan **≥2 aspek lulus = +481 bps CI [+23; +977]**; kombinasi terkuat
   "≥2 dompet DAN uang tidak dari satu dompet" **+748,8 CI [+12; +1574]**. `fresh_token` (+7.708)
   DIBUANG sebagai artefak kebijakan pull kami sendiri. Yang menahan: cuma **12,7 %** kejadian bisa
-  dinilai, satu jendela 43 jam
+  dinilai (6,9 % dari semua beli), satu jendela 43 jam
+- [[11 - Pra-Registrasi Hari Kedua]] - halaman yang bisa **membatalkan** 09 dan 10: parameter
+  dikunci (sha256 blok spesifikasi + `t_kunci` 06:13:38Z), hanya kejadian setelah kunci yang
+  dinilai, dan `tools/day2_replicate.py` menolak mencetak angka sampai rekaman baru >= 12 jam.
+  Dijuji: sunting spesifikasinya -> `exit=1` ("yang berubah bukan datanya, aturan mainnya")
 
 <!-- di atas: append-only oleh scripts/sync_vault.py; gloss tulisan tangan utuh -->
 ```dataview
