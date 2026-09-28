@@ -49,6 +49,12 @@ hasil keluar — koreksi lewat halaman baru, supaya urutannya bisa dipertanggung
   menaikkan peluang itu di atas baseline**. Yang lolos BH justru penurunan: `jual_2/3/bersih`
   menurunkan P(≥+500) ke **20,3–22,5 %** -> **veto masuk**; `beli_2` = waktu **keluar** (berpasangan
   −313 CI [−1041; −11]). Yang belum bisa dijawab: kapan boleh masuk.
+- [[14 - Buku Paper]] - builder meluruskan: yang diminta paper trading, bukan order. Buku jalan,
+  556 posisi: **random+veto +188,3** vs **tanpa-gerbang +95,1** (≈ +93 bps dari menolak kerumunan
+  jual), median tetap −59 (=ongkos, jadi yang hidup ekor), dan kandidat `lock_percent` **mati
+  sebagai kebijakan**: +109,7 < acak, dan −51,2 di 1 BNB - karena menyortirnya memaksa kami memilih
+  subset "yang bisa dideskripsikan", yang baseline-nya −64,7. Naik 0,01 -> 1,00 BNB memangkas
+  ~70-90 bps/posisi dari dampak harga; 454/556 posisi bahkan tidak punya angka likuiditas.
 - [[09 - Whale Cluster Test]] ← tulis penjelasannya
 - [[10 - Evidence Stack]] ← tulis penjelasannya
 

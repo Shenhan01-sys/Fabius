@@ -26,6 +26,7 @@ if not os.path.isfile(os.path.join(ROOT, "foundry.toml")):
 
 LEDGER = os.path.join(ROOT, "decisions", "ledger-*.jsonl")
 TRAIL = os.path.join(ROOT, "decisions", "execution-trail.jsonl")
+BOOK = os.path.join(ROOT, "decisions", "paper-book-positions.jsonl")
 
 MIN_N = 20          # F-D16: di bawah ini tidak ada klaim win-rate yang boleh keluar
 ALPHA = 0.10        # Benjamini-Hochberg, ambang yang sama di semua uji proyek ini
@@ -87,6 +88,39 @@ def chain_events():
                     "gas_units_paid": r.get("gas_units_paid"), "win": bps > 0,
                     "tx": (r.get("tx") or "")[:12]})
     return sorted(out, key=lambda x: str(x["when"]))
+
+
+def book_events():
+    """Seri KETIGA: slot BUKU PAPER dari aliran ⑦ (`tools/paper_book.py`).
+
+    Tidak pernah digabung dengan dua seri lain, dan namanya pun sengaja mirip tapi beda barang:
+      PAPER  = keputusan yang DI-ANCHOR lalu dinilai terhadap bar harga pasar nyata (Aster)
+      CHAIN  = fill nyata di pool demo kami sendiri
+      BUKU   = posisi BOONGAN dari aliran ⑦ pada harga peristiwa, berlabel `mode: PAPER`, dengan
+               kolom `pengganti_real` kosong sampai order asli mengisi slot yang sama
+    Mean-nya di-winsor +-2.000 bps dan winsor itu DILAPORKAN: pada payoff yang p99-nya +105.000 bps,
+    mean tanpa batas bukan angka yang bisa dibaca.
+    """
+    out = []
+    if not os.path.exists(BOOK):
+        return out
+    for ln in io.open(BOOK, encoding="utf-8", errors="replace"):
+        ln = ln.strip()
+        if not ln or ln.startswith("#"):
+            continue
+        try:
+            r = json.loads(ln)
+        except ValueError:
+            continue
+        if r.get("status") != "dinilai" or r.get("net_bps") is None:
+            continue
+        w = max(-2000.0, min(2000.0, float(r["net_bps"])))
+        out.append({"when": r.get("due_utc"), "symbol": r.get("tk"), "net": w,
+                    "net_tanpa_batas": r["net_bps"], "win": r["net_bps"] > 0,
+                    "slot": r.get("slot_id"), "kebijakan": r.get("kebijakan"),
+                    "promosi": r.get("promosi"), "layak": r.get("kebijakan_layak_real"),
+                    "pengganti_real": r.get("pengganti_real"), "mode": r.get("mode", "PAPER")})
+    return sorted(out, key=lambda x: (str(x["when"]), str(x["slot"])))
 
 
 def streaks(seq):
@@ -161,10 +195,23 @@ def main():
     gate(dinilai, "PAPER - keputusan ter-anchor vs harga pasar nyata (Aster)")
     if ambigu:
         print(f"  AMBIGU yang sengaja dikecualikan dari streak: {len(ambigu)}")
+    buku = book_events()
+    gate(buku, "BUKU PAPER ⑦ - slot boongan pada harga peristiwa (mean di-winsor +-2.000 bps)",
+         "  LABEL: tiap baris membawa mode=PAPER + slot_id; `pengganti_real` masih kosong berarti "
+         "belum ada order asli yang menambalnya")
     gate(chain, "CHAIN - fill nyata di venue demo sendiri",
          "  (pool x·y=k tanpa arus luar: realisasi = -fee, jadi ini ongkos, bukan sinyal)")
-    print("\nPeringatan yang menempel: kedua seri tidak dibandingkan dan tidak digabung - "
-          "satu menguji tebakan terhadap pasar, yang lain mengukur biaya eksekusi di kolam kami sendiri.")
+    siap = [x for x in buku if x.get("layak") == "YA"]
+    kalau = [x for x in buku if x.get("pengganti_real")]
+    print("\nPeringatan yang menempel: TIGA seri ini tidak dibandingkan dan tidak digabung - satu "
+          "menguji tebakan terhadap pasar nyata, satu mengukur biaya eksekusi di kolam sendiri, satu "
+          "lagi adalah buku posisi boongan.")
+    if buku:
+        print("  BUKU PAPER: %d slot dinilai | %d kebijakan layak real | %d slot sudah ditambal "
+              "posisi ASLI" % (len(buku), len(siap), len(kalau)))
+        if tidak := len(buku) - len(kalau):
+            print("  -> %d slot masih boongan. Yang boongan tidak boleh ditulis sebagai PnL, dan "
+                  "yang sudah ditambal harus menunjuk satu tx." % tidak)
 
 
 if __name__ == "__main__":

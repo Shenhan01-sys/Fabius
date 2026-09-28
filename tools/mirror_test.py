@@ -84,7 +84,8 @@ def bangun(H, W):
                 # seberapa jauh harga kini di bawah puncak 60 menit terakhir (0 = di puncak)
                 hi60 = max([p for tt, p in (series.get(tk) or []) if t - 60 * MIN <= tt <= t],
                            default=p0)
-                ev.append({"tk": tk, "t": t, "net": net,
+                ev.append({"tk": tk, "t": t, "net": net, "p0": p0, "p1": p1,
+                           "horizon_m": H, "usd_b": usd_b, "usd_s": usd_s, "n_maker": len(mb),
                            "beli_2": len(mb) >= 2, "beli_3": len(mb) >= 3,
                            "jual_2": len(ms) >= 2, "jual_3": len(ms) >= 3,
                            "jual_bersih": len(ms) >= 2 and usd_s >= 1.5 * usd_b,

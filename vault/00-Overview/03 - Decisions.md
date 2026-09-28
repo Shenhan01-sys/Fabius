@@ -681,3 +681,44 @@ dan dua hal keluar.
 **Terkait:** [[06-Results/13 - Apakah Tidak Trading Itu Gratis]] · [[06-Results/12 - Harga Masuk yang Benar]] · [[TradingKnowledge/FD5 - Expectancy Bukan Win Rate]] ·
 [[TradingKnowledge/FD6 - Ukuran Posisi]] · [[08-Backlog/01 - Backlog]] P25/P26 ·
 [[Concepts/One-Way Gate]] · [[Concepts/Unmeasured Is Not Clean]]
+
+
+## F-D32 — Paper trading adalah SLOT yang ditambal posisi asli, dan streak bukan kredensial · 28 Sep 2026
+
+Builder menyetel bentuk kerjanya: paper dipakai untuk membuktikan analisis SEBELUM uang turun
+("mungkin tiap 2 kali prediksi paper benar baru berani pasang posisi asli"), dan slot paper itulah
+yang nanti digantikan posisi nyata - jadi ia harus **berlabel**, bukan jadi laporan paralel.
+
+**Diputuskan dan dipasang di alat (`tools/paper_book.py` + `tools/winlog.py`):**
+
+1. Tiap posisi paper ditulis sebagai slot: `mode: "PAPER"`, `slot_id` = sha256(token|waktu|kebijakan),
+   dan `pengganti_real: null`. Kolom terakhir hanya boleh terisi oleh tx asli yang menambal slot yang
+   **sama** - jadi "paper jadi nyata" bukan pergantian label, melainkan tambalan yang bisa ditelusuri.
+2. `winlog` kini punya **tiga seri** dan menolak menggabungkannya: `PAPER` (keputusan ter-anchor vs
+   bar Aster), `BUKU PAPER ⑦` (slot boongan pada harga peristiwa), `CHAIN` (fill nyata di pool kami).
+   Yang tercetak sekarang: 556 slot dinilai, **0 layak real, 0 ditambal posisi asli**.
+3. **Aturan naik dua lapis.** Streak N benar beruntun (default 2) dicatat - itu permintaan builder -
+   tapi **bukan vonis**, dan alasannya terukur dari buku ini sendiri: peluang menang per posisi kami
+   **42,3 %**, jadi dua menang beruntun terjadi **~18 % dari waktu itu tanpa ada efek apa pun**.
+   Vonisnya: gerbang F-D16 (n≥20 DAN harapan > 0 DAN **CI bawah harapan** > 0) **DAN** kebijakan
+   harus di atas control `random + gerbang yang sama`.
+4. Control tidak pernah bisa mempromosikan dirinya sendiri. (Kegagalan pertama alat ini justru
+   menyatakan `random` LAYAK - karena membandingkan mean tak-dibulatkan dengan control yang sudah
+   dibulatkan. Diperbaiki, dan control sekarang dicetak sebagai `CONTROL - tidak pernah dipromosikan`.)
+
+**Vonis malam ini, dan ini yang tidak enak:** kontrol acak dengan gerbang yang sama **+188,3 bps**
+mengalahkan kedua aturan pilihan kami (`first` +140,9 CI [+35,0; +249,2]; `lock` +109,7 CI [+2,4;
++215,5]). Pada budget/ukuran kontrak (5 posisi/hari, 1 BNB) buku ini **−708,9 bps**. Jadi: yang
+terukur +188,3 sebagian besar adalah *"feed ini sedang menunjukkan token yang naik"*, bukan
+*"Fabius bisa memilih"*; dan status "paper" tidak mengubah tanda minus jadi plus - ia hanya
+memungkinkan kita mengukurnya sekarang, bukan sesudah uang turun.
+
+**Konsekuensi yang diterima.** Selama belum ada kebijakan di atas control, **tidak ada** posisi asli
+yang dibuka walau streak tercapai, dan tidak ada satu pun slot boongan yang boleh ditulis sebagai
+PnL. Jalur ke "gas" bukan mempertajam aspek maker (sudah dikuras hari ini) tapi **P29: memperbaiki
+cakupan snapshot** - sampai penyortiran dijalankan di atas sampel yang bukan "yang sedang panas",
+apa pun yang kami temukan adalah angka pada subset terburuk (§3e halaman 13).
+
+**Terkait:** [[06-Results/14 - Buku Paper]] · [[06-Results/13 - Apakah Tidak Trading Itu Gratis]] ·
+[[TradingKnowledge/FD5 - Expectancy Bukan Win Rate]] · [[TradingKnowledge/EV5 - Reproduksibilitas dan Pra-Registrasi]] · [[Concepts/One-Way Gate]] · [[08-Backlog/01 - Backlog]] P29/P30 ·
+[[Concepts/Unmeasured Is Not Clean]]
