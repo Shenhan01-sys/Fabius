@@ -53,6 +53,8 @@ Dijalankan ulang dengan **satu sumber harga (`px` di kedua ujung), horison 30 m,
 
 ## Koreksi 06:3xZ — label "K≥2" pada dua tabel di atas salah, dan itu mengubah angka
 
+**Angka pada bagian ini (+363,6) sudah digantikan lagi oleh Koreksi KEDUA di ujung halaman (+393,4 CI [+5; +1012] p=0,0008, pasca-kanonisasi `px`). Dibiarkan terbaca apa adanya, bukan disunat - urutan koreksinya justru bagian dari hasilnya.**
+
 `collect()` versi pertama menyimpan kejadian ke bucket **hanya kalau nilai `k` persis ada di daftar
 `(1, 2, 3, 5)`**. Jadi yang kutulis sebagai "K≥2" sebenarnya **"tepat 2 dompet"**, dan kejadian dengan
 4 maker atau ≥6 maker **dibuang** — diukur: **53 dari 2.592** (2,0 %) hilang, termasuk kerumunan
