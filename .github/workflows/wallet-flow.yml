@@ -36,8 +36,14 @@ name: wallet-flow
 # tidak punya nilai bukti. (Repo sudah PUBLIC, jadi menit runner bukan anggaran lagi.)
 
 on:
-  schedule:
-    - cron: "17 * * * *"          # penyelamat, bukan penggerak
+  # TIDAK ADA `schedule:` di berkas ini lagi - dan ini koreksi atas keputusan yang kutulis sendiri.
+  # Terukur 28 Sep 08:24Z (jam = header server GitHub, bukan jam laptop): run #11/#12/#13
+  # conclusion=`cancelled`, dan yang membatalkan adalah cron penyelamat di berkas yang SAMA -
+  # `schedule` menembak tiap jam sementara satu rantai hidup berjam-jam, dan dengan
+  # `cancel-in-progress: true` tiap tembakan mematikan rantai yang sedang merekam.
+  # Penyelamatnya membunuh pasiennya, dan pola itu terbaca "sehat" kalau orang cuma melihat
+  # daftar run per jam. Penyelamat sekarang = berkas terpisah `wallet-flow-watchdog.yml` dengan
+  # grup concurrency sendiri: dia tidak bisa membatalkan rantai, hanya men-dispatch kalau basi.
   workflow_dispatch:
     inputs:
       chain_started:
@@ -54,6 +60,8 @@ permissions:
   actions: write
 
 concurrency:
+  # Grup HANYA untuk workflow ini. Watchdog sengaja di berkas berbeda supaya dia tidak pernah
+  # masuk grup yang sama dengan yang dia hidupkan.
   group: wallet-flow-chain
   # `true`, bukan `false`. KOREKSI ATAS DIRIKU SENDIRI (27 Sep): commit sebelumnya menulis bahwa
   # `false` "membungkam perekam selama 24 jam". Itu SALAH. Sebabnya layak dicatat: aku membaca
@@ -66,7 +74,13 @@ concurrency:
   # mengantrikan semua berikutnya dan satu-satunya jalan keluar adalah tangan manusia membatalkan
   # manual. Dengan `true`, cron berikutnya mengganti yang macet sendiri. Alasannya berubah dari
   # "kita kehilangan sehari" jadi "kita tidak mau butuh tangan manusia" - dan itu tetap cukup kuat.
-  cancel-in-progress: true
+
+  # KOREKSI KEDUA (28 Sep): `true` justru menjadi lubang yang paling mahal. Dengan `schedule` di
+  # berkas yang sama, `true` berarti tiap jam rantai yang sedang merekam DIBUNUH (lihat di atas).
+  # Sekarang `false`: rantai yang menggantung tetap punya batas, tapi bukan lewat pembatalan -
+  # lewat `timeout-minutes: 330` di job ini, yang membunuh yang macet tanpa menyentuh yang hidup.
+  # Watchdog juga memeriksa `in_progress` sebelum dispatch, jadi tidak ada antrean tanpa batas.
+  cancel-in-progress: false
 
 jobs:
   rantai:
@@ -151,13 +165,21 @@ jobs:
           AGE_H=$(( ( $(date +%s) - $(date -u -d "$START" +%s) ) / 3600 ))
           echo "umur rantai: ${AGE_H} jam (mulai $START)"
           if [ "$AGE_H" -gt 40 ]; then
-            echo "BATAS UMUR TERSENTUH -> rantai berhenti; cron per-jam akan memulai rantai baru."
+            echo "BATAS UMUR TERSENTUH -> rantai berhenti; wallet-flow-watchdog yang menyalakan lagi."
+            echo "(watchdog membaca umur aliran dari manifest, bukan dari janji kita)"
             exit 0
           fi
           WID=$(gh api "repos/$GITHUB_REPOSITORY/actions/workflows" \
                 --jq ".workflows[] | select(.name==\"wallet-flow\") | .id")
-          gh api -X POST "repos/$GITHUB_REPOSITORY/actions/workflows/$WID/dispatch" \
-             -f "inputs[chain_started]=$START" && echo "rantai disambung (workflow id $WID)"
+          # Endpointnya `dispatches` (JAMAK) dan body-nya harus objek bersarang:
+          #   {"ref": "<branch>", "inputs": {"chain_started": "<iso>"}}
+          # Versi pertama menulis `$WID/dispatch` (tunggal, 404) dengan `-f "inputs[chain_started]=..."`
+          # yang dikirim sebagai key literally `inputs[chain_started]` - dua-dunya salah, dan
+          # kegagalan itu tidak kelihatan berhari-hari karena rantai tetap jalan oleh cron.
+          printf '{"ref":"%s","inputs":{"chain_started":"%s"}}' "$GITHUB_REF_NAME" "$START" \
+            | gh api -X POST "repos/$GITHUB_REPOSITORY/actions/workflows/$WID/dispatches" --input - \
+            && echo "rantai disambung (workflow id $WID, ref $GITHUB_REF_NAME)" \
+            || { echo "GAGAL menyambung rantai -> aliran akan bolong sampai watchdog menyalakan"; exit 1; }
 
       - name: Kesehatan aliran
         if: always()

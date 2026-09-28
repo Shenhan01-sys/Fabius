@@ -1,0 +1,133 @@
+name: wallet-flow-watchdog
+
+# PENYELAMAT YANG TIDAK BISA MEMBUNUH YANG DISELAMATKANNI.
+#
+# Kenapa berkas ini ada (terukur 28 Sep 08:2xZ, jam = header server GitHub):
+#   - `schedule: 17 * * * *` dulu tinggal di berkas `wallet-flow.yml` yang SAMA dengan rantainya.
+#     Dengan `cancel-in-progress: true`, tiap tembakan cron membatalkan rantai yang sedang merekam:
+#     run #11/#12/#13 `conclusion=cancelled`. Daftar run terlihat "hidup per jam", padahal yang
+#     kita lihat adalah jantung yang dihentikan oleh alat resusitasinya sendiri.
+#   - Dan langkah "sambung rantai" di rantai itu memanggil endpoint SALAH
+#     (`/dispatch`, seharusnya `/dispatches` dengan body {"ref":..,"inputs":{..}}) -> 404 ->
+#     rantai #14 mati 06:17Z dan bidang ⑦ berhenti menetes sejak itu. Tidak ada yang sadar,
+#     karena tanda "hidup" yang kita baca (jumlah run) bukan tanda yang benar.
+#
+# Jadi: tanda kehidupan yang benar adalah **umur berkas aliran itu sendiri**, dan itu yang dibaca
+# di sini - dari `universe/wallet-flow-manifest.txt` (`generated_utc`), yang ditulis oleh runner
+# pihak ketiga, bukan jam laptop siapa pun.
+#
+# Aturan tunggal: kalau aliran lebih tua dari AMBANG dan tidak ada rantai yang sedang jalan,
+# nyalakan satu rantai. Selain itu: tidak melakukan apa pun, dan menulis alasannya di log.
+#
+# Kenapa TIDAK pakai `push:` atau repo secret: workflow ini cuma butuh membaca berkas yang sudah
+# ada di branch dan punya izin `actions: write` untuk men-dispatch.
+
+on:
+  schedule:
+    - cron: "*/30 * * * *"       # dua kali per jam; ini penyelamat, bukan penggerak
+  workflow_dispatch:
+    inputs:
+      force:
+        description: "dispatch walau aliran belum basi (untuk menguji jalur ini)"
+        required: false
+        default: "0"
+
+permissions:
+  contents: read
+  actions: write
+
+concurrency:
+  # Grup SENDIRI, sengaja bukan `wallet-flow-chain`: kalau watchdog masuk grup yang sama dengan
+  # yang dia hidupkan, dia akan meng-antri-kan atau membatalkan rantainya sendiri.
+  group: wallet-flow-watchdog
+  cancel-in-progress: false
+
+jobs:
+  jagal:
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Baca umur aliran dari manifest (bukan dari janji kita)
+        id: umur
+        run: |
+          python - <<'PY' > /tmp/umur.txt
+          import datetime, io, re
+          s = io.open("universe/wallet-flow-manifest.txt", encoding="utf-8", errors="replace").read()
+          m = re.search(r"^generated_utc:\s*(\S+)", s, re.M)
+          if not m:
+              print("STATUS=tanpa-manifest"); raise SystemExit(0)
+          t = datetime.datetime.strptime(m.group(1), "%Y-%m-%dT%H:%M:%SZ").replace(
+              microsecond=0, tzinfo=datetime.timezone.utc)
+          age_m = (datetime.datetime.now(datetime.timezone.utc) - t).total_seconds() / 60.0
+          print("STATUS=%s" % ("basi" if age_m > 25 else "segar"))
+          print("UMUR_MINIT=%.1f" % age_m)
+          print("MANIFEST=%s" % m.group(1))
+          PY
+          cat /tmp/umur.txt
+          echo "STATUS=$(awk -F= '/^STATUS=/{print $2}' /tmp/umur.txt)" >> "$GITHUB_OUTPUT"
+          echo "UMUR=$(awk -F= '/^UMUR_MINIT=/{print $2}' /tmp/umur.txt)" >> "$GITHUB_OUTPUT"
+          echo "MANIFEST=$(awk -F= '/^MANIFEST=/{print $2}' /tmp/umur.txt)" >> "$GITHUB_OUTPUT"
+
+      - name: Hitung rantai yang sedang jalan (supaya tidak menumpuk)
+        id: rantai
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          N=$(gh api "repos/$GITHUB_REPOSITORY/actions/runs?status=in_progress&per_page=50" \
+              --jq '[.workflow_runs[] | select(.name=="wallet-flow")] | length')
+          echo "wallet-flow in_progress: [$N]"
+          case "$N" in
+            ''|*[!0-9]*) echo "N=0" >> "$GITHUB_OUTPUT"; echo "bukan angka -> anggap TIDAK ada (fail-open: rantai ganda tidak merusak data, aliran kosong merusak)" ;;
+            *) echo "N=$N" >> "$GITHUB_OUTPUT" ;;
+          esac
+
+      - name: Nyalakan rantai kalau aliran benar-benar basi
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          STATUS: ${{ steps.umur.outputs.STATUS }}
+          UMUR: ${{ steps.umur.outputs.UMUR }}
+          MANIFEST: ${{ steps.umur.outputs.MANIFEST }}
+          ADA_RANTAI: ${{ steps.rantai.outputs.N }}
+          FORCE: ${{ github.event.inputs.force }}
+        run: |
+          echo "decision inputs: STATUS=$STATUS umur=${UMUR}m manifest=$MANIFEST rantai_jalan=$ADA_RANTAI force=${FORCE:-0}"
+          if [ "${FORCE:-0}" != "1" ]; then
+            if [ "$STATUS" = "segar" ]; then
+              echo "aliran berumur ${UMUR} menit (<= 25) -> TIDAK ada yang perlu diselamatkan."
+              exit 0
+            fi
+            if [ "$STATUS" = "tanpa-manifest" ]; then
+              echo "manifest belum ada (chain pertama) -> dispatch sekali untuk memulainya."
+            elif [ "$ADA_RANTAI" != "0" ]; then
+              echo "aliran basi TAPI ada $ADA_RANTAI rantai in_progress -> biarkan yang jalan selesai."
+              exit 0
+            fi
+          else
+            echo "FORCE=1 (uji manual) -> dispatch tanpa menunggu syarat."
+          fi
+          WID=$(gh api "repos/$GITHUB_REPOSITORY/actions/workflows" \
+                --jq '.workflows[] | select(.name=="wallet-flow") | .id')
+          if [ -z "$WID" ]; then echo "workflow wallet-flow tidak ditemukan -> mati dengan jelas"; exit 1; fi
+          # Bentuk body sesuai dokumentasi REST: `dispatches` (jamak) + ref + inputs objek.
+          # `-f "inputs[x]=v"` menghasilkan key literal `inputs[x]` dan BUKAN objek bersarang -
+          # itulah penyebab kegagalan senyap di rantai utama selama berhari-hari.
+          printf '{"ref":"%s","inputs":{"chain_started":""}}' "$GITHUB_REF_NAME" \
+            | gh api -X POST "repos/$GITHUB_REPOSITORY/actions/workflows/$WID/dispatches" --input - \
+              --silent && echo "WATCHDOG: rantai di-dispatch (wid=$WID, ref=$GITHUB_REF_NAME, umur=${UMUR}m)"
+          sleep 20
+          gh api "repos/$GITHUB_REPOSITORY/actions/runs?per_page=3" \
+            --jq '.workflow_runs[] | select(.name=="wallet-flow") | "verifikasi: run #" + (.run_number|tostring) + " " + .status + " event=" + .event'
+
+      - name: Kalau rantai masih tidak hidup, jangan biarkan senyap
+        if: failure()
+        run: |
+          echo "::error::watchdog gagal men-dispatch rantai wallet-flow - bidang ⑦ (satu-satunya bidang tanpa riwayat) akan bolong sampai ini diperbaiki. Lihat log langkah sebelumnya."
+          exit 1
