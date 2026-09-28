@@ -99,6 +99,75 @@ Tiga hal yang harus dibaca bersama tabel ini:
   harga peristiwa, bukan PnL pada ukuran posisi tertentu. Satu pool $6k yang naik 10x menaikkan
   mean tanpa pernah bisa kami masuki sebesar itu.
 
+## 3c. Percobaan pertama "kapan boleh masuk": menyortir 5 posisi/hari - dan ia TIDAK BISA dimenangkan dengan data ini
+
+`tools/select_test.py` (28 Sep ±10:2xZ). Agen punya `dailyCap` 5, jadi pertanyaannya: dari kandidat
+yang lolos gerbang, 5 yang mana? Yang disortir: **10 kolom siklus hidup pool** dari snapshot universe
+kita sendiri, dengan aturan point-in-time (hanya snapshot `epoch <= t` yang boleh dipakai).
+
+| kebijakan | posisi | mean winso (bps) |
+|---|---|---|
+| first-5 (tanpa sortir) | 15 | **−379,0** |
+| random-5 (4.000 undian) | 15 | −27,0 |
+| **CI 95 % acak** | | **[−440,1; +411,4]** |
+| `top-5 lock_percent` / `bundler_rate` | 15 | +133,6 / +179,0 → **seri** |
+| 8 fitur lainnya | 15 | −24,0 s/d −165,7 → **seri semua** |
+
+**Tidak ada satu pun fitur yang keluar dari pita acak.** Tapi jangan baca ini sebagai "tidak ada
+efek": ini soal **daya**, dan daya itu bisa dihitung. Dari lebar pita acak (±425 bps pada 15 posisi),
+simpangan per posisi ≈ **841 bps**, jadi untuk memutuskan perbedaan sebesar:
+
+| resolusi yang diinginkan | posisi yang dibutuhkan | pada 5 posisi/hari |
+|---|---|---|
+| ±200 bps | ≈ 68 | **±14 hari** |
+| ±100 bps | ≈ 272 | **±55 hari** |
+
+Tenggat kami 30 Sep. Artinya jujur: **"kapan boleh masuk" tidak akan pernah bisa diuji dalam budget
+5 posisi/hari sebelum demo.** Yang TIDAK tunduk pada batas itu adalah pertanyaan "mana yang jangan"
+(veto, n=1.174, CI di §3b) - dan karena itu §3b tetap berdiri sedang §3c tidak akan berdiri
+tepat waktu.
+
+## 3d. Uji kuintil TANPA budget harian: satu kandidat muncul, dan satu perangkap ketahuan
+
+`tools/quintile_test.py` (28 Sep ±10:4xZ): 1.014 kejadian yang lolos gerbang, dikelompokkan ke
+kuintil fitur siklus hidup pool (point-in-time: hanya snapshot `epoch <= t`). Alat ini lahir karena
+kesalahan pertamanya: `flow_cluster_test.fisher_p` membandingkan probabilitas tabel dengan yang
+teramati (ekor **dua-arah**), jadi kuintil yang justru jauh lebih buruk pun mengembalikan p ≈ 0 -
+`volume_24h` "lolos" dengan P(≥+500) **0,0 % vs 31,4 %**. Sudah diganti dengan ekor hipergeometrik
+satu arah (`ekor_hipergeo`), dan kolomnya sekarang konsisten dengan arahnya.
+
+Yang bertahan dari **dua** uji berbeda (Mann-Whitney pada harapan winso + Fisher satu arah pada
+P(≥+500 bps)), BH α 0,10:
+
+| fitur | Q1 → Q5 harapan winso (bps) | P(≥+500) Q5 vs Q1 | MW p | Fisher p |
+|---|---|---|---|---|
+| **`lock_percent`** (LP dikunci) | −60,1 → **+66,0** | **36,0 % vs 0,0 %** | **0,0000** | **0,0010** |
+| `usd_b_jendela` (ukuran beli) | −78,6 → −64,5 (dua-duanya minus) | 11,8 % vs 0,0 % | 0,0000 | 0,0134 |
+| `sniper_count` | −60,1 → −32,3 | 24,0 % vs 0,0 % | 0,55 | 0,0127 |
+| `bundler_rate` | −63,5 → **+188,4** | 20,0 % vs 20,8 % | 0,0035 | 0,66 |
+
+**Kenapa ini belum boleh dijual.** Kuintilnya berisi 24–51 kejadian; satu pool yang naik 10x bisa
+memindahkan mean puluhan bps. Dan `bundler_rate` adalah contoh baiknya: kuintil teratasnya +188,4
+bps - angka yang **bertentangan dengan veto kita sendiri** (`bundler>30%` sudah menyingkirkan
+token di universe). Bacaan yang jujur: itu noise, bukan temuan. Yang tinggal sebagai *kandidat*:
+**likuiditas yang dikunci** (`lock_percent`) sebagai syarat masuk, bukan kerumunan maker - dan ia
+harus melewati hari-hari berikutnya, bukan meyakinkan kita malam ini.
+
+## 3e. Dan perangkap yang lebih penting dari semua itu: yang bisa kami deskripsikan justru yang paling buruk
+
+Baseline **pada subset yang punya snapshot universe point-in-time** adalah **−64,7 bps** harapan
+winso dan P(≥+500) **14,5 %** - padahal baseline semua kejadian yang boleh **+82,7 bps** dan
+**33,9 %**. Bedanya bukan nasib: **cakupan itu sendiri terpilih**. Snapshot universe kami berasal
+dari daftar `trending_pools`/`new_pools`, jadi token yang bisa kami deskripsikan dengan kolom
+siklus hidup adalah token yang **sudah panas** pada jam kami mengambilnya - yaitu kelompok yang
+peluang jackpotnya paling tipis.
+
+Konsekuensinya langsung untuk produk: **fitur apa pun yang kami temukan pada 25,1 % kejadian ini
+berlaku pada subpopulasi terburuk, dan tidak otomatis berlaku pada 74,9 % sisanya.** Itu sebabnya
+P26 tidak cukup "cari fitur" - ia butuh cakupan yang tidak dipilih oleh panasnya pool, dan satu-
+satunya jalur ke sana adalah `wp` (ditarik seragam untuk semua token yang pernah lewat, bukan yang
+sedang naik daun).
+
 ## 4. Yang menahan halaman ini
 
 Satu jendela 49 jam, satu rezim. Belum ada fill, belum ada kedalaman: P(≥+500 bps) dihitung pada
