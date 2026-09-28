@@ -14,7 +14,7 @@ field baris pertama ≠ baris terakhir
 menghitung ulang hash dari clone butuh tahu field mana yang ikut dan mana yang tidak. Tanpa skema,
 "verifiable" cuma bisa dipercaya dari mulut kami.
 
-## universe/bsc-universe.jsonl — satu baris per snapshot (65 baris)
+## universe/bsc-universe.jsonl — satu baris per snapshot (72 baris sampai `2026-09-28T00:37:37Z`, bertambah tiap jam)
 
 | field | arti | ikut hash? |
 |---|---|---|
@@ -42,8 +42,8 @@ menghitung ulang hash dari clone butuh tahu field mana yang ikut dan mana yang t
 - **4** — blok `gdelt` bertambah; baris skema 3 tidak punya field itu sama sekali
 
 Itulah kenapa `dump_schemas.py` melaporkan **pergeseran** untuk berkas ini dan itu bukan bug:
-65 barisnya memang melintasi empat semantik. Analisis mana pun wajib menyebut nomor skema yang
-dipakai; kalau tidak, angkanya diam-diam membandingkan dua definisi "lolos".
+barisnya (72 pada 28 Sep, terus bertambah) memang melintasi empat semantik. Analisis mana pun wajib
+menyebut nomor skema yang dipakai; kalau tidak, angkanya diam-diam membandingkan dua definisi "lolos".
 
 ## universe/wallet-flow.jsonl — polimorfik, 3 jenis baris
 
