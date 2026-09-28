@@ -528,9 +528,26 @@ salinan lokal yang ternyata 50 commit tertinggal. Sudah pernah membayar di proye
 [[Concepts/Stale Local Copy]]), dan tetap terjadi lagi. Aturan yang sekarang kutulis: **setiap
 "hidup/mati" dinyatakan setelah `git fetch` + sumber pihak ketiga**, bukan dari working copy.
 
-**Yang belum terbukti.** Bahwa watchdog benar-benar menyalakan rantai - itu hanya bisa terjadi di
-dalam Actions dengan `GITHUB_TOKEN` sungguhan, dan butuh commit ini sampai ke default branch (P22).
-Menulis YAML yang sah bukan klaim bahwa jalur dispatch-nya hidup.
+**Terbukti 28 Sep 08:53-09:00Z, dari log GitHub sendiri** (setelah commit ini didorong - bukan
+dari YAML yang sah):
+
+- `wallet-flow-watchdog` run **#1** `event=workflow_dispatch` `conclusion=success`:
+  `STATUS=segar umur=3.3m manifest=2026-09-28T08:50:24Z rantai_jalan=1 force=0` →
+  *"aliran berumur 3.3 menit (<= 25) -> TIDAK ada yang perlu diselamatkan."* Pembacaan umur
+  manifest bekerja, dan dia TIDAK men-dispatch sesuatu yang tidak perlu.
+- run **#2** dengan `force=1`: `WATCHDOG: rantai di-dispatch (wid=367575867, ref=master,
+  umur=2.6m)` lalu `verifikasi: run #16 pending event=workflow_dispatch`. **Ini pertama kalinya
+  rantai ⑦ lahir dari API dispatch** - bentuk body yang benar diterima, dan run #15 yang sedang
+  merekam TIDAK dibatalkan (#16 `pending` = mengantri di grup concurrency, perilaku yang
+  kusesatkan; `cancel-in-progress: false` bekerja seperti tulisannya).
+- Aliran hidup lagi terukur dari origin: commit `wallet flow` 08:43:36 / 08:47:00 / 08:50:24Z,
+  `usia_aliran_jam` 0,00, rentang 48,81 jam.
+
+**Yang masih belum terbukti.** Rantai #15 sendiri tetap memakai definisi workflow LAMA (dia dimulai
+08:39:58Z, sebelum push 08:50:54Z), jadi langkah "sambung rantai"-nya masih akan 404 saat loop itu
+selesai (~13:1xZ). Uji alami berikutnya: apakah watchdog cron (per-30 menit) menangkap lubang itu
+dan menyalakan rantai baru tanpa tangan manusia. Kalau itu berhasil, klaim "pipeline ini hidup tanpa
+dijaga" akhirnya punya bukti; sampai saat itu, yang terbukti cuma jalur dispatch-nya.
 
 **Terkait:** [[03-Data/D2 - Wallet Flow]] · [[TradingKnowledge/Fakta Terukur]] §G ·
 [[08-Backlog/01 - Backlog]] P22 · [[Concepts/Stale Local Copy]] · [[00-Overview/04 - Run It]]
