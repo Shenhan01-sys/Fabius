@@ -1,0 +1,285 @@
+{
+ "dibuat_utc": "2026-09-28T15:52:27Z",
+ "hasil": {
+  "30": {
+   "bh_ekor": [],
+   "di_atas_control": [],
+   "pool": 1054,
+   "rows": [
+    {
+     "c_atas": 438.3,
+     "di_atas": false,
+     "fis": 0.999999183662721,
+     "h": "ma_tren",
+     "hi": 36.1,
+     "lo": -411.5,
+     "mean": -186.5,
+     "median": -59.3,
+     "mw": 0.0,
+     "n": 136,
+     "p500": 22.1,
+     "pos": 27.2
+    },
+    {
+     "c_atas": 525.8,
+     "di_atas": false,
+     "fis": 0.8819045298615191,
+     "h": "rsi_jenuh_jual",
+     "hi": 304.3,
+     "lo": -264.6,
+     "mean": 15.3,
+     "median": -58.5,
+     "mw": 0.0,
+     "n": 87,
+     "p500": 34.5,
+     "pos": 41.4
+    },
+    {
+     "c_atas": 655.6,
+     "di_atas": false,
+     "fis": 0.8882172848712225,
+     "h": "rsi_jenuh_beli",
+     "hi": 232.7,
+     "lo": -780.8,
+     "mean": -280.1,
+     "median": -61.9,
+     "mw": 0.0,
+     "n": 35,
+     "p500": 31.4,
+     "pos": 34.3
+    },
+    {
+     "c_atas": 484.0,
+     "di_atas": false,
+     "fis": 0.9964905952154258,
+     "h": "macd_bull",
+     "hi": 50.8,
+     "lo": -497.5,
+     "mean": -225.7,
+     "median": -66.6,
+     "mw": 0.0,
+     "n": 97,
+     "p500": 27.8,
+     "pos": 32.0
+    },
+    {
+     "c_atas": 579.6,
+     "di_atas": false,
+     "fis": 0.9663363798518853,
+     "h": "boll_bawah",
+     "hi": 180.0,
+     "lo": -630.8,
+     "mean": -240.2,
+     "median": -82.2,
+     "mw": 0.0,
+     "n": 49,
+     "p500": 28.6,
+     "pos": 36.7
+    },
+    {
+     "c_atas": 758.3,
+     "di_atas": false,
+     "fis": 0.68804508596057,
+     "h": "boll_atas",
+     "hi": 446.0,
+     "lo": -783.6,
+     "mean": -183.8,
+     "median": -64.0,
+     "mw": 0.0,
+     "n": 27,
+     "p500": 37.0,
+     "pos": 40.7
+    },
+    {
+     "c_atas": 811.5,
+     "di_atas": false,
+     "fis": 0.9040529115298398,
+     "h": "fib_pullback",
+     "hi": 129.2,
+     "lo": -1188.0,
+     "mean": -548.3,
+     "median": -1265.5,
+     "mw": 0.0,
+     "n": 24,
+     "p500": 29.2,
+     "pos": 33.3
+    },
+    {
+     "c_atas": 719.6,
+     "di_atas": false,
+     "fis": 0.9999991256007821,
+     "h": "breakout",
+     "hi": -201.4,
+     "lo": -951.9,
+     "mean": -587.9,
+     "median": -59.6,
+     "mw": 0.0,
+     "n": 27,
+     "p500": 3.7,
+     "pos": 3.7
+    },
+    {
+     "c_atas": 720.2,
+     "di_atas": false,
+     "fis": 0.9984986696486428,
+     "h": "vol_spikes",
+     "hi": -141.6,
+     "lo": -960.2,
+     "mean": -558.0,
+     "median": -249.9,
+     "mw": 0.0,
+     "n": 26,
+     "p500": 15.4,
+     "pos": 23.1
+    },
+    {
+     "c_atas": 382.8,
+     "di_atas": false,
+     "fis": 0.9999999999988379,
+     "h": "vol_rendah",
+     "hi": 23.1,
+     "lo": -244.7,
+     "mean": -107.6,
+     "median": -59.2,
+     "mw": 0.0,
+     "n": 245,
+     "p500": 18.8,
+     "pos": 24.5
+    },
+    {
+     "c_atas": 413.2,
+     "di_atas": false,
+     "fis": 0.15304666708074116,
+     "h": "vol_tinggi",
+     "hi": 196.7,
+     "lo": -197.5,
+     "mean": -3.1,
+     "median": -93.9,
+     "mw": 0.0,
+     "n": 245,
+     "p500": 42.9,
+     "pos": 47.8
+    }
+   ]
+  },
+  "120": {
+   "bh_ekor": [],
+   "di_atas_control": [],
+   "pool": 376,
+   "rows": [
+    {
+     "c_atas": 508.7,
+     "di_atas": false,
+     "fis": 0.9992853770073498,
+     "h": "ma_tren",
+     "hi": 6.9,
+     "lo": -778.7,
+     "mean": -400.0,
+     "median": -63.2,
+     "mw": 0.0,
+     "n": 46,
+     "p500": 19.6,
+     "pos": 21.7
+    },
+    {
+     "c_atas": 609.8,
+     "di_atas": false,
+     "fis": 0.9754219611911823,
+     "h": "rsi_jenuh_jual",
+     "hi": 115.8,
+     "lo": -849.5,
+     "mean": -371.3,
+     "median": -246.2,
+     "mw": 0.0,
+     "n": 29,
+     "p500": 24.1,
+     "pos": 34.5
+    },
+    {
+     "c_atas": 578.8,
+     "di_atas": false,
+     "fis": 0.9633057982710393,
+     "h": "macd_bull",
+     "hi": 157.6,
+     "lo": -782.4,
+     "mean": -319.6,
+     "median": -345.4,
+     "mw": 0.0,
+     "n": 40,
+     "p500": 27.5,
+     "pos": 32.5
+    },
+    {
+     "c_atas": 419.9,
+     "di_atas": false,
+     "fis": 0.9998647712661445,
+     "h": "vol_rendah",
+     "hi": 179.2,
+     "lo": -285.8,
+     "mean": -50.8,
+     "median": -58.9,
+     "mw": 0.0,
+     "n": 95,
+     "p500": 24.2,
+     "pos": 30.5
+    },
+    {
+     "c_atas": 403.0,
+     "di_atas": false,
+     "fis": 0.5602121170457977,
+     "h": "vol_tinggi",
+     "hi": 151.8,
+     "lo": -510.2,
+     "mean": -187.4,
+     "median": -358.0,
+     "mw": 0.0,
+     "n": 95,
+     "p500": 38.9,
+     "pos": 46.3
+    }
+   ]
+  }
+ },
+ "spec": {
+  "boll": [
+   20,
+   2.0
+  ],
+  "break_jendela_menit": 60,
+  "dedup": "median per (token,stempel)",
+  "draws_control": 400,
+  "draws_mean": 4000,
+  "fib_jendela_menit": 60,
+  "fib_kaki_min": 0.1,
+  "fib_pita": [
+   0.38,
+   0.62
+  ],
+  "horison_menit": [
+   30,
+   120
+  ],
+  "jendela_keluar_menit": 15,
+  "kontrol": "acak-dari-pool-yang-sama-CI-atas",
+  "ma": [
+   20,
+   50
+  ],
+  "macd": [
+   12,
+   26,
+   9
+  ],
+  "n_min": 20,
+  "ongkos_bps_rt": 59.0,
+  "rsi_beli": 70.0,
+  "rsi_jual": 30.0,
+  "rsi_period": 14,
+  "sumber_harga": "peristiwa (tx)",
+  "versi": "1",
+  "vol_real_period": 20,
+  "vol_spike_rasio": 3.0,
+  "winsor_bps": 2000.0
+ },
+ "spec_sha256": "0x6032bda07a7bae89f1029ce3951a26ece664920be448d6e70b6583d3a0c07135"
+}

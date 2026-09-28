@@ -1,0 +1,46 @@
+{
+ "catatan": "teknikal klasik ditetapkan sebelum hasilnya dilihat",
+ "dibuat_utc": "2026-09-28T15:49:55Z",
+ "spec": {
+  "boll": [
+   20,
+   2.0
+  ],
+  "break_jendela_menit": 60,
+  "dedup": "median per (token,stempel)",
+  "draws_control": 400,
+  "draws_mean": 4000,
+  "fib_jendela_menit": 60,
+  "fib_kaki_min": 0.1,
+  "fib_pita": [
+   0.38,
+   0.62
+  ],
+  "horison_menit": [
+   30,
+   120
+  ],
+  "jendela_keluar_menit": 15,
+  "kontrol": "acak-dari-pool-yang-sama-CI-atas",
+  "ma": [
+   20,
+   50
+  ],
+  "macd": [
+   12,
+   26,
+   9
+  ],
+  "n_min": 20,
+  "ongkos_bps_rt": 59.0,
+  "rsi_beli": 70.0,
+  "rsi_jual": 30.0,
+  "rsi_period": 14,
+  "sumber_harga": "peristiwa (tx)",
+  "versi": "1",
+  "vol_real_period": 20,
+  "vol_spike_rasio": 3.0,
+  "winsor_bps": 2000.0
+ },
+ "spec_sha256": "0x6032bda07a7bae89f1029ce3951a26ece664920be448d6e70b6583d3a0c07135"
+}

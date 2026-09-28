@@ -55,6 +55,12 @@ hasil keluar — koreksi lewat halaman baru, supaya urutannya bisa dipertanggung
   sebagai kebijakan**: +109,7 < acak, dan −51,2 di 1 BNB - karena menyortirnya memaksa kami memilih
   subset "yang bisa dideskripsikan", yang baseline-nya −64,7. Naik 0,01 -> 1,00 BNB memangkas
   ~70-90 bps/posisi dari dampak harga; 454/556 posisi bahkan tidak punya angka likuiditas.
+- [[15 - Teknikal Klasik Diuji]] - builder bertanya "Fibonacci/swing/scalping/MA kepakai tidak?".
+  Jawabannya sekarang angka, bukan pengakuan: **12 fitur teknikal pada 1.054 kejadian harga
+  peristiwa - nol di atas control acak, nol lolos BH**, dan `breakout` **−587,9 CI [−951,9; −201,4]
+  dengan P(≥+500) 3,7 %** (vs pool 39,8 %). Catatan penting: bar kami = deret transaksi, jadi ini
+  ADAPTASI; `04-Setup` (7 persona) memang belum punya satu pun perintah alat, dan Fibonacci tidak
+  punya catatan sendiri - dia disebut 15 catatan sebagai konsep.
 - [[09 - Whale Cluster Test]] ← tulis penjelasannya
 - [[10 - Evidence Stack]] ← tulis penjelasannya
 
