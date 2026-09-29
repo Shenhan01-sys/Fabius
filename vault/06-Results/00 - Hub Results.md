@@ -56,6 +56,12 @@ hasil keluar — koreksi lewat halaman baru, supaya urutannya bisa dipertanggung
   adalah menolak. Di menit ke-5 `BOLEH` **+285,5 bps** (median **+79,8**) vs `VETO` **−230,3**
   (median −377,8); selisih +515,8 melawan CI atas placebo +397,2. Eksplorasi tanpa kunci, dan
   VETO-nya bukan kelompok acak - batas itu menempel pada angkanya.
+- [[22 - Buku Order, Terkunci Lebih Dulu]] - teori builder (imbalance buku order + trailing stop).
+  Ditulis jadi dua hal yang bisa diuji; T1 dikunci **sebelum** ada datanya (09:37:45Z, vonis
+  21:37:45Z) dengan lima pembacaan "variasi harga" yang direkam semua karena frasa aslinya ambigu -
+  dan snapshot pertama sudah membuktikan: `bi1` dan `bi20` pada simbol yang sama bisa berlawanan
+  tanda. Timeframe dijawab dengan tiga lapis: kabar hidup ±2 menit, buku kami terlihat tiap ±200
+  detik, jadi yang diuji adalah versi lambat teori itu.
 - [[19 - Umur Posisi]] - untuk pertama kalinya ada angka **positif yang lolos placebo**: harapan
   +192,7 bps di menit ke-2 dan +202,6 di menit ke-5, lalu meluruh jadi −182,5 di menit ke-30
   (placebo asal-mula: datar −180). Tapi menunda masuk **2 menit** saja sudah membalik mediannya,

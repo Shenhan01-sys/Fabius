@@ -2,7 +2,7 @@
 tags: [generated]
 ---
 
-_Auto-Index — 6 halaman · 2026-09-29T09:01Z · dari `vault/scripts/sync_vault.py`_
+_Auto-Index — 6 halaman · 2026-09-29T09:39Z · dari `vault/scripts/sync_vault.py`_
 
 ### 00-Overview (8)
 - [[00-Overview/00 - Hub Overview]]
@@ -54,7 +54,7 @@ _Auto-Index — 6 halaman · 2026-09-29T09:01Z · dari `vault/scripts/sync_vault
 - [[05-Ecosystem/02 - x402 Payment]]
 - [[05-Ecosystem/03 - Discovery Gap]]
 
-### 06-Results (22)
+### 06-Results (23)
 - [[06-Results/00 - Hub Results]]
 - [[06-Results/01 - Claims and Limits]]
 - [[06-Results/02 - Thresholds]]
@@ -77,6 +77,7 @@ _Auto-Index — 6 halaman · 2026-09-29T09:01Z · dari `vault/scripts/sync_vault
 - [[06-Results/19 - Umur Posisi]]
 - [[06-Results/20 - Keluar Cepat, Terkunci]]
 - [[06-Results/21 - Rem di Horison Cepat]]
+- [[06-Results/22 - Buku Order, Terkunci Lebih Dulu]]
 
 ### 07-Testing (8)
 - [[07-Testing/00 - Hub Testing]]
@@ -88,9 +89,11 @@ _Auto-Index — 6 halaman · 2026-09-29T09:01Z · dari `vault/scripts/sync_vault
 - [[07-Testing/T7 - Pre-Push Gate]]
 - [[07-Testing/01 - Test Commands]]
 
-### 08-Backlog (2)
+### 08-Backlog (4)
 - [[08-Backlog/01 - Backlog]]
 - [[08-Backlog/02 - Epik Alasan Masuk]]
+- [[08-Backlog/03 - Epik Teori Baru]]
+- [[08-Backlog/04 - Riset Teori (Sitasi)]]
 
 ### 09-Inbox (5)
 - [[09-Inbox/00 - Hub Inbox]]

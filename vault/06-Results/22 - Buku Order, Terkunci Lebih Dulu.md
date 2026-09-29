@@ -4,7 +4,7 @@ tags: [hasil, "pra-registrasi", "E16", "buku-order"]
 
 # 22 - Buku Order, Terkunci Lebih Dulu
 
-**Bagian dari:** [[06-Results/00 - Hub Results]] · [[08-Backlog/03 - Epik Teori Baru.md|Epik Teori Baru]]
+**Bagian dari:** [[06-Results/00 - Hub Results]] · [[08-Backlog/03 - Epik Teori Baru]]
 **Alat:** `tools/book_prereg.py` · **Perekam:** `universe/record_book_depth.py` (⑨, jalan di loop ⑦)
 **Status:** TERKUNCI sebelum ada satu pun pasangan prediktif
 
