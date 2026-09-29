@@ -19,6 +19,7 @@ import sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 R = os.path.dirname(HERE)
+FLOW = os.path.join(R, "universe", "wallet-flow.jsonl")
 sys.path.insert(0, HERE)
 import costs  # noqa: E402
 import flow_cluster_test as FC  # noqa: E402
@@ -29,7 +30,7 @@ rt = costs.rt_cost()
 
 # muat transaksi per token (maker, sisi, usd, waktu) + deret harga peristiwa
 txs, series = {}, {}
-for ln in io.open(R + r"\universe\wallet-flow.jsonl", encoding="utf-8", errors="replace"):
+for ln in io.open(FLOW, encoding="utf-8", errors="replace"):
     ln = ln.strip()
     if not ln or ln.startswith("#"):
         continue

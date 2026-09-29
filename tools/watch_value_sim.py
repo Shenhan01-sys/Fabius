@@ -12,12 +12,13 @@ import sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 R = os.path.dirname(HERE)
+FLOW = os.path.join(R, "universe", "wallet-flow.jsonl")
 sys.path.insert(0, HERE)
 MIN = 60
 W = int(sys.argv[1]) if len(sys.argv) > 1 else 120
 
 seen, buys = {}, {}
-for ln in io.open(R + r"\universe\wallet-flow.jsonl", encoding="utf-8", errors="replace"):
+for ln in io.open(FLOW, encoding="utf-8", errors="replace"):
     ln = ln.strip()
     if not ln or ln.startswith("#"):
         continue

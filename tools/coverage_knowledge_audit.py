@@ -15,7 +15,7 @@ import os
 import sys
 import re
 
-V = r"C:\Users\hansg\HansProject\Bnb-Indonesia-Hackathon\Fabius\vault\TradingKnowledge"
+V = os.path.join(ROOT, "vault", "TradingKnowledge")
 KHUSUS = ("00 - Hub", "Template", "Plan", "Resources", "Sumber dan", "Aturan Subtree",
           "Glossary", "Fakta Terukur")
 POLA_ALAT = re.compile(r"python -X utf8 tools/[a-z_0-9]+\.py")
