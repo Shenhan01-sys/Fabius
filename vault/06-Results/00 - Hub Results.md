@@ -52,6 +52,10 @@ hasil keluar — koreksi lewat halaman baru, supaya urutannya bisa dipertanggung
   tahan sampai menit ke-30 **pada posisi yang sama**, empat syarat serentak termasuk syarat baru F-D41
   (laporkan umur baris harga keluar + `P(ada harga keluar)` atau angkanya tidak masuk vault). Vonis
   **20:04:56Z**.
+- [[21 - Rem di Horison Cepat]] - E13: satu-satunya hal yang **masuk** di horison tempat kabar hidup
+  adalah menolak. Di menit ke-5 `BOLEH` **+285,5 bps** (median **+79,8**) vs `VETO` **−230,3**
+  (median −377,8); selisih +515,8 melawan CI atas placebo +397,2. Eksplorasi tanpa kunci, dan
+  VETO-nya bukan kelompok acak - batas itu menempel pada angkanya.
 - [[19 - Umur Posisi]] - untuk pertama kalinya ada angka **positif yang lolos placebo**: harapan
   +192,7 bps di menit ke-2 dan +202,6 di menit ke-5, lalu meluruh jadi −182,5 di menit ke-30
   (placebo asal-mula: datar −180). Tapi menunda masuk **2 menit** saja sudah membalik mediannya,

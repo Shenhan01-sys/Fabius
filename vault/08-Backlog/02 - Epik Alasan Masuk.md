@@ -207,6 +207,35 @@ dan mengujinya prospectif pada data yang belum terlihat, dengan horison 30 m seb
 posisi yang sama. [[06-Results/19 - Umur Posisi]] adalah halaman angkanya; F-D41 adalah keputusan
 dan empat kontrolnya.
 
+## 3f. E13 - satu-satunya hal yang masuk di horison cepat adalah REM (29 Sep 08:43Z)
+
+Gerbang ⑦ (`jual_*`) dipasang karena F-D31 mengukurnya menguntungkan **di horison 30 menit**
+(+82,7 → +162,3 bps). Setelah E11 menunjukkan bahwa 30 menit itu bocor, pertanyaan jujurnya: masih
+bergunakah rem itu di tempat kabar hidup? `tools/veto_expectancy.py` menjawab dengan kode gerbang
+yang sama yang dipakai agen, per kejadian, di 2/5/30 menit:
+
+| horison | n boleh | n veto | mean boleh | median boleh | mean veto | median veto | selisih | CI atas placebo |
+|---|---|---|---|---|---|---|---|---|
+| 2 m | 309 | 91 | +262,5 | **+58,5** | −187,8 | −393,1 | +450,3 | +294,5 |
+| 5 m | 308 | 92 | **+285,5** | **+79,8** | −230,3 | −377,8 | **+515,8** | **+397,2** |
+| 30 m | 307 | 92 | −72,7 | −61,9 | −560,2 | −996,6 | +487,5 | +405,1 |
+
+Tiga hal yang jarang datang bersamaan di proyek ini: **median dan mean searah** (median `BOLEH` di
+menit ke-5 = +79,8 bps, di atas lantai ongkos −59, jadi hasilnya tidak ditopang satu ekor),
+**placebo-nya benar** (penandaan ulang acak 200 undian - kontrol yang sama yang membunuh E7 dan E8),
+dan **tidak ada ambang baru** yang disetel: gerbangnya `flow_gate.py` apa adanya.
+
+Batas yang menempel: VETO bukan kelompok acak - dia adalah kejadian yang sedang dihajar penjual,
+sehingga yang boleh diklaim adalah *"menolak saat kerumunan menjual memperbaiki hasil di horison
+cepat"*, bukan sebab-akibat. Batas venue (3,1 %, F-D43) dan batas latensi (2 menit, F-D41) tidak
+bergerak oleh halaman ini. Dan statusnya **EKSPLORASI tanpa kunci** - [[06-Results/21 - Rem di Horison Cepat]] §3.
+
+Jadi jawaban sementara atas pertanyaan builder ("kalau dia cuma tahu kapan jangan masuk, apa
+bedanya dengan orang yang tidak berani masuk?") sekarang punya angka: **rem itu bukan penghindar
+umum - dia memisahkan +285,5 dari −230,3 bps di horison 5 menit, melewati placebo.** Yang belum
+kami punya tetap: alasan *positif* untuk masuk di luar "tidak ada kerumunan jual", dan jalur yang
+cukup cepat untuk mengambilnya.
+
 ## 4. Non-goal eksplisit
 
 - Tidak menaikkan `promote-after` di bawah gerbang F-D16 walau streak tercapai.

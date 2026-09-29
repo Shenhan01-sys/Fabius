@@ -1188,3 +1188,44 @@ menambah jalur spot/DEX: angka (2) yang bergerak, bukan (1).
 **Terkait:** [[06-Results/19 - Umur Posisi]] §3 · [[08-Backlog/01 - Backlog]] P41 ·
 [[07-Testing/01 - Test Commands]] baris 48 · [[10-Submissions/01 - Claims Cheat Sheet]] (aturan mana yang boleh dijual)
 
+## F-D44 — Satu-satunya hal yang masuk di horison tempat kabar hidup adalah REM · 29 Sep 2026 08:43Z
+
+**Kenapa diukur ulang.** F-D31 memasang gerbang ⑦ `jual_*` karena hasilnya di **horison 30 menit**
+(+82,7 → +162,3 bps). Setelah E11/F-D41 membuktikan bahwa 30 menit itu sendiri bocor, rem yang
+terbukti di sana belum tentu berguna di tempat kabar hidup. Kami tidak memindahkan klaimnya;
+kami mengujinya lagi dengan alat yang sama.
+
+**Angka** (`tools/veto_expectancy.py`, 482 kejadian sampai `t_kunci` watch, `flow_gate.py` apa
+adanya tanpa ambang baru; artefak `decisions/veto-expectancy-20260929T084355Z.json`):
+
+| horison | n boleh | n veto | mean boleh | median boleh | mean veto | median veto | selisih | CI atas placebo |
+|---|---|---|---|---|---|---|---|---|
+| 2 m | 309 | 91 | +262,5 | +58,5 | −187,8 | −393,1 | +450,3 | +294,5 |
+| **5 m** | 308 | 92 | **+285,5** | **+79,8** | **−230,3** | **−377,8** | **+515,8** | **+397,2** |
+| 30 m | 307 | 92 | −72,7 | −61,9 | −560,2 | −996,6 | +487,5 | +405,1 |
+
+**Tiga sifat yang tidak pernah datang bersamaan di uji kami sebelumnya:** (1) **median dan mean
+searah** - median `BOLEH` di menit ke-5 = +79,8 bps, di atas lantai ongkos −59, jadi keuntungannya
+tidak ditopang satu ekor; (2) **placebo yang benar** - penandaan ulang acak 200 undian atas angka
+yang sama, dan tiga-tiganya lewat; (3) **tidak ada parameter yang disetel di halaman ini** - yang
+diuji adalah perilaku yang sudah terpasang.
+
+**Keputusan.** (a) E13 **tidak** mengubah satu pun ambang gerbang; dia hanya memberi alasan
+berlaku *di mana* gerbang itu dipasang: horison cepat, bukan 30 menit. (b) Untuk materi submission,
+kalimat yang boleh dipakai: *"rem kami memisahkan +285,5 dari −230,3 bps pada horison 5 menit,
+melewati placebo penandaan ulang acak"* - dengan batasnya menempel di kalimat yang sama: VETO bukan
+kelompok acak (ia adalah kejadian yang sedang dihajar penjual), jadi ini asosiasi terarah, bukan
+sebab-akibat. (c) E13 **tetap eksplorasi tanpa kunci**; yang prospectif dan terkunci adalah E12
+(vonis 20:04:56Z). Kalau nanti ingin menjual kombinasi gerbang+keluar cepat sebagai kebijakan,
+dia butuh kunci sendiri - bukan halaman ini.
+
+**Dua batas yang tidak digeser oleh hasil bagus.** Batas venue: hanya **3,1 %** kabar ada di token
+yang bisa kami perdagangkan (F-D43), dan `--hanya-venue` menyisakan 24 kejadian - tidak cukup untuk
+menguji apa pun di dalam venue kami. Batas latensi: menunda masuk 2 menit membuat median@5m −56,2
+(F-D41) - jadi rem yang benar pun tidak menolong kalau kabarnya datang telat; pekerjaan P40 tetap
+yang paling menentukan.
+
+**Terkait:** [[06-Results/21 - Rem di Horison Cepat]] · [[06-Results/19 - Umur Posisi]] ·
+[[07-Testing/01 - Test Commands]] baris 49 · [[08-Backlog/02 - Epik Alasan Masuk]] §3f ·
+[[Concepts/One-Way Gate]]
+
