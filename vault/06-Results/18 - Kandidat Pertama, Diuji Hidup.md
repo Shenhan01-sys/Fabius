@@ -75,7 +75,7 @@ Supaya tidak ada yang boleh bilang "kamu menguji hal yang sama":
 | kandidat | semua kejadian beli di feed ⑦ yang punya `wp` | kejadian yang sudah lewat gerbang veto `jual_*` (paper_book) |
 | pemilihan | top-5 per siklus 30 menit | separuh volatilitas terendah per hari (budget 24 slot - naik dari 6 pada 29 Sep ±06:00Z SEBELUM satu slot pun dibuka, karena ember harian ini memuat seluruh jendela 05:13Z->17:13Z dan dengan 6/ember n lengan A tidak akan pernah sampai syarat F-D16; ini perubahan biaya, bukan perubahan aturan vonis) |
 | harga masuk | ticker `wp` terakhir sebelum `t` | harga transaksi `tx.p` (kanonis F-D30) |
-| hasil | `wp` median pada t+[15;45] m | `net_bps` yang sudah dinilai paper_book (ongkos + haircut dampak s/L) |
+| hasil | `wp` median pada t+[15;45] m | `net_bps` seperti dicatat `paper_book` - ongkos 59 bps **+ istilah "dampak" yang satuannya baru diketahui salah ±600x** (F-D46; lihat kotak sebelum §5) |
 | kontrol | acak sesama kandidat siklus itu | **lengan `vol-tinggi` pada jam, feed, dan gerbang yang sama** |
 | volatilitas | `pstdev` return dari ≤40 baris `wp` terakhir | sama (`vol_sebelum()` disamakan, lihat catatan di bawah) |
 
@@ -139,6 +139,16 @@ keadaan kalau hasilnya jelek:
    alat itu yang berlaku, tiga syarat serentak, dan kedua mean negatif membuat syarat (2) hampir
    pasti jatuh. Kalau itu yang terjadi, tulisannya begini: *aturan volatilitas rendah tidak
    menghasilkan harapan positif di data yang belum terlihat* - bukan "hampir" dan bukan "n kecil".
+
+**Satu pengakuan sebelum vonis (F-D46).** Blok spesifikasi yang di-sha di §3 menyebut harga
+masuk sebagai "tx.peristiwa + haircut dampak s/L". Kata "haircut" di situ kini
+diketahui mengukur ±600x terlalu kecil (size BNB dibagi liq USD), dan **blok itu tidak kami
+koreksi** - mengganti penggaris di tengah uji terkunci adalah cara paling halus untuk
+memenangkan uji itu. Kotak ini ada di luar blok supaya sha-nya tetap utuh dan pembacanya tetap
+tahu: **E9 membandingkan dua lengan dengan penggaris yang sama-sama terlalu murah.** Itu berarti
+vonisnya berbicara soal *pilihan posisi*, bukan soal harapan yang bisa diambil. Kalau E9 lolos
+sekalipun, angka buku yang sama menyebut varian dampaknya (tercatat +75,9 / satuan-dibetulkan
+−715,7 / hanya-liq-sah −87,8 bps) - dan itu ditulis di halaman ini, bukan di slide.
 
 ## 5. Hasil
 

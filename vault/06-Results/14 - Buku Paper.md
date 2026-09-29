@@ -90,6 +90,13 @@ bukan di niat:
 
 Vonis malam ini, pada 556 slot (0,01 BNB, 200 posisi/hari paper):
 
+> **⚠ Baca +188,3 dengan satuannya (29 Sep 08:5xZ, F-D46).** Angka di halaman ini adalah
+> *net of* ongkos tetap **59,0 bps** dan **hampir nol dampak**: `haircut()` kami membagi
+> **size dalam BNB** dengan **liq dalam USD** (±600x terlalu kecil), dan desil terbawah
+> `liq` adalah $1/$0. Diukur ulang pada jalur yang sama (`tools/impact_audit.py`, 702 slot):
+> **tercatat +75,9 · satuan-dibetulkan −715,7 · hanya-liq-sah −87,8 bps**.
+> Kodenya sengaja belum diubah karena E9/E12 terkunci pada definisi yang dicatat - tapi nomor
+> tabel di bawah tidak boleh lagi dikutip tanpa kalimat ini.
 | kebijakan | winso mean | CI 95 % | vs control (+188,3) | layak posisi asli? |
 |---|---|---|---|---|
 | `first` (datang dulu, diloloskan gerbang) | +140,9 | [+35,0; +249,2] | di bawah | **BELUM** |

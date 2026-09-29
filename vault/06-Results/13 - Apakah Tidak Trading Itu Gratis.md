@@ -81,7 +81,7 @@ winsorized ±2.000, bootstrap 4.000):
 | **A** tidak pernah masuk ("orang penakut") | 0 | **0,0** (tetap) | 0,0 | 0,0 % | 0 |
 | **B** masuk semua kejadian feed | 1.174 (100 %) | **+82,7** [+5,0; +159,1] | −58,9 | 33,9 % | 97.091 |
 | **C** B + veto kerumunan jual | 1.014 (86,4 %) | **+162,3** [+80,4; +243,0] | −57,0 | 35,7 % | 164.555 |
-| **D** C + keluar saat kerumunan beli | - | **TIDAK DIUJI** (butuh harga per detik saat keluar) | | | |
+| **D** C + keluar saat kerumunan beli | - | **DIUJI 29 Sep (E8) lalu DICABUT (F-D40)**: +316,6 bps vs kontrol "keluar di waktu ACAK pada jendela yang sama" +187,9 (CI atas +357,1); per posisi 64 menang / 50 kalah, p=0,112 -> yang terukur umur posisi | | | |
 
 Pada horison 60 m arahnya sama, lebih kecil: B **+112,1** → C **+153,6** (+41,5 bps/kejadian,
 10,6 % kejadian dilewati).
