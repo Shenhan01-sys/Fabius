@@ -1,0 +1,123 @@
+{
+ "dibuat_utc": "2026-09-29T22:34:56Z",
+ "hasil": [
+  {
+   "ci_atas": [
+    -4.68,
+    1.57
+   ],
+   "hipotesis": "bi5",
+   "layak": false,
+   "mean_net_atas": -61.33,
+   "mean_ret_atas": -1.44,
+   "median_ret_atas": 0.0,
+   "median_ret_bawah": 0.0,
+   "n": 4505,
+   "n_atas": 2253,
+   "n_bawah": 2252,
+   "p_mw": 0.05587,
+   "selisih_mean": -0.51,
+   "syarat": {
+    "1_n": true,
+    "2_median_ci": false,
+    "3_mw": false,
+    "4_net_of_cost": false
+   }
+  },
+  {
+   "ci_atas": [
+    -5.4,
+    0.71
+   ],
+   "hipotesis": "bi1",
+   "layak": false,
+   "mean_net_atas": -58.67,
+   "mean_ret_atas": -2.24,
+   "median_ret_atas": 0.0,
+   "median_ret_bawah": 0.0,
+   "n": 4505,
+   "n_atas": 2253,
+   "n_bawah": 2252,
+   "p_mw": 0.23407,
+   "selisih_mean": -2.11,
+   "syarat": {
+    "1_n": true,
+    "2_median_ci": false,
+    "3_mw": false,
+    "4_net_of_cost": false
+   }
+  },
+  {
+   "ci_atas": [
+    -5.55,
+    0.6
+   ],
+   "hipotesis": "bi20",
+   "layak": false,
+   "mean_net_atas": -70.11,
+   "mean_ret_atas": -2.39,
+   "median_ret_atas": 0.0,
+   "median_ret_bawah": 0.0,
+   "n": 4505,
+   "n_atas": 2253,
+   "n_bawah": 2252,
+   "p_mw": 0.19081,
+   "selisih_mean": -2.42,
+   "syarat": {
+    "1_n": true,
+    "2_median_ci": false,
+    "3_mw": false,
+    "4_net_of_cost": false
+   }
+  },
+  {
+   "ci_atas": [
+    -4.65,
+    0.89
+   ],
+   "hipotesis": "mi20",
+   "layak": false,
+   "mean_net_atas": -26.85,
+   "mean_ret_atas": -1.74,
+   "median_ret_atas": 0.0,
+   "median_ret_bawah": 0.0,
+   "n": 4505,
+   "n_atas": 2253,
+   "n_bawah": 2252,
+   "p_mw": 0.2031,
+   "selisih_mean": -1.12,
+   "syarat": {
+    "1_n": true,
+    "2_median_ci": false,
+    "3_mw": false,
+    "4_net_of_cost": false
+   }
+  },
+  {
+   "ci_atas": [
+    -5.66,
+    0.13
+   ],
+   "hipotesis": "util20",
+   "layak": false,
+   "mean_net_atas": -59.49,
+   "mean_ret_atas": -2.62,
+   "median_ret_atas": 0.0,
+   "median_ret_bawah": 0.0,
+   "n": 4505,
+   "n_atas": 2253,
+   "n_bawah": 2252,
+   "p_mw": 0.45852,
+   "selisih_mean": -2.88,
+   "syarat": {
+    "1_n": true,
+    "2_median_ci": false,
+    "3_mw": false,
+    "4_net_of_cost": false
+   }
+  }
+ ],
+ "pasangan": 4505,
+ "spec_sha256": "0xeba3e0c510cb8470961f9b94b7cc68f490d5aa41c849c6b14baba6cd81cdebe2",
+ "umur_jam": 12.95
+}

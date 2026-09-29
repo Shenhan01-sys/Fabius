@@ -191,6 +191,13 @@ sekunder (semua GAGAL, tidak ada yang lolos BH alpha 0,10):
    util20 selisih -3,23 p=0,443
 ```
 
+**Reproduksi 22:3xZ sesudah `book_prereg.py` diberi dukungan dua ujian (E16/E25):** vonisnya tetap
+**GAGAL**, tapi angkanya bergeser karena jendela 12 jam-nya bertambah tua - jangkar n=537 → **567**
+(selisih +1,45 → **+1,47**, net +0,03 → **+0,14**), kabar n=3.718 → **3.938** (selisih −0,95 →
+**−0,33**). Bukan kontradiksi: E16 adalah pembacaan pada **21:46:56Z**, dan itu tertulis di kepalanya.
+Yang tidak boleh dilakukan seseorang sekarang adalah mengambil salah satu dari dua angka itu tanpa
+jamnya - itu persis penyakit yang baru kubunuh di F-D68.
+
 ## Kelompok terpisah - dan inilah alasan clauses itu ada di spesifikasi
 
 Spesifikasi E16 mewajibkan jangkar likuid dilaporkan **terpisah** dari simbol kabar. Saat cetakan

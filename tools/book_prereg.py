@@ -89,6 +89,40 @@ cadence_batas : ~200 s/simbol dari loop ⑦; E11 mengukur kabar hidup ±2 menit,
 """
 
 
+SPESIFIKASI_E25 = """E25 - buku order sebagai prediktor, atas frame yang diperluas DAN jendela non-overlap.
+
+sumber_teori  : builder (29 Sep), dari trader yang dia hormati: 'total variasi harga beli - jual'
+warisan       : E16 GAGAL 29 Sep 21:46:56Z pada 25 simbol (bi5 selisih -0,72 bps, p=0,060; BH alpha
+                0,10 nol lulus). Keputusan F-D53 melarang frame E16 diubah di tengah jendelanya, jadi
+                pelebaran itu menjadi UJIAN BARU dengan kunci sendiri - bukan E16 yang dibaca ulang.
+perubahan_dari_E16 : (1) frame: daftar pantau ⑩ diperluas ke 40 simbol kabar teratas (irisan ⑦ x venue,
+                         diukur 22:2xZ: 102 simbol irisan) + 3 jangkar yang selalu direkam perekam;
+                     (2) jendela non-overlap (P66, ditulis SEBELUM kunci dipasang): jarak antar
+                         snapshot dalam satu simbol terukur median 244 d pada horison 300 d, sehingga
+                         99,7 % pasangan E16 beririsan (deflasi n efektif ~1,23x). E25 hanya
+                         mengambil snapshot yang berjarak >= horison dari snapshot terpilih terakhir.
+hipotesis_primer : kuantil-atas `bi5` (imbalance kuantitas 5 level) menghasilkan return-ahead
+                   5 menit lebih tinggi dari kuantil-bawah, pada simbol yang sama
+hipotesis_sekunder : bi1, bi20, mi20, util20 - masing-masing diuji, Benjamini-Hochberg alpha 0,10
+return_ahead  : 10000 * (mid(t+300s) - mid(t)) / mid(t), mid dari snapshot berikutnya yang
+                |t' - t - 300s| <= 150s; kalau tidak ada -> TIDAK DIHITUNG, bukan nol
+biaya         : dikurangi setengah spread (bps) pada snapshot t - syarat (4) vonis adalah
+                net-of-cost, bukan gross
+perhitungan   : HANYA snapshot dengan detik > t_kunci; jangkar likuid (BTC/ETH/SOL) dilaporkan
+                TERPISAH dari simbol kabar - menggabungkannya akan menyembunyikan bentuknya
+vonis_layak   : (1) n >= 40 DAN (2) median > 0 DAN CI bawah bootstrap 4000 (seed 20260929) > 0
+                DAN (3) Mann-Whitney satu arah atas-vs-bawah p < 0,05 DAN (4) mean net-of-cost > 0
+kalau_kecil   : 'BELUM BISA DIUJI' - ambang tidak diturunkan, horison tidak diperpanjang diam-diam
+kalau_gagal   : buku order ditutup sebagai jalur prediksi pada cadence kami, untuk kedua kalinya,
+                dan pada frame yang lebih luas; TIDAK dibalik jadi 'contra-imbalance' tanpa kunci baru
+kalau_layak   : yang boleh dikatakan adalah 'imbalance memprediksi pada cadence 5 menit di frame 40
+                simbol' - BUKAN 'Fabius bisa trading': E24 menunjukkan masuk kita tidak di atas acak,
+                dan E12 tetap satu-satunya perilaku yang lulus prospectif
+cadence_batas : ~244 s/simbol terukur; E11 mengukur kabar hidup +-2 menit, jadi uji ini tetap tidak
+                bisa memalsukan versi CEPAT dari teori - hanya versi lambatnya
+"""
+
+
 def w(x):
     return max(-WINS, min(WINS, x))
 
@@ -97,11 +131,35 @@ def iso(t):
     return time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime(t))
 
 
-def pasang_kunci():
-    if os.path.exists(LOCK):
-        d = json.load(io.open(LOCK, encoding="utf-8"))
-        raise SystemExit("kunci sudah dipasang %s (%s) - dipasang ulang = hipotesis baru, itu "
-                         "halaman baru" % (d.get("dibuat_utc"), d.get("spec_sha256")))
+UJIAN = {
+    "E16": {"lock": os.path.join(ROOT, "decisions", "prereg-book-lock.json"),
+            "spec": lambda: SPESIFIKASI, "halaman":
+                "vault/06-Results/22 - Buku Order, Terkunci Lebih Dulu.md",
+            "non_overlap": False},
+    "E25": {"lock": os.path.join(ROOT, "decisions", "prereg-book2-lock.json"),
+            "spec": lambda: SPESIFIKASI_E25, "halaman":
+                "vault/06-Results/29 - Buku Order, Frame Baru.md",
+            "non_overlap": True},
+}
+
+
+def cfg(nama):
+    if nama not in UJIAN:
+        raise SystemExit("ujian '%s' tidak dikenal - yang ada: %s. Satu ujian = satu berkas kunci = "
+                         "satu sha; tidak ada kunci yang boleh ditimpa"
+                         % (nama, ", ".join(sorted(UJIAN))))
+    return UJIAN[nama]
+
+
+
+def pasang_kunci(nama="E16"):
+    c = cfg(nama)
+    spec = c["spec"]()
+    if os.path.exists(c["lock"]):
+        d = json.load(io.open(c["lock"], encoding="utf-8"))
+        raise SystemExit("kunci %s sudah dipasang %s (%s) - dipasang ulang = hipotesis baru, itu "
+                         "halaman baru" % (nama, d.get("dibuat_utc"), d.get("spec_sha256"))
+                         [:18])
     if not os.path.exists(BUKU):
         raise SystemExit("perekam ⑨ belum pernah jalan (%s belum ada) - pasang perekam dulu, "
                          "kunci tidak perlu data, tapi alatnya perlu tahu bedanya"
@@ -109,21 +167,25 @@ def pasang_kunci():
     t = int(time.time())
     out = {"dibuat_utc": iso(t), "t_kunci": t, "t_kunci_iso": iso(t), "umur_jam_min": UMUR_JAM_MIN,
            "n_min": N_MIN, "horizon_detik": HORIZON_DTK, "primer": PRIMER,
-           "sekunder": SEKUNDER,
-           "spesifikasi": "vault/06-Results/22 - Buku Order, Terkunci Lebih Dulu.md",
-           "spek_teks": SPESIFIKASI,
-           "spec_sha256": "0x" + hashlib.sha256(SPESIFIKASI.encode()).hexdigest()}
-    json.dump(out, io.open(LOCK, "w", encoding="utf-8", newline="\n"), indent=1, sort_keys=True)
-    print("kunci E16 dipasang %s | spec %s | vonis boleh dibaca mulai %s"
-          % (out["dibuat_utc"], out["spec_sha256"][:18], iso(t + UMUR_JAM_MIN * 3600)))
+           "sekunder": SEKUNDER, "non_overlap": c["non_overlap"], "ujian": nama,
+           "spesifikasi": c["halaman"], "spek_teks": spec,
+           "spec_sha256": "0x" + hashlib.sha256(spec.encode()).hexdigest()}
+    json.dump(out, io.open(c["lock"], "w", encoding="utf-8", newline="\n"), indent=1, sort_keys=True)
+    print("kunci %s dipasang %s | spec %s | non_overlap %s | vonis boleh dibaca mulai %s"
+          % (nama, out["dibuat_utc"], out["spec_sha256"][:18], c["non_overlap"],
+             iso(t + UMUR_JAM_MIN * 3600)))
 
 
-def baca_kunci():
-    if not os.path.exists(LOCK):
-        raise SystemExit("tidak ada %s - aturan tanpa kunci adalah opini" % os.path.basename(LOCK))
-    lk = json.load(io.open(LOCK, encoding="utf-8"))
+def baca_kunci(nama="E16"):
+    c = cfg(nama)
+    if not os.path.exists(c["lock"]):
+        raise SystemExit("tidak ada %s - aturan tanpa kunci adalah opini"
+                         % os.path.basename(c["lock"]))
+    lk = json.load(io.open(c["lock"], encoding="utf-8"))
     assert "0x" + hashlib.sha256(lk["spek_teks"].encode()).hexdigest() == lk["spec_sha256"], \
         "SPESIFIKASI DIUBAH SETELAH DIKUNCI"
+    assert lk["spek_teks"] == c["spec"](), ("spesifikasi aktif alat ini berbeda dari yang di-sha untuk "
+                                           "%s - dua ujian tidak boleh saling menimpa teks" % nama)
     halaman = os.path.join(ROOT, *(lk["spesifikasi"].strip().lstrip("/")).split("/"))
     assert os.path.exists(halaman), "halaman spesifikasi hilang: %s" % lk["spesifikasi"]
     assert lk["spek_teks"].rstrip() in io.open(halaman, encoding="utf-8",
@@ -157,15 +219,30 @@ def muat(t_kunci=None):
     return per, tolak
 
 
-def pasangan(per, horizon=HORIZON_DTK, tolerance=150):
+def pasangan(per, horizon=HORIZON_DTK, tolerance=150, non_overlap=False):
+    """non_overlap (P66/E25): jendela return tidak boleh bertumpang tindih dalam satu simbol.
+
+    Terukur 29 Sep: cadence ⑨ median 244 d sementara horison 300 d, jadi 99,7 % pasangan E16
+    beririsan dan n efektif ~1,23x lebih kecil dari n yang tercetak. Aturan ini ditulis SEBELUM
+    kunci E25 dipasang, bukan ditambal setelah hasilnya dilihat.
+    """
     out = []
     for sym, rows in per.items():
-        for i, r in enumerate(rows):
+        bebas = -10 ** 15
+        i = 0
+        while i < len(rows):
+            r = rows[i]
+            if non_overlap and r["detik"] < bebas:
+                i += 1
+                continue
             tgt = r["detik"] + horizon
             j = min(range(len(rows)), key=lambda k: abs(rows[k]["detik"] - tgt))
             if abs(rows[j]["detik"] - tgt) > tolerance or j <= i:
+                i += 1
                 continue
+            bebas = rows[j]["detik"]
             sp = r.get("spread_bps")
+            i += 1
             out.append({"sym": sym, "detik": r["detik"],
                         "ret_bps": round(10000.0 * (rows[j]["mid"] - r["mid"]) / r["mid"], 2),
                         "ret_net": round(10000.0 * (rows[j]["mid"] - r["mid"]) / r["mid"]
@@ -244,6 +321,10 @@ def bh(res):
 def utama():
     ap = argparse.ArgumentParser()
     ap.add_argument("--lock", action="store_true")
+    ap.add_argument("--kunci-nama", default="E16", choices=sorted(UJIAN),
+                    help="E16 = jendela asli (kunci 09:37:45Z, sudah divonis); "
+                         "E25 = frame 40 simbol + jendela NON-OVERLAP (P66) - berkas "
+                         "kuncinya sendiri, tidak menimpa yang lama")
     ap.add_argument("--status", action="store_true")
     ap.add_argument("--self-test", action="store_true")
     ap.add_argument("--tanpa-umur", action="store_true")
@@ -251,8 +332,8 @@ def utama():
     if a.self_test:
         return self_test()
     if a.lock:
-        return pasang_kunci()
-    lk = baca_kunci()
+        return pasang_kunci(a.kunci_nama)
+    lk = baca_kunci(a.kunci_nama)
     jam = (time.time() - lk["t_kunci"]) / 3600.0
     semua, t1 = muat(None)
     pasca, t2 = muat(lk["t_kunci"])
@@ -267,7 +348,7 @@ def utama():
         print("\nBELUM SAH - kurang %.1f jam. Tidak ada angka yang dicetak sebagai vonis."
               % (lk["umur_jam_min"] - jam))
         return
-    ps = pasangan(pasca)
+    ps = pasangan(pasca, non_overlap=cfg(a.kunci_nama)["non_overlap"])
     # Komposisi dicetak SELALU, termasuk sebelum matang: jendela E16 tidak homogen karena daftar
     # pantau baru dibetulkan 09:5xZ (F-D47) - jadi "siapa yang diukur" bukan catatan kaki.
     dari = {}

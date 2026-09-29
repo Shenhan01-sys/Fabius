@@ -1,0 +1,20 @@
+{
+ "dibuat_utc": "2026-09-29T22:29:37Z",
+ "horizon_detik": 300,
+ "n_min": 40,
+ "non_overlap": true,
+ "primer": "bi5",
+ "sekunder": [
+  "bi1",
+  "bi20",
+  "mi20",
+  "util20"
+ ],
+ "spec_sha256": "0x8353a2984b403393c4ac1b0646aae53deb4f94481fb962d0412d29118753d7ba",
+ "spek_teks": "E25 - buku order sebagai prediktor, atas frame yang diperluas DAN jendela non-overlap.\n\nsumber_teori  : builder (29 Sep), dari trader yang dia hormati: 'total variasi harga beli - jual'\nwarisan       : E16 GAGAL 29 Sep 21:46:56Z pada 25 simbol (bi5 selisih -0,72 bps, p=0,060; BH alpha\n                0,10 nol lulus). Keputusan F-D53 melarang frame E16 diubah di tengah jendelanya, jadi\n                pelebaran itu menjadi UJIAN BARU dengan kunci sendiri - bukan E16 yang dibaca ulang.\nperubahan_dari_E16 : (1) frame: daftar pantau \u2469 diperluas ke 40 simbol kabar teratas (irisan \u2466 x venue,\n                         diukur 22:2xZ: 102 simbol irisan) + 3 jangkar yang selalu direkam perekam;\n                     (2) jendela non-overlap (P66, ditulis SEBELUM kunci dipasang): jarak antar\n                         snapshot dalam satu simbol terukur median 244 d pada horison 300 d, sehingga\n                         99,7 % pasangan E16 beririsan (deflasi n efektif ~1,23x). E25 hanya\n                         mengambil snapshot yang berjarak >= horison dari snapshot terpilih terakhir.\nhipotesis_primer : kuantil-atas `bi5` (imbalance kuantitas 5 level) menghasilkan return-ahead\n                   5 menit lebih tinggi dari kuantil-bawah, pada simbol yang sama\nhipotesis_sekunder : bi1, bi20, mi20, util20 - masing-masing diuji, Benjamini-Hochberg alpha 0,10\nreturn_ahead  : 10000 * (mid(t+300s) - mid(t)) / mid(t), mid dari snapshot berikutnya yang\n                |t' - t - 300s| <= 150s; kalau tidak ada -> TIDAK DIHITUNG, bukan nol\nbiaya         : dikurangi setengah spread (bps) pada snapshot t - syarat (4) vonis adalah\n                net-of-cost, bukan gross\nperhitungan   : HANYA snapshot dengan detik > t_kunci; jangkar likuid (BTC/ETH/SOL) dilaporkan\n                TERPISAH dari simbol kabar - menggabungkannya akan menyembunyikan bentuknya\nvonis_layak   : (1) n >= 40 DAN (2) median > 0 DAN CI bawah bootstrap 4000 (seed 20260929) > 0\n                DAN (3) Mann-Whitney satu arah atas-vs-bawah p < 0,05 DAN (4) mean net-of-cost > 0\nkalau_kecil   : 'BELUM BISA DIUJI' - ambang tidak diturunkan, horison tidak diperpanjang diam-diam\nkalau_gagal   : buku order ditutup sebagai jalur prediksi pada cadence kami, untuk kedua kalinya,\n                dan pada frame yang lebih luas; TIDAK dibalik jadi 'contra-imbalance' tanpa kunci baru\nkalau_layak   : yang boleh dikatakan adalah 'imbalance memprediksi pada cadence 5 menit di frame 40\n                simbol' - BUKAN 'Fabius bisa trading': E24 menunjukkan masuk kita tidak di atas acak,\n                dan E12 tetap satu-satunya perilaku yang lulus prospectif\ncadence_batas : ~244 s/simbol terukur; E11 mengukur kabar hidup +-2 menit, jadi uji ini tetap tidak\n                bisa memalsukan versi CEPAT dari teori - hanya versi lambatnya\n",
+ "spesifikasi": "vault/06-Results/29 - Buku Order, Frame Baru.md",
+ "t_kunci": 1790720977,
+ "t_kunci_iso": "2026-09-29T22:29:37Z",
+ "ujian": "E25",
+ "umur_jam_min": 12
+}

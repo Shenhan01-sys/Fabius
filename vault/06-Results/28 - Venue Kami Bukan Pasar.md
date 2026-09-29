@@ -209,6 +209,62 @@ karena ia memakai spread median 0,04 bps dari level teratas, bukan persebaran pe
 Belum terukur (masih P60 utuh): MARSCOIN/ZEC/DOGE/LINK tidak ada di ⑨, jadi hanya 3 dari 5 simbol HIDUP
 yang bisa dibaca bukunya; menambah daftar itu adalah P54, sesudah E16 divonis.
 
+## 10. Diukur ulang 29 Sep 22:31-22:32Z - dan angka E27 bergerak, yang membongkar alatnya sendiri
+
+Langkah P54 menyuruhku mengukur ulang dua hal yang tidak terkunci dan menuliskannya sebagai koreksi,
+bukan penimpaan. Ini hasilnya - dan isinya lebih banyak tentang **alat** daripada tentang pasar.
+
+**E20 (`tools/perp_liveness.py`, artefak `decisions/e20-perp-liveness-20260929T223147Z.json`):**
+
+```text
+kabar beli 24 jam        13.293 -> 15.034 kejadian (1.172 -> 1.201 simbol)
+reachable ASET            5,86 % -> 7,41 %  (41 -> 45 simbol; 779 -> 1.114 kabar)
+reachable PASANGAN        2,26 % -> 2,16 %  (301 -> 324 kabar)
+kelas                   HIDUP 5 / TIPIS 17 / MATI 17  ->  HIDUP 8 / TIPIS 17 / MATI 19
+HIDUP                     MARSCOIN, ZEC, DOGE, ASTER, LINK
+                       -> MARSCOIN, AI, ZEC, DOGE, SOON, ASTER, SPCXUSD1, LINK
+```
+
+Yang berubah bukan pasarnya sendirian - jendela 24 jam **bergeser**, dan kelas ikut bergeser bersamanya:
+`AIUSDT` naik dari 66,3 bps spread menjadi nol-volume 9,5 % / 861 harga berbeda seharian (TIPIS →
+**HIDUP**), dan `SOON`/`SPCXUSD1` masuk. Kelas `MATI` membesar 17 → 19.
+
+**E27 (`tools/gate_bump.py`, artefak `decisions/e27-gate-bump-20260929T223206Z.json`) - dan inilah
+yang harus ditulis dengan tangan gemetar:**
+
+```text
+                     21:15Z                         22:32Z
+n                    31                             31 (0 hilang)
+@5 m  asli/placebo   +2,0 /  -7,4                   -9,8 / -12,2
+@30m  asli/placebo   -3,2 /  -3,4                  +15,1 / -36,0
+berpasangan 5-30 m   -9,0 bps | 14M/17K | p=0,763  -29,4 bps | 9M/22K | p=0,995
+```
+
+Delapan puluh menit, n yang sama, satu-satunya yang berubah adalah **deret harga yang dipakai
+mendefinisikan populasinya**. Angka +2,0 jadi −9,8; p=0,763 jadi p=0,995.
+
+**Kesimpulan yang kucabut dan yang tetap berdiri.**
+
+- **Dicabut sebagai besaran:** dua tabel E27 di §8 tidak lagi boleh dikutip sebagai "efek di venue
+  hidup = +2,0 bps". Yang bertahan adalah kalimat kualitatifnya: efek pada horison menit di venue
+  pembanding berada dalam **orde ±10 bps** - di bawah 59 bps ongkos round-trip kami - dan tidak
+  pernah bergerak searah dengan yang dibutuhkan klaim "bump-nya ada, venue kami yang beku". Kalau
+  seseorang butuh angka tunggal untuk kutipan, angka yang jujur adalah **rentang**, bukan titik.
+- **Kebobolan alat yang kunyatakan terang-terangan:** `gate_bump.py` (dan `perp_bump.py`) mendefinisikan
+  populasinya sebagai "simbol yang kelasnya HIDUP **saat ini dijalankan**". Kelas itu dihitung dari
+  jendela 24 jam yang bergulir, jadi **satu percobaan yang sama bisa menguji dua kumpulan kejadian yang
+  berbeda**. Itulah sebabnya E27 bergerak 12 bps dalam 80 menit tanpa ada yang mengubah kodenya.
+  Perbaikan masuk **P67**: kunci daftar simbol di waktu-kunci (ditulis ke artefak kunci), bukan
+  diturunkan dari kelas saat runtime.
+- **Yang tetap tidak berubah dari halaman ini:** §3 (buku beku di venue kami), §7 (venue pembanding
+  lebih hidup pada kontrak yang sama), §9 (kedalaman nol dalam ±10 bps pada 5 dari 26 simbol), dan
+  tabel tiga dugaan di §8 - kelimanya sudah diukur dengan alat yang salah satu di antaranya baru saja
+  ketahuan tidak stabil, jadi angka titik mana pun dari halaman ini wajib disebut bersama jam
+  pembuatannya.
+
+Lihat juga: `00-Overview/03 - Decisions.md` F-D68 · [[08-Backlog/01 - Backlog]] P67 ·
+halaman 22 §6 (non-overlap E25 adalah reaksi terhadap penyakit yang sama: jendela yang bergeser).
+
 ## 6. Yang berubah karena ini
 
 - Keputusan: **F-D56** (E20), **F-D57** (parser & dua angka reachable), **F-D61** (yang mati bukan kutipan, tapi buku dalam 10 bps), **F-D59** (venue pembanding lebih hidup - dugaan 'nasib long-tail' dibantah), **F-D60** (bump tetap mati di venue hidup - dugaan 'venue terlalu beku' dibantah), **F-D58** (E26, bump tidak

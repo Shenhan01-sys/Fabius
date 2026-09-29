@@ -2143,3 +2143,36 @@ tidak boleh dibaca apa pun. Diperbaiki di kunci berikutnya dengan jendela **non-
 **Status proyek setelah ini:** lima uji prospectif selesai (E9, watch, E22, E24, E16) - **semua
 GAGAL**; satu-satunya yang lulus adalah **E12** (aturan keluar). Teori builder yang terakhir
 (E25, frame lebih luas + non-overlap) sudah boleh dijalankan: **P54 22:25Z**.
+
+## F-D68 - Kelas simbol dari jendela yang bergulir tidak boleh mendefinisikan populasi uji: E27 bergerak +2,0 -> −9,8 bps dalam 80 menit tanpa satu baris kode berubah · 29 Sep 2026 22:32Z
+
+**Yang memanggil.** Prompt P54 menyuruhku mengukur ulang `perp_liveness.py` + `gate_bump.py` dan
+menuliskannya sebagai koreksi terlihat. Kuikuti, dan hasilnya bukan konfirmasi - melainkan alatku
+sendiri yang ketahuan.
+
+**Yang terukur.** E20: jendela 24 jam bergeser, `AIUSDT` naik TIPIS → HIDUP (nol-volume 66,3 % → 9,5 %),
+`SOON`/`SPCXUSD1` masuk, HIDUP 5 → 8, MATI 17 → 19, reachable aset 5,86 % → 7,41 %. E27: dengan
+n sama-sama 31 dan nol perubahan kode, mean @5 m **±2,0 → −9,8**, placebo −7,4 → −12,2, berpasangan
+5m-vs-30m median **−9,0 → −29,4**, p **0,763 → 0,995**.
+
+**Penyebabnya satu baris rancangan.** `gate_bump.py`/`perp_bump.py` mendefinisikan populasinya
+sebagai "simbol yang kelasnya HIDUP *saat alatnya dijalankan*". Kelas itu datang dari jendela 24 jam
+yang bergulir. Jadi satu "uji" yang sama bisa menjumpai dua kumpulan kejadian yang berbeda pada jam
+yang berbeda - dan angka yang keluar bukan fungsi dari pasar, tapi dari **kapan aku menekan tombol**.
+Ini penyakit yang sama dengan yang kubunuh tadi malam di dua bentuk lain: F-D54 (dua rejim satu alat),
+F-D57 (penyebut yang menjawab pertanyaan lain), dan E16→E25 (jendela tumpang tindih).
+
+**Keputusan.** (a) Dua tabel E27 di halaman 28 §8 **dicabut sebagai besaran titik** - yang boleh
+dipakai adalah pernyataan rentang ("orde ±10 bps, di bawah ongkos 59 bps, tidak pernah searah dengan
+klaim"), dan halaman 28 §10 menuliskannya sebagai koreksi terlihat, bukan penimpaan; (b) **P67**:
+populasi uji dikunci - daftar simbol (dan jendela kelasnya) ditulis ke artefak kunci pada saat
+`--lock`, dan alat pembaca menolak jalan kalau daftar itu tidak cocok; (c) E25 sudah lebih dulu
+memperbaiki sebagian penyakit yang sama lewat aturan **non-overlap** yang ditulis sebelum kuncinya
+dipasang - itu polanya: **yang menentukan populasinya harus dibekukan sebelum datanya ada, bukan
+diturunkan dari keadaan saat perhitungan**.
+
+**Yang tidak kupakai sebagai pembelaan.** Bahwa hasil pertama (21:15Z) "kebetulan lebih mendukung
+narasi kami". Ia tidak lebih benar; ia hanya lebih dulu. Dan bahwa venue pembanding ternyata tetap
+tidak memanggil bump - itu tetap kesimpulan tiga alat (E20/E26/E27) yang arahnya sama; yang berubah
+hanya titik angkanya, dan titik itulah yang tidak boleh kami jual.
+
