@@ -23,6 +23,19 @@ kandidat dalam siklus 30 menit**) menghasilkan satu anomali:
    (tujuh fitur lain: -403,3 .. -199,2 - semuanya di bawah acak)
 ```
 
+> **⚠ DICABUT 29 Sep ±05:35Z - tabel di bawah adalah satu UNDIAN, dan undiannya menang
+> karena kebetulan.** `topk_test` memecah seri dengan pengacak; mean "top-5 menurut fitur" adalah
+> variabel acak, tapi versi alatnya membandingkan **satu** tarikan itu terhadap persentil-97,5
+> distribusi acak. Setelah pembandangnya dibuat setara (40 pengulangan pemilihan, vonis memakai
+> MEDIAN seed): **tidak ada satu pun dari 10 fitur yang melewati acak-siklus**. `vol_rendah`
+> median **+112,7** vs CI atas acak **+137,5**, sebar seed **−30,7 … +299,7**, dan hanya **33 %**
+> seed yang melewati kontrolnya. Run: `python -X utf8 tools/topk_test.py --draws 300`
+> (artefak `decisions/topk-test-20260929T053349Z.json`).
+>
+> Ini kelas kesalahan yang sama dengan F-D32 (control mempromosikan dirinya sendiri) dan F-D37
+> (MW salah urut), dan ketahuan karena alat berikutnya (`uji_kombinasi`/E10) minta angka yang sama
+> dengan pembanding yang berbeda. [[00-Overview/03 - Decisions]] F-D39.
+
 Angka itu **tidak boleh dijual**, dan alasannya aritmatika, bukan selera: sepuluh fitur diuji
 sekaligus, jadi peluang ada satu "menang" walau tidak ada efek apa pun ≈ `10 × 0,025 = 0,25`.
 Koreksi Bonferroni atas uji satu arah 2,5 % membuat `vol_rendah` **tidak signifikan**. Yang kita
@@ -86,6 +99,23 @@ python -X utf8 tools/vol_ab.py --tanpa-umur   # bacaan sementara, dicetak dengan
 Job `paper-book` (cron `23 */4`) membuka kedua lengan tiap empat jam; slot sebelum `t_kunci` adalah
 prefill dan **tidak ikut vonis**. Kalau pada saat matang `n < 20`: vonisnya `BELUM BISA DIUJI`,
 ambang tidak boleh diturunkan, dan itu bukan "tidak ada efek" ([[Concepts/Unmeasured Is Not Clean]]).
+
+## 4b. Yang berubah setelah pembandingnya dibetulkan (29 Sep ±05:35Z)
+
+E9 **tetap berjalan** - kuncinya tidak digeser, karena data setelah 05:13:25Z tetap data yang belum
+pernah kita lihat, dan membatalkan uji hanya karena hasilnya jadi kurang menarik adalah One-Way Gate
+versi pengebirian. Yang berubah adalah **prior-nya**: dari "kandidat pertama" jadi "tidak ada
+candidate sama sekali di dalam sampel". Dua lengan dibuka terus sampai 17:13:25Z; kalauvonisnya
+n<20, tertulis "BELUM BISA DIUJI", dan itu jawaban yang sah, bukan kegagalan.
+
+E10 (kebijakan utuh: pemilihan × aturan keluar, pada posisi yang sama) bahkan **tidak konsisten pada
+dirinya sendiri**: dengan outcome `net` (tahan sampai horison) `vol_rendah` +145,4 vs CI atas acak
++86,7 (80 % seed); dengan outcome `net_exit` (aturan keluar E8 dipasang) +164,0 vs +169,0 (47 % seed) -
+**gugur**. Sementara pembanding yang dipakai E7 sendiri (`net`, CI atas **+137,5** pada run yang sama)
+menaruhnya di **bawah** acak dengan 33 % seed. Tiga nilai CI atas untuk kontrol yang sama
+(+86,7 / +137,5 / +169,0) mengukur satu hal: **pita Monte-Carlo kami lebih lebar daripada selisih yang
+ingin kita klaim.** Tidak ada satu pun dari ketiganya boleh dijual; lihat
+[[00-Overview/03 - Decisions]] F-D39.
 
 ## 5. Hasil
 

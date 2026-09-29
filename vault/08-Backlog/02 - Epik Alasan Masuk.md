@@ -165,6 +165,12 @@ pada pool yang sangat miring, bukan gaji. Perilaku ini sudah jadi alat: `tools/e
 (tiga pemicu: kerumunan datang, harga kini ≥ puncak 60 menit pertama, jaring +4 %; `TAK ADA DATA`
 kalau ticker basi - tidak diperlakukan sebagai "bersih").
 
+**Koreksi yang wajib dibaca sebelum kalimat di atas:** ketika pembandingnya dibuat setara
+(mean = median dari 40 pengulangan pemilihan, bukan satu undian), **E7 tidak menyisakan pemenang
+apa pun**: `vol_rendah` +112,7 vs CI atas acak +137,5, hanya 33 % seed di atas kontrol. Vonis E7
+sekarang: **TIDAK ADA fitur yang melewati acak-siklus** (F-D39). E9 jadi satu-satunya jalur tersisa
+ke jawaban "kapan boleh masuk", dan dia sudah terkunci sebelum koreksi ini - kuncinya TIDAK digeser.
+
 **E9 - kunci keempat dipasang 29 Sep 05:13Z** sebelum satu byte data replikasi ada:
 [[06-Results/18 - Kandidat Pertama, Diuji Hidup]], `spec_sha256=0x9d70c580…`, matang **17:13:25Z**,
 `tools/vol_ab.py`. Dua lengan dibuka hidup-hidup oleh job `paper-book` (`vol-rendah` vs

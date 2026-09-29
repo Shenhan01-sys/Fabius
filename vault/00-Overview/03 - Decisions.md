@@ -956,3 +956,59 @@ lagi dicetak "di atas control" (sebelumnya itu terjadi begitu saja saat acaknya 
 **Konsekuensi untuk halaman produk.** Yang boleh ditulis hari ini cuma: *"kami punya satu kandidat
 alas masuk, ia sedang diuji pada data yang belum terjadi, dan vonisnya jatuh 17:13Z."* Bukan
 "Fabius sekarang tahu kapan masuk". 
+
+## F-D39 — "kandidat pertama" E7 ternyata satu undian yang menang: pembanding dibuat setara, pemenangnya hilang · 29 Sep 2026 05:33Z
+
+**Yang terbit lebih dulu.** `tools/topk_test.py` (E7) melaporkan `vol_rendah` **+132,9 bps** melawan
+acak-siklus −134,3 dengan **CI atas acak +116,1** - angka pertama di proyek ini yang melewati kontrolnya
+sendiri. Kunci E9 dipasang 05:13:25Z atas dasar itu, dan epik menuliskannya sebagai "kandidat".
+
+**Yang salah bukan fitur dan bukan data - yang salah pembandingnya.** Tie-break pemilihan diacak (itu
+perbaikan yang benar, F-D38), tapi konsekuensinya tidak ikut dibayar: begitu tie-break acak, **mean
+"top-5 menurut fitur X" juga variabel acak**, sementara alatnya membandingkan **satu** tarikan terhadap
+persentil-97,5 distribusi kontrol. Itu lotre di mana kita cuma menyebut nomor yang keluar.
+
+**Setelah vonis diambil sebagai median 40 pengulangan pemilihan**
+(`decisions/topk-test-20260929T053349Z.json`, `python -X utf8 tools/topk_test.py --draws 300`):
+
+| fitur | mean (median seed) | CI atas acak | sebar seed | % seed di atas | vonis |
+|---|---|---|---|---|---|
+| `vol_rendah` | **+112,7** | **+137,5** | −30,7 … +299,7 | **33 %** | **di bawah acak** |
+| `usd_ge_1k` | −32,8 | +99,0 | −274,4 … +168,9 | 12 % | di bawah acak |
+| `di_atas_puncak60` | −60,3 | +113,2 | −344,0 … +153,7 | 3 % | di bawah acak |
+| `sepi_total` | −105,4 | +108,3 | −460,4 … +124,6 | 5 % | di bawah acak |
+| enam sisanya | −197,1 … −438,4 | — | — | 0 % | di bawah acak |
+
+**Vonis E7 sekarang: TIDAK ADA satu pun dari 10 fitur yang melewati acak-siklus.** Tidak ada kandidat
+di dalam sampel.
+
+**E10 dan godaan berikutnya.** Kebijakan utuh (pemilihan × aturan keluar, pada POSISI YANG SAMA) bahkan
+tidak konsisten pada dirinya sendiri:
+
+| outcome | mean `vol_rendah` | CI atas acak | % seed di atas | vonis |
+|---|---|---|---|---|
+| `net` (tahan sampai horison) | +145,4 | +86,7 | **80 %** | tampak "di atas acak" |
+| `net_exit` (E8: keluar saat kerumunan beli) | +164,0 | +169,0 | **47 %** | **di bawah acak** |
+
+Satu fitur, satu jendela, satu berkas: lolos kalau hasilnya didefinisikan satu cara, gugur dengan
+definisi lain - sementara pembanding yang dipakai E7 sendiri (`net`, CI atas **+137,5** pada run yang
+sama) menaruhnya di bawah acak dengan 33 % seed. Tiga nilai CI atas untuk kontrol yang sama
+(+86,7 / +137,5 / +169,0) mengukur satu hal: **pita Monte-Carlo kami lebih lebar daripada selisih yang
+ingin kita klaim.** Tidak ada satu pun boleh dijual.
+
+**E9 tidak dibatalkan.** Kunci 05:13:25Z tetap di tempatnya, datanya tetap belum pernah terlihat, dan
+membatalkan uji karena prior-nya melemah sama dengan memindahkan gol saat bola datang. Yang berubah
+hanya kalimat yang boleh ditulis sebelum 17:13:25Z: bukan "kandidat kami sedang diuji" tanpa catatan,
+tapi "di dalam sampel tidak ada fitur yang melewati kontrolnya; satu-satunya jawaban yang tersisa
+adalah data yang belum terjadi".
+
+**Aturan baru.** Untuk semua pemilihan teracak: **laporkan distribusi hasil pemilihan, bukan satu
+tarikan**, dan vonis hanya atas median distribusi itu - dipasang di `ringkas_topk(..., seeds=40)` dan
+`uji_kombinasi()` di `tools/topk_test.py`. Ini korban **keempat** alat kami sendiri dalam empat hari
+(F-D30 harga masuk beku → F-D32 control mempromosikan dirinya → F-D37 MW salah urut → F-D39 satu
+undian disebut hasil), dengan pola yang selalu sama: **angka masuk vault sebelum pembandingnya
+diaudit.**
+
+**Terkait:** [[06-Results/18 - Kandidat Pertama, Diuji Hidup]] · [[08-Backlog/02 - Epik Alasan Masuk]]
+§3d · [[07-Testing/01 - Test Commands]] baris 38/42 · [[Concepts/One-Way Gate]]
+

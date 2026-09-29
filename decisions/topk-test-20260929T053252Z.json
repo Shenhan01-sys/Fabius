@@ -1,0 +1,273 @@
+{
+ "batas_jelajah_utc": "2026-09-29T02:59:06Z",
+ "dibuat_utc": "2026-09-29T05:32:52Z",
+ "e10": [
+  {
+   "acak_ci_atas": 121.4,
+   "di_atas_acak": false,
+   "fitur": "ACAK (kontrol)",
+   "mean": -129.7,
+   "median": -125.0,
+   "n": 95,
+   "outcome": "net",
+   "sebar_seed": null
+  },
+  {
+   "acak_ci_atas": 121.4,
+   "di_atas_acak": false,
+   "fitur": "vol_rendah",
+   "frac_seed_di_atas_acak": 0.47,
+   "mean": 106.4,
+   "median": 106.2,
+   "n": 95,
+   "outcome": "net",
+   "sebar_seed": [
+    -74.9,
+    349.9
+   ]
+  },
+  {
+   "acak_ci_atas": 121.4,
+   "di_atas_acak": false,
+   "fitur": "kluster_beli",
+   "frac_seed_di_atas_acak": 0.0,
+   "mean": -355.5,
+   "median": -356.3,
+   "n": 95,
+   "outcome": "net",
+   "sebar_seed": [
+    -641.3,
+    -150.4
+   ]
+  },
+  {
+   "acak_ci_atas": 121.4,
+   "di_atas_acak": false,
+   "fitur": "usd_ge_1k",
+   "frac_seed_di_atas_acak": 0.0,
+   "mean": -76.6,
+   "median": -82.1,
+   "n": 95,
+   "outcome": "net",
+   "sebar_seed": [
+    -308.1,
+    91.9
+   ]
+  },
+  {
+   "acak_ci_atas": 121.4,
+   "di_atas_acak": false,
+   "fitur": "di_bawah_puncak60",
+   "frac_seed_di_atas_acak": 0.07,
+   "mean": -30.1,
+   "median": -30.8,
+   "n": 95,
+   "outcome": "net",
+   "sebar_seed": [
+    -149.7,
+    155.0
+   ]
+  },
+  {
+   "acak_ci_atas": 211.2,
+   "di_atas_acak": false,
+   "fitur": "ACAK (kontrol)",
+   "mean": -26.7,
+   "median": -29.9,
+   "n": 95,
+   "outcome": "net_exit",
+   "sebar_seed": null
+  },
+  {
+   "acak_ci_atas": 211.2,
+   "di_atas_acak": false,
+   "fitur": "vol_rendah",
+   "frac_seed_di_atas_acak": 0.45,
+   "mean": 188.8,
+   "median": 187.7,
+   "n": 95,
+   "outcome": "net_exit",
+   "sebar_seed": [
+    15.9,
+    321.7
+   ]
+  },
+  {
+   "acak_ci_atas": 211.2,
+   "di_atas_acak": false,
+   "fitur": "kluster_beli",
+   "frac_seed_di_atas_acak": 0.0,
+   "mean": -112.5,
+   "median": -116.4,
+   "n": 95,
+   "outcome": "net_exit",
+   "sebar_seed": [
+    -324.5,
+    121.6
+   ]
+  },
+  {
+   "acak_ci_atas": 211.2,
+   "di_atas_acak": false,
+   "fitur": "usd_ge_1k",
+   "frac_seed_di_atas_acak": 0.0,
+   "mean": -59.5,
+   "median": -61.0,
+   "n": 95,
+   "outcome": "net_exit",
+   "sebar_seed": [
+    -307.3,
+    128.2
+   ]
+  },
+  {
+   "acak_ci_atas": 211.2,
+   "di_atas_acak": false,
+   "fitur": "di_bawah_puncak60",
+   "frac_seed_di_atas_acak": 0.0,
+   "mean": 1.7,
+   "median": 1.4,
+   "n": 95,
+   "outcome": "net_exit",
+   "sebar_seed": [
+    -200.3,
+    182.8
+   ]
+  }
+ ],
+ "e7": [
+  {
+   "acak_ci_atas": 117.7,
+   "acak_mean": -129.6,
+   "di_atas": false,
+   "h": "kluster_beli",
+   "mean": -425.7,
+   "median": -751.1,
+   "n": 95,
+   "p_ge_500": 26.3,
+   "siklus": 19
+  },
+  {
+   "acak_ci_atas": 131.7,
+   "acak_mean": -112.2,
+   "di_atas": false,
+   "h": "maker_ge3",
+   "mean": -310.4,
+   "median": -324.3,
+   "n": 95,
+   "p_ge_500": 29.5,
+   "siklus": 19
+  },
+  {
+   "acak_ci_atas": 131.2,
+   "acak_mean": -123.3,
+   "di_atas": false,
+   "h": "spread_ok",
+   "mean": -356.6,
+   "median": -635.0,
+   "n": 95,
+   "p_ge_500": 28.4,
+   "siklus": 19
+  },
+  {
+   "acak_ci_atas": 111.6,
+   "acak_mean": -122.2,
+   "di_atas": false,
+   "h": "usd_ge_1k",
+   "mean": -134.0,
+   "median": -123.4,
+   "n": 95,
+   "p_ge_500": 36.8,
+   "siklus": 19
+  },
+  {
+   "acak_ci_atas": 140.8,
+   "acak_mean": -135.8,
+   "di_atas": false,
+   "h": "vol_tinggi",
+   "mean": -26.6,
+   "median": -67.3,
+   "n": 95,
+   "p_ge_500": 38.9,
+   "siklus": 19
+  },
+  {
+   "acak_ci_atas": 133.4,
+   "acak_mean": -134.2,
+   "di_atas": true,
+   "h": "vol_rendah",
+   "mean": 209.1,
+   "median": -52.3,
+   "n": 95,
+   "p_ge_500": 34.7,
+   "siklus": 19
+  },
+  {
+   "acak_ci_atas": 105.3,
+   "acak_mean": -139.8,
+   "di_atas": false,
+   "h": "di_atas_puncak60",
+   "mean": -41.2,
+   "median": -77.2,
+   "n": 95,
+   "p_ge_500": 34.7,
+   "siklus": 19
+  },
+  {
+   "acak_ci_atas": 116.1,
+   "acak_mean": -131.6,
+   "di_atas": false,
+   "h": "di_bawah_puncak60",
+   "mean": -112.4,
+   "median": -146.0,
+   "n": 95,
+   "p_ge_500": 32.6,
+   "siklus": 19
+  },
+  {
+   "acak_ci_atas": 93.9,
+   "acak_mean": -130.4,
+   "di_atas": false,
+   "h": "sepi_total",
+   "mean": -97.8,
+   "median": -64.8,
+   "n": 95,
+   "p_ge_500": 33.7,
+   "siklus": 19
+  },
+  {
+   "acak_ci_atas": 128.6,
+   "acak_mean": -130.4,
+   "di_atas": false,
+   "h": "banyak_jual",
+   "mean": -328.2,
+   "median": -86.6,
+   "n": 95,
+   "p_ge_500": 26.3,
+   "siklus": 19
+  }
+ ],
+ "e8": {
+  "delta_persentil_5_95": [
+   -2000.0,
+   2000.0
+  ],
+  "keluar_dini_kalah": 45,
+  "keluar_dini_menang": 69,
+  "mean_winso_delta": 316.6,
+  "median_delta_bps": 116.5,
+  "posisi_dipantau": 122
+ },
+ "horizon_menit": 30,
+ "k": 5,
+ "kejadian": 403,
+ "ongkos_bps_rt": 59.0,
+ "pool_mean_winso": -183.7,
+ "sensor": {
+  "n_oleh_batas": 1516,
+  "tanpa_wp_keluar": 393,
+  "tanpa_wp_masuk": 6518,
+  "token_tanpa_wp": 11406
+ },
+ "sha": "0xbca2d1fdae3d139d217521978b27ac237dca4a982bef56648146400481bfec5c"
+}
