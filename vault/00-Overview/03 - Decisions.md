@@ -1752,14 +1752,14 @@ harga kejadian, dan dari harga satu menit kemudian (umur keputusan nyata kami, F
 asal-mula digeser acak 30-90 m pada deret yang sama.
 
 ```text
-@2  m n=15 | asli mean +2,0 / median +5,0  | masuk +1 m  -3,8 | placebo  +0,7
-@5  m n=15 | asli mean -7,3 / median +4,7  | masuk +1 m  -9,3 | placebo  +6,9
-@30 m n=15 | asli mean -34,4 / median +6,9 | masuk +1 m -33,4 | placebo  -9,6
-berpasangan 5 m vs 30 m, posisi yang sama: median delta -0,5 bps | menang 7 kalah 8 | p=0,69638
+versi pertama (cache 24 jam, n=15 - DIBATALKAN P59, jangan dikutip):
+  @2 m +2,0 | @5 m -7,3 | @30 m -34,4 | placebo +0,7 / +6,9 / -9,6 | 5m-vs-30m -0,5 bps p=0,696
+versi dipakai (cache 3 hari sejak P59, n=31 dari 33 kejadian):
+  @2 m -2,6 | @5 m +15,2 | @30 m +18,1 | placebo +3,3 / +10,7 / -8,1
+  berpasangan 5 m vs 30 m: median +14,8 bps | menang 16 kalah 15 | p=0,50000
 ```
 
-Placebo **di atas** yang asli di horison 5 m, tanda-uji p=0,70 - dan itu belum pernah terjadi di proyek
-ini untuk klaim unggulannya. E11 (+192,7 → +202,6 bps, placebo datar −180) tetap sahih **sebagai
+Pada kedua versi jawabannya sama: **tidak ada bump yang bisa dibedakan dari nol** - placebo di atas yang asli di versi pertama (+6,9 vs −7,3), dan hanya 4,5 bps di bawahnya di versi kedua (+10,7 vs +15,2) dengan tanda-uji **p=0,50**. Yang belum pernah terjadi di proyek ini untuk klaim unggulannya adalah yang kedua: placebo yang nyaris tak terbedakan dari sinyal. E11 (+192,7 → +202,6 bps, placebo datar −180) tetap sahih **sebagai
 pengukuran deret harga spot BSC**. Yang gugur adalah kalimat penghubungnya: "karena itu agen kami bisa
 mengambil dua menit pertama".
 
@@ -1771,7 +1771,18 @@ menyamar sebagai hasil.
 
 **Keputusan.** (a) Halaman 28 jadi rumah angka ini; (b) klaim "edge dua menit" di submission **tidak
 boleh** lagi berdiri tanpa menyebut bahwa ia terukur di substrate yang bukan tempat kami bertransaksi;
-(c) **P61**: venue pembanding diukur dengan alat yang sama, bukan diharapkan; (d) n=15/39 satu hari,
+(c) **P61**: venue pembanding diukur dengan alat yang sama, bukan diharapkan; (d) n=31/39 satu hari,
 jadi ini **bukan vonis** - tapi cukup untuk memindahkan seluruh argumen "tinggal eksekusi" dari tabel
 fitur ke pertanyaan yang benar: **di mana pasar kami benar-benar hidup?**
+
+**Addendum 14:1xZ (P59) - keputusan ini hampir berdiri di atas angka yang salah karena cache-ku pendek.**
+Versi pertama E26 menilai **15 dari 32** kejadian: sisanya terbuang karena cache 1 m hanya memuat 24 jam,
+sehingga jendela ±3 m di ujung seri tidak punya bar. Setelah cache diperpanjang ke 3 hari, 31 dari 33
+kejadian dinilai dan **mean @5 m berpindah tanda**: −7,3 → **+15,2**. Kesimpulan keputusan ini tidak
+berubah (placebo +10,7, p=0,50 - tetap tidak ada bump), tapi besaran yang kutulis di badan F-D58 sudah
+kedaluwarsa, dan itu yang addendum ini koreksi secara terlihat.
+
+Aturannya naik satu tingkat: **panjang jendela pengukuran adalah bagian dari spesifikasi, bukan detail
+cache.** E20 karena itu kupatok explicit (`suhu(deret, jam=24)`) supaya cache yang memanjang tidak bisa
+mengubah kelas sebuah simbol diam-diam - dan assert barunya membuktikan pemotongan itu bekerja.
 

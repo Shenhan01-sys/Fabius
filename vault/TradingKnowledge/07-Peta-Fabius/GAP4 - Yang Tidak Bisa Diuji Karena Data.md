@@ -105,7 +105,7 @@ menit tanpa transaksi). Untuk horison 2-5 menit, gap-nya bukan jumlah baris - ba
 simbol - gap-nya **isi baris**. Tidak ada backtest yang bisa menutupi deret beku; yang bisa dilakukan
 adalah mengukur dulu, lalu membatasi klaim ke simbol yang hidup (5) atau pindah venue (**P61**).
 
-**(b) Jendela yang bolong kini terukur, bukan diasumsikan.** E26 kehilangan **17 dari 32** kejadian HIDUP
+**(b) Jendela yang bolong kini terukur, bukan diasumsikan - **dan sudah ditutup 14:1xZ (P59)**:** E26 kehilangan **17 dari 32** kejadian HIDUP
 karena cache 1 m hanya 24 jam (jendela ±3 m di ujung seri tidak punya bar). Itu bukan "sedikit data", itu
 kehilangan yang harus dicetak - dan karena itu dicetak, ia jadi **P59**, bukan jadi n yang mengecil tanpa
 sebab (F-D16).

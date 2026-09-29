@@ -295,8 +295,9 @@ kecil dari yang kami kira. Kabar 24 jam yang sampai ke venue kami **2,26 %** (pa
 41 simbol reachable itu, **hanya 5** yang harga perp-nya bergerak pada resolusi menit (F-D56).
 
 Di kelima simbol hidup itulah E26 menguji klaim inti epik ini - "beli sesudah whale, jual di menit
-ke-5" - dan hasilnya **nol terhadap placebo**: @5 m mean −7,3 vs placebo +6,9; berpasangan 5m-vs-30m
-median −0,5 bps, p=0,696 (n=15 jendela lengkap dari 32). Di kelas TIPIS median return-nya **tepat 0,0**
+ke-5" - dan hasilnya **nol terhadap placebo**: @5 m mean +15,2 vs placebo +10,7;
+berpasangan 5m-vs-30m median +14,8 bps, menang 16 kalah 15, **p=0,50** (n=31 dari 33 sesudah P59;
+dengan cache 24 jam mean-nya −7,3 - kesimpulannya sama, besarannya tidak). Di kelas TIPIS median return-nya **tepat 0,0**
 di semua horison, karena deretnya beku - itu bukan hasil nol, itu tidak ada pengukuran (F-D58).
 
 Bukan vonis akhir (satu hari, n kecil, klines bukan kedalaman), tapi **batas atas yang terukur**. Daftar

@@ -43,6 +43,7 @@ JENDELAPAS = 3 * MIN
 H = (2, 5, 30)
 MASUK_TELAT_MENIT = 1        # umur keputusan nyata kami: median 58-61 d (F-D54) -> bulatkan 1 m
 DEDUPE_MENIT = 30
+HARI_CACHE = 3   # P59: 24 jam kejadian + 30 m horison + tepi jendela membuat cache 1 hari tidak cukup
 
 
 def w(x):
@@ -116,13 +117,29 @@ def jalan(kelas_ok, draws):
     if len(ev) < 5:
         print("   n terlalu kecil untuk statement apa pun - ini BELUM BISA DIUJI, bukan nol")
         return {"vonis": "BELUM BISA DIUJI", "n": len(ev)}
-    seri = {}
-    for y in {e["y"] for e in ev}:
-        p = os.path.join(BR.CACHE, "%s_1m.json" % peta.get(y, y + "USDT"))
+    seri, ambil_ulang = {}, []
+    for y in sorted({e["y"] for e in ev}):
+        sym = peta.get(y, y + "USDT")
+        p = os.path.join(BR.CACHE, "%s_1m.json" % sym)
+        deret = []
         if os.path.exists(p):
-            seri[y] = json.load(io.open(p, encoding="utf-8"))["bars"]
+            deret = json.load(io.open(p, encoding="utf-8"))["bars"]
+        if len(deret) < int(HARI_CACHE * 1440 * 0.9):
+            try:
+                deret, _ = BR.fetch(sym, "1m", HARI_CACHE, verbose=False)
+                if deret:
+                    BR.save(sym, "1m", deret, {"pages": (len(deret) // 1500) + 1})
+                    ambil_ulang.append(sym)
+            except SystemExit as e2:
+                print("   %s gagal diambil ulang: %s" % (sym, e2))
+                deret = []
+        if deret:
+            seri[y] = deret
         else:
-            print("   cache %s tidak ada - lewati (KEHILANGAN, bukan nol)" % y)
+            print("   %s: tidak ada deret 1 m - KEHILANGAN, bukan nol" % sym)
+    if ambil_ulang:
+        print("   cache diperpanjang ke %d hari untuk %d simbol (P59): %s"
+              % (HARI_CACHE, len(ambil_ulang), ", ".join(ambil_ulang)))
     pakai = [e for e in ev if e["y"] in seri]
     print("   kejadian dengan deret perp 1 m: %d dari %d (symbol %d)"
           % (len(pakai), len(ev), len({e["y"] for e in pakai})))

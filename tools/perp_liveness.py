@@ -46,10 +46,18 @@ KELAS = {"HIDUP": "layak diuji horison menit", "TIPIS": "ujinya harus lebih panj
          "MATI": "bukan pasar - deretnya beku"}
 
 
-def suhu(deret):
-    """Ukuran 'hidup' satu deret 1 m: volume nol, harga berbeda, dan run beku terpanjang."""
+def suhu(deret, jam=24):
+    """Ukuran 'hidup' satu deret 1 m pada `jam` jam TERAKHIR, bukan pada seluruh berkas cache.
+
+    E20 mendefinisikan kelasnya pada jendela 24 jam. Kalau cache-nya lebih panjang (P59 mengambil
+    3 hari supaya jendela E26 tidak bolong), pemotongan harus terjadi DI SINI, supaya klasifikasi
+    tidak berubah hanya karena berkasnya memanjang - itu penggantian penggaris di tengah pengukuran
+    (F-D54).
+    """
     if not deret:
         return {"bar": 0}
+    if jam and len(deret) > jam * 60:
+        deret = deret[-jam * 60:]
     v = [float(x.get("v") or 0) for x in deret]
     c = [float(x.get("c") or 0) for x in deret]
     nol = 100.0 * sum(1 for x in v if x <= 0) / len(v)
@@ -147,13 +155,15 @@ def jalan(limit, hemat):
             p = os.path.join(BR.CACHE, "%s_1m.json" % sym)
             if os.path.exists(p) and time.time() - os.path.getmtime(p) < 6 * 3600:
                 deret = json.load(io.open(p, encoding="utf-8"))["bars"]
-            else:
+                if len(deret) < int(HARI * 1440 * 0.9):
+                    deret = []        # cache lebih pendek dari jendela yang dijanjikan -> ambil ulang
+            if not deret:
                 deret, _ = BR.fetch(sym, "1m", HARI, verbose=False)
                 if deret and not hemat:
                     BR.save(sym, "1m", deret, {"pages": 1})
         except SystemExit as e:
             print("   %-14s gagal: %s" % (sym, e))
-        m = suhu(deret)
+        m = suhu(deret, jam=24)
         k = kelas(m)
         rows.append({"simbol": sym, "kabar_beli": n, "kelas": k, **m})
         print("   %-16s kabar %-4d | bar %-4s | nol-vol %-6s%% | harga berbeda %-5s | beku maks %-5s m | %s"
@@ -172,7 +182,7 @@ def jalan(limit, hemat):
         print("   yang HIDUP: " + ", ".join("%s(%d)" % (r["simbol"], r["kabar_beli"]) for r in hit[:12]))
     print("   batas yang TIDAK boleh dilewati: klines berisi transaksi yang terjadi, bukan kedalaman "
           "buku; 'HIDUP' di sini = layak diuji pada horison menit, BUKAN layak dieksekusi besar.")
-    d = {"dibuat_utc": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()), "hari": HARI,
+    d = {"dibuat_utc": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()), "hari": HARI, "jendela_klasifikasi_jam": 24,
          "ambang": {"nol_volume_maks_persen": AMBANG_HIDUP_0VOL, "harga_berbeda_min": AMBANG_HIDUP_HARGA,
                     "beku_panik_menit": BEKU_PANIK},
          "simbol_irisan": len(rows), "kabar_beli_irisan": tot_inter,
@@ -206,6 +216,11 @@ def self_test():
     assert mt["beku_menit_maks"] <= 3 and mt["nol_volume_persen"] > 60, mt
     assert mm["beku_menit_maks"] > 100 and mm["harga_berbeda"] <= 2, (mt, mm)
     assert kelas(suhu([])) == "TIDAK-ADA-DATA"
+    # jendela tetap: cache 3 hari tidak boleh mengubah kelas yang sama (F-D54)
+    panjang = [b(1_000_000 + i * 60000, 1.0 + i * 0.0007, 5000.0 + i)
+               for i in range(3 * 1440)]
+    mp = suhu(panjang, jam=24)
+    assert mp["bar"] == 1440 and kelas(mp) == "HIDUP", mp
     print("self-test E20 OK: tiga kelas terpisah (HIDUP/TIPIS/MATI) | run beku terukur | "
           "deret kosong -> TIDAK-ADA-DATA, bukan '0 %'")
 

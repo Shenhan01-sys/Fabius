@@ -1,0 +1,40 @@
+{
+  "batas": "satu hari; n=33; tanpa kedalaman buku; harga perp != harga isi kami; EKSPLORASI, belum dikunci",
+  "dibuat_utc": "2026-09-29T14:11:52Z",
+  "horison": {
+    "2": {
+      "P_ge_500": 0.0,
+      "mean_winso": -2.6,
+      "median": 2.1,
+      "n": 31,
+      "placebo_mean": 3.3,
+      "telat1m_mean": -4.2,
+      "telat1m_median": -4.2
+    },
+    "5": {
+      "P_ge_500": 0.0,
+      "mean_winso": 15.2,
+      "median": 2.1,
+      "n": 31,
+      "placebo_mean": 10.7,
+      "telat1m_mean": 11.4,
+      "telat1m_median": 0.7
+    },
+    "30": {
+      "P_ge_500": 3.2,
+      "mean_winso": 18.1,
+      "median": 6.9,
+      "n": 31,
+      "placebo_mean": -8.1,
+      "telat1m_mean": 9.8,
+      "telat1m_median": -7.8
+    }
+  },
+  "kelas": [
+    "HIDUP"
+  ],
+  "masuk_telat_menit": 1,
+  "n_kejadian": 33,
+  "perintah": "python -X utf8 tools/perp_bump.py",
+  "winsor_bps": 2000.0
+}
