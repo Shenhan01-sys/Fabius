@@ -142,7 +142,11 @@ jobs:
             # P17: perpanjang pantauan harga 2 jam ke token yang sudah keluar dari daftar panas.
             # Tanpa ini 80,6 % kejadian tidak punya harga keluar (diukur tools/flow_cluster_test.py).
             # Sengaja TIDAK boleh mematikan rantai: kalau DexScreener mati, perekam utama jalan terus.
-            python -u universe/record_watch_prices.py --watch-min 120 --max-batches 6 \
+            # --max-batches 40 = sampai ~1.200 alamat/siklus. Bukan demi angka yang lebih besar:
+            # dengan daftar pantau 400-900 token, 6 batch (180 alamat) membuat sisanya TIDAK PERNAH
+            # DITANYA - dan itu terbaca sebagai 'pool mati' oleh tools/presence_ledger.py. Yang ditanya
+            # harus seluas yang kita simpulkan.
+            python -u universe/record_watch_prices.py --watch-min 120 --max-batches 40 \
               || echo "watchPrices gagal di siklus $K - lanjut"
             git add universe/wallet-flow.jsonl universe/wallet-flow-manifest.txt \
                     universe/watch-prices.jsonl universe/watch-prices-manifest.txt

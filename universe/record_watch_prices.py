@@ -154,6 +154,12 @@ def catatan_ketiadaan(t_now, chunk, got, code):
 
 
 def build_rows(t_now, toks, max_batches, sleep_s=0.4):
+    """Baris termasuk `wpc`: berapa yang KAMI TANYA siklus ini.
+
+    Tanpa ini, 'tidak dijawab' tidak bisa dibedakan dari 'tidak ditanya' - dan dengan
+    daftar pantau ratusan token sementara batas batch lama 180 alamat, separuh dari apa
+    yang kuanggap 'pool mati' sebenarnya cuma antrian yang kepotong.
+    """
     """Kembalikan (baris, tidak_terjawab, panggilan, hilang_tercatat, batch_gagal)."""
     rows, unresolved, calls = [], set(toks), 0
     hilang, butek = [], 0
@@ -197,6 +203,10 @@ def build_rows(t_now, toks, max_batches, sleep_s=0.4):
             unresolved.discard(tk)
         time.sleep(sleep_s)
     rows.extend(hilang)
+    # apa yang KAMI TANYA siklus ini dicatat, supaya "tidak dijawab" bisa dibedakan dari
+    # "tidak ditanya" (dengan 6 batch, separuh daftar pantau tidak pernah ditanya sama sekali)
+    rows.append({"k": "wpc", "t": t_now, "n_tanya": len(toks), "n_batch": calls,
+                 "max_batches": max_batches, "schema": SCHEMA})
     rows.sort(key=lambda r: (r["t"], r.get("tk") or ""))
     return rows, sorted(unresolved), calls, len(hilang), butek
 
@@ -289,22 +299,35 @@ def main():
               % (len(rows), json.dumps(rows[0], ensure_ascii=False)[:200]))
         return
 
+    def kunci(d):
+        # Semua jenis baris ikut ter-guard: `wpc`/`wpv` tidak punya `tk` dan versi pertama
+        # memanggil r["tk"] membabi buta -> KeyError -> siklus melapor 'mencatat' padahal nol
+        # baris tertulis.
+        return (d.get("k"), d.get("tk"), d.get("t"), d.get("why"), d.get("http"),
+                d.get("n_tanya"))
+
     seen = set()
     if os.path.exists(OUT):
         for ln in io.open(OUT, encoding="utf-8"):
             ln = ln.strip()
             if ln and not ln.startswith("#"):
-                d = json.loads(ln)
-                seen.add((d.get("tk"), d.get("t")))
+                try:
+                    seen.add(kunci(json.loads(ln)))
+                except ValueError:
+                    continue
     with io.open(OUT, "a", encoding="utf-8", newline="\n") as fh:
         wrote = 0
+        jenis = {}
         for r in rows:
-            if (r["tk"], r["t"]) in seen:
+            k = kunci(r)
+            if k in seen:
                 continue
             fh.write(json.dumps(r, sort_keys=True, ensure_ascii=False) + "\n")
+            seen.add(k)
             wrote += 1
+            jenis[r["k"]] = jenis.get(r["k"], 0) + 1
     write_manifest(int(time.time()))
-    print("ditulis %d baris ke universe/%s" % (wrote, os.path.basename(OUT)))
+    print("ditulis %d baris ke universe/%s -> %s" % (wrote, os.path.basename(OUT), jenis))
 
 
 if __name__ == "__main__":

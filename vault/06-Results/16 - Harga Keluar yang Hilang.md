@@ -42,6 +42,42 @@ Dua jalan keluar yang jujur, dan belum satu pun kita punya:
 2. **Bound yang dilaporkan**: setiap kali menyebut mean, sebut juga `P(ada harga keluar)`. Alat ini
    sudah mencetaknya; sekarang tinggal kewajiban menuliskannya di tiap halaman hasil.
 
+## 2b. Tahap 2: mana yang benar-benar mati, mana yang cuma tidak kami tanya
+
+Bound di §1 masih buta - ia memberi nilai terburuk ke SEMUA kejadian tanpa harga keluar.
+`tools/presence_ledger.py` memisahkan keduanya, dan perjalanannya membuka tiga lapis kesalahanku
+sendiri:
+
+1. **Jendela pantau dipakai sebagai bukti kematian.** Versi pertama menyebut 74 % token HILANG -
+   padahal jendela perekam 120 menit, jadi absen di siklus ke-40 artinya keluar dari DAFTAR KAMI.
+   Aturan diperbaiki: bukti hanya dari siklus di dalam `(last_seen, last_seen + jendela]`.
+2. **Batas batch membuat kami berhenti bertanya sebelum bisa menyimpulkan.** Workflow memanggil
+   `--max-batches 6` = 180 alamat, sementara daftar pantau sudah 400-900 token: sisanya tidak
+   pernah ditanya dan tetap terbaca "venue tidak menjawab". Naik ke 40 batch, dan perekam sekarang
+   menulis `wpc` (berapa yang kami TANYA tiap siklus). Siklus pertama sudah membuktikan bedanya:
+   `n_tanya=147`, terjawab 136.
+3. **Perekam melapor "mencatat" tanpa mencatat.** Guard dedupe memanggil `r["tk"]` buta; baris buku
+   tidak punya `tk` -> `KeyError` -> siklus selesai dengan konsol *kehilangan tercatat 11* sementara
+   berkas tidak bertambah. Ketahuan bukan dari error, tapi dari angka konsol yang tidak muncul di
+   berkas. Guard kini tahan semua jenis baris dan tiap siklus mencetak komposisinya
+   (`{'wpc':1,'wp':136,'wp0':11}`).
+
+Klasifikasi (28 Sep 22:1xZ; 1.439 kejadian lolos veto, harga peristiwa):
+
+| status kehadiran | n | mean winso | median | P(≥+500) |
+|---|---|---|---|---|
+| ADA | 489 | +141,3 | −58,9 | 29,9 % |
+| **HILANG** | 375 | +140,5 | −15,7 | 38,1 % |
+| TIDAK-JELAS (tidak pernah lewat pantau) | 575 | +229,0 | −11,0 | 41,7 % |
+
+**Bound dengan bukti:** 1.064 kejadian teramati (mean **+188,7**) + 375 token HILANG dihitung rugi
+penuh = **−381,7 bps/posisi**. Jadi "+249 di kohort muda" bertahan hanya kalau kita rela berkata
+375 token yang berhenti dijawab venue itu tidak apa-apa.
+
+Yang tersisa sebagai batas: bukti langsung (`answered-no-pair`) baru 8 token sejauh ini - mayoritas
+status HILANG masih **inferensi jendela**. Yang mengubahnya jadi bukti adalah rantai menjalankan
+perekam baru, dan itu butuh commit ini sampai ke default branch.
+
 ## 3. Konsekuensinya untuk tiga kandidat fine-tuning (P32)
 
 - **Volatilitas terealisasi** tetap kandidat terkuat - tapi alasannya berubah: ia satu-satunya fitur
@@ -54,7 +90,8 @@ Dua jalan keluar yang jujur, dan belum satu pun kita punya:
 - Dan yang paling penting: **teknik klasik tidak akan pernah teruji di kohort tempat harapan
   tinggal**, sampai pengukuran keluar diperbaiki. Urutan kerjanya jadi P33 → P32, bukan sebaliknya.
 
-Baca ulang: `python -X utf8 tools/censor_bound.py` · `python -X utf8 tools/censor_bound.py --horizon 60`
+Baca ulang: `python -X utf8 tools/censor_bound.py` · `python -X utf8 tools/censor_bound.py --horizon 60` ·
+`python -X utf8 tools/presence_ledger.py` (buku kehadiran) · `python -X utf8 universe/record_watch_prices.py --watch-min 120 --max-batches 40`
 
 **Terkait:** [[06-Results/15 - Teknikal Klasik Diuji]] · [[06-Results/13 - Apakah Tidak Trading Itu Gratis]] · [[06-Results/04 - Negative Results]] · [[03-Data/D2 - Wallet Flow]] ·
 [[TradingKnowledge/EV4 - Point-in-Time dan Riwayat yang Tidak Bisa Disusulkan]] ·

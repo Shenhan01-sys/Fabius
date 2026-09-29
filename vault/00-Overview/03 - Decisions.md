@@ -846,3 +846,37 @@ ada. Tiga hal yang kupelajari dan harus tertulis:
 [[TradingKnowledge/EV5 - Reproduksibilitas dan Pra-Registrasi]] ·
 [[TradingKnowledge/EV3 - Signifikansi dan Multiple Testing]] ·
 [[08-Backlog/01 - Backlog]] P20/P29/P33/P34
+
+
+## F-D36 — Yang tidak dijawab != yang tidak ditanya != yang mati; dan alat harus membuktikan tulisannya sendiri · 28 Sep 22:1xZ
+
+P33 tahap 2 (`tools/presence_ledger.py`) seharusnya menjawab "berapa dari kejadian tanpa harga
+keluar itu poolnya benar-benar mati". Yang terbuka malah tiga lapis kesalahanku sendiri - dan itu
+menjadi keputusan tentang caranya, bukan cuma tentang hasilnya:
+
+1. **Jendela pantau dipakai sebagai bukti kematian.** Versi pertama menyebut 74 % token HILANG;
+   itu hanya token yang keluar dari daftar pantau 120 menit kami. Aturan diperbaiki: bukti hanya
+   dari siklus dalam `(last_seen, last_seen + jendela]`.
+2. **Batas batch membuat kami berhenti bertanya sebelum bisa menyimpulkan.** `--max-batches 6` =
+   180 alamat per siklus, sementara daftar pantau 400-900 token - sisanya tidak pernah ditanya dan
+   tetap terbaca "venue tidak menjawab". Naik ke 40; dan perekam menulis `wpc` (berapa yang kami
+   TANYA) supaya "tidak ditanya" terbedakan dari "tidak dijawab". Siklus pertama langsung
+   membuktikannya: `n_tanya=147` vs terjawab 136.
+3. **Perekam melapor "mencatat" tanpa mencatat.** Guard dedupe memanggil `r["tk"]` buta; baris buku
+   `wpc`/`wpv` tidak punya `tk` -> `KeyError` -> siklus selesai dengan konsol *kehilangan tercatat
+   11* sementara berkas tidak bertambah apa pun. Kelas yang sama dengan penolakan yang lulus karena
+   perintah salah ketik: **angka yang dicetak alat tidak dihitung sampai ia ada di berkas.** Guard
+   kini tahan semua jenis baris dan tiap siklus mencetak komposisinya.
+
+Angka dengan klasifikasi (1.439 kejadian lolos veto, harga peristiwa): ADA 489 → +141,3 · HILANG
+375 → +140,5 · TIDAK-JELAS 575 → +229,0. **Bound dengan bukti: 1.064 teramati (+188,7) + 375
+HILANG dihitung rugi penuh = −381,7 bps/posisi.** Optimisme kohort muda tidak bertahan di bawah
+asumsi yang jujur.
+
+Yang belum klaim: bukti langsung baru 8 token; mayoritas status HILANG masih inferensi jendela. Yang
+mengubahnya jadi bukti adalah rantai menjalankan perekam baru - butuh commit ini mendarat, bukan
+perhitungan tambahan di atas data yang sama.
+
+**Terkait:** [[06-Results/16 - Harga Keluar yang Hilang]] · [[03-Data/D5 - Record Schemas]] ·
+[[03-Data/D2 - Wallet Flow]] · [[Concepts/Unmeasured Is Not Clean]] ·
+[[08-Backlog/01 - Backlog]] P33/P34/P29 · [[00-Overview/03 - Decisions]] F-D34
