@@ -141,6 +141,17 @@ menguji BTC/ETH/SOL, bukan simbol kabar"* - bukan "imbalance buku tidak bekerja 
 Kunci tidak digeser dan data tidak dibuang: keduanya akan jadi goalpost-moving, dan itu justru yang
 kami hindari sejak halaman 12.
 
+**Status jam (diperbarui 10:0xZ, akan diperbarui lagi sesudah vonis - bukan sebelumnya).** Run 10:0xZ:
+41 snapshot `bd` (14 simbol) + 176 baris `bdx` gagal, dan **hanya BTC/ETH/SOL yang bertambah**
+(10 masing-masing; sisanya 1). Sebabnya mekanis, bukan pasar: rantai ⑦ yang **sedang berjalan**
+melakukan checkout pada 05:00Z, jadi ia memakai kode perekam **versi lama** sampai run berikutnya
+memuat kode yang sudah dibetulkan. Artinya cakupan E16 baru melebar di tengah jendela, dan itu
+justru alasan komposisi dicetak: vonis nanti dibaca bersama `share jangkar`, bukan tanpanya.
+Baris `bdx` lama tidak punya `msg` (kode lama) - itu bukan data yang hilang, itu bukti bahwa
+laporan kegagalan tanpa penyebab tidak bisa dijawab nanti.
+
+
+
 ## 6. Hasil
 
 _kosong sampai umur kunci cukup - dan kekosongan ini bagian dari spesifikasinya._
