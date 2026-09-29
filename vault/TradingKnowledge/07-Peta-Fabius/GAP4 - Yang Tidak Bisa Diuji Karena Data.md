@@ -96,3 +96,20 @@ untuk setiap pernyataan bahwa metode yang terkunci di sini akan berguna setelah 
 **Terkait:** [[GAP5 - Urutan Kerja dan Bayarnya]] · [[GAP3 - Yang Punya Data Tapi Belum Diuji]] ·
 [[QT12 - Stack Data dan Perkakas]] · [[V4 - Order Book dan Liquidity Heatmap]] ·
 [[03-Data/D4 - Dune]]
+
+## Tambahan 29 Sep 13:54Z - satu gap baru, dan satu gap lama ternyata bukan soal volume
+
+**(a) "Data cukup" ≠ "data hidup".** E20 (F-D56) menemukan bahwa dari 41 simbol yang kabar ⑦-nya sampai
+ke venue perp kami, **36 tidak punya harga yang bergerak pada resolusi menit** (kelas MATI median 97,4 %
+menit tanpa transaksi). Untuk horison 2-5 menit, gap-nya bukan jumlah baris - barisnya ada 1.439 per
+simbol - gap-nya **isi baris**. Tidak ada backtest yang bisa menutupi deret beku; yang bisa dilakukan
+adalah mengukur dulu, lalu membatasi klaim ke simbol yang hidup (5) atau pindah venue (**P61**).
+
+**(b) Jendela yang bolong kini terukur, bukan diasumsikan.** E26 kehilangan **17 dari 32** kejadian HIDUP
+karena cache 1 m hanya 24 jam (jendela ±3 m di ujung seri tidak punya bar). Itu bukan "sedikit data", itu
+kehilangan yang harus dicetak - dan karena itu dicetak, ia jadi **P59**, bukan jadi n yang mengecil tanpa
+sebab (F-D16).
+
+**(c) Yang masih menunggu seperti sebelumnya:** kedalaman ⑨ per simbol untuk 5 simbol HIDUP (**P60**),
+dan klines 1 m spot untuk E19/E21. Lihat [[06-Results/28 - Venue Kami Bukan Pasar]].
+

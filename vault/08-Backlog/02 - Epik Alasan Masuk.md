@@ -287,3 +287,24 @@ Kunci untuk yang pertama itu sudah dipasang malam ini: **E24** (`tools/entry_ab.
 Lihat: [[06-Results/26 - Masuk Segar, Terukur Benar]] · [[06-Results/19 - Umur Posisi]] §2b ·
 `00-Overview/03 - Decisions.md` F-D54.
 
+## 3h. F-D56/F-D57/F-D58 (29 Sep 13:54Z) - epik ini akhirnya punya batas atas yang terukur
+
+Dua jam setelah §3g menulis "kecepatan bukan lagi alasan", dua tembok lain diukur dan keduanya lebih
+kecil dari yang kami kira. Kabar 24 jam yang sampai ke venue kami **2,26 %** (pasangan yang sama) /
+**5,86 %** (aset yang sama) - parser daftar kita selama ini membuang 17 dari 584 entri (F-D57). Dan dari
+41 simbol reachable itu, **hanya 5** yang harga perp-nya bergerak pada resolusi menit (F-D56).
+
+Di kelima simbol hidup itulah E26 menguji klaim inti epik ini - "beli sesudah whale, jual di menit
+ke-5" - dan hasilnya **nol terhadap placebo**: @5 m mean −7,3 vs placebo +6,9; berpasangan 5m-vs-30m
+median −0,5 bps, p=0,696 (n=15 jendela lengkap dari 32). Di kelas TIPIS median return-nya **tepat 0,0**
+di semua horison, karena deretnya beku - itu bukan hasil nol, itu tidak ada pengukuran (F-D58).
+
+Bukan vonis akhir (satu hari, n kecil, klines bukan kedalaman), tapi **batas atas yang terukur**. Daftar
+kerja epik ini berubah urutan: (1) **P59** pulihkan jendela yang bolong (17 dari 32 kejadian hilang);
+(2) **P60** baca kedalaman ⑨ untuk 5 simbol HIDUP sebelum FD6 bicara ukuran posisi; (3) **P61** ukur
+venue pembanding dengan alat yang sama, jangan diharapkan; (4) kalau ketiganya tetap nol, pertanyaan
+yang benar bukan "kapan masuk" tapi **"di pasar mana kami punya harga yang hidup"** - dan itu pertanyaan
+produk, bukan pertanyaan backtest.
+
+Lihat: [[06-Results/28 - Venue Kami Bukan Pasar]] · `00-Overview/03 - Decisions.md` F-D56/F-D57/F-D58.
+

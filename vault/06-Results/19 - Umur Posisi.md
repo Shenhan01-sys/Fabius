@@ -101,6 +101,18 @@ margin - itu arsip. Perbaikan P40 (jalur kabar→order) tetap perlu dan sekarang
 tetapi **tidak cukup**: yang harus berubah adalah SUMBERnya (P50).
 
 ## 3. Apa yang TIDAK boleh dibaca dari halaman ini
+> **⚠ KOREKSI KEDUA 29 Sep 13:54Z (F-D56/F-D57/F-D58) - dua tembok di bawah ini berubah, dan
+> yang ketiga muncul.** (a) **"3,1 % kabar ada di token yang bisa kita perdagangkan" adalah ukuran
+> all-time dengan parser yang membuang 17 entri daftar** (`BTCU`, `BTCUSD1`, `SKHYNIXUSD1`, ...): kabar
+> 24 jam yang reachable = **2,26 %** kalau yang dicari pasangan yang persis sama, **5,86 %** kalau yang
+> dicari aset yang sama (F-D57 - dua pertanyaan, jangan ditukar). (b) Yang lebih menentukan: dari 41 simbol
+> reachable, harga perp-nya bergerak pada resolusi menit hanya di **5 simbol** (`tools/perp_liveness.py`);
+> `BNCUSD1`, simbol dengan kabar terbanyak, 96 % menitnya tanpa transaksi dan beku 446 menit (F-D56).
+> (c) Dan di 5 simbol hidup itu, **bump E11 tidak ada di harga perp**: @5 m mean −7,3 vs placebo +6,9,
+> berpasangan 5m-vs-30m median −0,5 bps, p=0,696 (`tools/perp_bump.py`, n=15 dari 32) - F-D58. Tabel §4a
+> `delay` tetap valid sebagai pengukuran **deret spot**; yang tidak lagi berdiri adalah kalimat
+> "karena itu agen kami bisa mengambilnya". Lihat [[06-Results/28 - Venue Kami Bukan Pasar]].
+
 
 - Bukan "Fabius bisa trading". Yang terukur adalah **bump pasca-peristiwa yang meluruh**, dengan
   median +20…+60 bps pada dua horison pertama dan **harapan yang datang dari ekor kanan**

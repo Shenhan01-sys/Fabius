@@ -57,6 +57,7 @@ hasil keluar — koreksi lewat halaman baru, supaya urutannya bisa dipertanggung
 - [[25 - Rem, Terkunci Prospectif]] - E22: untuk pertama kalinya aturan rem ditulis **sebelum** ada datanya (kunci 12:08:15Z saat `kejadian pasca-kunci: 0`). Empat syarat serentak, dua kontrol arah sekaligus (Mann-Whitney + placebo label), dan syarat cakupan + umur baris harga keluar. Vonis 20:08:15Z. Kalau gagal: "rem memperbaiki hasil" turun jadi klaim in-sample - dan itu akan tetap tertulis di halaman ini.
 - [[26 - Masuk Segar, Terukur Benar]] - koreksi besar 29 Sep: umur kabar kami **61 d**, bukan 808 d; **0 dari 58** lengan 5 m rejim lama mengukur masa depan; angka sah pertama n=25: **−519,4 bps**
 - [[27 - Masuk Terpilih vs Masuk Acak]] - E24: kontrol acak dipasang di jalur cepat, kunci 13:19:04Z dengan **0 kejadian pasca-kunci**; yang harus dikalahkan bukan nol (F-D8)
+- [[28 - Venue Kami Bukan Pasar]] - E20/E26: dari 41 simbol reachable hanya **5** yang harga perp-nya bergerak di resolusi menit, dan di 5 itu bump E11 **tidak ada** (placebo di atas yang asli); dua angka reachable dipakai bersama sekarang (2,26 % pasangan vs 5,86 % aset)
   Hasilnya **membantah dugaan saya**: lock bersyarat justru umum (63 % kejadian punya puncak di paruh
   awal yang melewati ambang 2s+i+C) - yang tidak kami punya adalah **resolusi** (pada 5 menit 69 %
   kejadian tidak punya dua baris harga sama sekali), dan stop mengubah bentuk distribusi, bukan drift.

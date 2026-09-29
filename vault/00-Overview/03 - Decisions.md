@@ -1657,7 +1657,7 @@ masuk sebagai penyebab, dan itu belum pernah diisolasi.
 dibangun di atasnya ikut dicabut - bukan disimpan sebagai "sisi negatif". Dan median dari dua rejim
 yang berbeda BUKAN angka: dia pencampuran dua alat.
 
-## F-D55 - Kontrol acak dipasang di jalur cepat, dan masuknya jadi ujian terkunci (E24) - satu nama kunci hampir menimpa ujian 28 Sep · 29 Sep 2026 13:19:04Z
+## F-D55 — Kontrol acak dipasang di jalur cepat, dan masuknya jadi ujian terkunci (E24) - satu nama kunci hampir menimpa ujian 28 Sep · 29 Sep 2026 13:19:04Z
 
 **Kenapa ini perlu.** F-D54 memberi angka masuk pertama yang sah (−519,4 bps, n=25), tapi angka tanpa
 pembanding bukan kesimpulan. Kalau masuk **acak** di menit pertama setelah whale membeli juga memberi
@@ -1690,4 +1690,88 @@ kebetulan lebih muda.
 **Yang tidak boleh terjadi setelah ini:** membaca GAGAL sebagai "VETO justru untung" (dibalik butuh
 kunci baru), atau membaca BELUM BISA DIUJI sebagai teori salah. Dan LAYAK pun belum uang: tembok
 venue 3,1 % (F-D43) dan `i` +245 bps (E21) tetap berdiri.
+
+## F-D56 — Yang terdaftar bukan yang hidup: dari 41 simbol reachable, harga perp hanya bergerak pada resolusi menit di 5 simbol · 29 Sep 2026 13:56Z
+
+**Yang mengukur.** `tools/perp_liveness.py` - 1 m klines 24 jam untuk tiap simbol yang kabar beli ⑦-nya
+ada di venue kami: % menit tanpa transaksi, harga berbeda dalam sehari, run terpanjang harga tidak
+berubah. Kelasnya: **HIDUP 5 / TIPIS 17 / MATI 17** (dari 41; 2 tidak terukur karena klines kosong).
+Isinya bukan pendapat: `BNCUSD1` - simbol dengan kabar **terbanyak** (478 dari 779) - 96,0 % menit tanpa
+transaksi, 41 harga berbeda sehari, beku 446 menit. `GMEUSDT` 99,2 % / beku **679 m**. `CUSDT` 99,6 % /
+671 m. Kelas MATI median 97,4 % menit kosong; kelas TIPIS 77,9 %.
+
+**Angka yang boleh dijual.** Dari 13.293 kabar beli hari ini, yang terjadi pada simbol yang harga
+perp-nya benar-benar hidup di resolusi menit: **26 = 0,20 %**. Bukan 3,1 %, bukan 5,86 % - itu ukuran
+lain (F-D57).
+
+**Kenapa ini mengubah urutan kerja.** Kami seharian memperbaiki cara membaca sinyal (F-D50 → F-D54),
+dan ternyata substrate tempat kami bisa mengirim order sebagian besar **tangga beku**. Pada deret seperti
+ini horison dua menit tidak terukur: bukan karena sinyalnya lemah, tapi karena tidak ada transaksi yang
+bisa menggeser harga. Ini juga menjelaskan kenapa sebagian "hasil" kami selalu terdengar bulat: nol.
+
+**Batas yang kutulis sekaligus.** Klines = transaksi yang terjadi, **bukan** kedalaman buku; "HIDUP"
+berarti layak diuji pada horison menit, bukan layak dieksekusi ukuran besar; dan satu hari data bukan
+sifat pasar. Yang belum: baca ⑨ untuk 5 simbol HIDUP itu (**P60**), dan kurangi kehilangan jendela
+dengan cache 1 m lebih panjang (**P59**).
+
+
+## F-D57 — Parser daftar venue membuang 17 entri: "3,1 % kabar bisa dieksekusi" sekarang punya dua angka, dan keduanya menjawab pertanyaan berbeda · 29 Sep 2026 13:56Z
+
+**Yang terjadi.** `tools/venue_bridge.py` memotong sufiks kuotasi dari `data/aster_symbols.json` dengan
+daftar tetap (`USDT`, `USDC`, `PERP`). Ada 17 dari 584 entri yang tidak cocok: `BTCU`, `BTCUSD1`,
+`ETHUSD1`, `SOLUSD1`, `SKHYNIXUSD1`, `MUUSD1`, `CLUSD1`, ... Parser menghasilkan basis `BTCUSD1` (string
+utuh), jadi kabar "BTC" tidak pernah ketemu dengannya. Efeknya bukan pembulatan: kabar 24 jam yang
+reachable naik dari **301 (2,26 %)** jadi **779 (5,86 %)** begitu basis dibaca dari field `base`.
+
+**Kenapa ini keputusan, bukan bug kecil.** Sepekan ini 3,1 % dipakai sebagai **batas produk** - "kami
+hanya bisa mengambil sebagian kecil kabar". Sekarang ada dua angka dan keduanya sahih untuk pertanyaan
+yang berbeda:
+- **pasangan yang persis sama** dengan yang diberitakan → 2,26 %;
+- **aset yang sama** (BTC spot di BSC ↔ perp BTC) → 5,86 %, dan ini yang relevan kalau agen boleh
+  mengekspresikan pandangan lewat proksi.
+Yang dilarang adalah **memakai yang satu untuk menjawab yang lain**: proksi punya basis risk, funding,
+dan jam trading sendiri - dan untuk kabar memecoin BSC, proksi perp major tidak akan pernah jadi
+perdagangan yang sama.
+
+**Keputusan.** (a) `tools/perp_liveness.py` membaca basis dari field `base` dan mencetak **kedua** angka
+setiap jalan, supaya tidak ada yang mengutip satu tanpa menyebut pertanyaannya; (b) F-D43 tidak dicabut -
+kesimpulannya (venue, bukan sinyal, yang membatasi) justru menguat, tapi angka 3,1 % sekarang berstatus
+"ukuran all-time dengan parser yang membuang 17 entri"; (c) klaim submission tidak boleh memakai 5,86 %
+tanpa kalimat "aset yang sama, bukan pasangan yang sama".
+
+**Yang kutarik untuk cara kerja:** tiap kali sebuah rasio dipakai sebagai batas produk, pertanyaan
+pertama bukan "besok berapa" tapi **"apa definisi pembilang dan penyebutnya, dan pertanyaan mana yang
+ia jawab"**. Angka ini salah bukan karena hitungannya keliru - ia menjawab pertanyaan lain tanpa mengaku.
+
+
+## F-D58 — Bump E11 tidak pindah ke harga perp: nol terhadap placebo, dan di kelas TIPIS mediansya tepat 0,0 di semua horison · 29 Sep 2026 13:56Z
+
+**Uji.** `tools/perp_bump.py` (E26): 32 kejadian buy ⑦ pada simbol kelas HIDUP (dedupe 30 m/simbol,
+24 jam), 15 jendelanya lengkap; horison 2/5/30 m pada **harga perp 1 m**, masuk diukur dua kali - dari
+harga kejadian, dan dari harga satu menit kemudian (umur keputusan nyata kami, F-D54). Placebo =
+asal-mula digeser acak 30-90 m pada deret yang sama.
+
+```text
+@2  m n=15 | asli mean +2,0 / median +5,0  | masuk +1 m  -3,8 | placebo  +0,7
+@5  m n=15 | asli mean -7,3 / median +4,7  | masuk +1 m  -9,3 | placebo  +6,9
+@30 m n=15 | asli mean -34,4 / median +6,9 | masuk +1 m -33,4 | placebo  -9,6
+berpasangan 5 m vs 30 m, posisi yang sama: median delta -0,5 bps | menang 7 kalah 8 | p=0,69638
+```
+
+Placebo **di atas** yang asli di horison 5 m, tanda-uji p=0,70 - dan itu belum pernah terjadi di proyek
+ini untuk klaim unggulannya. E11 (+192,7 → +202,6 bps, placebo datar −180) tetap sahih **sebagai
+pengukuran deret harga spot BSC**. Yang gugur adalah kalimat penghubungnya: "karena itu agen kami bisa
+mengambil dua menit pertama".
+
+**Sensitivitas yang justru lebih penting dari hasilnya.** Pada 39 kejadian di kelas TIPIS, **median
+return = 0,0 bps di @2, @5, dan @30 m** - persis nol, bukan mendekati nol. Deretnya beku, jadi tidak ada
+yang terjadi untuk diukur. Ini bentuk paling bersih dari aturan "unmeasured is not clean", dan ia
+mengingatkan bahwa sebagian "nul" kami selama ini bukan hasil negatif: itu **tidak ada pengukuran** yang
+menyamar sebagai hasil.
+
+**Keputusan.** (a) Halaman 28 jadi rumah angka ini; (b) klaim "edge dua menit" di submission **tidak
+boleh** lagi berdiri tanpa menyebut bahwa ia terukur di substrate yang bukan tempat kami bertransaksi;
+(c) **P61**: venue pembanding diukur dengan alat yang sama, bukan diharapkan; (d) n=15/39 satu hari,
+jadi ini **bukan vonis** - tapi cukup untuk memindahkan seluruh argumen "tinggal eksekusi" dari tabel
+fitur ke pertanyaan yang benar: **di mana pasar kami benar-benar hidup?**
 

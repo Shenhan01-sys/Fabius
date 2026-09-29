@@ -116,3 +116,30 @@ bentuk kurva dampak kuadrat-akar (literatur, tidak kami reproduksi) · `T1` untu
 **Terkait:** [[FD4 - Ongkos Perdagangan]] · [[FD6 - Ukuran Posisi]] · [[FD7 - Invalidation Stop dan Time-Stop]] ·
 [[V4 - Order Book dan Liquidity Heatmap]] · [[O6 - Konsentrasi Holder Bundler dan LP Lock]] ·
 [[PL2 - Menyaring Universe]]
+
+## 29 Sep 13:54Z - kami menemukan tempat likuiditas benar-benar menahan kami (F-D56)
+
+Halaman ini lama bicara likuiditas dalam bentuk **"seberapa besar order menggeser harga"** (Almgren,
+`i`, `haircut`). Hari ini bentuk yang lebih mendasar muncul di venue kami sendiri: **tidak ada order
+yang bisa menggeser harga pada deret yang tidak bergerak.**
+
+`tools/perp_liveness.py` mengukur 41 simbol yang kabar ⑦-nya sampai ke venue perp kami (1 m klines,
+24 jam): hanya **5** yang kelasnya HIDUP; kelas MATI punya median **97,4 % menit tanpa transaksi** dan
+run terpanjang tanpa perubahan harga sampai **679 menit**. `BNCUSD1` - simbol dengan kabar **paling
+banyak** (478) - 96,0 % menit kosong dan beku 446 menit.
+
+Konsekuensi untuk cara halaman ini dipakai:
+
+- Model dampak (`x·y=k`, `haircut`, skema F-D46) **tidak terdefinisi** pada deret beku: `liq` dari
+  transaksi 96 % nol bukan "buku tipis", itu **buku yang tidak terlihat**. Angka dampak di simbol seperti
+  itu wajib keluar sebagai TIDAK SAH, bukan sebagai nol.
+- Urutan pertanyaan berubah: sebelum "seberapa besar boleh masuk" datang "**pada menit mana harga ini
+  pernah bergerak**". Itu ukuran satu baris (`nol_volume_persen`, `beku_menit_maks`) dan sekarang punya
+  alatnya.
+- E26 menguji horison 5 m di 5 simbol hidup dan hasilnya nol terhadap placebo (−7,3 vs +6,9; p=0,696),
+  sementara kelas TIPIS memberi median **tepat 0,0** - bukti bahwa di sana yang diukur adalah kelambatan
+  deret, bukan pasar. Lihat [[06-Results/28 - Venue Kami Bukan Pasar]].
+
+Batasnya: klines mencatat transaksi yang **terjadi**, bukan kuotasi yang **ditawarkan** - kedalaman
+ sebenarnya ada di ⑨, dan membacanya untuk 5 simbol HIDUP itu adalah **P60**.
+

@@ -38,6 +38,7 @@ fitur yang tidak bisa diverifikasi.
 | ✔ **12:55Z sudah jatuh** | **F-D54** - tembok "kabar 13,5 menit" ternyata alatku; 0 dari 58 lengan 5 m rejim lama sah | `tools/fast_lane.py --report` memisah dua rejim + saringan `sah`; halaman 26 menulis angka pertamanya (n=25 sah: **−519,4 bps**) |
 | **21:19:04Z** | **vonis E24** - masuk terpilih vs masuk ACAK pada siklus yang sama | `python -X utf8 tools/entry_ab.py` (empat syarat serentak; n≥40 per lengan) - hasilnya ke halaman 27 §6 |
 | setelah vonis | **P42** satuan dampak ke `tools/costs.py` + `skema_dampak` per slot | tiga varian `tools/impact_audit.py` jadi satu angka yang punya varian jelas |
+| hari ini juga terukur | **P59** cache 1 m >= 3 hari (jendela E26 bolong 17/32) · **P60** kedalaman ⑨ untuk 5 simbol HIDUP · **P61** venue pembanding diukur alat yang sama | `tools/perp_liveness.py` + `tools/perp_bump.py` dijalankan ulang dengan n yang naik |
 | sebelum submit | **P2-P6b** jalur submission (host, kartu agen, form satu kontrak) | URL publik + form terisi dengan angka yang baris perintahnya ada di registry |
 | kalau ada ruang | **P49/E17** trailing sebagai uji bentuk-distribusi (random-barrier placebo) | tabel `P(net <= -X)` + median vs placebo, bukan "untung/tidak" |
 

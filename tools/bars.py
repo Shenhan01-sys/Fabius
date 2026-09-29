@@ -45,7 +45,8 @@ UA = {"User-Agent": "Mozilla/5.0 (compatible; fabius-bars/1.0)", "Accept": "appl
 
 PAGE_CAP = 1500          # server menolak di atas ini (code -1130), terukur 25 Sep
 PAGE_SLEEP = 0.45        # REQUEST_WEIGHT 2400/menit; kita jauh di bawahnya
-INTERVAL_MS = {"15m": 900_000, "1h": 3_600_000, "4h": 14_400_000, "1d": 86_400_000}
+INTERVAL_MS = {"1m": 60_000, "3m": 180_000, "5m": 300_000, "15m": 900_000,
+               "1h": 3_600_000, "4h": 14_400_000, "1d": 86_400_000}
 
 
 def _get(path: str, timeout: int = 40):
