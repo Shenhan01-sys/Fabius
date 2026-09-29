@@ -27,6 +27,10 @@ ROOT = os.path.dirname(HERE)
 PATH = "universe/wallet-flow.jsonl"
 
 
+def pct(xs, q):
+    return xs[min(len(xs) - 1, int(q * (len(xs) - 1)))]
+
+
 def lag(n_commit):
     r = subprocess.run(["git", "log", "-%d" % n_commit, "--format=%ct|%H", "--", PATH],
                        capture_output=True, text=True, cwd=ROOT)
@@ -53,17 +57,83 @@ def lag(n_commit):
     return sorted(out), len(log)
 
 
+def saat_ditemukan(n_commit):
+    """Umur peristiwa SAAT KAMI BARU MENEMUKANNYA - bukan umur peristiwa terbaru di commit.
+
+    Dua statistik ini sering ditukar, dan bedanya决定了 apakah sebuah edge bisa diambil:
+      (a) commit_time - max(t pada versi berkas saat itu)  -> sebaris paling baru; bagus kalau
+          perekam kebetulan menangkap sesuatu yang baru terjadi;
+      (b) commit_time - t(untuk setiap baris yang PERTAMA KALI muncul di commit itu)
+          -> umur sebenarnya dari kabar yang baru kami ketahui. Ini yang dipakai agen.
+    """
+    log = subprocess.run(["git", "log", "-%d" % n_commit, "--format=%ct|%H", "--", PATH],
+                         capture_output=True, text=True, cwd=ROOT).stdout.splitlines()
+    log = [x for x in log if x.strip()]
+    lag = []
+    for i, ln in enumerate(log):
+        ct, sha = ln.split("|")
+        ct = int(ct)
+        baru_blob = subprocess.run(["git", "show", "%s:%s" % (sha, PATH)], capture_output=True,
+                                   text=True, errors="replace").stdout
+        t_set = set()
+        for l in baru_blob.splitlines():
+            if not l.startswith("{"):
+                continue
+            try:
+                d = json.loads(l)
+            except ValueError:
+                continue
+            if d.get("k") in ("tx", "txc") and isinstance(d.get("t"), int):
+                t_set.add((str(d.get("h") or ""), d["t"]))
+        if i + 1 < len(log):
+            lama_sha = log[i + 1].split("|")[1]
+            lama_blob = subprocess.run(["git", "show", "%s:%s" % (lama_sha, PATH)],
+                                       capture_output=True, text=True, errors="replace").stdout
+            lama_set = set()
+            for l in lama_blob.splitlines():
+                if not l.startswith("{"):
+                    continue
+                try:
+                    d = json.loads(l)
+                except ValueError:
+                    continue
+                if d.get("k") in ("tx", "txc") and isinstance(d.get("t"), int):
+                    lama_set.add((str(d.get("h") or ""), d["t"]))
+        else:
+            lama_set = set()
+        for _h, t in (t_set - lama_set):
+            lag.append(ct - t)
+    return sorted(lag)
+
+
 def utama():
     ap = argparse.ArgumentParser()
     ap.add_argument("n", nargs="?", type=int, default=40, help="berapa commit terakhir")
+    ap.add_argument("--saat-ditemukan", action="store_true",
+                    help="ukur umur peristiwa SAAT pertama kali kami melihatnya (bukan yang terbaru)")
     ap.add_argument("--self-test", action="store_true")
     a = ap.parse_args()
     if a.self_test:
         # perhitungan harus menolak berkas kosong dan tidak pernah menghasilkan lag negatif
         assert lag.__module__ == "feed_latency" or True
         xs = [12, 30, 45]
-        assert xs[len(xs) // 2] == 30 and xs[int(0.9 * (len(xs) - 1))] == 45
-        print("self-test latensi OK: median/p90 diambil dari daftar terurut")
+        assert xs[len(xs) // 2] == 30 and pct(xs, 0.9) == 30 and pct(xs, 1.0) == 45
+        assert len(xs) == 3, "self-test harus pakai sampel kecil yang explisit"
+        print("self-test latensi OK: median/p90 diambil dari daftar terurut (n=3: p90 floor-index "
+              "= nilai tengah - itu sebabnya run asli butuh >=20 pasangan)")
+        return
+    if a.saat_ditemukan:
+        xs2 = saat_ditemukan(a.n)
+        if not xs2:
+            raise SystemExit("tidak ada baris baru yang bisa dibandingkan antar commit")
+        print("commit dibandingkan: %d | baris baru terpakai: %d" % (a.n, len(xs2)))
+        print("umur kabar versi REKONSTRUKSI git (menit): median %.1f | p90 %.1f"
+              % (xs2[len(xs2) // 2] / 60.0, pct(xs2, 0.9) / 60.0))
+        print("\n   TIDAK BOLEH DIKUTIP. Beda 100x dengan ukuran LANGSUNG")
+        print("   (`tools/fast_lane.py --report` -> latensi_keputusan_detik) berarti selisih")
+        print("   himpunan baris ini bukan cara yang sah untuk mengukur 'kapan kami mengetahui")
+        print("   sebuah peristiwa': commit perekam menumpuk banyak baris lama sekaligus, dan")
+        print("   median-nya jadi umur arsip, bukan umur kabar. Artefak tidak ditulis.")
         return
     xs, nlog = lag(a.n)
     if not xs:

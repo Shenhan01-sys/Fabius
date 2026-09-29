@@ -1461,3 +1461,50 @@ melihat masa depan** saat angka itu dihitung.
 **Terkait:** [[06-Results/24 - Trailing pada Bar yang Salah]] · [[06-Results/23 - Gerbang Trailing]] ·
 [[08-Backlog/01 - Backlog]] P49 · [[07-Testing/01 - Test Commands]] baris 56
 
+## F-D50 — Aku memakai statistik yang paling beruntung untuk menyalahkan kodeku sendiri: umur kabar yang kami olah itu 13,5 menit, bukan 0,2 · 29 Sep 2026 11:1xZ
+
+**Yang tertulis kemarin (halaman 19 §2b, README, Fakta §F):** "latensi feed kami **median 0,2
+menit** (stempel commit GitHub) - kabar sampai dalam ±12 detik, acaranya selesai dalam ±2 menit, dan
+mesin keputusan kami bangun tiap 4 jam. Yang menahan bukan sinyal, tapi jalur." Kalimat itu terasa
+jujur, karena dia menyalahkan diri sendiri. Ternyata dia tetap salah - dengan arah yang membuat
+kesimpulannya tidak berlaku.
+
+**Definisi yang kutukar.** `0,2 menit` = `waktu commit − t(baris TERBARU pada versi berkas saat
+itu)`. Itu umur **potongan paling segar dalam satu muatan**. Pertanyaan yang benar untuk sebuah
+strategi bukan "seberapa segar baris terakhirmu", tapi "seberapa tua peristiwa yang kamu
+olah". Yang kedua terukur langsung, tanpa rekonstruksi: `tools/fast_lane.py` mencatat
+`latensi_keputusan_detik` = `now − t_kejadian` **pada saat keputusan benar-benar diambil atas berkas
+yang baru saja ditulis runner yang sama**.
+
+| ukuran | angka | dari |
+|---|---|---|
+| commit − t baris terbaru | median **0,2 menit** (p90 0,2) | `tools/feed_latency.py 25` |
+| **umur kabar saat kami memutuskan** | median **808 d = 13,5 menit**, min 534, p90 874, max 899 | `tools/fast_lane.py --report`, 276 baris CI jam 09-11Z |
+| umur bump E11 | **±2 menit** (`delay 2 m` → median@5m −56,2 bps) | `tools/horizon_decay.py` |
+
+**Konsekuensinya bukan kosmetik.** Kalau kabar datang sudah berumur ±11 menit, maka **mempercepat
+pipeline menjadi 0 detik pun tidak menyentuh bump itu**. P40 (yang barusan kupasang dan sudah jalan di
+CI) adalah pekerjaan yang perlu tapi **tidak cukup**, dan kalimat "tinggal eksekusi" yang
+sebelumnya kubiar berdiri harus dicabut. Karena itu: (a) **P50** - sumber kabar yang lebih muda dari
+umur kabarnya (streaming/websocket/vendor lain, atau harga venue kami sendiri sebagai sumber);
+(b) kalau itu tidak ketemu, **E11 turun status** dari "edge yang belum kita ambil" menjadi
+"observasi yang tidak bisa diambil oleh sumber yang kita punya" - dan itu harus sampai ke
+kalimat submission, bukan berhenti di vault.
+
+**Cara salah ini terjadi, dan itu yang harus diingat.** Aku mengukur sesuatu yang benar, dengan alat
+yang jujur, lalu memakai **ekor terbaik dari distribusinya** sebagai ringkasan. Yang membuat kesalahan
+ini lolos bukan angkanya, tapi **arahnya**: dia membuat kami tampak jadi kambing hitam, dan kesimpulan
+yang menyalahkan diri sendiri terasa paling sulit ditolak. Koreksi ketujuh dari alat kami sendiri
+dalam enam hari sekarang punya varian baru: **bukan alatnya yang salah, tapi pilihannya atas
+statistik yang menguntungkan cerita yang sedang kita percayai.**
+
+**Yang kucoba setelah itu, dan juga kutolak.** Rekonstruksi umur kabar lewat selisih himpunan baris
+antar-commit menghasilkan median **1494 MENIT** - jelas salah (perekam menumpuk baris lama sekaligus).
+Angkanya tidak kucabut diam-diam: `tools/feed_latency.py --saat-ditemukan` sekarang mencetak
+**"TIDAK BOLEH DIKUTIP"** di outputnya dan **tidak menulis artefak**, supaya tidak ada yang
+(melainkan saya nanti) mengutipnya sebagai angka.
+
+**Terkait:** [[06-Results/19 - Umur Posisi]] §2b · [[08-Backlog/01 - Backlog]] P40/P50 ·
+[[07-Testing/01 - Test Commands]] baris 47/58 · F-D41 (batas waktu yang menghormati horison) ·
+[[TradingKnowledge/FD5 - Expectancy Bukan Win Rate]]
+

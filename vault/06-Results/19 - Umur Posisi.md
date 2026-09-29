@@ -72,14 +72,19 @@ kami), bump-nya menyusut tapi tidak hilang:
 ```
 
 Tunda dua menit dan median@5m sudah **negatif**; tunda lima menit dan yang tersisa cuma kerugian.
-Sementara itu latensi **data** kami terukur baik: `python -X utf8 tools/feed_latency.py 25`
-→ **median 0,2 menit** (p90 0,2) dari kejadian ke baris yang sudah masuk git, dihitung dari stempel
-commit GitHub, bukan jam laptop.
+> **⚠ KOREKSI 29 Sep 11:1xZ (F-D50) - angka di bawah ini benar, simpulannya salah.**
+> `median 0,2 menit` itu adalah `commit − t(baris TERBARU dalam commit itu)`: umur potongan
+> paling segar dalam satu muatan, **bukan** umur peristiwa yang kami olah. Ukuran langsung -
+> `tools/fast_lane.py` mencatat `latensi_keputusan_detik` untuk tiap keputusan yang benar-benar
+> diambil CI atas berkas yang baru ditulisnya - memberi **median 808 detik = 13,5 menit**
+> (min 534, p90 874, max 899; 276 baris, jam 09-11Z).
 
-Jadi keadaan yang jujur: **kabarnya sampai cepat (±12 detik), acaranya selesai dalam ±2 menit, dan
-mesin keputusan kami bangun tiap 4 jam** (cron `paper-book`) atau per siklus 202 detik (rantai ⑦).
-Yang menahan Fabius sekarang bukan "tidak ada sinyal", tapi **jalur dari sinyal ke order belum
-dibangun pada kecepatan sinyal itu hidup**.
+Keadaan yang jujur, setelah koreksi: **kabar tiba di kami sudah berumur ±9-13 menit**, acaranya
+selesai dalam ±2 menit, dan pemroses kami bangun tiap 4 jam. Jadi yang menunda Fabius **bukan
+hanya** kodenya: sumber kabarnya sendiri datang terlambat ±11 menit. Kalau `delay 2 m` saja sudah
+membuat median@5m jadi −56,2 bps, maka pada `delay 13 m` yang tersisa dari bump itu bukan
+margin - itu arsip. Perbaikan P40 (jalur kabar→order) tetap perlu dan sekarang terpasang,
+tetapi **tidak cukup**: yang harus berubah adalah SUMBERnya (P50).
 
 ## 3. Apa yang TIDAK boleh dibaca dari halaman ini
 
