@@ -1229,3 +1229,44 @@ yang paling menentukan.
 [[07-Testing/01 - Test Commands]] baris 49 · [[08-Backlog/02 - Epik Alasan Masuk]] §3f ·
 [[Concepts/One-Way Gate]]
 
+## F-D45 — Rem diuji di grid ambang sebelum kami percaya dirinya: 16/16 lolos, dan pemindaian ulangnya 677/677 identik dengan gerbang asli · 29 Sep 2026 08:5xZ
+
+**Kenapa ini diukur lebih dulu daripada klaim baru.** F-D44 memberi kami angka yang untuk pertama
+ kalinya bagus: di menit ke-5, `BOLEH` +285,5 vs `VETO` −230,3 bps. Reaksi yang benar bukan mem posting
+ nya, tapi curiga pada dua angka yang menentukannya - `MAKER_MIN = 2` dan `RASIO_JUAL = 1,5` - yang
+ ditetapkan 28 Sep dari uji di horison 30 menit dan **tidak pernah** diuji sebagai fungsi horison
+ cepat. Sebuah "edge" yang hanya hidup di satu titik parameter bukan perilaku, itu kekocokan.
+
+**Yang dilakukan `tools/veto_sensitivity.py`.** Grid 4×4 (maker 1..4 × rasio 1,25; 1,5; 2,0; 3,0),
+horison 5 menit, 677 kejadian yang punya harga keluar di 5 menit, placebo penandaan ulang acak 200
+undian per kombinasi - **dan satu syarat sebelum laporan apa pun dicetak:** pada ambang terpasang,
+pemindaian ulang alat ini harus memberi status yang **identik dengan `flow_gate.state()`** untuk
+setiap kejadian. Hasilnya **677/677 cocok (0 berbeda)**; kalau satu saja berbeda, alatnya berhenti
+dengan `SystemExit`, karena itu bug kami, bukan pasar.
+
+| | |
+|---|---|
+| kombinasi ambang yang melewati placebo | **16 dari 16** |
+| rentang selisih mean(BOLEH) − mean(VETO) | **+260,0 … +399,7 bps** |
+| rentang CI atas placebo | +170,2 … +254,4 |
+| titik terpasang (maker 2; rasio 1,5) | **+395,1** vs CI atas **+202,4** |
+
+**Keputusan.** (a) Rem `jual_*` naik status dari "satu ambang yang terukur" menjadi "perilaku yang
+bertahan di seluruh grid" - dan itu satu-satunya kelaikan yang boleh diklaim; (b) **tidak ada satu
+angka pun yang diubah di `flow_gate.py`.** Grid ini menjawab "seberapa jauh hasil bergerak", bukan
+"mana yang paling bagus"; memilih maker=4 karena grid menunjukkannya sama saja akan mengulang
+F-D32 dengan nama baru. Mengubah ambang butuh pra-registrasi sendiri. (c) Aturan yang kini ikut
+dipakai di alat: **kalau sebuah perilaku bergantung pada satu titik parameter, uji dulu dia bergerak
+bagaimana sebelum menyebutnya temuan.**
+
+**Batas yang harus dibawa bersama.** Populasi E14 (677) berbeda dari E13 (482) karena syarat harga
+keluarnya berbeda (5 m vs 30 m) - jadi `mean boleh` 219,8 di sini dan 285,5 di sana bukan dua hasil
+yang bertentangan, melainkan dua sample yang tidak sama; alatnya mencetak jumlah kejadian di baris
+pertama supaya itu tidak bisa terlupakan. Dan dua pagar lama tetap berlaku: kabar ini ada di substrat
+**spot** (venue kami hanya menyentuh 3,1 %, F-D43) dan ia **mati dalam ±2 menit** kalau masuknya
+ditunda (F-D41). Sensitivitas tidak memperbaiki jangkauan atau latensi - ia cuma membuat kami boleh
+percaya remnya.
+
+**Terkait:** [[06-Results/21 - Rem di Horison Cepat]] §4 · [[00-Overview/03 - Decisions]] F-D31 /
+F-D44 · [[07-Testing/01 - Test Commands]] baris 50 · [[Concepts/One-Way Gate]]
+

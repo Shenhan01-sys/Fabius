@@ -236,6 +236,13 @@ umum - dia memisahkan +285,5 dari −230,3 bps di horison 5 menit, melewati plac
 kami punya tetap: alasan *positif* untuk masuk di luar "tidak ada kerumunan jual", dan jalur yang
 cukup cepat untuk mengambilnya.
 
+**E14 - remnya tidak di atas tebing.** `tools/veto_sensitivity.py` menggeser `MAKER_MIN` (1..4) dan
+`RASIO_JUAL` (1,25..3,0) di grid 4×4: **16/16 kombinasi melewati placebo**, selisih menit ke-5
+**+260,0 … +399,7 bps** melawan CI atas acak **+170,2 … +254,4**, dan alatnya memverifikasi dulu
+bahwa pemindaian ulangnya **identik dengan `flow_gate.state()` untuk 677/677 kejadian** sebelum
+berani melaporkan apa pun. Tidak ada satu pun ambang yang diubah - itu akan butuh kunci sendiri.
+(F-D45)
+
 ## 4. Non-goal eksplisit
 
 - Tidak menaikkan `promote-after` di bawah gerbang F-D16 walau streak tercapai.

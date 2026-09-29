@@ -59,7 +59,35 @@ mengecilkan yang lain).
 - **Belum terkunci.** Tidak ada pra-registrasi di halaman ini. Kalau angka ini ingin jadi klaim, dia
   harus lewat kunci baru, bukan lewat halaman ini.
 
-## 4. Perintah
+## 4. E14 - rem ini tidak berdiri di atas tebing
+
+Angka bagus membuat kami gugup dengan cara yang benar: jangan-jangan ia bergantung pada ambang yang
+kebetulan dipilih. `MAKER_MIN = 2` dan `RASIO_JUAL = 1,5` ditetapkan 28 Sep dari uji di horison 30
+menit, dan tidak pernah diuji sebagai fungsi horison cepat. `tools/veto_sensitivity.py` menggeser
+keduanya di grid 4×4 (maker 1..4 × rasio 1,25..3,0) - **tanpa mencari ambang terbaik**, hanya
+menanyakan seberapa jauh hasil bergerak:
+
+- **Kocokan lebih dulu:** pada ambang terpasang, pemindaian ulang alat ini memberi status yang
+  **identik dengan `flow_gate.state()` untuk 677/677 kejadian (0 berbeda)**. Kalau satu saja berbeda,
+  alatnya berhenti dan tidak berani melaporkan grid - itu bug kami, bukan pasar.
+- **Grid-nya lolos semua:** 16 dari 16 kombinasi melewati placebo penandaan ulang acak. Selisih
+  (mean `BOLEH` − mean `VETO`, menit ke-5) bergerak **+260,0 … +399,7 bps** melawan CI atas acak
+  **+170,2 … +254,4**. Titik terpasang (maker 2; rasio 1,5) = **+395,1 vs +202,4**.
+- **Bentuknya masuk akal:** melonggarkan maker (2→4) menggeser sebagian kejadian ke `BOLEH` dan
+  selisihnya menyempit perlahan, bukan jatuh. Tidak ada tebing.
+
+Satu perbedaan yang **wajib** disebut supaya dua tabel di halaman ini tidak terlihat bertentangan:
+E13 memakai kejadian yang punya harga keluar di **30 menit** (482 kejadian; n boleh 308 / n veto 92
+→ mean boleh +285,5), sedangkan E14 memakai kejadian yang punya harga keluar di **5 menit** saja
+(677 kejadian; n boleh 416 / n veto 261 → mean boleh +219,8). Populationnya berbeda karena
+syarat censoring-nya berbeda - dan itu sebabnya alatnya mencetak `kejadian dinilai di menit ke-5`
+di baris pertama, bukan mengandalkan pembaca mengingatnya.
+
+Perintah: `python -X utf8 tools/veto_sensitivity.py --self-test` lalu `--draws 200` · artefak
+`decisions/veto-sensitivity-20260929T085xZ.json`. **Alat ini tidak mengubah satu angka pun di
+`flow_gate.py`** - mengubah ambang butuh pra-registrasi sendiri, bukan halaman ini (F-D45).
+
+## 5. Perintah
 
 ```bash
 python -X utf8 tools/veto_expectancy.py --self-test    # selisih terdeteksi saat ada, nol saat tidak
