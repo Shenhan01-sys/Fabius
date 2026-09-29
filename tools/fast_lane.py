@@ -217,6 +217,56 @@ def jalankan(now, per_run, cari_menit, rt):
     return rows, dibuka, dinilai, tolak
 
 
+def laporan_terpasang(latest, urutan, rt):
+    """Angka yang paling jujur dari jalur cepat: apa hasil masuk dengan umur kabar yang kami dapat.
+
+    Ini bukan uji kebijakan baru - ini konsekuensi langsung dari F-D50: slot-slot ini dibuka pada
+    umur kabar median 808 detik, jadi delta 5m-vs-30m yang terukur di sini adalah apa yang tersisa
+    dari bump E11 setelah kabar menua 13 menit. Dievaluasi pada POSISI yang sama (paired), dengan
+    tanda-uji dan winsor seperti semua uji lain di repo ini.
+    """
+    ps = [latest[sid] for sid in urutan
+          if latest[sid].get("status") == "dinilai"
+          and isinstance(latest[sid].get("keluar_5m"), dict)
+          and isinstance(latest[sid].get("keluar_30m"), dict)]
+    if not ps:
+        print("   pairing: belum ada slot dengan DUA arm dinilai - ini BELUM BISA DIUJI")
+        return None
+    d = [x["keluar_5m"]["net_bps"] - x["keluar_30m"]["net_bps"] for x in ps]
+    usia = sorted(x.get("latensi_keputusan_detik") or 0 for x in ps)
+    lb = sum(1 for x in d if x > 1)
+    kb = sum(1 for x in d if x < -1)
+    p = FC.sign_p(lb, lb + kb) if lb + kb >= 5 else None
+    r = {"n_terpasang": len(ps),
+         "usia_kabar_median_d": int(FC.med(usia)),
+         "usia_kabar_min_d": int(min(usia)), "usia_kabar_maks_d": int(max(usia)),
+         "mean_5m": round(sum(w(x["keluar_5m"]["net_bps"]) for x in ps) / len(ps), 1),
+         "mean_30m": round(sum(w(x["keluar_30m"]["net_bps"]) for x in ps) / len(ps), 1),
+         "median_5m": round(FC.med([x["keluar_5m"]["net_bps"] for x in ps]), 1),
+         "median_30m": round(FC.med([x["keluar_30m"]["net_bps"] for x in ps]), 1),
+         "median_delta_5m_kurang_30m": round(FC.med(d), 1),
+         "menang_5m": lb, "kalah_5m": kb, "p_tanda": None if p is None else round(p, 4),
+         "P_ge_500_5m": round(100.0 * sum(1 for x in ps if x["keluar_5m"]["net_bps"] >= 500)
+                              / len(ps), 1),
+         "P_ge_500_30m": round(100.0 * sum(1 for x in ps if x["keluar_30m"]["net_bps"] >= 500)
+                               / len(ps), 1)}
+    print("   PAIRING pada posisi yang sama (n=%d, umur kabar median %d d):"
+          % (r["n_terpasang"], r["usia_kabar_median_d"]))
+    print("      5m : mean winso %+0.1f | median %+0.1f | P(>=+500) %0.1f %%"
+          % (r["mean_5m"], r["median_5m"], r["P_ge_500_5m"]))
+    print("      30m: mean winso %+0.1f | median %+0.1f | P(>=+500) %0.1f %%"
+          % (r["mean_30m"], r["median_30m"], r["P_ge_500_30m"]))
+    print("      delta 5m-30m median %+0.1f bps | menang %d / kalah %d | tanda-uji p=%s"
+          % (r["median_delta_5m_kurang_30m"], r["menang_5m"], r["kalah_5m"],
+             "-" if r["p_tanda"] is None else "%.4f" % r["p_tanda"]))
+    print("      baca: ini bukan 'strategi 5 menit kalah', ini apa yang tersisa dari bump E11")
+    print("      SETELAH kabarnya menua %d menit (min %d, maks %d) - dan E11 sudah memprediksi"
+          % (r["usia_kabar_median_d"] // 60, r["usia_kabar_min_d"] // 60,
+             r["usia_kabar_maks_d"] // 60))
+    print("      `delay 5 m` -> mean@5m -166,4 bps; di sini kita masuk pada delay yang lebih besar.")
+    return r
+
+
 def report(rt):
     latest, urutan = muat_log()
     buka = [latest[s] for s in urutan if latest[s].get("status") == "terbuka"]
@@ -242,6 +292,7 @@ def report(rt):
                  len(l), FC.med(dl)))
     if hili:
         print("   tanpa data: %d - ini KEHILANGAN, bukan hasil nol" % len(hili))
+    rtp = laporan_terpasang(latest, urutan, rt)
     if tolak:
         alasan = {}
         for r in tolak:
@@ -249,7 +300,7 @@ def report(rt):
         print("   penolakan gerbang per status: %s" % json.dumps(alasan, sort_keys=True))
     return {"dinilai": len(nilai), "terbuka": len(buka), "ditolak": len(tolak),
             "tanpa_data": len(hili), "latensi_median_detik": lat[len(lat) // 2] if lat else None,
-            "delta_median_bps": round(FC.med(dl), 1) if dl else None}
+            "delta_median_bps": round(FC.med(dl), 1) if dl else None, "pairing_ci": rtp}
 
 
 def self_test():
