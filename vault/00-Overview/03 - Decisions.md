@@ -1324,3 +1324,59 @@ mempromosikan diri) → F-D37 (MW salah urut) → F-D39 (satu undian) → F-D40 
 [[08-Backlog/01 - Backlog]] P42 · [[07-Testing/01 - Test Commands]] baris 51 ·
 [[02-Fondasi/FD3 - Likuiditas dan Dampak Harga]] · [[Concepts/Unmeasured Is Not Clean]]
 
+## F-D47 — Perekam buku order meruntuh 110 kegagalan sebelum kami lihat: daftar kami berisi BASIS, API minta SIMBOL · 29 Sep 2026 09:5xZ
+
+**Yang terjadi.** `universe/record_book_depth.py` dipasang 09:1xZ dan langsung ikut loop rantai ⑦.
+Laporan pertama, sesudah beberapa siklus CI:
+
+```
+   baris: 142 | simbol tercatat: 14 | kegagalan per kode HTTP: {"400": 110}
+```
+
+`universe/book-venue.txt` saya tulis dari **irisan basis aset** (`0G`, `APE`, `CAKE`) hasil
+`venue_bridge.py`, sedangkan `/fapi/v1/depth` meminta simbol kuotasi penuh (`0GUSDT`). Semua jangkar
+(BTC/ETH/SOL/BNB) lolos karena kebetulan sudah saya tulis lengkap - jadi alatnya "hidup", mencetak
+baris, dan tetap 85 % isinya sampah. Diagnosisnya satu baris `git`-style: `{"code":-1121,
+"msg":"Invalid symbol."}` yang **tidak saya simpan** di versi pertama - saya cuma menyimpan
+`kode_http`, sehingga laporan berkata "400: 110" tanpa bisa menjawab "kenapa".
+
+**Yang dipasang setelahnya.** (a) `normal()` memetakan basis -> simbol kuotasi (tambah `USDT` kalau
+belum bersufiks); (b) `msg` API ikut dicatat di baris `bdx`, supaya kegagalan punya penyebab, bukan
+cuma kode; (c) `--validasi-saja` memotong daftar terhadap `exchangeInfo` dan **mencetak berapa yang
+dibuang**; (d) daftar valid dipakai setiap siklus sebelum merekam. Verifikasi: `12/12 simbol
+terjawab`, nol kegagalan baru.
+
+**Yang harus ditulis tentang E16 (jujur soal jam yang sudah berjalan).** Kunci E16 dipasang
+09:37:45Z. Sebelum 09:5xZ, hampir semua snapshot pasca-kunci adalah **jangkar likuid** (BTC/ETH/SOL)
+karena simbol kabar ditolak API. Artinya jendela E16 tidak homogen: ada perubahan cakupan **di
+tengah uji terkunci**. Kami tidak menggeser kunci dan tidak membuang data - keduanya akan jadi
+goalpost-moving. Yang kami lakukan: vonis nanti **wajib** menyertakan komposisi (berapa pasangan per
+simbol, berapa sebelum vs sesudah 09:5xZ), dan kalau komposisinya ternyata jangkar-dominan, itu
+dinyatakan sebagai **batas baca**, bukan sebagai kemenangan. Ini pelajaran yang sama dengan F-D46
+(mengganti penggaris di tengah ujian) dengan wajah sebaliknya: kali ini penggarisnya berubah karena
+bug, dan yang harus dilakukan adalah **melaporkan**, bukan mempercantik.
+
+**Yang pertama kali dijawab data, bukan argumen.** Setelah daftar dibetulkan, `tools/cost_budget.py`
+langsung memberi angka yang tidak bisa dibantah retoris:
+
+| simbol | spread median | biaya RT penuh (59 + spread) | dalam anggaran median (+79,8 bps)? |
+|---|---|---|---|
+| BTCUSDT / ETHUSDT / SOLUSDT | 0,01 / 0,04 / 0,84 bps | 59,01-59,84 | YA (jangkar) |
+| CAKEUSDT / 0GUSDT / APEUSDT / ARIAUSDT / AEONUSDT | 7,8-20,2 bps | 66,8-79,2 | YA, tapi mepet |
+| AIUSDT | 40,8 bps | 99,8 | **TIDAK** |
+| 4STOCKUSDT / ASTEROIDUSDT | 422,3 / 519,5 bps | 481,3 / 578,5 | **TIDAK, jauh** |
+
+Jadi untuk simbol kabar yang paling tipis, **biaya satu kali keluar-masuk sudah 6x harapan median
+kami** - dan ini sebelum bicara apakah sinyalnya ada. Catatan sampelnya tetap menempel: 9 dari 14
+simbol baru punya < 5 snapshot, jadi baris di atas adalah **pengamatan pertama**, bukan median yang
+stabil.
+
+**Korban ketujuh alat kami dalam enam hari** (F-D30, F-D32, F-D37, F-D39, F-D40, F-D43, F-D46,
+F-D47). Polanya tetap sama dan sekarang sudah bukan kebetulan lagi: **alat baru dianggap bekerja
+karena ia menulis sesuatu**, bukan karena isinya yang kita butuhkan. Aturan yang ditambahkan ke
+epik: setiap perekam baru wajib menunjukkan **rasio baris-berguna vs baris-total** di `--report`
+sebelum dianggap hidup (sudah ada di laporan ⑨: `bd=… bdx=…`).
+
+**Terkait:** [[06-Results/22 - Buku Order, Terkunci Lebih Dulu]] §5c · [[08-Backlog/01 - Backlog]]
+P47 · [[07-Testing/01 - Test Commands]] baris 51/53 · [[08-Backlog/03 - Epik Teori Baru]] T1/T4
+

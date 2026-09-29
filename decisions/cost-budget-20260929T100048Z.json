@@ -1,0 +1,148 @@
+{
+ "dalam_anggaran_median": [
+  "BTCUSDT",
+  "ETHUSDT",
+  "SOLUSDT",
+  "BNBUSDT",
+  "ASTERUSDT",
+  "CAKEUSDT",
+  "0GUSDT",
+  "APEUSDT",
+  "4USDT",
+  "ARIAUSDT",
+  "AEONUSDT"
+ ],
+ "dibuat_utc": "2026-09-29T10:00:48Z",
+ "mean_net_boleh_e13_bps": 285.5,
+ "median_net_boleh_e13_bps": 79.8,
+ "ongkos_rt_terukur_bps": 59.0,
+ "sha": "0xaf567f50a8946ad4e6308fac9a8c0487de727f6a45f1c3182f7c7edf43c021fe",
+ "simbol": [
+  {
+   "biaya_rt_penuh_bps": 59.01,
+   "jangkar": true,
+   "menang_di_median": true,
+   "n": 7,
+   "simbol": "BTCUSDT",
+   "spread_median_bps": 0.01,
+   "spread_p90_bps": 0.01
+  },
+  {
+   "biaya_rt_penuh_bps": 59.04,
+   "jangkar": true,
+   "menang_di_median": true,
+   "n": 7,
+   "simbol": "ETHUSDT",
+   "spread_median_bps": 0.04,
+   "spread_p90_bps": 0.04
+  },
+  {
+   "biaya_rt_penuh_bps": 59.84,
+   "jangkar": true,
+   "menang_di_median": true,
+   "n": 7,
+   "simbol": "SOLUSDT",
+   "spread_median_bps": 0.84,
+   "spread_p90_bps": 0.84
+  },
+  {
+   "biaya_rt_penuh_bps": 60.05,
+   "jangkar": true,
+   "menang_di_median": true,
+   "n": 1,
+   "simbol": "BNBUSDT",
+   "spread_median_bps": 1.05,
+   "spread_p90_bps": 1.05
+  },
+  {
+   "biaya_rt_penuh_bps": 60.38,
+   "jangkar": false,
+   "menang_di_median": true,
+   "n": 1,
+   "simbol": "ASTERUSDT",
+   "spread_median_bps": 1.38,
+   "spread_p90_bps": 1.38
+  },
+  {
+   "biaya_rt_penuh_bps": 66.77,
+   "jangkar": false,
+   "menang_di_median": true,
+   "n": 1,
+   "simbol": "CAKEUSDT",
+   "spread_median_bps": 7.77,
+   "spread_p90_bps": 7.77
+  },
+  {
+   "biaya_rt_penuh_bps": 69.09,
+   "jangkar": false,
+   "menang_di_median": true,
+   "n": 1,
+   "simbol": "0GUSDT",
+   "spread_median_bps": 10.09,
+   "spread_p90_bps": 10.09
+  },
+  {
+   "biaya_rt_penuh_bps": 72.29,
+   "jangkar": false,
+   "menang_di_median": true,
+   "n": 1,
+   "simbol": "APEUSDT",
+   "spread_median_bps": 13.29,
+   "spread_p90_bps": 13.29
+  },
+  {
+   "biaya_rt_penuh_bps": 72.54,
+   "jangkar": false,
+   "menang_di_median": true,
+   "n": 1,
+   "simbol": "4USDT",
+   "spread_median_bps": 13.54,
+   "spread_p90_bps": 13.54
+  },
+  {
+   "biaya_rt_penuh_bps": 77.97,
+   "jangkar": false,
+   "menang_di_median": true,
+   "n": 1,
+   "simbol": "ARIAUSDT",
+   "spread_median_bps": 18.97,
+   "spread_p90_bps": 18.97
+  },
+  {
+   "biaya_rt_penuh_bps": 79.2,
+   "jangkar": false,
+   "menang_di_median": true,
+   "n": 1,
+   "simbol": "AEONUSDT",
+   "spread_median_bps": 20.2,
+   "spread_p90_bps": 20.2
+  },
+  {
+   "biaya_rt_penuh_bps": 99.84,
+   "jangkar": false,
+   "menang_di_median": false,
+   "n": 1,
+   "simbol": "AIUSDT",
+   "spread_median_bps": 40.84,
+   "spread_p90_bps": 40.84
+  },
+  {
+   "biaya_rt_penuh_bps": 481.28,
+   "jangkar": false,
+   "menang_di_median": false,
+   "n": 1,
+   "simbol": "4STOCKUSDT",
+   "spread_median_bps": 422.28,
+   "spread_p90_bps": 422.28
+  },
+  {
+   "biaya_rt_penuh_bps": 578.48,
+   "jangkar": false,
+   "menang_di_median": false,
+   "n": 1,
+   "simbol": "ASTEROIDUSDT",
+   "spread_median_bps": 519.48,
+   "spread_p90_bps": 519.48
+  }
+ ]
+}

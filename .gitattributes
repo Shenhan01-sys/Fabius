@@ -27,6 +27,12 @@ docs/upstream-8004/** -text
 universe/wallet-flow.jsonl  merge=union
 universe/watch-prices.jsonl merge=union
 universe/bsc-universe.jsonl merge=union
+universe/book-depth.jsonl   merge=union
+decisions/fast-lane.jsonl   merge=union
+# ^ dua berkas yang saya LUPA beri driver saat memasangnya (29 Sep): keduanya ditulis mesin
+#   tiap siklus dan hanya bertambah di ekor, sama seperti aliran ⑦ - dan tanpa union, rebase
+#   rantai langsung mentok di `UU universe/book-depth.jsonl` (terjadi 10:0xZ, lima dorongan
+#   gagal). Pembacanya wajib dedupe: book_prereg pada (sym,update_id), fast_lane pada `kunci`.
 universe/*-manifest.txt     merge=ours
 # CATATAN: TIDAK ada wildcard `*.json merge=union` di sini. Union pada JSON menghasilkan berkas
 # yang tidak bisa di-parse, dan artefak keputusan justru harus bertabrakan kalau dua pihak

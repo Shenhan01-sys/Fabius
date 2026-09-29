@@ -86,6 +86,11 @@ def utama():
                  "YA" if 79.8 > penuh else "TIDAK",
                  "  (jangkar likuid)" if sym in JANGKAR else ""))
     sehat = [x for x in baris if x["menang_di_median"]]
+    tipis = [x["simbol"] for x in baris if x["n"] < 5]
+    print("   PERINGATAN SAMPEL: %d dari %d simbol punya < 5 snapshot%s - untuk mereka ini bukan "
+          "median, cuma satu pengamatan"
+          % (len(tipis), len(baris), (": " + ", ".join(tipis[:6]) + (" ..." if len(tipis) > 6 else ""))
+             if tipis else ""))
     print("\nAngka yang boleh dipakai untuk bicara timeframe:")
     print("   - harapan MEDIAN kami di horison cepat = +79,8 bps (E13, `BOLEH`, menit ke-5). "
           "Semua simbol dengan spread median > ~21 bps (79,8 - 59) sudah di luar anggaran pada "

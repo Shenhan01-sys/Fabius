@@ -253,6 +253,18 @@ def utama():
               % (lk["umur_jam_min"] - jam))
         return
     ps = pasangan(pasca)
+    # Komposisi dicetak SELALU, termasuk sebelum matang: jendela E16 tidak homogen karena daftar
+    # pantau baru dibetulkan 09:5xZ (F-D47) - jadi "siapa yang diukur" bukan catatan kaki.
+    dari = {}
+    for p in ps:
+        dari[p["sym"]] = dari.get(p["sym"], 0) + 1
+    if dari:
+        top = sorted(dari.items(), key=lambda kv: -kv[1])
+        jangkar = sum(v for k, v in dari.items() if k in ("BTCUSDT", "ETHUSDT", "SOLUSDT",
+                                                          "BNBUSDT"))
+        print("   komposisi pasangan: %d simbol | teratas %s | share 4 jangkar likuid %0.0f %%"
+              % (len(dari), ", ".join("%s=%d" % kv for kv in top[:5]),
+                 100.0 * jangkar / len(ps)))
     res = [uji(ps, k) for k in (PRIMER,) + tuple(SEKUNDER)]
     for r in res:
         if r.get("status"):

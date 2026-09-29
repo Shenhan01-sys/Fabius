@@ -52,6 +52,50 @@ LEVELS = 20
 JANGKAR = ["BTCUSDT", "ETHUSDT", "SOLUSDT"]
 
 
+def normal(sym):
+    """Daftar kami menyimpan BASIS (0G, APE); API minta `0GUSDT`.
+
+    Kekeliruan ini menghasilkan 110 baris `Invalid symbol` vs 20 snapshot nyata sebelum
+    ketahuan (29 Sep 09:5xZ). Perekam yang rajin mencatat kegagalan tetap harus mengoreksi
+    dirinya sendiri - itu yang dilakukan `normal()` dan `--validasi-saja`.
+    """
+    y = str(sym or "").strip().upper()
+    if not y:
+        return None
+    for suf in ("USDT", "USDC", "PERP"):
+        if y.endswith(suf):
+            return y
+    return y + "USDT"
+
+
+VEN = {"loaded": False, "sim": set()}
+
+
+def venue_sejati():
+    """Simbol yang benar-benar ada di exchangeInfo; dibaca sekali per proses."""
+    if VEN["loaded"]:
+        return VEN["sim"]
+    try:
+        req = urllib.request.Request("https://fapi.asterdex.com/fapi/v1/exchangeInfo",
+                                     headers=UA)
+        with urllib.request.urlopen(req, timeout=30) as r:
+            d = json.loads(r.read().decode())
+        VEN["sim"] = {str((x or {}).get("symbol") or "").upper()
+                      for x in (d.get("symbols") or [])} - {""}
+        VEN["loaded"] = True
+    except Exception as e:
+        print("   exchangeInfo TIDAK terbaca (%s) - validasi dilewat; kegagalan tetap dicatat "
+              "apa adanya, tidak ditelan" % str(e)[:70])
+    return VEN["sim"]
+
+
+def validasi(daftar):
+    kn = venue_sejati()
+    if not kn:
+        return daftar, []
+    return [x for x in daftar if x in kn], [x for x in daftar if x not in kn]
+
+
 def baca_daftar(nama_berkas="universe/book-venue.txt"):
     p = os.path.join(ROOT, nama_berkas)
     if not os.path.exists(p):
@@ -60,7 +104,9 @@ def baca_daftar(nama_berkas="universe/book-venue.txt"):
     for ln in io.open(p, encoding="utf-8", errors="replace"):
         ln = ln.strip()
         if ln and not ln.startswith("#"):
-            out.append(ln.upper())
+            n = normal(ln)
+            if n:
+                out.append(n)
     return out
 
 
@@ -70,7 +116,15 @@ def derived(bids, asks):
     Teori builder berbunyi "jumlahkan total variasi harga sisi beli, kurangi sisi jual". Frasa itu
     ambigu secara sengaja, dan memaksakan satu rumus hari ini berarti memilih tanpa bukti. Yang
     dicatat per snapshot:
-      bi1/bi5/bi20 : imbalance KUANTITAS pada 1 / 5 / 20 level (bacaan paling kanonis)
+      bi1/bi5/bi20 : imbalance KUANTITAS pada 1 / 5 / 20 level. INI STATE, BUKAN order flow
+                     imbalance (OFI) - OFI-nya Cont-Kukanov-Stoikov adalah JUMLAH ATAS EVENT
+                     (arXiv:1011.6402v3) dan tidak dapat dipulihkan dari dua endpoint; menyebut
+                     angka kami "OFI" adalah salah label (S1, halaman 04)
+    bi25         : imbalance kuantitas tapi dalam JENDELA HARGA tetap (+/-2,5% x mid), gaya
+                     tutorial hftbacktest -tanpa menjawab pertanyaan "berapa level?" yang tidak terjawab
+                     oleh buku yang tebalnya berbeda antar simbol
+    pmicro       : microprice (bobot terbalik dari ketebalan 20 level) - dipakai sebagai
+                     REFERENSI nilai wajar untuk mengaudit harga fill/exit, BUKAN sebagai prediktor
       mi20         : imbalance NILAI UANG (sigma q*p) - bacaan "variasi harga" paling harfiah
       util20       : imbalance yang menghormati JARAK ke mid (sigma q*d) - ini menghargai likuiditas
                      JAUH, jadi kebalikan dari bi pada buku miring; kalau ketiganya bergerak searah
@@ -108,9 +162,28 @@ def derived(bids, asks):
         tot = ub + ua
         return round((ub - ua) / tot, 5) if tot > 0 else None
 
+    def dalam_jendela(rows, frac):
+        # hanya quote yang berada dalam +/- frac x mid dari mid (gaya tutorial hftbacktest);
+        # buku yang tipis di dekat mid akan menghasilkan jendela kosong -> None, bukan 0
+        lo, hi = mid * (1 - frac), mid * (1 + frac)
+        return [(p, q) for p, q in rows if lo <= p <= hi]
+
+    jd_b, jd_a = dalam_jendela(sisi(bids, LEVELS), 0.025), dalam_jendela(sisi(asks, LEVELS), 0.025)
+    qb = sum(q for _, q in jd_b)
+    qa = sum(q for _, q in jd_a)
+    bi25 = round((qb - qa) / (qb + qa), 5) if (qb + qa) > 0 else None
+    Qb = sum(q for _, q in B20)
+    Qa = sum(q for _, q in A20)
+    # microprice = mid digeser ke sisi yang tipis (H asumsinya order besar datang dari sisi tebal);
+    # dipakai sebagai REFERENSI nilai wajar, bukan sebagai prediktor - lihat S3 di
+    # vault/08-Backlog/04 - Riset Teori (Sitasi).md
+    pmicro = round((Qb * pa + Qa * pb) / (Qb + Qa), 12) if (Qb + Qa) > 0 else None
     return {"mid": mid, "spread_bps": round(10000.0 * (pa - pb) / mid, 2),
             "bi1": imb(B1, A1), "bi5": imb(B5, A5), "bi20": imb(B20, A20),
-            "mi20": imb_uang(B20, A20), "util20": util(B20, A20),
+            "mi20": imb_uang(B20, A20), "util20": util(B20, A20), "bi25": bi25,
+            "pmicro": pmicro,
+            "micro_minus_mid_bps": (round(10000.0 * (pmicro - mid) / mid, 2)
+                                    if pmicro else None),
             "n_bid": len(bids), "n_ask": len(asks)}
 
 
@@ -122,7 +195,12 @@ def satu(sym, timeout=25):
             kode = resp.getcode()
             d = json.loads(resp.read().decode())
     except urllib.error.HTTPError as e:
-        return {"k": "bdx", "sym": sym, "kode_http": e.code, "detik": int(time.time())}
+        try:
+            pesan = json.loads(e.read().decode()).get("msg")
+        except Exception:
+            pesan = None
+        return {"k": "bdx", "sym": sym, "kode_http": e.code, "msg": str(pesan or "")[:80],
+                "detik": int(time.time())}
     except Exception as e:
         return {"k": "bdx", "sym": sym, "kode_http": -1, "galat": str(e)[:120],
                 "detik": int(time.time())}
@@ -149,7 +227,7 @@ def laporan():
     if not os.path.exists(OUT):
         print("belum ada %s - perekam belum pernah jalan" % os.path.basename(OUT))
         return
-    by, x, gagal, update_sama = {}, 0, {}, 0
+    by, x, gagal, pesan, update_sama = {}, 0, {}, {}, 0
     tid = None
     for ln in io.open(OUT, encoding="utf-8", errors="replace"):
         if not ln.startswith("{"):
@@ -157,7 +235,10 @@ def laporan():
         d = json.loads(ln)
         x += 1
         if d.get("k") == "bdx":
-            gagal[str(d.get("kode_http"))] = gagal.get(str(d.get("kode_http")), 0) + 1
+            kode = str(d.get("kode_http"))
+            gagal[kode] = gagal.get(kode, 0) + 1
+            kk = "%s:%s" % (kode, d.get("msg") or "")
+            pesan[kk] = pesan.get(kk, 0) + 1
             continue
         by.setdefault(d["sym"], []).append(d)
         if tid == d.get("update_id"):
@@ -165,6 +246,8 @@ def laporan():
         tid = d.get("update_id")
     print("baris: %d | simbol tercatat: %d | kegagalan per kode HTTP: %s"
           % (x, len(by), json.dumps(gagal, sort_keys=True) if gagal else "tidak ada"))
+    if pesan:
+        print("   pesan API apa adanya: %s" % json.dumps(pesan, sort_keys=True)[:420])
     for sym in sorted(by)[:8]:
         r = by[sym]
         sp = [y["spread_bps"] for y in r]
@@ -217,16 +300,26 @@ def utama():
     ap = argparse.ArgumentParser()
     ap.add_argument("--self-test", action="store_true")
     ap.add_argument("--report", action="store_true")
+    ap.add_argument("--validasi-saja", action="store_true",
+                    help="cek daftar pantau terhadap exchangeInfo lalu berhenti")
     ap.add_argument("--limit-simbol", type=int, default=25)
     ap.add_argument("--gap", type=float, default=1.2)
-    ap.add_argument("--ymbols", default="", help="daftar manual, koma; gabungan dengan berkas daftar")
+    ap.add_argument("--symbols", default="", help="daftar manual, koma; gabungan dengan berkas daftar")
     a = ap.parse_args()
     if a.self_test:
         return self_test()
     if a.report:
         return laporan()
-    daftar = list(dict.fromkeys((JANGKAR + baca_daftar() +
-                                 [s.strip().upper() for s in a.ymbols.split(",") if s.strip()])))
+    daftar = list(dict.fromkeys([x for x in (normal(y) for y in (
+        JANGKAR + baca_daftar() + [z for z in a.symbols.split(",") if z.strip()])) if x]))
+    if a.validasi_saja:
+        ok, buang = validasi(daftar)
+        print("validasi daftar ⑨: %d dikenal, %d TIDAK ada di exchangeInfo (dari %d)"
+              % (len(ok), len(buang), len(daftar)))
+        if buang:
+            print("   contoh dibuang: %s" % ", ".join(buang[:10]))
+        return
+    daftar = validasi(daftar)[0]
     if not daftar:
         raise SystemExit("tidak ada simbol untuk direkam - tulis daftar ke universe/book-venue.txt")
     rows = siklus(daftar[:a.limit_simbol], a.gap)

@@ -98,6 +98,49 @@ python -X utf8 tools/book_prereg.py --status               # umur kunci + jumlah
 python -X utf8 tools/book_prereg.py                        # vonis (menolak sebelum matang)
 ```
 
+## 5b. Empat batas yang ditulis literatur **sebelum** vonis kami keluar
+
+Bukan supaya hasilnya sudah tahu lebih dulu - aturan vonisnya tidak berubah - tapi supaya nol tidak
+dibaca sebagai pembuktian dan positif tidak dibaca sebagai penemuan (lihat
+[[08-Backlog/04 - Riset Teori (Sitasi)]] S1-S4, semuanya diakses 29 Sep 2026):
+
+1. **Kami mengukur STATE, bukan OFI.** OFI (Cont-Kukanov-Stoikov, arXiv:1011.6402v3) adalah jumlah
+   atas *event* dan **tidak dapat dipulihkan dari dua endpoint**. R² 65 % yang sering dikutip itu
+   adalah kecocokan **kontemporer** pada Δt = 10 detik, bukan kemampuan meramal; dan "fit-nya
+   meningkat dengan Δt" berarti makin panjang interval makin cocok dengan pergerakan yang *sudah*
+   terjadi.
+2. **Horison literatur bukan jam dinding.** Queue imbalance (arXiv:1512.03492v1) memprediksi
+   **pergerakan mid-price berikutnya** (AUC out-of-sample 0,752-0,805 large-tick vs 0,581-0,642
+   small-tick; null 0,5), dengan imbalance diambil pada waktu acak **di antara dua pergerakan harga**.
+   Kami mengambil satu snapshot per ±200 detik: kami tidak sedang mengukur sinyal yang sama lebih
+   pelan, kami mengukur agregat yang berbeda.
+3. **Di horison satu menit pun angka OOS bisa negatif.** arXiv:2112.13213v4 melapor R² out-of-sample
+   1-minute-ahead **negatif** (−0,37 s/d −0,36) di S&P 100. Dan SSRN 7053198 (preprint, tidak
+   peer-review) menunjukkan Sharpe **gross +0,981 → net −1,726** pada bar 10 detik karena biaya
+   ±164× edge-nya. E19 kami memberi versi lokalnya: ruang spread ≈ **21 bps** di horison 5 menit.
+4. **Ada bukti arah "kontra".** arXiv:2502.18625v2 mencatat maker yang layak justru bergerak
+   **melawan** imbalance dominan di beberapa rezim. Kalau vonis kami datang dengan tanda terbalik,
+   itu **bukan** penemuan baru: itu arah yang sudah diduga dari literatur, dan tetap butuh kunci
+   sendiri (aturan halaman 12/22: tidak membalik arah demi hasil).
+
+Konsekuensi operasional: E16 tetap diuji apa adanya (n≥40, median>0 dengan CI bawah>0, MW satu arah,
+net-of-spread>0). Yang berubah adalah **cara membacanya**: nol = sesuai dugaan; positif = curig dulu,
+placebo dan grid dulu, baru klaim.
+
+## 5c. Pengakuan cakupan (ditulis 09:5xZ, sebelum vonis, supaya tidak perlu ditulis sesudah)
+
+Kunci dipasang 09:37:45Z. Sampai ±09:5xZ, hampir semua snapshot pasca-kunci adalah **jangkar likuid**
+(BTC/ETH/SOL/BNB) - simbol kabar ditolak API karena daftar kami berisi basis aset, bukan simbol
+kuotasi (F-D47; 110 baris `400 Invalid symbol` vs 20 baris data). Daftar sudah dibetulkan dan
+validasi sekarang berjalan tiap siklus, tapi **jendelanya sudah tidak homogen**.
+
+Maka vonis E16 nanti **tidak sah** kalau datang tanpa komposisi. Yang wajib ikut dicetak:
+jumlah pasangan per simbol, berapa pasangan dari sebelum/sesudah 09:5xZ, dan berapa persen dari
+`n` datang dari jangkar. Kalau ternyata jangkar-dominan, kalimatnya adalah *"uji ini sebenarnya
+menguji BTC/ETH/SOL, bukan simbol kabar"* - bukan "imbalance buku tidak bekerja di micro-cap".
+Kunci tidak digeser dan data tidak dibuang: keduanya akan jadi goalpost-moving, dan itu justru yang
+kami hindari sejak halaman 12.
+
 ## 6. Hasil
 
 _kosong sampai umur kunci cukup - dan kekosongan ini bagian dari spesifikasinya._

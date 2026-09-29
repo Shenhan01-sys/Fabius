@@ -1,0 +1,33 @@
+{
+ "dibuat_utc": "2026-09-29T10:01:48Z",
+ "hasil": [
+  {
+   "hipotesis": "bi5",
+   "n": 15,
+   "status": "BELUM BISA DIUJI (n < 40)"
+  },
+  {
+   "hipotesis": "bi1",
+   "n": 15,
+   "status": "BELUM BISA DIUJI (n < 40)"
+  },
+  {
+   "hipotesis": "bi20",
+   "n": 15,
+   "status": "BELUM BISA DIUJI (n < 40)"
+  },
+  {
+   "hipotesis": "mi20",
+   "n": 15,
+   "status": "BELUM BISA DIUJI (n < 40)"
+  },
+  {
+   "hipotesis": "util20",
+   "n": 15,
+   "status": "BELUM BISA DIUJI (n < 40)"
+  }
+ ],
+ "pasangan": 15,
+ "spec_sha256": "0xeba3e0c510cb8470961f9b94b7cc68f490d5aa41c849c6b14baba6cd81cdebe2",
+ "umur_jam": 0.4
+}
