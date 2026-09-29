@@ -1,0 +1,151 @@
+{
+ "bh_lulus": [],
+ "dibuat_utc": "2026-09-29T09:45:26Z",
+ "draws": 200,
+ "hasil": [
+  {
+   "ci_bawah_atas": -110.6,
+   "di_atas_nol": false,
+   "di_atas_placebo": false,
+   "ekstrem_di_bawah_placebo": false,
+   "fitur": "svu15",
+   "frac_selisih_positif": 0.3,
+   "mean_net_atas": 82.8,
+   "mean_net_bawah": 240.4,
+   "median_net_atas": -51.4,
+   "median_net_bawah": 125.0,
+   "n": 396,
+   "n_atas": 198,
+   "n_bawah": 198,
+   "p_mw": 0.89747,
+   "p_placebo_dua_ekor": 0.7761,
+   "placebo_ci": [
+    -231.4,
+    270.2
+   ],
+   "sebar_selisih": [
+    -343.0,
+    207.1
+   ],
+   "selisih": -41.4
+  },
+  {
+   "ci_bawah_atas": -50.3,
+   "di_atas_nol": false,
+   "di_atas_placebo": false,
+   "ekstrem_di_bawah_placebo": false,
+   "fitur": "svu5",
+   "frac_selisih_positif": 0.45,
+   "mean_net_atas": 139.3,
+   "mean_net_bawah": 183.8,
+   "median_net_atas": -33.5,
+   "median_net_bawah": 33.7,
+   "n": 396,
+   "n_atas": 198,
+   "n_bawah": 198,
+   "p_mw": 0.57491,
+   "p_placebo_dua_ekor": 0.7463,
+   "placebo_ci": [
+    -243.3,
+    251.5
+   ],
+   "sebar_selisih": [
+    -372.3,
+    272.4
+   ],
+   "selisih": -15.0
+  },
+  {
+   "ci_bawah_atas": -22.9,
+   "di_atas_nol": false,
+   "di_atas_placebo": false,
+   "ekstrem_di_bawah_placebo": false,
+   "fitur": "svn15",
+   "frac_selisih_positif": 0.5,
+   "mean_net_atas": 168.1,
+   "mean_net_bawah": 155.0,
+   "median_net_atas": -1.3,
+   "median_net_bawah": -10.8,
+   "n": 396,
+   "n_atas": 198,
+   "n_bawah": 198,
+   "p_mw": 0.53971,
+   "p_placebo_dua_ekor": 0.9254,
+   "placebo_ci": [
+    -247.0,
+    273.1
+   ],
+   "sebar_selisih": [
+    -411.9,
+    267.8
+   ],
+   "selisih": 9.6
+  },
+  {
+   "ci_bawah_atas": 41.7,
+   "di_atas_nol": false,
+   "di_atas_placebo": false,
+   "ekstrem_di_bawah_placebo": false,
+   "fitur": "svm15",
+   "frac_selisih_positif": 0.42,
+   "mean_net_atas": 229.2,
+   "mean_net_bawah": 94.0,
+   "median_net_atas": 45.2,
+   "median_net_bawah": -47.0,
+   "n": 396,
+   "n_atas": 198,
+   "n_bawah": 198,
+   "p_mw": 0.16268,
+   "p_placebo_dua_ekor": 0.796,
+   "placebo_ci": [
+    -264.8,
+    277.5
+   ],
+   "sebar_selisih": [
+    -466.5,
+    246.0
+   ],
+   "selisih": -24.8
+  },
+  {
+   "ci_bawah_atas": -9.5,
+   "di_atas_nol": false,
+   "di_atas_placebo": false,
+   "ekstrem_di_bawah_placebo": false,
+   "fitur": "vpb15",
+   "frac_selisih_positif": 0.4,
+   "mean_net_atas": 181.0,
+   "mean_net_bawah": 142.1,
+   "median_net_atas": 11.1,
+   "median_net_bawah": -18.2,
+   "n": 396,
+   "n_atas": 198,
+   "n_bawah": 198,
+   "p_mw": 0.3739,
+   "p_placebo_dua_ekor": 0.8856,
+   "placebo_ci": [
+    -273.5,
+    291.8
+   ],
+   "sebar_selisih": [
+    -421.4,
+    351.4
+   ],
+   "selisih": -14.9
+  }
+ ],
+ "horison_menit": [
+  2,
+  5,
+  30
+ ],
+ "kejadian": 396,
+ "ongkos_bps_rt": 59.0,
+ "sensor": {
+  "n_oleh_batas": 5789,
+  "tanpa_keluar": 86,
+  "tanpa_wp_masuk": 6608,
+  "token_tanpa_wp": 2573
+ },
+ "sha": "0x47d01ede9ab5897d2df9f46843b11a0d56f421d5eece87286d7bb388d821f82b"
+}

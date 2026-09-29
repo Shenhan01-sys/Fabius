@@ -1,0 +1,61 @@
+{
+ "dalam_anggaran_median": [
+  "BTCUSDT",
+  "ETHUSDT",
+  "SOLUSDT",
+  "BNBUSDT",
+  "CAKEUSDT"
+ ],
+ "dibuat_utc": "2026-09-29T09:48:17Z",
+ "mean_net_boleh_e13_bps": 285.5,
+ "median_net_boleh_e13_bps": 79.8,
+ "ongkos_rt_terukur_bps": 59.0,
+ "sha": "0x59b7d0575d09b85b51f2d2c3fc06317e902565bd46e16abcc9cc1730b0665bfe",
+ "simbol": [
+  {
+   "biaya_rt_penuh_bps": 59.01,
+   "jangkar": true,
+   "menang_di_median": true,
+   "n": 2,
+   "simbol": "BTCUSDT",
+   "spread_median_bps": 0.01,
+   "spread_p90_bps": 0.01
+  },
+  {
+   "biaya_rt_penuh_bps": 59.04,
+   "jangkar": true,
+   "menang_di_median": true,
+   "n": 2,
+   "simbol": "ETHUSDT",
+   "spread_median_bps": 0.04,
+   "spread_p90_bps": 0.04
+  },
+  {
+   "biaya_rt_penuh_bps": 59.84,
+   "jangkar": true,
+   "menang_di_median": true,
+   "n": 2,
+   "simbol": "SOLUSDT",
+   "spread_median_bps": 0.84,
+   "spread_p90_bps": 0.84
+  },
+  {
+   "biaya_rt_penuh_bps": 60.05,
+   "jangkar": true,
+   "menang_di_median": true,
+   "n": 1,
+   "simbol": "BNBUSDT",
+   "spread_median_bps": 1.05,
+   "spread_p90_bps": 1.05
+  },
+  {
+   "biaya_rt_penuh_bps": 66.77,
+   "jangkar": false,
+   "menang_di_median": true,
+   "n": 1,
+   "simbol": "CAKEUSDT",
+   "spread_median_bps": 7.77,
+   "spread_p90_bps": 7.77
+  }
+ ]
+}

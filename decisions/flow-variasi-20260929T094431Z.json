@@ -1,0 +1,126 @@
+{
+ "bh_lulus": [],
+ "dibuat_utc": "2026-09-29T09:44:31Z",
+ "draws": 200,
+ "hasil": [
+  {
+   "ci_bawah_atas": -110.6,
+   "di_atas_nol": false,
+   "di_atas_placebo": false,
+   "ekstrem_di_bawah_placebo": false,
+   "fitur": "svu15",
+   "mean_net_atas": 82.8,
+   "mean_net_bawah": 240.4,
+   "median_net_atas": -51.4,
+   "median_net_bawah": 125.0,
+   "n": 396,
+   "n_atas": 198,
+   "n_bawah": 198,
+   "p_mw": 0.89747,
+   "p_placebo_dua_ekor": 0.2189,
+   "placebo_ci": [
+    -236.0,
+    278.0
+   ],
+   "selisih": -157.6
+  },
+  {
+   "ci_bawah_atas": -20.6,
+   "di_atas_nol": false,
+   "di_atas_placebo": false,
+   "ekstrem_di_bawah_placebo": false,
+   "fitur": "svu5",
+   "mean_net_atas": 166.7,
+   "mean_net_bawah": 156.4,
+   "median_net_atas": 2.6,
+   "median_net_bawah": -22.8,
+   "n": 396,
+   "n_atas": 198,
+   "n_bawah": 198,
+   "p_mw": 0.46884,
+   "p_placebo_dua_ekor": 0.9751,
+   "placebo_ci": [
+    -303.4,
+    284.2
+   ],
+   "selisih": 10.2
+  },
+  {
+   "ci_bawah_atas": -68.7,
+   "di_atas_nol": false,
+   "di_atas_placebo": false,
+   "ekstrem_di_bawah_placebo": false,
+   "fitur": "svn15",
+   "mean_net_atas": 120.0,
+   "mean_net_bawah": 203.1,
+   "median_net_atas": 55.0,
+   "median_net_bawah": -33.5,
+   "n": 396,
+   "n_atas": 198,
+   "n_bawah": 198,
+   "p_mw": 0.62343,
+   "p_placebo_dua_ekor": 0.597,
+   "placebo_ci": [
+    -272.0,
+    236.5
+   ],
+   "selisih": -83.1
+  },
+  {
+   "ci_bawah_atas": 52.2,
+   "di_atas_nol": true,
+   "di_atas_placebo": false,
+   "ekstrem_di_bawah_placebo": false,
+   "fitur": "svm15",
+   "mean_net_atas": 234.7,
+   "mean_net_bawah": 88.4,
+   "median_net_atas": 79.8,
+   "median_net_bawah": -54.4,
+   "n": 396,
+   "n_atas": 198,
+   "n_bawah": 198,
+   "p_mw": 0.10627,
+   "p_placebo_dua_ekor": 0.2388,
+   "placebo_ci": [
+    -247.5,
+    244.8
+   ],
+   "selisih": 146.4
+  },
+  {
+   "ci_bawah_atas": -26.9,
+   "di_atas_nol": false,
+   "di_atas_placebo": false,
+   "ekstrem_di_bawah_placebo": false,
+   "fitur": "vpb15",
+   "mean_net_atas": 159.0,
+   "mean_net_bawah": 164.2,
+   "median_net_atas": -5.8,
+   "median_net_bawah": -5.3,
+   "n": 396,
+   "n_atas": 198,
+   "n_bawah": 198,
+   "p_mw": 0.49352,
+   "p_placebo_dua_ekor": 0.9154,
+   "placebo_ci": [
+    -280.4,
+    264.1
+   ],
+   "selisih": -5.2
+  }
+ ],
+ "horison_menit": [
+  2,
+  5,
+  30
+ ],
+ "kejadian": 396,
+ "ongkos_bps_rt": 59.0,
+ "sensor": {
+  "n_oleh_batas": 5789,
+  "tanpa_keluar": 86,
+  "tanpa_wp_masuk": 6608,
+  "token_tanpa_wp": 2573
+ },
+ "sha": "0xd7fe7403fc28ff8b387a149f8370de572580abe97eda3e8c1f7d2cc60ed6e011"
+}

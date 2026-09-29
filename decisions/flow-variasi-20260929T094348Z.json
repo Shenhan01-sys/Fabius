@@ -1,0 +1,101 @@
+{
+ "bh_lulus": [],
+ "dibuat_utc": "2026-09-29T09:43:48Z",
+ "draws": 150,
+ "hasil": [
+  {
+   "ci_bawah_atas": -110.6,
+   "di_atas_nol": false,
+   "di_atas_placebo": false,
+   "fitur": "svu15",
+   "mean_net_atas": 82.8,
+   "mean_net_bawah": 240.4,
+   "median_net_atas": -51.4,
+   "median_net_bawah": 125.0,
+   "n": 396,
+   "n_atas": 198,
+   "n_bawah": 198,
+   "p_mw": 0.89747,
+   "placebo_ci_atas": 284.6,
+   "selisih": -157.6
+  },
+  {
+   "ci_bawah_atas": -47.3,
+   "di_atas_nol": false,
+   "di_atas_placebo": false,
+   "fitur": "svu5",
+   "mean_net_atas": 143.8,
+   "mean_net_bawah": 179.3,
+   "median_net_atas": -25.4,
+   "median_net_bawah": 11.1,
+   "n": 396,
+   "n_atas": 198,
+   "n_bawah": 198,
+   "p_mw": 0.62859,
+   "placebo_ci_atas": 265.1,
+   "selisih": -35.6
+  },
+  {
+   "ci_bawah_atas": 22.5,
+   "di_atas_nol": true,
+   "di_atas_placebo": false,
+   "fitur": "svn15",
+   "mean_net_atas": 214.7,
+   "mean_net_bawah": 108.5,
+   "median_net_atas": -11.2,
+   "median_net_bawah": -5.3,
+   "n": 396,
+   "n_atas": 198,
+   "n_bawah": 198,
+   "p_mw": 0.24965,
+   "placebo_ci_atas": 250.8,
+   "selisih": 106.2
+  },
+  {
+   "ci_bawah_atas": -71.0,
+   "di_atas_nol": false,
+   "di_atas_placebo": false,
+   "fitur": "svm15",
+   "mean_net_atas": 123.2,
+   "mean_net_bawah": 200.0,
+   "median_net_atas": -16.2,
+   "median_net_bawah": 37.2,
+   "n": 396,
+   "n_atas": 198,
+   "n_bawah": 198,
+   "p_mw": 0.74389,
+   "placebo_ci_atas": 254.9,
+   "selisih": -76.8
+  },
+  {
+   "ci_bawah_atas": -83.4,
+   "di_atas_nol": false,
+   "di_atas_placebo": false,
+   "fitur": "vpb15",
+   "mean_net_atas": 108.3,
+   "mean_net_bawah": 214.9,
+   "median_net_atas": -57.6,
+   "median_net_bawah": 95.5,
+   "n": 396,
+   "n_atas": 198,
+   "n_bawah": 198,
+   "p_mw": 0.85591,
+   "placebo_ci_atas": 228.3,
+   "selisih": -106.6
+  }
+ ],
+ "horison_menit": [
+  2,
+  5,
+  30
+ ],
+ "kejadian": 396,
+ "ongkos_bps_rt": 59.0,
+ "sensor": {
+  "n_oleh_batas": 5789,
+  "tanpa_keluar": 86,
+  "tanpa_wp_masuk": 6608,
+  "token_tanpa_wp": 2573
+ },
+ "sha": "0x44795f90e0d5f5a320c124e6d86fdc8547b76bbce33c44e90ad48f5612bed826"
+}

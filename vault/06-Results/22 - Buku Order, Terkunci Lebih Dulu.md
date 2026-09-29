@@ -72,6 +72,15 @@ Jawaban kami datang dari pengukuran, bukan selera, dan ada tiga lapis:
 | buku order kami bisa **diamati** setiap | **±200 detik** (satu siklus ⑦) | cadence loop, bukan pilihan teori |
 | horizon prediksi yang diuji di sini | **5 menit** (3 snapshot) | kompromi jujur: lebih pendek dari ini kami tidak punya data; lebih panjang sudah terbukti bocor |
 
+Satu lapis lagi, karena pertanyaan "timeframe" sebenarnya pertanyaan uang:
+`tools/cost_budget.py` menghitungnya sebagai anggaran - ongkos tetap 59,0 bps RT **plus** spread
+penuh dua kaki, melawan harapan MEDIAN terkecil yang pernah kami ukur (+79,8 bps, E13 `BOLEH` menit
+ke-5). Artinya **ambang spread ≈ 21 bps**: di atas itu strategi 5 menit kalah oleh biaya sebelum
+pasar bergerak. Mean +285,5 bps memberi ruang sampai ~226 bps, tapi mean itu ditopang ekor kanan
+(P(≥+500) 37-40 %), jadi memakainya sebagai anggaran = berharap undian, bukan menghitung edge.
+Run pertama: 5/5 simbol lolos - dan itu **belum menjawab apa pun**, yang direkam baru
+BTC/ETH/SOL/BNB/CAKE.
+
 Konsekuensinya harus ditulis terang: **pada cadence 200 detik, uji ini tidak bisa memalsukan versi
 cepat dari teori itu.** Kalau hasilnya nol, yang gugur adalah "buku order pada resolusi 3-4 menit",
 bukan klaim trader bahwa imbalance di bawah satu menit itu nyata - dan di literatur memang
