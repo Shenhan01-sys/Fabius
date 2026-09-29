@@ -1,0 +1,10 @@
+{
+  "kunci": "E24",
+  "menit_kunci": 1790716744,
+  "perintah_vonis": "python -X utf8 tools/entry_ab.py",
+  "spec": "E24 - masuk terpilih vs masuk acak pada horison tempat kabar masih hidup.\n\npopulasi       : baris keputusan tools/fast_lane.py dengan dibuat_utc > t_kunci; lengan yang\n                 dinilai hanya yang SAH (umur keputusan <= 120 d; jendela 5m mulai di\n                 kejadian+120 d - F-D54), status dinilai, dan punya keluar_5m\nlengan T       : yang dibuka setelah gerbang \u2466 BOLEH (label FAST-5m, kontrol != True)\nlengan K       :kontrol acak siklus yang sama (label ACAK-5m, kontrol == True) - gerbang tidak\n                 dilihat; satu kontrol per siklus; benih pengambilannya waktu siklus\noutcome        : net_bps dari harga ticker `wp` saat keputusan ke median `wp` pada\n                 kejadian+5m +-3 m, dikurangi ongkos round-trip terukur 59 bps\nwinsor         : +/-1500 bps pada mean; median dilaporkan tanpa winsor\nvonis_primer   : selisih = mean_winso(T) - mean_winso(K)\nsyarat_layak   : (1) n_T >= 40 DAN n_K >= 40\n                 (2) median(T) > 0 DAN CI bawah bootstrap 4000 (seed 20260929) dari selisih > 0\n                 (3) Mann-Whitney satu arah T > K dengan p < 0,05\n                 (4) komposisi kedua lengan dicetak: token berbeda, median umur keputusan,\n                     median umur baris harga masuk - kalau T dan K tidak sebanding pada\n                     ketiganya, vonisnya BELUM BISA DIUJI\nkalau_gagal    : T tidak lebih baik dari K berarti seleksi kami tidak menambah apa pun di atas\n                 \"masuk acak pada menit pertama setelah whale beli\"; angka T yang NEGATIF dan\n                 K yang NEGATIF berarti substratnya yang buruk, bukan penilaiannya - dan itu\n                 TIDAK boleh dibaca sebagai \"fade saja\", arah dibalik butuh kunci baru\n",
+  "spec_sha256": "0x4c90bb27ac947420d5be198643c46a572cc66c4e8837206263a619f615270473",
+  "t_kunci": "2026-09-29T13:19:04Z",
+  "t_kunci_epoch": 1790687944,
+  "umur_jam_min": 8
+}

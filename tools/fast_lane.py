@@ -39,6 +39,7 @@ import hashlib
 import io
 import json
 import os
+import random
 import sys
 import tempfile
 import time
@@ -202,7 +203,7 @@ def jalankan(now, per_run, cari_menit, rt):
     latest, _ = muat_log()
     sudah = {r.get("kunci") for r in latest.values() if r.get("kunci")}
     wp = PR.load(os.path.join(ROOT, "universe", "watch-prices.jsonl"), "wp")["rows"]
-    rows, dinilai, dibuka, tolak = [], 0, 0, 0
+    rows, dinilai, dibuka, tolak, kontrol = [], 0, 0, 0, 0
 
     # 1) penilaian dulu (slot yang umurnya sudah lewat) supaya delta tak tertunda satu siklus
     for sid, r in latest.items():
@@ -274,7 +275,43 @@ def jalankan(now, per_run, cari_menit, rt):
                      "usd": c["usd"], "gerbang": fg["status"],
                      "sha": "0x" + hashlib.sha256(json.dumps(
                          {"k": c["kunci"], "now": now}, sort_keys=True).encode()).hexdigest()[:16]})
-    return rows, dibuka, dinilai, tolak
+
+    # 3) KONTROL ACAK - satu slot per siklus, dipilih dari kolam yang sama TANPA melihat gerbang.
+    #    Ini yang membuat angka F-D54 ("-519,4 bps saat kami masuk") bisa dibandingkan dengan
+    #    "apa yang kami dapat kalau masuk tanpa alasan sama sekali" (F-D8: yang harus dikalahkan
+    #    adalah kontrol acak siklus yang sama, bukan nol). Diambil seragam dengan benih = waktu
+    #    siklus, jadi pengambilannya bisa dihitung ulang. Hanya kandidat yang masih di dalam
+    #    ambang `sah` (<= 120 d) yang boleh jadi kontrol - kalau tidak, kontrolnya sistematis
+    #    tertolak dan perbandingannya jadi boneka.
+    kolam = [c for c in kandidat if now - c["t"] <= ARM_CEPAT * MIN - JENDELAPAS and now - c["t"] >= 5]
+    kolam = [c for c in kolam if c["kunci"] not in {r.get("kunci") for r in rows}]
+    if kolam:
+        c = kolam[random.Random(now).randrange(len(kolam))]
+        ent = wp_terakhir(wp.get(c["tk"]), now)
+        if ent and ent["px"] > 0:
+            kontrol += 1
+            rows.append({"slot_id": "R" + hashlib.sha256(("K|" + c["kunci"]).encode()).hexdigest()[:15],
+                         "status": "terbuka", "mode": "PAPER", "label": "ACAK-5m", "kontrol": True,
+                         "tk": c["tk"], "simbol": c["simbol"], "t_kejadian": c["t"],
+                         "kunci": c["kunci"], "dibuat_utc": iso(now), "t_putus": now,
+                         "pemilih": REJIM_BARI, "latensi_keputusan_detik": now - c["t"],
+                         "entry_px": ent["px"], "umur_baris_entry_detik": ent["umur_detik"],
+                         "tx_p": c["tx_p"], "usd": c["usd"],
+                         "gerbang": "TIDAK DILIHAT (kontrol acak)"})
+        else:
+            rows.append({"slot_id": "R" + hashlib.sha256(("K|" + c["kunci"]).encode()).hexdigest()[:15],
+                         "status": "KONTROL-KOSONG", "kontrol": True, "tk": c["tk"],
+                         "dibuat_utc": iso(now), "pemilih": REJIM_BARI,
+                         "alasan": "kontrol acak terpilih tapi ticker `wp` tidak punya baris <= "
+                                   "sekarang - kehilangan, bukan nol"})
+    else:
+        rows.append({"slot_id": "RKOSONG-" + iso(now).replace(":", "").replace("-", ""),
+                     "status": "KONTROL-KOSONG", "kontrol": True, "dibuat_utc": iso(now),
+                     "pemilih": REJIM_BARI, "kolam_siklus": len(kandidat),
+                     "alasan": "tidak ada kandidat berumur <= %d d di siklus ini - kontrol tidak "
+                               "bisa diambil, dan itu tercatat, bukan dilewati"
+                               % (ARM_CEPAT * MIN - JENDELAPAS)})
+    return rows, dibuka, dinilai, tolak, kontrol
 
 
 def laporan_terpasang(latest, urutan, rt):
@@ -289,6 +326,7 @@ def laporan_terpasang(latest, urutan, rt):
     """
     semua = [latest[sid] for sid in urutan
              if latest[sid].get("status") == "dinilai"
+             and not latest[sid].get("kontrol")
              and isinstance(latest[sid].get("keluar_5m"), dict)
              and isinstance(latest[sid].get("keluar_30m"), dict)]
 
@@ -355,10 +393,17 @@ def laporan_terpasang(latest, urutan, rt):
 
 def report(rt):
     latest, urutan = muat_log()
-    buka = [latest[s] for s in urutan if latest[s].get("status") == "terbuka"]
-    nilai = [latest[s] for s in urutan if latest[s].get("status") == "dinilai"]
-    tolak = [latest[s] for s in urutan if latest[s].get("status") == "DITOLAK"]
-    hili = [latest[s] for s in urutan if latest[s].get("status") == "TAK ADA DATA"]
+    # KONTROL ACAK dipisah dari perlakuan sejak daftar pertama: mencampurnya dengan angka
+    # perlakuan akan membuat "-519,4 bps kami" dan "+X bps tanpa alasan" jadi satu rata-rata.
+    ctrl = [latest[s] for s in urutan if latest[s].get("kontrol")]
+    buka = [latest[s] for s in urutan if latest[s].get("status") == "terbuka"
+            and not latest[s].get("kontrol")]
+    nilai = [latest[s] for s in urutan if latest[s].get("status") == "dinilai"
+             and not latest[s].get("kontrol")]
+    tolak = [latest[s] for s in urutan if latest[s].get("status") == "DITOLAK"
+             and not latest[s].get("kontrol")]
+    hili = [latest[s] for s in urutan if latest[s].get("status") == "TAK ADA DATA"
+            and not latest[s].get("kontrol")]
     lat = sorted(r["latensi_keputusan_detik"] for r in buka + nilai + tolak
                  if isinstance(r.get("latensi_keputusan_detik"), int))
     dl = [r["delta_cepat_kurang_lambat"] for r in nilai
@@ -423,6 +468,19 @@ def report(rt):
                      FC.med(cSah), len(cSah), len(c)))
     if hili:
         print("   tanpa data: %d - ini KEHILANGAN, bukan hasil nol" % len(hili))
+    if ctrl:
+        bys = {}
+        for r in ctrl:
+            bys[r.get("status")] = bys.get(r.get("status"), 0) + 1
+        kl = sorted(r["keluar_5m"]["net_bps"] for r in ctrl if isinstance(r.get("keluar_5m"), dict)
+                    and sah_arm(r, ARM_CEPAT))
+        print("   KONTROL ACAK (F-D8 - yang harus dikalahkan, bukan nol): %d baris %s"
+              % (len(ctrl), json.dumps(bys, sort_keys=True)))
+        if kl:
+            print("      lengan 5m SAH pada kontrol: n=%d | mean winso %+0.1f | median %+0.1f"
+                  % (len(kl), sum(w(x) for x in kl) / len(kl), FC.med(kl)))
+        else:
+            print("      belum ada lengan 5m sah pada kontrol - perbandingan belum bisa dibuat")
     rtp = laporan_terpasang(latest, urutan, rt)
     if tolak:
         alasan = {}
@@ -461,7 +519,7 @@ def self_test():
     FG.state = lambda a, now=None, **k: {"status": "BOLEH", "alasan": None}
     PR.load = lambda *a, **k: {"rows": seri}
     try:
-        rows, dib, nil, tol = jalankan(now, 3, 15, 59.0)
+        rows, dib, nil, tol, kon = jalankan(now, 3, 15, 59.0)
         assert dib == 1 and rows[0]["status"] == "terbuka", rows
         assert rows[0]["latensi_keputusan_detik"] == 60, rows[0]
         assert rows[0]["umur_baris_entry_detik"] == 5 * MIN, rows[0]
@@ -480,11 +538,11 @@ def self_test():
         assert sah_arm({"keluar_5m": {"net_bps": 1.0}, "latensi_keputusan_detik": 534}, 5) is False
         tulis(rows)
         # siklus berikutnya: slot dinilai (5m lewat, 30m belum) -> delta masih None
-        rows2, _, nil2, _ = jalankan(now + 6 * MIN, 3, 15, 59.0)
+        rows2, _, nil2, _, _ = jalankan(now + 6 * MIN, 3, 15, 59.0)
         assert nil2 == 1 and rows2[0]["status"] == "dinilai", rows2
         assert rows2[0]["keluar_30m"] is None and rows2[0]["delta_cepat_kurang_lambat"] is None
         # setelah 30 m: dua arm terisi dan delta berpasangan ada
-        rows3, _, nil3, _ = jalankan(now + 31 * MIN, 3, 15, 59.0)
+        rows3, _, nil3, _, _ = jalankan(now + 31 * MIN, 3, 15, 59.0)
         assert nil3 == 1 and rows3[0]["delta_cepat_kurang_lambat"] is not None, rows3
         assert rows3[0]["keluar_5m"]["net_bps"] > 0 > rows3[0]["keluar_30m"]["net_bps"], rows3
         assert isinstance(rows3[0]["keluar_5m"]["umur_baris_detik"], (int, float))
@@ -493,7 +551,7 @@ def self_test():
         io.open(FLOW, "w", encoding="utf-8").write(
             json.dumps({"k": "tx", "b": True, "tk": "0xtok2", "t": now - 30, "p": 1.0, "u": 500.0,
                         "m": "0xm", "y": "T2", "h": "0xh2"}) + "\n")
-        rows4, dib4, _, tol4 = jalankan(now, 3, 15, 59.0)
+        rows4, dib4, _, tol4, _ = jalankan(now, 3, 15, 59.0)
         assert dib4 == 0 and tol4 == 1 and rows4[0]["status"] == "DITOLAK", rows4
         assert rows4[0]["alasan"] == "kerumunan jual"
         # tidak ada baris wp -> TAK ADA DATA, BUKAN 0 bps
@@ -502,8 +560,25 @@ def self_test():
         io.open(FLOW, "w", encoding="utf-8").write(
             json.dumps({"k": "tx", "b": True, "tk": "0xtok3", "t": now - 30, "p": 1.0, "u": 9.0,
                         "m": "0xm", "y": "T3", "h": "0xh3"}) + "\n")
-        rows5, dib5, _, tol5 = jalankan(now, 3, 15, 59.0)
+        rows5, dib5, _, tol5, _ = jalankan(now, 3, 15, 59.0)
         assert dib5 == 0 and tol5 == 1 and rows5[0]["status"] == "TAK ADA DATA", rows5
+        assert any(r.get("kontrol") and r["status"] == "KONTROL-KOSONG" for r in rows5), rows5
+        # KONTROL ACAK (F-D8): dua kandidat segar + satu kursi perlakuan -> kandidat KEDUA harus
+        # jadi kontrol, dipilih tanpa melihat gerbang, dan benihnya waktu siklus (bisa dihitung ulang).
+        FG.state = lambda a, now=None, **k: {"status": "BOLEH", "alasan": None}
+        PR.load = lambda *a2, **k2: {"rows": {"0xtoka": [(now - 5 * MIN, 1.0), (now + 4 * MIN, 1.02)],
+                                              "0xtokb": [(now - 5 * MIN, 1.0), (now + 4 * MIN, 1.02)]}}
+        io.open(FLOW, "w", encoding="utf-8").write(
+            json.dumps({"k": "tx", "b": True, "tk": "0xtoka", "t": now - 60, "p": 1.0, "u": 500.0,
+                        "m": "0xma", "y": "TA", "h": "0xha"}) + "\n" +
+            json.dumps({"k": "tx", "b": True, "tk": "0xtokb", "t": now - 61, "p": 1.0, "u": 400.0,
+                        "m": "0xmb", "y": "TB", "h": "0xhb"}) + "\n")
+        rows6, dib6, _, _, kon6 = jalankan(now, 1, 15, 59.0)
+        assert dib6 == 1 and kon6 == 1, (dib6, kon6)
+        kr = [r for r in rows6 if r.get("kontrol")]
+        assert len(kr) == 1 and kr[0]["label"] == "ACAK-5m" and kr[0]["status"] == "terbuka", kr
+        assert kr[0]["gerbang"].startswith("TIDAK DILIHAT"), kr[0]
+        assert kr[0]["pemilih"] == REJIM_BARI and kr[0]["t_putus"] == now, kr[0]
         rep = report(59.0)
         assert set(("dinilai", "ditolak", "tanpa_data")) <= set(rep), rep
     finally:
@@ -540,10 +615,11 @@ def utama():
         return
     if not a.run:
         raise SystemExit("pilih --run, --report, atau --self-test")
-    rows, dibuka, dinilai, tolak = jalankan(now, a.per_run, a.cari, rt)
+    rows, dibuka, dinilai, tolak, kontrol = jalankan(now, a.per_run, a.cari, rt)
     tulis(rows)
-    print("FAST-LANE %s | dibuka %d | dinilai %d | ditolak/tanpa-data %d | ongkos %.1f bps RT"
-          % (iso(now), dibuka, dinilai, tolak, rt))
+    print("FAST-LANE %s | dibuka %d (terperlaku) | kontrol acak %d | dinilai %d | "
+          "ditolak/tanpa-data %d | ongkos %.1f bps RT"
+          % (iso(now), dibuka, kontrol, dinilai, tolak, rt))
     for r in rows:
         print("   %-8s %-10s %s" % (r["slot_id"][:8], r["tk"][:10],
                                     "%s lat=%ss %s" % (r["status"],

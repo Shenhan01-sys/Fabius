@@ -282,6 +282,8 @@ alatnya sendiri** - jadi belum bisa dijual, hanya bisa dijadikan kunci berikutny
 dan sekarang ada **T8 - titik masuk sebagai objek uji** yang sebelumnya tidak pernah bisa diuji
 karena alatnya sendiri salah.
 
+Kunci untuk yang pertama itu sudah dipasang malam ini: **E24** (`tools/entry_ab.py`, 13:19:04Z, vonis 21:19:04Z) - lihat [[06-Results/27 - Masuk Terpilih vs Masuk Acak]].
+
 Lihat: [[06-Results/26 - Masuk Segar, Terukur Benar]] · [[06-Results/19 - Umur Posisi]] §2b ·
 `00-Overview/03 - Decisions.md` F-D54.
 

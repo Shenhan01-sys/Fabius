@@ -1657,3 +1657,37 @@ masuk sebagai penyebab, dan itu belum pernah diisolasi.
 dibangun di atasnya ikut dicabut - bukan disimpan sebagai "sisi negatif". Dan median dari dua rejim
 yang berbeda BUKAN angka: dia pencampuran dua alat.
 
+## F-D55 - Kontrol acak dipasang di jalur cepat, dan masuknya jadi ujian terkunci (E24) - satu nama kunci hampir menimpa ujian 28 Sep · 29 Sep 2026 13:19:04Z
+
+**Kenapa ini perlu.** F-D54 memberi angka masuk pertama yang sah (−519,4 bps, n=25), tapi angka tanpa
+pembanding bukan kesimpulan. Kalau masuk **acak** di menit pertama setelah whale membeli juga memberi
+sekitar −520, yang buruk adalah **substratnya**, bukan penilaian kami - dua kalimat dengan akibat
+produk yang berbeda sama sekali. Aturan kami sendiri (F-D8) sudah bilang: yang dikalahkan adalah
+**kontrol acak pada siklus yang sama**, bukan nol.
+
+**Yang dipasang.** `tools/fast_lane.py` kini membuka satu slot kontrol per siklus (`ACAK-5m`,
+`kontrol: true`), dipilih seragam dari kolam yang sama dengan benih = waktu siklus, **tanpa melihat
+gerbang**; kandidat yang terlalu tua untuk jadi lengan sah tidak boleh jadi kontrol (kalau tidak ada
+yang layak, baris `KONTROL-KOSONG` ditulis - kehilangan dicatat, bukan dilewati). Statistik perlakuan
+dan kontrol dipisah sejak daftar pertama. `tools/entry_ab.py` memegang kunci
+`decisions/prereg-fastlane-lock.json`, `spec_sha256=0x4c90bb27ac947420d5be198643c46a572cc66c4e8837206263a619f615270473`, dipasang **13:19:04Z dengan 0 kejadian
+pasca-kunci**, vonis boleh mulai **21:19:04Z**. Self-test-nya memuat **kontrol negatif**: pada
+distribusi T dan K yang identik vonisnya harus GAGAL - harness yang tidak bisa menjawab "tidak"
+bukan harness.
+
+**Nyaris menghapus ujian yang sedang berjalan.** Nama berkas kunci pertama yang kutulis
+(`prereg-entry-lock.json`) **sudah dipakai** E1/E2/E3 sejak 28 Sep 11:32:07Z. Kalau tidak kucek,
+`--lock` malam ini menimpa spec ujian yang sedang hidup - sekelas dengan F-D42 (self-test menghapus
+data riwayat) dan F-D45 (dua alat, satu berkas). Alatnya sekarang menolak: berkas kunci dengan sha
+berbeda tidak pernah ditimpa, dan itu keluar dengan kode bukan nol. **Aturannya: satu ujian = satu
+berkas = satu sha; nama kunci adalah bagian dari spesifikasi.**
+
+**Empat syarat vonis:** n≥40 per lengan; median(T)>0 dan CI bawah bootstrap 4.000 dari selisih > 0;
+Mann-Whitney satu arah p<0,05; **komposisi lengan sebanding** (median umur keputusan tak berbeda >60
+d). Syarat keempat itu yang biasanya dilupakan - tanpanya T bisa menang hanya karena kontrolnya
+kebetulan lebih muda.
+
+**Yang tidak boleh terjadi setelah ini:** membaca GAGAL sebagai "VETO justru untung" (dibalik butuh
+kunci baru), atau membaca BELUM BISA DIUJI sebagai teori salah. Dan LAYAK pun belum uang: tembok
+venue 3,1 % (F-D43) dan `i` +245 bps (E21) tetap berdiri.
+
