@@ -1859,3 +1859,37 @@ penafsiran terbalik tanpa kunci baru); tidak menamai ini vonis akhir (satu hari,
 kedalaman); dan tidak memutuskan sendiri soal pindah venue - itu keputusan produk builder, saya catat
 sebagai **P62** dengan bukti yang sudah ada, bukan dengan ajakan.
 
+## F-D61 — Yang mati bukan kutipannya: pada 5 dari 26 simbol yang kami pantau, tidak ada volume sama sekali di dalam ±10 bps · 29 Sep 2026 14:50Z
+
+**Kenapa ini saya kejar.** `i` (E21, +245 bps) dan kerugian F-D54 (−519 bps) selalu saya jelaskan dengan
+satu kata: "likuiditas". Itu kata, bukan angka. ⑨ sudah merekam 20 level selama 4,7 jam pada 26 simbol,
+jadi pertanyaan "seberapa dalam buku kami di dekat mid" akhirnya bisa dijawab dengan `tools/book_stale.py`
+- dan jawabannya memisahkan tiga hal yang selama ini saya campur.
+
+```text
+BTC 0,01 bps spread / 1,58 jt unit dalam 10 bps / kutipan beku 0 %
+BOME 15,1 bps / 1.000 / 1,5 %          <-- kutipan HIDUP, transaksi MATI (E20: 96,9 % menit kosong)
+AI 66 bps / 0 / 13,4 %   BREW 139 bps / 0 / 12,1 %   4STOCK 310 bps / 0 / 7,5 %
+ASTEROID 551 bps / 0 / 22,4 %          B-MONEY 654 bps / 0 / 48,5 %
+```
+
+**Yang terbantahkan oleh angka ini.** (a) "Market maker-nya diam" - salah: mayoritas simbol mengubah
+best quote di >86 % snapshot. (b) "Yang beku itu kelas asetnya secara umum" - sebagian salah, lihat
+F-D59. (c) Yang benar: **kutipan ada, tapi tidak ada yang bisa diambil di dekat harga** - untuk 5 simbol,
+kedalaman dalam ±10 bps persis **nol**, dan spread-nya 66-654 bps. Order market apa pun di sana bukan
+"masuk dengan slippage", itu "masuk 1-6 persentase poin di luar harga terakhir".
+
+**Konsekuensi yang saya tarik sampai ujung.** Untuk E17/trailing: algebra `pi > 2s + i + C` tidak punya
+solusi pada simbol dengan `s` = 33-327 bps. Jadi "trailing tidak menolong" bukan sekadar "belum cukup
+data 1 menit" (F-D49) - pada sebagian buku yang kami pantau, **tidak ada jarak yang sah untuk dipasang**,
+berapapun resolusi harganya. Ini juga membuat F-D48 perlu catatan: 63-66 % kejadian "berjendela sah"
+dihitung dengan spread median 0,04 bps dari level teratas; kalau distribusinya dipisah per simbol,
+pemandangannya jauh lebih buruk dari satu angka itu.
+
+**Batas yang kutahan.** Kedalaman dalam **unit kuotasi** (px×qty), belum USD, jadi membandingkan besar
+kedalaman antar simbol yang harganya berbeda tidak sah - yang saya pakai di sini hanya "nol vs bukan nol"
+dan spread dalam bps (skala-bebas). Daftar pantau ⑨ TIDAK saya lebarkan (F-D53/P54), jadi 4 dari 5 simbol
+HIDUP (MARSCOIN/ZEC/DOGE/LINK) masih belum ada bukunya - itu P60 yang sesungguhnya, dikerjakan setelah
+E16 divonis. Dan `book_stale.py` baru sekali jalan: self-test-nya lolos (kutipan beku vs hidup terpisah,
+run terputus oleh celah waktu, <3 snapshot = TERLALU-SEDIKIT bukan nol).
+

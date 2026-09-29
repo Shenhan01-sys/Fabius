@@ -167,9 +167,51 @@ probabilitas isi), bukan **alasan masuk**. Itu perbedaan yang harus disebut deng
 dan itu juga yang membuat keputusan produk berikutnya menjadi pertanyaan builder, bukan pertanyaan
 backtest (P62).
 
+## 9. Yang mati bukan kutipannya - tapi bukunya dalam 10 bps pertama (P60, sebagian)
+
+`tools/book_stale.py` membaca ⑨ yang **sudah** terekam (daftar pantau tidak disentuh - F-D53 masih
+berlaku sampai vonis E16), 26 simbol, ~67-78 snapshot masing-masing, rentang 4,7 jam:
+
+```text
+              spread median   ±10 bps depth   ±50 bps depth   kutipan beku
+BTCUSDT             0,01 bps      1.584.224       1.584.224        0,0 %
+ETHUSDT             0,04 bps        668.423         668.423        0,0 %
+SOLUSDT             0,83 bps      1.658.575       2.285.152        5,2 %
+ASTERUSDT           2,75 bps         47.903         172.172        6,0 %
+BOMEUSDT           15,12 bps          1.000          10.498        1,5 %
+CAKEUSDT            7,73 bps         1.212           7.647        1,5 %
+AIUSDT             66,27 bps              0              27       13,4 %
+BREWUSDT          139,26 bps              0               0       12,1 %
+4STOCKUSDT        310,03 bps              0               0        7,5 %
+ASTEROIDUSDT      550,83 bps              0               0       22,4 %
+B-MONEYUSDT       654,21 bps              0               0       48,5 %
+```
+
+Tiga hal yang sebelumnya tercampur sekarang terpisah:
+
+1. **Kutipan umumnya HIDUP.** Yang beku kutipannya cuma B-MONEY (48,5 % snapshot identik). Sisanya
+   0-13 % - jadi "tidak ada transaksi" (E20) **bukan** karena market maker berhenti mengutip.
+2. **Tapi tidak ada yang bisa dibeli di dekat harga.** Untuk AI/BREW/4STOCK/ASTEROID/B-MONEY, kedalaman
+   dalam ±10 bps = **nol**: order market apa pun harus naik 66-654 bps lebih dulu sebelum bertemu
+   volume. Ini mekanisme yang selama ini cuma saya asumsikan di `i` (E21, +245 bps) dan di kerugian
+   F-D54 (-519 bps) - sekarang ada angkanya per simbol, bukan sebagai model.
+3. **BOME adalah kasus yang memisahkan dua penjelasan.** Kutipannya hidup (spread 15,1 bps, beku 1,5 %)
+   tapi klines-nya 96,9 % menit tanpa transaksi (E20). Jadi yang mati di sana **minat**, bukan kuotasi -
+   dan itu tidak bisa diperbaiki dengan venue lain yang lebih ramai kutipan.
+
+**Untuk trailing stop (E17/F-D48), ini bagian yang menentukan:** algebra saya menahan sebuah stop hanya
+kalau `pi > 2s + i + C`. Pada 4STOCK/ASTEROID/B-MONEY, `s` (setengah spread) sudah 155-327 bps, dan `i`
+tidak bisa di bawah selisih itu karena tidak ada likuiditas di dalam 10 bps. Jadi jawaban atas
+"trailing kok tidak menolong" bukan lagi "belum cukup data 1 menit" - pada separuh buku yang kami pantau,
+**tidak ada angka `d` yang memenuhi**, dan alat E17-gate menghitung 63-66 % kejadian berjendela sah
+karena ia memakai spread median 0,04 bps dari level teratas, bukan persebaran per simbol seperti ini.
+
+Belum terukur (masih P60 utuh): MARSCOIN/ZEC/DOGE/LINK tidak ada di ⑨, jadi hanya 3 dari 5 simbol HIDUP
+yang bisa dibaca bukunya; menambah daftar itu adalah P54, sesudah E16 divonis.
+
 ## 6. Yang berubah karena ini
 
-- Keputusan: **F-D56** (E20), **F-D57** (parser & dua angka reachable), **F-D59** (venue pembanding lebih hidup - dugaan 'nasib long-tail' dibantah), **F-D60** (bump tetap mati di venue hidup - dugaan 'venue terlalu beku' dibantah), **F-D58** (E26, bump tidak
+- Keputusan: **F-D56** (E20), **F-D57** (parser & dua angka reachable), **F-D61** (yang mati bukan kutipan, tapi buku dalam 10 bps), **F-D59** (venue pembanding lebih hidup - dugaan 'nasib long-tail' dibantah), **F-D60** (bump tetap mati di venue hidup - dugaan 'venue terlalu beku' dibantah), **F-D58** (E26, bump tidak
   pindah ke perp).
 - Koreksi terlihat di: halaman 19 §3 (tembok venue), `TradingKnowledge/Fakta Terukur.md`,
   `10-Submissions/01 - Claims Cheat Sheet.md` (baris "edge dua menit" + frasa yang dilarang),
