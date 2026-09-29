@@ -51,11 +51,13 @@ sendiri:
 1. **Jendela pantau dipakai sebagai bukti kematian.** Versi pertama menyebut 74 % token HILANG -
    padahal jendela perekam 120 menit, jadi absen di siklus ke-40 artinya keluar dari DAFTAR KAMI.
    Aturan diperbaiki: bukti hanya dari siklus di dalam `(last_seen, last_seen + jendela]`.
-2. **Batas batch membuat kami berhenti bertanya sebelum bisa menyimpulkan.** Workflow memanggil
-   `--max-batches 6` = 180 alamat, sementara daftar pantau sudah 400-900 token: sisanya tidak
-   pernah ditanya dan tetap terbaca "venue tidak menjawab". Naik ke 40 batch, dan perekam sekarang
-   menulis `wpc` (berapa yang kami TANYA tiap siklus). Siklus pertama sudah membuktikan bedanya:
-   `n_tanya=147`, terjawab 136.
+2. **Kami tidak mencatat apa yang kami tanyakan - jadi pemangkasan batch tidak akan kelihatan.**
+   Kekhawatiran awalnya salahukur: daftar pantau nyata = 161-165 token dan 6 batch = 180 alamat,
+   jadi saat ini tidak ada yang terpotong. Yang benar-benar salah adalah ketiadaan catatan: tanpa
+   `wpc` kami tidak akan pernah bisa membedakan keduanya, dan aku sudah terlanjur menyimpulkan
+   '55 % pool mati'. Sekarang perekam menulis `wpc` (n_tanya/n_batch) dan `--max-batches` naik ke 40
+   sebagai asuransi - bukan sebagai perbaikan bug yang sedang terjadi. Pembacaan origin pertama:
+   6 siklus `wpc`, semuanya `n_tanya > n_jawab` (161 ditanya, 136 terjawab).
 3. **Perekam melapor "mencatat" tanpa mencatat.** Guard dedupe memanggil `r["tk"]` buta; baris buku
    tidak punya `tk` -> `KeyError` -> siklus selesai dengan konsol *kehilangan tercatat 11* sementara
    berkas tidak bertambah. Ketahuan bukan dari error, tapi dari angka konsol yang tidak muncul di
@@ -71,7 +73,9 @@ Klasifikasi (28 Sep 22:1xZ; 1.439 kejadian lolos veto, harga peristiwa):
 | TIDAK-JELAS (tidak pernah lewat pantau) | 575 | +229,0 | −11,0 | 41,7 % |
 
 **Bound dengan bukti:** 1.064 kejadian teramati (mean **+188,7**) + 375 token HILANG dihitung rugi
-penuh = **−381,7 bps/posisi**. Jadi "+249 di kohort muda" bertahan hanya kalau kita rela berkata
+penuh = **−381,7 bps/posisi**. Pembacaan ulang 24 menit kemudian (206 siklus, 1.484 kejadian):
+1.055 teramati (+170,7) + 429 HILANG = **−456,8 bps/posisi** - bound ini bergerak karena datanya
+bertambah, dan itu alasan ia ditulis sebagai bound, bukan sebagai hasil. Jadi "+249 di kohort muda" bertahan hanya kalau kita rela berkata
 375 token yang berhenti dijawab venue itu tidak apa-apa.
 
 Yang tersisa sebagai batas: bukti langsung (`answered-no-pair`) baru 8 token sejauh ini - mayoritas

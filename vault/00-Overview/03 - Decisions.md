@@ -857,11 +857,13 @@ menjadi keputusan tentang caranya, bukan cuma tentang hasilnya:
 1. **Jendela pantau dipakai sebagai bukti kematian.** Versi pertama menyebut 74 % token HILANG;
    itu hanya token yang keluar dari daftar pantau 120 menit kami. Aturan diperbaiki: bukti hanya
    dari siklus dalam `(last_seen, last_seen + jendela]`.
-2. **Batas batch membuat kami berhenti bertanya sebelum bisa menyimpulkan.** `--max-batches 6` =
-   180 alamat per siklus, sementara daftar pantau 400-900 token - sisanya tidak pernah ditanya dan
-   tetap terbaca "venue tidak menjawab". Naik ke 40; dan perekam menulis `wpc` (berapa yang kami
-   TANYA) supaya "tidak ditanya" terbedakan dari "tidak dijawab". Siklus pertama langsung
-   membuktikannya: `n_tanya=147` vs terjawab 136.
+2. **Kami tidak mencatat apa yang kami tanyakan.** Asumsi awalku ("400-900 token vs 180 alamat =
+   terpotong") ternyata salahukur: daftar pantau nyata 161-165 token dan itu muat di 6 batch.
+   Yang benar-benar salah adalah ketiadaan catatan `n_tanya` - tanpa itu kami TIDAK AKAN PERNAH
+   bisa membedakan "tidak ditanya" dari "tidak dijawab", dan aku tetap menyimpulkan "55 % pool
+   mati" tanpa dasar. Perekam sekarang menulis `wpc`; `--max-batches` naik ke 40 sebagai
+   **asuransi**, bukan sebagai perbaikan bug yang sedang terjadi. Pembacaan origin pertama: 6
+   siklus `wpc`, semuanya `n_tanya > n_jawab` (161-165 ditanya, 136 terjawab).
 3. **Perekam melapor "mencatat" tanpa mencatat.** Guard dedupe memanggil `r["tk"]` buta; baris buku
    `wpc`/`wpv` tidak punya `tk` -> `KeyError` -> siklus selesai dengan konsol *kehilangan tercatat
    11* sementara berkas tidak bertambah apa pun. Kelas yang sama dengan penolakan yang lulus karena
