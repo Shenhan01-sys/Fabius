@@ -97,8 +97,14 @@ dibangun pada kecepatan sinyal itu hidup**.
   yang terlihat oleh ⑦ (harga dari GMGN/DexScreener). Yang bisa dieksekusi agen ini hari ini adalah
   **perp di Aster** (`tools/direction.py` → `tools/execute_live.py`), dengan deret harganya sendiri.
   Apakah bump dua menit di spot muncul juga di perp pada arah yang sama **belum diukur** - dan tanpa
-  itu, E11 tidak boleh dibaca sebagai "Fabius bisa menradingkan ini", seberapa pun bagus kurva di
+  itu, E11 tidak boleh dibaca sebagai "Fabius bisa trading ini", seberapa pun bagus kurva di
   halaman ini. (P41)
+
+- **Dan irisannya sudah diukur, hasilnya tipis.** `tools/venue_bridge.py` (29 Sep 08:3xZ,
+  `decisions/p41-venue-bridge.json`): venue perp kami punya **584 basis aset**, kabar beli ⑦ hidup di
+  **2.163 simbol**, dan yang beririsan adalah **61 simbol - 3,1 % dari 25.050 kabar beli**. Sebelum
+  satu pun pertanyaan statistik dijawab, **96,9 % dari kabar yang kami ukur terjadi di tempat agen ini
+  tidak bisa berdiri**. Itu batas kalimat, bukan detail implementasi: F-D43.
 
 ## 4. Perintah
 

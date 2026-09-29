@@ -1132,3 +1132,44 @@ sama.
 **Terkait:** [[07-Testing/01 - Test Commands]] baris 46 · [[Concepts/Unmeasured Is Not Clean]] ·
 [[08-Backlog/01 - Backlog]] P35
 
+## F-D43 — Yang membatasi agen ini adalah JANGKAUAN VENUE, bukan kekuatan sinyal: 3,1 % kabar bisa dieksekusi · 29 Sep 2026 08:3xZ
+
+**Angka yang ditemukan setelah kabar.** E11 memberi kami hal pertama yang positif dan lolos placebo
+(bump ±2 menit, `tools/horizon_decay.py`). Refleks normalnya: cari ambang, cari horizon, cari fitur
+yang membuat bump itu lebih tajam. Kami melakukan hal yang lebih dulu dan lebih murah:
+**`tools/venue_bridge.py` membandingkan daftar tempat kabar hidup dengan daftar tempat kami bisa
+berdiri.**
+
+| | |
+|---|---|
+| basis aset di venue perp kami (`data/aster_symbols.json`) | **584** |
+| simbol tempat kabar beli ⑦ hidup (`universe/wallet-flow.jsonl`, 25.050 kabar) | **2.163** |
+| irisan | **61 simbol = 3,1 % dari volume kabar** |
+| contoh kabar TERBANYAK yang tidak beririsan | `CUE` 459 · `BPAY` 311 · `FXION` 292 · `QQQB` 290 - dan empat simbol teratas justru **nama token non-Latin** dari pasar Four.meme (527 dan 513 kabar pertama); nama aslinya ada di artefak, tidak kami salin ke vault karena gerbang teks proyek menolak aksara di luar Indonesia/Inggris |
+
+Artefak: `decisions/p41-venue-bridge.json` · perintah: `python -X utf8 tools/venue_bridge.py`.
+
+**Konsekuensinya, ditulis tanpa dipoles.** **96,9 % dari kabar yang kami ukur terjadi di token yang
+agen ini tidak bisa perdagangkan.** Jadi bahkan kalau bump E11 lolos uji prospectif dan terbukti bisa
+diambil secara statistik, ia tetap bukan PnL agen ini - kecuali salah satu dari dua hal berubah:
+(a) jalur eksekusi kami meluas ke spot/DEX tempat kabar itu hidup, atau (b) kami mempersempit
+pengamatan ke 61 simbol yang bisa kami pegang dan mengukur ulang dari nol di sana. Yang (a) adalah
+pekerjaan produk yang lebih besar dari sisa tenggat; yang (b) bisa dilakukan tapisampelnya langsung
+kecil - dan kami sudah berjanji tidak menjual harapan di atas sampel yang tidak cukup (F-D16).
+
+**Tembok kedua, jangan sampai terlewat.** Deret Aster yang kami punya berinterval minimal **15 menit**
+(`tools/bars.py` `INTERVAL_MS`), sementara kabar E11 hidup ±2 menit. Artinya "apakah bump ini ada di
+perp" tidak bisa dijawab dengan cache yang ada; ia butuh 1m-klines. Alat penghitung irisannya sudah
+ada; alat uji jembatannya **belum**, jadi P41 ditulis 🟡 (cakupan terukur, arah belum) dan bukan ✅.
+
+**Keputusan untuk halaman produk dan submission.** Semua kalimat yang menyebut E11 wajib membawa
+angka 3,1 % ini atau merujuk F-D43. Boleh: "ada kabar berumur dua menit di substrate yang kami
+amati; 96,9 % darinya terjadi di luar venue kami, dan itu sebabnya agen hari ini hanya boleh
+dijual dengan rem-nya." Tidak boleh: "Fabius tahu kapan masuk", "edge bisa diambil", atau kalimat
+apa pun yang membuat pembaca mengira bump itu milik portofolio yang bisa ia jalankan. Ini bukan
+koreksi angka - ini **batasan klaim**, dan ia dibuat justru pada saat angkanya terlihat bagus, yang
+adalah waktu di mana paling mudah berbohong.
+
+**Terkait:** [[06-Results/19 - Umur Posisi]] §3 · [[08-Backlog/01 - Backlog]] P41 ·
+[[07-Testing/01 - Test Commands]] baris 48 · [[10-Submissions/01 - Claims Cheat Sheet]] (aturan mana yang boleh dijual)
+
