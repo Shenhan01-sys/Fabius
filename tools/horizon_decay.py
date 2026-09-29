@@ -54,6 +54,50 @@ def w(x):
     return max(-WINS, min(WINS, x))
 
 
+def simbol_map():
+    """token -> simbol, dibaca dari baris ⑦. Kami butuh ini karena venue perp mengenal SIMBOL,
+    sementara seluruh pipeline kami mengenal ALAMAT."""
+    import json as _j
+    out = {}
+    for ln in io.open(os.path.join(ROOT, "universe", "wallet-flow.jsonl"), encoding="utf-8",
+                      errors="replace"):
+        if not ln.startswith("{"):
+            continue
+        try:
+            d = _j.loads(ln)
+        except ValueError:
+            continue
+        tk = str(d.get("tk") or "").lower()
+        y = str(d.get("y") or "").strip().upper()
+        if tk and y and tk not in out:
+            out[tk] = y
+    return out
+
+
+def venue_set():
+    """Basis aset venue perp kami - sama aturannya dengan `tools/venue_bridge.py`."""
+    import json as _j
+    p = os.path.join(ROOT, "data", "aster_symbols.json")
+    if not os.path.exists(p):
+        return None
+    d = _j.load(io.open(p, encoding="utf-8"))
+    cand = d if isinstance(d, list) else (d.get("symbols") or d.get("data")
+                                          or next((v for v in d.values() if isinstance(v, list)),
+                                                  []))
+    out = set()
+    for x in cand or []:
+        y = x if isinstance(x, str) else str((x or {}).get("symbol") or (x or {}).get("baseAsset")
+                                             or (x or {}).get("base") or "")
+        y = y.strip().upper()
+        for suf in ("USDT", "USDC", "PERP"):
+            if y.endswith(suf) and len(y) > len(suf):
+                y = y[: -len(suf)]
+                break
+        if y:
+            out.add(y)
+    return out
+
+
 def kejadian(horison_luar):
     """Satu kejadian per token per `horison_luar` menit (non-overlap, sama seperti E7/E8)."""
     txs, wp = TK.muat()
@@ -112,6 +156,8 @@ def utama():
     ap = argparse.ArgumentParser()
     ap.add_argument("--horisons", default="2,5,10,15,20,30,45,60")
     ap.add_argument("--dasar", type=int, default=30, help="horison pembanding untuk uji berpasangan")
+    ap.add_argument("--hanya-venue", action="store_true",
+                    help="hanya kejadian pada simbol yang terdaftar di venue perp kami (F-D43)")
     ap.add_argument("--self-test", action="store_true")
     a = ap.parse_args()
     if a.self_test:
@@ -119,6 +165,20 @@ def utama():
     hs = [int(x) for x in a.horisons.split(",") if x.strip()]
     rt = costs.rt_cost()
     ev, sensor = kejadian(max(hs))
+    if a.hanya_venue:
+        vb, sm = venue_set(), simbol_map()
+        if not vb:
+            raise SystemExit("data/aster_symbols.json tidak ada - tidak bisa menyaring venue")
+        sebelum = len(ev)
+        ev = [e for e in ev if sm.get(e["tk"]) in vb]
+        sensor["venue_sebelum"] = sebelum
+        sensor["venue_simbol_dipakai"] = len({sm.get(e["tk"]) for e in ev})
+        print("PENYARINGAN VENUE (F-D43): %d -> %d kejadian; simbol yang tersisa %d dari 584 basis "
+              "aset kami" % (sebelum, len(ev), sensor["venue_simbol_dipakai"]))
+        if len(ev) < 20:
+            raise SystemExit("hanya %d kejadian di tempat agen ini bisa berdiri - ini BELUM BISA "
+                             "DIUJI, bukan 'tidak ada efek'. Bump E11 boleh nyata di ⑦, tapi sample "
+                             "di venue kami belum cukup untuk memutus apa pun." % len(ev))
     print("E11 kurva umur posisi | %d kejadian | horison %s m | harga `wp` | ongkos %.1f bps RT | "
           "batas jelajah %s" % (len(ev), hs, rt,
                                 time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime(TK.T_BATAS))))

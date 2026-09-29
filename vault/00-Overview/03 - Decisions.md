@@ -1170,6 +1170,21 @@ apa pun yang membuat pembaca mengira bump itu milik portofolio yang bisa ia jala
 koreksi angka - ini **batasan klaim**, dan ia dibuat justru pada saat angkanya terlihat bagus, yang
 adalah waktu di mana paling mudah berbohong.
 
+**Lanjutan yang mengubah kesimpulan jadi angka (29 Sep ±09:0xZ).** Kami jalankan E11 **hanya pada
+simbol yang ada di venue kami**: `python -X utf8 tools/horizon_decay.py --hanya-venue`. Hasilnya:
+**393 → 24 kejadian, di 13 simbol** dari 584 basis aset. Alatnya menolak memotong kurva
+(`kejadian cuma 24 - tidak cukup untuk memutus apa pun (ini BUKAN 'tidak ada kemiringan')`).
+Jadi tiga pernyataan sekarang berdiri berurutan dan tidak bisa dipisahkan:
+
+1. bump itu **ada** dan lolos placebo di substrat yang kami amati (E11);
+2. **96,9 %** dari kabar itu terjadi di token yang tidak bisa kami perdagangkan (F-D43);
+3. di **dalam** venue kami sendiri, sample yang tersisa (24 kejadian / 13 simbol) **belum bisa
+   menguji apa pun** - dan ambang tidak kami turunkan untuk membuatnya jadi bisa.
+
+Kalimat yang jujur: *"kabar yang kami temukan berada di luar jangkauan tangan kami, dan di dalam
+jangkauan itu datanya belum cukup"*. Bukan "kami hampir bisa". Yang berubah kalau suatu hari kami
+menambah jalur spot/DEX: angka (2) yang bergerak, bukan (1).
+
 **Terkait:** [[06-Results/19 - Umur Posisi]] §3 · [[08-Backlog/01 - Backlog]] P41 ·
 [[07-Testing/01 - Test Commands]] baris 48 · [[10-Submissions/01 - Claims Cheat Sheet]] (aturan mana yang boleh dijual)
 

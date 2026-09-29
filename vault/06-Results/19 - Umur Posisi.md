@@ -105,6 +105,10 @@ dibangun pada kecepatan sinyal itu hidup**.
   **2.163 simbol**, dan yang beririsan adalah **61 simbol - 3,1 % dari 25.050 kabar beli**. Sebelum
   satu pun pertanyaan statistik dijawab, **96,9 % dari kabar yang kami ukur terjadi di tempat agen ini
   tidak bisa berdiri**. Itu batas kalimat, bukan detail implementasi: F-D43.
+- **Dan di dalam venue kami sendiri, uji itu tidak bisa dijalankan.** `python -X utf8
+  tools/horizon_decay.py --hanya-venue` (29 Sep ±09:0xZ): **393 → 24 kejadian di 13 simbol**, dan
+  alatnya **menolak memotong kurva** dengan pesan `kejadian cuma 24 - tidak cukup untuk memutus apa
+  pun (ini BUKAN 'tidak ada kemiringan')`. Ambang tidak diturunkan.
 
 ## 4. Perintah
 
