@@ -93,6 +93,13 @@ dibangun pada kecepatan sinyal itu hidup**.
 - Bukan pengganti veto. `jual_*` tetap satu-satunya rem yang berdiri; E11 bicara **umur**, bukan
   arah.
 
+- **Batas substrat - dan ini syarat, bukan catatan kaki.** Yang diukur E11 adalah token **spot BSC**
+  yang terlihat oleh ⑦ (harga dari GMGN/DexScreener). Yang bisa dieksekusi agen ini hari ini adalah
+  **perp di Aster** (`tools/direction.py` → `tools/execute_live.py`), dengan deret harganya sendiri.
+  Apakah bump dua menit di spot muncul juga di perp pada arah yang sama **belum diukur** - dan tanpa
+  itu, E11 tidak boleh dibaca sebagai "Fabius bisa menradingkan ini", seberapa pun bagus kurva di
+  halaman ini. (P41)
+
 ## 4. Perintah
 
 ```bash

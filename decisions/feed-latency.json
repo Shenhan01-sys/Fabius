@@ -1,0 +1,10 @@
+{
+ "dibuat_utc": "2026-09-29T08:21:28Z",
+ "max_detik": 18,
+ "median_detik": 10,
+ "min_detik": 7,
+ "n_commit": 25,
+ "n_terpakai": 25,
+ "p90_detik": 13,
+ "sumber_waktu": "stempel commit GitHub"
+}

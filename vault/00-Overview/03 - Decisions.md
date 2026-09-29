@@ -1098,3 +1098,37 @@ bocor - itu harga dari pra-registrasi, dan kami membayarnya dengan sadar.
 **Terkait:** [[06-Results/19 - Umur Posisi]] · [[08-Backlog/02 - Epik Alasan Masuk]] §3e ·
 [[07-Testing/01 - Test Commands]] baris 44 · [[Concepts/Unmeasured Is Not Clean]]
 
+## F-D42 — Self-testku menghapus berkas riwayat ⑦ dan git menyelamatkan kami · 29 Sep 2026 08:2xZ
+
+**Yang terjadi.** `tools/fast_lane.py` saya beri `--self-test` yang menukar global `FLOW`/`LOG` ke
+`tempfile`, lalu di blok `finally` **memulihkan global SEBELUM memanggil `os.remove`**. Urutan itu
+membuat `os.remove(FLOW)` menunjuk `universe/wallet-flow.jsonl` - berkas riwayat 115.487 baris yang
+jadi dasar E7/E8/E10/E11/E12 - dan **menghapusnya**. Tidak ada test yang gagal, tidak ada angka yang
+berubah, tidak ada peringatan: gejalanya baru muncul saat alat berikutnya membuka berkas dan
+mendapat `FileNotFoundError`.
+
+**Kenapa ini lebih berbahaya dari bug statistik.** F-D37/F-D39 membuat kami salah simpul; bugs seperti
+ini membuat kami **kehilangan bahan untuk menyimpul sama sekali**, dan ia datang dengan wajah
+"pekerjaan sudah selesai" karena self-test-nya sendiri yang menghancurkan buktinya. Pemulihan:
+`git checkout -- universe/wallet-flow.jsonl` (branch `master` lokal, tidak ada commit yang hilang;
+origin tidak pernah tersentuh karena berkas itu tidak sempat di-`add`).
+
+**Yang dipasang setelahnya (di alat, bukan di niat).** (a) berkas uji **dipaksa di luar `ROOT`**
+dengan `assert not tmp.startswith(ROOT)`; (b) assert bahwa path uji berbeda dari path nyata sebelum
+apa pun disentuh; (c) `finally` memulihkan global **lalu** menghapus berkas temp, dan di ujungnya
+memeriksa `os.path.exists(FLOW_ASLI)` - kalau tidak ada, self-test **gagal keras**. Aturan epik:
+**alat yang menguji dirinya sendiri tidak boleh punya jalan untuk menyentuh keadaan asli.**
+
+**Kelas kesalahan ini bukan newcomer.** Dalam empat hari: harga masuk beku (F-D30), control yang
+mempromosikan dirinya (F-D32), Mann-Whitney salah urut (F-D37), satu undian disebut hasil (F-D39),
+kontrol keluar yang salah (F-D40), dan sekarang self-test yang memakan datanya sendiri (F-D42). Yang
+membunuh semuanya bukan kecerdasan, tapi **perintah yang dijalankan sampai selesai** - dan itu sebab
+setiap klaim di vault ini wajib punya baris di `vault/07-Testing/01 - Test Commands.md`.
+
+**Skop.** Tidak ada angka yang berubah oleh peristiwa ini; tidak ada klaim yang ditarik. Yang berubah
+adalah satu aturan di `tools/` dan kalimat ini, supaya orang berikutnya tidak mewarisi jebakan yang
+sama.
+
+**Terkait:** [[07-Testing/01 - Test Commands]] baris 46 · [[Concepts/Unmeasured Is Not Clean]] ·
+[[08-Backlog/01 - Backlog]] P35
+
