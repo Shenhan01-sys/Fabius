@@ -5,8 +5,20 @@ satu siklus (10 fitur, `tools/topk_test.py`): TIDAK ADA yang mengalahkan acak-si
 ticker `wp` harapan pool justru NEGATIF (-183,7 bps setelah ongkos). Yang bertahan adalah sisi
 keluar, dan itu diukur pada posisi yang sama, bukan dua populasi berbeda:
 
-    E8 (decisions/topk-test-20260929T045209Z.json): keluar SAAT kerumunan beli datang
-      vs menahan sampai horison 30 menit
+> **STATUS 29 Sep 05:54Z - KLAIM "BACA KERUMUNAN" SUDAH DICABUT.** E8 tadinya dibandingkan dengan
+> MENAHAN sampai horison. Kontrol yang benar di kolam yang bocor (pool mean **-183,7 bps**, median
+> -123,8) adalah **keluar di waktu ACAK di jendela yang sama**, dan itu sudah diukur
+> (`tools/exit_control.py` -> `decisions/exit-control-20260929T055442Z.json`):
+>
+>     kerumunan: mean winso +316,6 | median +116,5 | 56,6% posisi di atas horison
+>     acak     : mean +187,9 | CI atas +357,1 | sebar seed 64,6 .. 368,0
+>     per posisi vs undian acaknya sendiri: menang 64 | kalah 50 | seri 8 | p=0,112
+>     VONIS: TIDAK melewati keluar acak.
+>
+> Yang terukur di E8 adalah **umur posisi**, bukan sinyal kerumunan: apa pun yang membuatmu keluar
+> lebih awal terlihat lebih baik di sini. Jadi alat ini TIDAK boleh dibaca sebagai "Fabius tahu kapan
+> pasar berakhir" dan TIDAK boleh ditambal ke posisi asli. Nilai yang tersisa cuma operasional: dia
+> memotong umur posisi, mencatat alasannya, dan tidak mengirim order.
       posisi dipantau 122 | keluar dini menolong 69 | merugikan 45
       median delta +116,5 bps | mean winso delta +316,6 bps
       (persentil 5-95 = [-2.000; +2.000] - ekornya tebal di dua arah; jangan baca ini sebagai

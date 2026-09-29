@@ -1012,3 +1012,44 @@ diaudit.**
 **Terkait:** [[06-Results/18 - Kandidat Pertama, Diuji Hidup]] · [[08-Backlog/02 - Epik Alasan Masuk]]
 §3d · [[07-Testing/01 - Test Commands]] baris 38/42 · [[Concepts/One-Way Gate]]
 
+## F-D40 — Perilaku "pandai trading" yang terakhir (E8) juga gugur: yang terukur adalah UMUR posisi, bukan kerumunan · 29 Sep 2026 05:54Z
+
+**Yang terbit lebih dulu.** Setelah E7 mencabut kandidatnya sendiri (F-D39), satu-satunya klaim
+"Fabius bisa trading" yang berdiri di angka kami adalah **E8**: keluar saat kerumunan beli datang,
+diukur pada **posisi yang sama** (+316,6 bps mean winso, median +116,5, 69 menolong vs 45 merugikan),
+dan sudah dibuat jadi perilaku (`tools/exit_policy.py`).
+
+**Kenapa kontrolnya salah.** E8 dibandingkan dengan **menahan sampai horison 30 menit**. Di kolam yang
+mean pool-nya **−183,7** dan medannya **−123,8** bps, pembanding itu punya penjelasan alternatif yang murah:
+*apa pun yang membuatmu keluar lebih awal akan terlihat lebih baik*. Pertanyaan yang benar bukan
+"lebih baik dari menahan" - itu hampir pasti ya - tapi **"lebih baik dari keluar di waktu ACAK pada
+jendela yang sama"**.
+
+**Angka setelah kontrol dibetulkan** (`tools/exit_control.py`, 122 posisi identik, 150 undian,
+`decisions/exit-control-20260929T055442Z.json`):
+
+| lengan | mean winso | median | sebar antar-undian | vonis |
+|---|---|---|---|---|
+| keluar saat kerumunan beli | **+316,6** | +116,5 | — | — |
+| keluar di waktu acak (5 m … horison) | +187,9 | — | **64,6 … 368,0** | CI atas **+357,1** |
+| per posisi vs undian acaknya sendiri | menang **64** | kalah **50** | seri 8 | tanda-uji **p=0,112** |
+
+**Vonis: TIDAK melewati keluar acak.** Yang diukur E8 adalah **memotong umur posisi**, bukan membaca
+kerumunan. Docstring `tools/exit_policy.py` diturunkan mengikuti ini (bukan dihapus: alatnya jalan,
+self-test-nya jalan, dan alasan yang dicatatnya tetap bisa diaudit) - tapi statusnya sekarang
+**operasional**, dan ia **tidak boleh ditambal ke posisi asli** atas dasar bukti sinyal.
+
+**Yang tersisa setelah empat koreksi alat (F-D30, F-D32, F-D37, F-D39, F-D40).** Satu perilaku yang
+tetap berdiri karena dibandingkan dengan pembanding yang benar - **sesama posisi di siklus yang sama,
+bukan nol**: **rem** `jual_*` (veto kerumunan jual). Policy test 28 Sep: A (never) 0 · B (blind)
+**+82,7 [+5,0; +159,1]** · C (veto) **+162,3 [+80,4; +243,0]**. Itu bukan "pandai trading"; itu
+"tahu kapan jangan masuk", dan sekarang punya angka pembanding yang jujur.
+
+**Aturan yang ditambahkan, dan ini yang paling penting untuk hari-hari terakhir.** Untuk SEMUA
+perilaku keluar/memotong: **kontrolnya harus "waktu keluar acak pada jendela yang sama"**, bukan
+"menahan sampai habis". Di distribusi yang miring negatif, "keluar lebih awal" adalah strategi yang
+menang sendiri. Alat yang menegakkan: `tools/exit_control.py` (punya `--self-test` dengan dua kasus
+buatan - kerumunan awal menolong, kerumunan telat kalah).
+
+**Terkait:** [[06-Results/13 - Apakah Tidak Trading Itu Gratis]] §3b · [[08-Backlog/02 - Epik Alasan Masuk]] §3d · [[07-Testing/01 - Test Commands]] baris 43 · [[Concepts/Unmeasured Is Not Clean]]
+

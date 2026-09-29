@@ -156,6 +156,13 @@ Tiga hal yang wajib disebut bersama tabel itu:
 3. **Pool-nya tetap −183,7 bps** sebelum penyortiran apa pun. Jadi kalau `vol_rendah` benar, yang
    ia lakukan adalah *memilih dari kolam yang bocor*, bukan mengeringkannya.
 
+> **⚠ E8 JUGA DICABUT 29 Sep 05:54Z** - kontrolnya salah. Di kolam dengan mean **-183,7 bps**,
+> "keluar lebih awal" mengalahkan "menahan sampai habis" tanpa tahu apa pun tentang pasar. Lawan
+> **keluar di waktu ACAK pada jendela yang sama** (`tools/exit_control.py`, 122 posisi identik):
+> kerumunan +316,6 vs acak +187,9 dengan **CI atas +357,1**; per posisi 64 menang / 50 kalah,
+> **p=0,112** -> **tidak lewat**. Yang terukur adalah **umur posisi**, bukan kerumunan.
+> [[00-Overview/03 - Decisions]] F-D40.
+
 **E8 - sisi keluar, dan ini yang pertama bisa dipasang sebagai perilaku.** Keluar saat **kerumunan
 beli datang** (≥2 maker berbeda dalam 15 menit) vs menahan sampai horison, diukur pada **posisi yang
 sama** (`tools/topk_test.py` `uji_keluar()`, artefak yang sama): 122 posisi dipantau, keluar dini

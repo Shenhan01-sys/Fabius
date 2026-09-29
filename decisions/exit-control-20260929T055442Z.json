@@ -1,0 +1,29 @@
+{
+ "batas_jelajah_utc": "2026-09-29T02:59:06Z",
+ "dibuat_utc": "2026-09-29T05:54:42Z",
+ "draws": 150,
+ "horizon_menit": 30,
+ "kerumunan_vs_acak": {
+  "acak_ci_atas": 357.1,
+  "acak_mean": 187.9,
+  "di_atas_acak": false,
+  "kerumunan_mean_winso": 316.6,
+  "kerumunan_median_bps": 116.5,
+  "kerumunan_p_menang": 56.6,
+  "median_seed_acak": 220.7,
+  "menang_vs_acak_per_posisi": null,
+  "posisi": 122,
+  "sebar_seed_acak": [
+   64.6,
+   368.0
+  ]
+ },
+ "per_posisi": {
+  "kalah": 50,
+  "menang": 64,
+  "p_tanda_eksak": 0.1116151812277728,
+  "seri": 8
+ },
+ "posisi": 122,
+ "sha": "0x251fb86cedddd242f88094b1b2b26d94a3f540197abaf2d83fa54e8aff724941"
+}
