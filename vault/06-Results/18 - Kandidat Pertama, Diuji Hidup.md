@@ -117,6 +117,26 @@ menaruhnya di **bawah** acak dengan 33 % seed. Tiga nilai CI atas untuk kontrol 
 ingin kita klaim.** Tidak ada satu pun dari ketiganya boleh dijual; lihat
 [[00-Overview/03 - Decisions]] F-D39.
 
+## 4c. Catatan yang ditulis SETELAH lengan pertama terisi tapi SEBELUM vonis dibaca (29 Sep ±06:25Z)
+
+Kedua lengan terisi penuh pada hari yang sama: **24 slot pasca-kunci di tiap lengan**
+(`decisions/paper-book-positions.jsonl`, `rows_sha256` A `0xcff59af824a927…` / B `0x99e803ff8b00ec…`).
+`--per-day 24` adalah **budget harian**, jadi hari 29 Sep sudah habis dan **n akan tetap 24/24 pada
+saat matang** - itu yang dikunci, dan itu yang akan dipakai.
+
+Dua rem yang dipasang sekarang, sebelum vonis apa pun dibaca, dan TIDAK boleh dipakai membalik
+keadaan kalau hasilnya jelek:
+
+1. **Hari 30 Sep tidak boleh dipakai menyelamatkan vonis 29 Sep.** Slot besok adalah ember baru,
+   dan kalau ia dipanggil untuk menutupi kegagalan ember ini, yang berubah adalah ukurannya, bukan
+   dunianya. Kalau vonis 17:13:25Z gagal, vonisnya gagal - dan hari berikutnya hanya boleh bicara
+   atas hipotesis BARU yang dikunci lagi.
+2. **Angka antara lengan yang terlihat sekarang (mean A −191,9 vs B −278,3) BUKAN hasil.** Dia
+   dicetak oleh `paper_book` sebagai tabel kebijakan, bukan oleh `tools/vol_ab.py`; vonis tunggal
+   alat itu yang berlaku, tiga syarat serentak, dan kedua mean negatif membuat syarat (2) hampir
+   pasti jatuh. Kalau itu yang terjadi, tulisannya begini: *aturan volatilitas rendah tidak
+   menghasilkan harapan positif di data yang belum terlihat* - bukan "hampir" dan bukan "n kecil".
+
 ## 5. Hasil
 
 _kosong sampai umur kunci cukup — alatnya menolak mencetak angka sebelum itu, dan kekosongan ini
