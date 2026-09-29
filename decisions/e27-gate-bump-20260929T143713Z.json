@@ -1,0 +1,48 @@
+{
+  "artefak_p61": "e20b-gate-liveness-20260929T143124Z.json",
+  "batas": "bukan jalur eksekusi kami (ExecutionVault bicara ke venue lain); n=40 satu hari; klines != kedalaman; TIDAK dikunci - ini eksplorasi pemisah hipotesis",
+  "dibuat_utc": "2026-09-29T14:37:13Z",
+  "gagal_ambil": [],
+  "horison": {
+    "2": {
+      "hilang": 0,
+      "mean_winso": 9.3,
+      "median": 1.1,
+      "menit": 2,
+      "n": 40,
+      "placebo_mean": 2.5,
+      "telat1m_mean": -1.3
+    },
+    "30": {
+      "hilang": 0,
+      "mean_winso": 0.8,
+      "median": 12.7,
+      "menit": 30,
+      "n": 40,
+      "placebo_mean": 12.1,
+      "telat1m_mean": -8.8
+    },
+    "5": {
+      "hilang": 0,
+      "mean_winso": 13.2,
+      "median": 3.1,
+      "menit": 5,
+      "n": 40,
+      "placebo_mean": 4.9,
+      "telat1m_mean": 1.1
+    },
+    "berpasangan": {
+      "kalah_5m": 19,
+      "median_delta": 8.8,
+      "menang_5m": 21,
+      "n": 40,
+      "p_tanda": 0.43731465619021037
+    }
+  },
+  "kelas": [
+    "TIPIS"
+  ],
+  "n_kejadian": 40,
+  "perintah": "python -X utf8 tools/gate_bump.py",
+  "venue": "gate"
+}

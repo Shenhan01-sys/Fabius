@@ -1,0 +1,474 @@
+{
+  "catatan_skala": "v Gate = jumlah kontrak, bukan USD; hanya uji nol/bukan-nol dan lamanya beku yang dipakai di sini",
+  "dibuat_utc": "2026-09-29T14:27:11Z",
+  "hidup_aster_saja": [],
+  "hidup_gate": [
+    "BOME_USDT",
+    "GWEI_USDT",
+    "O_USDT",
+    "PEOPLE_USDT",
+    "Q_USDT",
+    "TRX_USDT",
+    "UB_USDT",
+    "USELESS_USDT"
+  ],
+  "jendela_menit": 1440,
+  "kabar_total": 259,
+  "kelas_sama": 17,
+  "penggaris": "tools/perp_liveness.suhu()/kelas() - fungsi yang sama, bukan salinan",
+  "perintah": "python -X utf8 tools/gate_liveness.py",
+  "rows": [
+    {
+      "bar_gate": 1440,
+      "basis": "Q",
+      "beku_gate": 1,
+      "err": null,
+      "harga_berbeda_gate": 1179,
+      "kabar_beli": 93,
+      "kelas_aster": "TIPIS",
+      "kelas_gate": "HIDUP",
+      "kontrak": "Q_USDT",
+      "nol_volume_gate": 0.0
+    },
+    {
+      "bar_gate": 1440,
+      "basis": "BREW",
+      "beku_gate": 26,
+      "err": null,
+      "harga_berbeda_gate": 482,
+      "kabar_beli": 18,
+      "kelas_aster": "TIPIS",
+      "kelas_gate": "TIPIS",
+      "kontrak": "BREW_USDT",
+      "nol_volume_gate": 49.8
+    },
+    {
+      "bar_gate": 1440,
+      "basis": "USELESS",
+      "beku_gate": 1,
+      "err": null,
+      "harga_berbeda_gate": 1011,
+      "kabar_beli": 17,
+      "kelas_aster": "TIPIS",
+      "kelas_gate": "HIDUP",
+      "kontrak": "USELESS_USDT",
+      "nol_volume_gate": 0.6
+    },
+    {
+      "bar_gate": 1440,
+      "basis": "STONKS",
+      "beku_gate": 55,
+      "err": null,
+      "harga_berbeda_gate": 201,
+      "kabar_beli": 14,
+      "kelas_aster": "TIPIS",
+      "kelas_gate": "TIPIS",
+      "kontrak": "STONKS_USDT",
+      "nol_volume_gate": 59.2
+    },
+    {
+      "bar_gate": 1440,
+      "basis": "MARSCOIN",
+      "beku_gate": 2,
+      "err": null,
+      "harga_berbeda_gate": 884,
+      "kabar_beli": 14,
+      "kelas_aster": "HIDUP",
+      "kelas_gate": "HIDUP",
+      "kontrak": "MARSCOIN_USDT",
+      "nol_volume_gate": 0.3
+    },
+    {
+      "bar_gate": 1440,
+      "basis": "CC",
+      "beku_gate": 14,
+      "err": null,
+      "harga_berbeda_gate": 421,
+      "kabar_beli": 12,
+      "kelas_aster": "TIPIS",
+      "kelas_gate": "TIPIS",
+      "kontrak": "CC_USDT",
+      "nol_volume_gate": 47.6
+    },
+    {
+      "bar_gate": 1440,
+      "basis": "4STOCK",
+      "beku_gate": 16,
+      "err": null,
+      "harga_berbeda_gate": 141,
+      "kabar_beli": 10,
+      "kelas_aster": "TIPIS",
+      "kelas_gate": "TIPIS",
+      "kontrak": "4STOCK_USDT",
+      "nol_volume_gate": 32.0
+    },
+    {
+      "bar_gate": 0,
+      "basis": "牛来",
+      "beku_gate": null,
+      "err": {
+        "_err": "UnicodeEncodeError('ascii', 'GET /api/v4/futures/usdt/candlesticks?contract=牛来_USDT&interval=1m&limit=1000 HTTP/1.1', 47, 49, 'ordinal not in range(128)')"
+      },
+      "harga_berbeda_gate": null,
+      "kabar_beli": 8,
+      "kelas_aster": "TIDAK-ADA-DATA",
+      "kelas_gate": "TIDAK-ADA-DATA",
+      "kontrak": "牛来_USDT",
+      "nol_volume_gate": null
+    },
+    {
+      "bar_gate": 1440,
+      "basis": "ZEC",
+      "beku_gate": 1,
+      "err": null,
+      "harga_berbeda_gate": 1359,
+      "kabar_beli": 7,
+      "kelas_aster": "HIDUP",
+      "kelas_gate": "HIDUP",
+      "kontrak": "ZEC_USDT",
+      "nol_volume_gate": 0.0
+    },
+    {
+      "bar_gate": 1440,
+      "basis": "MET",
+      "beku_gate": 7,
+      "err": null,
+      "harga_berbeda_gate": 246,
+      "kabar_beli": 7,
+      "kelas_aster": "TIPIS",
+      "kelas_gate": "TIPIS",
+      "kontrak": "MET_USDT",
+      "nol_volume_gate": 34.2
+    },
+    {
+      "bar_gate": 1440,
+      "basis": "GME",
+      "beku_gate": 48,
+      "err": null,
+      "harga_berbeda_gate": 141,
+      "kabar_beli": 6,
+      "kelas_aster": "MATI",
+      "kelas_gate": "TIPIS",
+      "kontrak": "GME_USDT",
+      "nol_volume_gate": 82.4
+    },
+    {
+      "bar_gate": 1440,
+      "basis": "O",
+      "beku_gate": 5,
+      "err": null,
+      "harga_berbeda_gate": 456,
+      "kabar_beli": 4,
+      "kelas_aster": "TIPIS",
+      "kelas_gate": "HIDUP",
+      "kontrak": "O_USDT",
+      "nol_volume_gate": 0.0
+    },
+    {
+      "bar_gate": 1440,
+      "basis": "FLORK",
+      "beku_gate": 44,
+      "err": null,
+      "harga_berbeda_gate": 258,
+      "kabar_beli": 4,
+      "kelas_aster": "MATI",
+      "kelas_gate": "TIPIS",
+      "kontrak": "FLORK_USDT",
+      "nol_volume_gate": 77.3
+    },
+    {
+      "bar_gate": 1440,
+      "basis": "CAKE",
+      "beku_gate": 12,
+      "err": null,
+      "harga_berbeda_gate": 548,
+      "kabar_beli": 4,
+      "kelas_aster": "TIPIS",
+      "kelas_gate": "TIPIS",
+      "kontrak": "CAKE_USDT",
+      "nol_volume_gate": 36.0
+    },
+    {
+      "bar_gate": 1440,
+      "basis": "IN",
+      "beku_gate": 25,
+      "err": null,
+      "harga_berbeda_gate": 163,
+      "kabar_beli": 4,
+      "kelas_aster": "MATI",
+      "kelas_gate": "TIPIS",
+      "kontrak": "IN_USDT",
+      "nol_volume_gate": 58.1
+    },
+    {
+      "bar_gate": 1440,
+      "basis": "GENIUS",
+      "beku_gate": 56,
+      "err": null,
+      "harga_berbeda_gate": 156,
+      "kabar_beli": 4,
+      "kelas_aster": "TIPIS",
+      "kelas_gate": "TIPIS",
+      "kontrak": "GENIUS_USDT",
+      "nol_volume_gate": 73.9
+    },
+    {
+      "bar_gate": 1440,
+      "basis": "C",
+      "beku_gate": 19,
+      "err": null,
+      "harga_berbeda_gate": 264,
+      "kabar_beli": 4,
+      "kelas_aster": "MATI",
+      "kelas_gate": "TIPIS",
+      "kontrak": "C_USDT",
+      "nol_volume_gate": 62.8
+    },
+    {
+      "bar_gate": 1440,
+      "basis": "TRX",
+      "beku_gate": 6,
+      "err": null,
+      "harga_berbeda_gate": 278,
+      "kabar_beli": 4,
+      "kelas_aster": "TIPIS",
+      "kelas_gate": "HIDUP",
+      "kontrak": "TRX_USDT",
+      "nol_volume_gate": 0.1
+    },
+    {
+      "bar_gate": 1440,
+      "basis": "DOGE",
+      "beku_gate": 2,
+      "err": null,
+      "harga_berbeda_gate": 403,
+      "kabar_beli": 4,
+      "kelas_aster": "HIDUP",
+      "kelas_gate": "HIDUP",
+      "kontrak": "DOGE_USDT",
+      "nol_volume_gate": 0.0
+    },
+    {
+      "bar_gate": 1440,
+      "basis": "ATH",
+      "beku_gate": 9,
+      "err": null,
+      "harga_berbeda_gate": 327,
+      "kabar_beli": 2,
+      "kelas_aster": "MATI",
+      "kelas_gate": "TIPIS",
+      "kontrak": "ATH_USDT",
+      "nol_volume_gate": 32.9
+    },
+    {
+      "bar_gate": 1440,
+      "basis": "RAVE",
+      "beku_gate": 14,
+      "err": null,
+      "harga_berbeda_gate": 163,
+      "kabar_beli": 2,
+      "kelas_aster": "TIPIS",
+      "kelas_gate": "TIPIS",
+      "kontrak": "RAVE_USDT",
+      "nol_volume_gate": 40.0
+    },
+    {
+      "bar_gate": 1440,
+      "basis": "ESPORTS",
+      "beku_gate": 7,
+      "err": null,
+      "harga_berbeda_gate": 187,
+      "kabar_beli": 2,
+      "kelas_aster": "MATI",
+      "kelas_gate": "TIPIS",
+      "kontrak": "ESPORTS_USDT",
+      "nol_volume_gate": 0.3
+    },
+    {
+      "bar_gate": 1440,
+      "basis": "TOSHI",
+      "beku_gate": 49,
+      "err": null,
+      "harga_berbeda_gate": 69,
+      "kabar_beli": 2,
+      "kelas_aster": "MATI",
+      "kelas_gate": "TIPIS",
+      "kontrak": "TOSHI_USDT",
+      "nol_volume_gate": 81.6
+    },
+    {
+      "bar_gate": 1440,
+      "basis": "LISTA",
+      "beku_gate": 76,
+      "err": null,
+      "harga_berbeda_gate": 122,
+      "kabar_beli": 2,
+      "kelas_aster": "MATI",
+      "kelas_gate": "TIPIS",
+      "kontrak": "LISTA_USDT",
+      "nol_volume_gate": 90.6
+    },
+    {
+      "bar_gate": 1440,
+      "basis": "GWEI",
+      "beku_gate": 1,
+      "err": null,
+      "harga_berbeda_gate": 1010,
+      "kabar_beli": 1,
+      "kelas_aster": "MATI",
+      "kelas_gate": "HIDUP",
+      "kontrak": "GWEI_USDT",
+      "nol_volume_gate": 0.0
+    },
+    {
+      "bar_gate": 0,
+      "basis": "哈基米",
+      "beku_gate": null,
+      "err": {
+        "_err": "UnicodeEncodeError('ascii', 'GET /api/v4/futures/usdt/candlesticks?contract=哈基米_USDT&interval=1m&limit=1000 HTTP/1.1', 47, 50, 'ordinal not in range(128)')"
+      },
+      "harga_berbeda_gate": null,
+      "kabar_beli": 1,
+      "kelas_aster": "TIDAK-ADA-DATA",
+      "kelas_gate": "TIDAK-ADA-DATA",
+      "kontrak": "哈基米_USDT",
+      "nol_volume_gate": null
+    },
+    {
+      "bar_gate": 1440,
+      "basis": "GIGGLE",
+      "beku_gate": 6,
+      "err": null,
+      "harga_berbeda_gate": 205,
+      "kabar_beli": 1,
+      "kelas_aster": "TIPIS",
+      "kelas_gate": "TIPIS",
+      "kontrak": "GIGGLE_USDT",
+      "nol_volume_gate": 26.8
+    },
+    {
+      "bar_gate": 1440,
+      "basis": "BILL",
+      "beku_gate": 15,
+      "err": null,
+      "harga_berbeda_gate": 59,
+      "kabar_beli": 1,
+      "kelas_aster": "MATI",
+      "kelas_gate": "TIPIS",
+      "kontrak": "BILL_USDT",
+      "nol_volume_gate": 52.4
+    },
+    {
+      "bar_gate": 1440,
+      "basis": "UB",
+      "beku_gate": 2,
+      "err": null,
+      "harga_berbeda_gate": 800,
+      "kabar_beli": 1,
+      "kelas_aster": "MATI",
+      "kelas_gate": "HIDUP",
+      "kontrak": "UB_USDT",
+      "nol_volume_gate": 0.6
+    },
+    {
+      "bar_gate": 1440,
+      "basis": "DOT",
+      "beku_gate": 6,
+      "err": null,
+      "harga_berbeda_gate": 89,
+      "kabar_beli": 1,
+      "kelas_aster": "TIPIS",
+      "kelas_gate": "TIPIS",
+      "kontrak": "DOT_USDT",
+      "nol_volume_gate": 0.0
+    },
+    {
+      "bar_gate": 1440,
+      "basis": "BOME",
+      "beku_gate": 2,
+      "err": null,
+      "harga_berbeda_gate": 521,
+      "kabar_beli": 1,
+      "kelas_aster": "MATI",
+      "kelas_gate": "HIDUP",
+      "kontrak": "BOME_USDT",
+      "nol_volume_gate": 0.0
+    },
+    {
+      "bar_gate": 1440,
+      "basis": "PEOPLE",
+      "beku_gate": 2,
+      "err": null,
+      "harga_berbeda_gate": 545,
+      "kabar_beli": 1,
+      "kelas_aster": "MATI",
+      "kelas_gate": "HIDUP",
+      "kontrak": "PEOPLE_USDT",
+      "nol_volume_gate": 0.1
+    },
+    {
+      "bar_gate": 1440,
+      "basis": "ASTER",
+      "beku_gate": 7,
+      "err": null,
+      "harga_berbeda_gate": 345,
+      "kabar_beli": 1,
+      "kelas_aster": "HIDUP",
+      "kelas_gate": "HIDUP",
+      "kontrak": "ASTER_USDT",
+      "nol_volume_gate": 16.9
+    },
+    {
+      "bar_gate": 1440,
+      "basis": "LINK",
+      "beku_gate": 1,
+      "err": null,
+      "harga_berbeda_gate": 730,
+      "kabar_beli": 1,
+      "kelas_aster": "HIDUP",
+      "kelas_gate": "HIDUP",
+      "kontrak": "LINK_USDT",
+      "nol_volume_gate": 0.0
+    },
+    {
+      "bar_gate": 1440,
+      "basis": "ON",
+      "beku_gate": 74,
+      "err": null,
+      "harga_berbeda_gate": 128,
+      "kabar_beli": 1,
+      "kelas_aster": "MATI",
+      "kelas_gate": "TIPIS",
+      "kontrak": "ON_USDT",
+      "nol_volume_gate": 88.1
+    }
+  ],
+  "simbol_dibandingkan": 35,
+  "tidak_ada_di_gate": [
+    {
+      "basis": "BNC",
+      "kabar": 611
+    },
+    {
+      "basis": "ASTEROID",
+      "kabar": 30
+    },
+    {
+      "basis": "AI",
+      "kabar": 15
+    },
+    {
+      "basis": "GSTOCK",
+      "kabar": 10
+    },
+    {
+      "basis": "MAX",
+      "kabar": 10
+    },
+    {
+      "basis": "SYN",
+      "kabar": 7
+    }
+  ],
+  "venue": "gate-futures-usdt"
+}

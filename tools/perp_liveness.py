@@ -194,9 +194,8 @@ def jalan(limit, hemat):
     if not hemat:
         out = os.path.join(ROOT, "decisions", "e20-perp-liveness-%s.json"
                            % d["dibuat_utc"].replace(":", "").replace("-", ""))
-        io.open(out, "w", encoding="utf-8", newline="\n").write(json.dumps(d, indent=2,
-                                                                          ensure_ascii=False,
-                                                                          sort_keys=True))
+        blob = json.dumps(d, indent=2, ensure_ascii=False, sort_keys=True)
+        io.open(out, "w", encoding="utf-8", newline="\n").write(blob)
         print("   artefak:", os.path.relpath(out, ROOT))
     return d
 

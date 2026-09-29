@@ -38,3 +38,16 @@ agen yang menerbitkan keputusannya ke chain sebelum hasilnya ada, lalu memakai m
 membatalkan klaim kami sendiri empat kali dalam empat hari - dan masih menjalankan dua uji yang
 sudah dikunci sebelum tenggat.* Itu bukan permintaan maaf; itu satu-satunya hal yang bisa dibuktikan
 orang lain tanpa percaya kepada kami.
+### Baris yang ditambahkan 29 Sep 14:4xZ setelah F-D59/F-D60
+
+| Kalimat yang sekarang **dilarang** | Kenapa (alat + jam) | Kalimat yang boleh dipakai |
+|---|---|---|
+| "edge dua menit kami tinggal dieksekusi" / "kalau venue-nya lebih hidup, edge-nya kembali" | `tools/gate_bump.py` 14:36:08Z: di venue pembanding dengan 14 simbol HIDUP, efek @5 m **+2,0** (placebo −7,4) dan **+13,2** di kelas TIPIS (placebo +4,9); berpasangan 5m-vs-30m p=0,76 / p=0,44 - satu ordo di bawah E11 (+202,6) dan di bawah ongkos terukur kami (59 bps) | "kami menguji apakah bump yang kami ukur di deret spot bisa dipindahkan ke substrate tempat kami benar-benar bertransaksi. Di dua venue perp jawabnya tidak, dan efeknya tinggal satu ordo di bawah ongkos round-trip kami." |
+| "buku beku itu sifat long-tail perp, jadi bukan salah venue kami" | `tools/gate_liveness.py` 14:31:24Z: pada 35 kontrak yang sama - Gate HIDUP 14 / MATI 0, Aster HIDUP 5 / MATI 14; 9 simbol hidup hanya di Gate, nol hanya di kami | "sebagian besar kebuntuan eksekusi kami adalah sifat venue yang kami pakai, dan kami bisa menunjuk buktinya - tapi memindah venue memperbaiki eksekusi, bukan memberi alasan masuk" |
+| "kami sudah selesai mengukur sebabnya" | tiga alat, tiga sebab yang tersisa setelah yang lain dicabut: F-D54 (umur keputusan 61 d - bukan kecepatan), F-D60 (bukan hidup/tidaknya venue), E21 + F-D54 (`i` +245 bps dan `entry_px` di atas harga whale pada 16/25 - **titik masuk**) | "yang tersisa setelah kecepatan dan venue kami buang adalah selisih antara harga yang dilihat sinyal dan harga yang benar-benar bisa kami bayar; itu terukur, bukan diasumsikan" |
+
+**Satu kalimat untuk juri, kalau cuma boleh satu:** *"Kami tidak punya edge yang bisa dieksekusi hari
+ini - dan kami bisa menunjukkan pengukuran yang membunuh tiap penjelasan alternatif, di dua venue,
+dengan n, jam, dan perintah yang mencetaknya."*
+
+

@@ -189,8 +189,8 @@ def jalan(kelas_ok, draws):
                     "belum dikunci" % len(pakai)}
     p = os.path.join(ROOT, "decisions", "e26-perp-bump-%s.json"
                     % out["dibuat_utc"].replace(":", "").replace("-", ""))
-    io.open(p, "w", encoding="utf-8", newline="\n").write(json.dumps(out, indent=2, ensure_ascii=False,
-                                                                     sort_keys=True))
+    blob = json.dumps(out, indent=2, ensure_ascii=False, sort_keys=True)
+    io.open(p, "w", encoding="utf-8", newline="\n").write(blob)
     print("   artefak:", os.path.relpath(p, ROOT))
     return out
 

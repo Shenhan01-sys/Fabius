@@ -96,7 +96,8 @@ def pasang_kunci(now):
          "spec": SPEC, "spec_sha256": sha_spec(), "umur_jam_min": UMUR_JAM_MIN,
          "menit_kunci": now + UMUR_JAM_MIN * 3600,
          "perintah_vonis": "python -X utf8 tools/entry_ab.py"}
-    io.open(LOCK, "w", encoding="utf-8", newline="\n").write(json.dumps(d, indent=2, sort_keys=True))
+    blob = json.dumps(d, indent=2, sort_keys=True)
+    io.open(LOCK, "w", encoding="utf-8", newline="\n").write(blob)
     print("KUNCI E24 DIPASANG %s | sha %s | vonis %s"
           % (d["t_kunci"], d["spec_sha256"][:18], iso(d["menit_kunci"])))
     print("kejadian pasca-kunci yang sudah tercatat sekarang:", jumlah(now))

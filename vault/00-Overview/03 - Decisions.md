@@ -1786,3 +1786,76 @@ Aturannya naik satu tingkat: **panjang jendela pengukuran adalah bagian dari spe
 cache.** E20 karena itu kupatok explicit (`suhu(deret, jam=24)`) supaya cache yang memanjang tidak bisa
 mengubah kelas sebuah simbol diam-diam - dan assert barunya membuktikan pemotongan itu bekerja.
 
+## F-D59 - Dugaan "buku beku itu nasib long-tail perp" saya bantah sendiri: pada 35 kontrak yang sama, venue pembanding punya 14 simbol HIDUP dan nol MATI, kami 5 dan 14 · 29 Sep 2026 14:31:24Z
+
+**Kenapa harus diuji sebelum dipercaya.** §3 halaman 28 menuduh kelas asetnya ("memecoin long-tail ya
+begitu"). Itu penjelasan yang nyaman karena tidak menuntut apa-apa dari kami. Sebelum ia dipakai memilih
+arah produk, ia wajib diadu dengan venue lain pada **daftar simbol yang sama**.
+
+**Alatnya.** `tools/gate_liveness.py` (P61) mengimpor `suhu()`/`kelas()` dari `tools/perp_liveness.py` -
+bukan menyalin rumus, karena dua salinan rumus menghasilkan dua angka yang tidak sebanding (F-D45).
+
+```text
+35 dari 41 simbol reachable kami juga terdaftar di Gate Futures (kabar 259)
+   HIDUP  gate 14 simbol / 157 kabar | aster  5 simbol /  27 kabar
+   TIPIS  gate 21 simbol / 102 kabar | aster 14 simbol / 191 kabar
+   MATI   gate  0 simbol /   0 kabar | aster 14 simbol /  32 kabar
+   HIDUP hanya di Gate: Q, USELESS, 牛来, O, TRX, GWEI, UB, BOME, PEOPLE | hanya di Aster: tidak ada
+   kelas sama: 15 dari 35
+```
+
+**Keputusan.** (a) Dugaan "nasib long-tail" **dicabut**: pada kontrak yang sama venue kami 2,8× lebih
+sering MATI dan tidak ada satu pun simbol yang hidup di kami tapi mati di sana - jadi buku beku adalah
+**sebagian besar cacat venue kami**. (b) Ini **tidak** otomatis berarti "ganti venue = selesai": yang
+diperbaiki venue adalah **eksekusi** (isi, slippage, probabilitas terisi), bukan alasan masuk - dan
+E27/F-D60 menutup celah itu. (c) Angkanya saya catat dengan skala yang tidak sebanding: `v` Gate =
+jumlah kontrak, bukan USD; yang dipakai hanya uji nol-vs-bukan-nol dan lama harga tidak berubah.
+
+**Kecelakaan alat yang ikut memperbaiki gambar.** Dua kontrak non-Latin (`牛来_USDT`, `哈基米_USDT`)
+melempar `UnicodeEncodeError` karena saya hanya mengquote path, bukan query - dan itu tercatat sebagai
+"TIDAK-ADA-DATA". Sesudah diquote, keduanya punya data (TIPIS/HIDUP). Jadi sebagian "kehilangan jujur"
+saya adalah **bug pemetaan sendiri**, untuk kesekian kalinya (F-D47: daftar kami BASIS, API minta SIMBOL;
+F-D42: self-test menghapus data). Pelajarannya naik tingkat: *setiap "tidak ada data" dari alat baru
+wajib dibedakan tiga hal - tidak ada, tidak bisa dibaca, dan salah nama.*
+
+**Batas yang kutahan.** Satu hari; satu venue pembanding (Binance/Bybit/OKX tidak bisa dijangkau dari
+mesin ini - itu bukan "tidak ada", itu tidak terukur); klines bukan kedalaman; "HIDUP" = layak diuji
+horison menit, bukan layak dieksekusi ukuran besar.
+
+
+## F-D60 - Kesempatan terakhir hipotesis venue juga gagal: di venue yang bukunya hidup, efek menit-5 tinggal +2 sampai +13 bps - di bawah ongkos kami sendiri · 29 Sep 2026 14:36:08Z
+
+**Ini uji yang paling menentukan malam ini.** F-D59 memberi kesempatan terakhir bagi kalimat "bump-nya
+ada, venue kami yang terlalu beku untuk menunjukkannya". Kalau itu benar, di venue dengan 14 simbol
+HIDUP effect-nya harus kembali sebesar E11. `tools/gate_bump.py` (E27) mengujinya dengan **matematika yang diimpor dari E26** - hanya deretnya yang ganti rumah.
+
+```text
+HIDUP (n=31 kejadian, 14 simbol, 0 hilang):
+   @2 m  asli +4,7 | median +0,7 | masuk +1 m -1,7 | placebo  -2,8
+   @5 m  asli +2,0 | median +4,6 | masuk +1 m -4,1 | placebo  -7,4
+   @30m  asli -3,2 | median +12,1| masuk +1 m -7,7 | placebo  -3,4
+   berpasangan 5m vs 30m: median -9,0 bps | menang 14 kalah 17 | p=0,76344
+TIPIS (n=40, 21 simbol): @2 m +9,3 (pl +2,5) | @5 m +13,2 (pl +4,9) | @30 m +0,8 (pl +12,1); p=0,43731
+```
+
+**Angka yang harus disandingkan, bukan dipilih.** E11: **+202,6 bps** di menit 2-5 pada deret spot BSC.
+Ongkos round-trip terukur kami di venue sendiri: **59 bps**. Efek di venue hidup: **+2,0 sampai +13,2
+bps**. Jadi bahkan di tempat bukunya benar-benar bergerak, horison pendek (a) satu ordo lebih kecil dari
+yang kami klaim, (b) **habis sebelum ongkos**, dan (c) tetap nondeterministik melawan horison panjang
+(p=0,76; p=0,44).
+
+**Keputusan.** (a) Hipotesis "venue terlalu beku" **dicabut sebagai penjelasan hilangnya bump** - ia
+tetap benar sebagai masalah eksekusi (F-D59), tapi tidak menyelamatkan alasan masuk. (b) Rangkaian
+sebabnya sekarang tertutup dan terukur dari tiga sisi berbeda: kami **tidak lambat** (F-D54, umur
+keputusan 61 d); bukan karena **venue beku** (F-D60); melainkan karena **harga yang kami bayar bukan
+harga yang dilihat sinyal** (E21 `i` +245 bps; F-D54 `entry_px` di atas harga whale pada 16/25) - dan di
+atas semuanya, **bump itu sendiri tidak ada di harga perp**, di dua venue. (c) Untuk submission: kalimat
+"agen kami bisa mengambil dua menit pertama" **tidak boleh** diucapkan dalam bentuk apa pun; yang benar
+dan tetap kuat: *"kami mengukur apakah edge yang kami temukan bisa dipindahkan ke substrate tempat kami
+benar-benar bertransaksi - dan di dua venue jawabnya tidak, sebesar satu ordo di bawah ongkos."*
+
+**Yang tidak kulakukan.** Tidak membalik arah menjadi "maka jual saat whale beli" (F-D39/F-D51 melarang
+penafsiran terbalik tanpa kunci baru); tidak menamai ini vonis akhir (satu hari, n=31/40, klines tanpa
+kedalaman); dan tidak memutuskan sendiri soal pindah venue - itu keputusan produk builder, saya catat
+sebagai **P62** dengan bukti yang sudah ada, bukan dengan ajakan.
+

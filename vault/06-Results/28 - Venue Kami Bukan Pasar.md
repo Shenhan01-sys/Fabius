@@ -104,9 +104,72 @@ kedalaman buku ⑨ baru direkam untuk 26 simbol dan belum kita bacakan per simbo
 diharapkan; (d) 17 dari 32 kejadian hilang karena jendela seri (cache 1 m 24 jam) - dicatat sebagai
 kehilangan, dan itu sudah diperbaiki 14:12Z (**P59**) - lihat §4, yang menelan angka versi pertama.
 
+## 7. Ternyata bukan cuma kami - dan ini membalik sebagian tuduhan saya (P61, F-D59)
+
+Sebelum menerima kesimpulan §3 sebagai "nasib long-tail perp", saya ukur venue pembanding dengan
+**penggaris yang sama persis** (`tools/gate_liveness.py` mengimpor `suhu()`/`kelas()` E20; tidak ada
+salinan rumus) pada **daftar simbol yang sama**:
+
+```text
+35 dari 41 simbol reachable kami juga terdaftar di Gate Futures
+   HIDUP  gate 14 simbol / 157 kabar | aster  5 simbol /  27 kabar
+   TIPIS  gate 21 simbol / 102 kabar | aster 14 simbol / 191 kabar
+   MATI   gate  0 simbol /   0 kabar | aster 14 simbol /  32 kabar
+   HIDUP di Gate tapi tidak di Aster: Q, USELESS, 牛来, O, TRX, GWEI, UB, BOME, PEOPLE  (9 simbol)
+   HIDUP di Aster tapi tidak di Gate: tidak ada
+   kelas sama di kedua venue: 15 dari 35
+```
+
+Jadi buku beku itu **sebagian besar milik venue kami**, bukan milik kelas asetnya: pada kontrak yang sama,
+venue pembanding tidak punya satu pun simbol MATI dan punya 5,8× lebih banyak kabar di simbol yang hidup.
+Satu kecelakaan alatku sendiri ikut memperbaikinya: kontrak non-Latin (`牛来_USDT`) membuat URL saya
+melempar `UnicodeEncodeError`, dan itu sempat tercatat sebagai "TIDAK-ADA-DATA" - sesudah query diquote,
+dua simbol itu ternyata TIPIS/HIDUP. Kehilangan yang saya banggakan "jujur" itu ternyata bug pemetaan
+(F-D47 sekali lagi: yang salah hampir selalu ada di sisi kita).
+
+Catatan skala yang tidak boleh hilang: `v` di Gate adalah **jumlah kontrak**, bukan USD atau unit basis.
+Yang dipakai di halaman ini hanya "nol vs bukan nol" dan "berapa lama harga tidak berubah" - dua-duanya
+tidak bergantung skala. Membandingkan besar volume antar venue butuh konversi lebih dulu dan belum saya
+lakukan.
+
+## 8. Tapi buku yang hidup TIDAK menyelamatkan bump-nya (E27, F-D60)
+
+Ini yang menentukan, karena §7 memberi kesempatan terakhir bagi hipotesis "venue kami terlalu beku
+untuk menunjukkan bump". `tools/gate_bump.py` menguji 31 kejadian pada 14 simbol HIDUP di venue
+pembanding - matematikanya diimpor dari E26, deretnya dari venue itu:
+
+```text
+HIDUP (n=31, 14 simbol, 0 hilang):
+   @2 m asli  +4,7 | median +0,7 | masuk +1 m  -1,7 | placebo  -2,8
+   @5 m asli  +2,0 | median +4,6 | masuk +1 m  -4,1 | placebo  -7,4
+   @30m asli  -3,2 | median +12,1| masuk +1 m  -7,7 | placebo  -3,4
+   berpasangan 5m vs 30m: median -9,0 bps | menang 14 kalah 17 | p=0,76344
+TIPIS (n=40, 21 simbol):
+   @2 m +9,3 (placebo +2,5) | @5 m +13,2 (placebo +4,9) | @30 m +0,8 (placebo +12,1)
+   berpasangan: +8,8 bps | menang 21 kalah 19 | p=0,43731
+```
+
+**Efeknya di venue hidup: +2 sampai +13 bps di menit ke-5.** E11 memberi +202,6 di deret spot BSC; ongkos
+round-trip kami **59 bps**. Jadi bahkan di tempat bukunya benar-benar bergerak, horison pendek (a) satu
+ordo lebih kecil dari yang kami klaim, dan (b) **habis sebelum ongkos**, dan (c) tanda-uji berpasangan
+melawan horison panjang tetap nondeterministik (p=0,76 dan p=0,44).
+
+Rangkaiannya sekarang lengkap, dan tiga alat berbeda sepakat:
+
+| dugaan kenapa "edge 2 menit" tidak jadi uang | diuji dengan | jawab |
+|---|---|---|
+| kami terlalu lambat | `fast_lane.py --report` (F-D54) | **salah** - umur keputusan 61 d |
+| venue kami terlalu beku | `gate_liveness.py` + `gate_bump.py` (F-D59, F-D60) | **salah** - di venue hidup pun tinggal +2..+13 bps |
+| harga masuk kami bukan harga yang dilihat sinyal | `fill_gap.py` (E21) + `fast_lane` (F-D54) | **benar dan cukup** - `i` +245 bps; `entry_px` di atas harga whale pada 16/25 |
+
+Yang tersisa bukan "maka tinggal ganti venue": ganti venue memperbaiki **eksekusi** (fill, slippage,
+probabilitas isi), bukan **alasan masuk**. Itu perbedaan yang harus disebut dengan benar di depan juri,
+dan itu juga yang membuat keputusan produk berikutnya menjadi pertanyaan builder, bukan pertanyaan
+backtest (P62).
+
 ## 6. Yang berubah karena ini
 
-- Keputusan: **F-D56** (E20), **F-D57** (parser & dua angka reachable), **F-D58** (E26, bump tidak
+- Keputusan: **F-D56** (E20), **F-D57** (parser & dua angka reachable), **F-D59** (venue pembanding lebih hidup - dugaan 'nasib long-tail' dibantah), **F-D60** (bump tetap mati di venue hidup - dugaan 'venue terlalu beku' dibantah), **F-D58** (E26, bump tidak
   pindah ke perp).
 - Koreksi terlihat di: halaman 19 §3 (tembok venue), `TradingKnowledge/Fakta Terukur.md`,
   `10-Submissions/01 - Claims Cheat Sheet.md` (baris "edge dua menit" + frasa yang dilarang),
@@ -117,5 +180,7 @@ kehilangan, dan itu sudah diperbaiki 14:12Z (**P59**) - lihat §4, yang menelan 
   (venue pembanding: ukur hal yang sama di venue lain, jangan berharap).
 - Epik: pertanyaan "alasan masuk" sekarang punya batas atas yang terukur, dan itu yang menentukan
   urutan kerja berikutnya.
+
+- Alat baru: `tools/gate_liveness.py` (P61) dan `tools/gate_bump.py` (E27) - keduanya **mengimpor** penggaris E20/E26, tidak menyalin rumus, karena dua salinan rumus berarti dua angka yang tidak sebanding.
 
 Lihat juga: [[06-Results/26 - Masuk Segar, Terukur Benar]] · [[06-Results/27 - Masuk Terpilih vs Masuk Acak]] · [[03-Data/D2 - Wallet Flow]] · [[07-Peta-Fabius/GAP4 - Yang Tidak Bisa Diuji Karena Data]].

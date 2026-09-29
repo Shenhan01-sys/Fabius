@@ -309,3 +309,23 @@ produk, bukan pertanyaan backtest.
 
 Lihat: [[06-Results/28 - Venue Kami Bukan Pasar]] · `00-Overview/03 - Decisions.md` F-D56/F-D57/F-D58.
 
+## 3i. F-D59/F-D60 (29 Sep 14:3xZ) - dua penjelasan yang tersisa untuk "tidak ada alasan masuk", dan keduanya sudah diuji
+
+§3h menyisakan satu hipotesis yang belum dibantah: mungkin bump-nya nyata, tapi venue kami terlalu beku
+untuk menunjukkannya. Malam ini hipotesis itu pecah menjadi dua uji, dan keduanya gagal dengan cara yang
+seharusnya membuat kita berhenti mencari alasan keempat:
+
+1. **"long-tail perp memang begini"** → **dicabut** (F-D59). Pada 35 kontrak yang sama, venue pembanding:
+   HIDUP 14 / MATI 0; venue kami: HIDUP 5 / MATI 14. Buku beku sebagian besar cacat **kami**.
+2. **"kalau venue-nya hidup, bump-nya muncul"** → **dicabut juga** (F-D60). Di 14 simbol hidup itu,
+   efek menit-5 **+2,0 bps** (placebo −7,4) dan **+13,2** di kelas TIPIS (placebo +4,9); berpasangan
+   5m-vs-30m p=0,76 dan p=0,44. E11 memberi +202,6; ongkos kami 59.
+
+Yang tinggal adalah yang sudah tiga alat tunjukkan dari sisi berbeda: **harga yang kami bayar bukan harga
+yang dilihat sinyal** (E21 `i` +245 bps; F-D54 `entry_px` di atas harga whale pada 16/25), dan di luar itu
+bump-nya memang tidak ada di harga perp. Konsekuensi untuk epik ini: tidak ada lagi "satu pengukuran lagi
+akan membuka alasan masuk" - yang ada adalah keputusan produk (**P62**: venue pembanding memperbaiki
+eksekusi, bukan sinyal), dan itu hak builder, bukan hak saya.
+
+Lihat: [[06-Results/28 - Venue Kami Bukan Pasar]] §7-§8 · F-D59/F-D60.
+
