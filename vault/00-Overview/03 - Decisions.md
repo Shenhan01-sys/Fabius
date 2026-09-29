@@ -1594,3 +1594,66 @@ umur kabar **±13 menit** dengan bump **±2 menit**, `i` **+245 bps**).
 **Terkait:** [[06-Results/25 - Rem, Terkunci Prospectif]] · [[06-Results/21 - Rem di Horison Cepat]] · [[08-Backlog/02 - Epik Alasan Masuk]] §3f · [[07-Testing/01 - Test Commands]] baris 61 ·
 [[TradingKnowledge/QT4 - Overfitting dan Validasi]]
 
+## F-D53 — Daftar pantau buku order TIDAK kulebarkan malam ini, walaupun itu membuat E16 mungkin gagal karena n · 29 Sep 2026 12:26Z
+
+**Godaannya konkret, bukan abstrak.** E16 (`spec_sha256=0xeba3e0c5…`) berdiri di 26 simbol, median
+16 snapshot per simbol, dan aku sudah menghitung bahwa irisannya 90 simbol - jadi satu baris tulis
+berikutnya bisa melipatduakan sampelnya sebelum vonis 21:37:45Z, dan vonis itu akan jauh lebih
+berkuasa. Tidak ada yang menyebut itu curang; terdengar seperti kerja bagus (lebih banyak data!).
+
+**Kenapa kutolak.** Frame sampel adalah bagian dari ujian. Sekali spec di-sha, memperbesar frame =
+mengganti soalnya, bukan mengisi jawabannya - dan kami sudah membayar tiga versi kesalahan ini dalam
+sepekan: F-D32 (kontrol yang terpilih oleh sifarnya sendiri), F-D47 (cakupan berubah di tengah
+jendela karena bug, dan kami harus mengakuinya, bukan memperindahnya), F-D51 (peringkat lengan E9
+berbalik saat budget diubah - jadi “sampel mana” menentukan jawabannya lebih dari yang kami kira).
+Yang membuat godaan kali ini kuat justru karena ia *menguntungkan kami*: menaikkan n membuat
+peluang LAYAK naik. Itu tanda paling jelas bahwa yang sedang menyetir bukan pertanyaan, tapi
+jawabannya.
+
+**Keputusan.** (a) E16 jalan di 26 simbol, apa pun hasilnya - termasuk kalau “BELUM BISA DIUJI”,
+yang tetap jawaban sah. (b) Pelebaran daftar dijadwalkan sebagai **P54**, dieksekusi **setelah**
+21:37:45Z, dengan validasi ke `exchangeInfo` (yang dibuang dicetak), lalu **kunci baru** atas frame
+baru itu. (c) Aturan yang kutulis ke halaman 22 §5d: *frame sampel boleh diganti hanya untuk uji
+berikutnya, tidak untuk uji yang sudah di-sha.* Kalau nanti angka E16 memang tipis karena n,
+kalimat yang benar adalah “belum bisa diuji pada 26 simbol”, bukan “teorinya salah” - dan P54-lah
+yang akan menjawabnya.
+
+## F-D54 — 58 dari 58 lengan 5 m jalur cepat mengukur MASA LALU; blok pairing-nya kucabut, dan tembok "kabar 13,5 menit" ternyata tembokku sendiri · 29 Sep 2026 12:55Z
+
+**Yang terjadi.** Aku punya tiga "tembok" yang mengurung bump E11: venue (3,1 %), umur kabar (808 d),
+dan celah harga masuk (`i`, +245 bps). Yang kedua kubuang hari ini, bukan dengan analisis, tapi dengan
+perbaikan satu baris di `beli_baru()`: kandidat dulu diambil "12 teratas dari URUTAN BERKAS", dan
+karena satu muatan GMGN membentang puluhan menit, itu berarti sistematis mengambil yang paling TUA di
+jendela. Sesudah diambil dari yang paling segar, `tools/fast_lane.py --report` mencetak dua rejim
+terpisah: **812 d → 61 d (92 % lebih muda) pada alat yang sama.** Jadi kalimat "kabar kami mati sebelum
+kami selesai membacanya" salah alamat: yang mati adalah caraku mengambil kabar, dan kabar ⑦ tiba
+rata-rata berumur 24 d pada baris yang benar-benar kami putuskan.
+
+**Lalu alatku sendiri ketahuan salah ukur.** Jendela arm 5 m adalah `kejadian + 5 m ± 3 m`, yaitu mulai
+di kejadian + 120 d, sedangkan harga masuk kami adalah harga SAAT KEPUTUSAN. Keputusan yang tiba pada
+umur 812 d berarti jendelanya **sudah lewat sebelum kami masuk** - jadi angka yang keluar bukan "hasil
+dari masuk kami", tapi selisih antara masa lalu dan harga kami. Hitungannya: **0 dari 58 lengan 5 m
+rejim lama sah.** Termasuk tiga slot pairing yang sudah kupublikasikan (`5m −59,0` / `30m +139,3` /
+`delta −17,5`) dan baris `PROSPEKTIF n=86` - itu gabungan dua rejim, yang sah hanya 25.
+
+**Angka pertama yang boleh dipakai** (`--report`, 12:5xZ, n=25 lengan sah, umur keputusan min 42 /
+median 58 / maks 96 d, 24 token berbeda): **mean winso −519,4 | median −76,4 | mean mentah −1.016,6 |
+positif 5 dari 25 | 9 posisi jatuh > 1.000 bps.** E11 menjanjikan positif pada delay 0-2 m (+202,6 →
++47,3); yang hidup memberi −519,4, dan sebab yang terukur: `entry_px − tx_p` median **+25,7 bps**,
+p90 **+1.199,6**, dan pada **16 dari 25** posisi harga kami sudah DI ATAS harga transaksi whale.
+
+**Keputusan.** (a) Semua angka pairing/PROSPEKTIF jalur cepat yang pernah dikutip **dicabut sebagai
+pengukuran**, bukan dijadikan hasil negatif - halaman 26 menyimpan tabelnya, halaman 19 §2b dan cheat
+sheet kuberi koreksi bertanggal, baris 808 d sekarang berstatus "deskripsi rejim lama". (b) Alat
+diubah supaya tidak bisa mengulangi: `nilai_arm()` mengembalikan `sah` + `umur_keputusan_d`, keputusan
+telat menjadi status **`DI LUAR JENDEL`** (dihitung, bukan dinilai, bukan nol), laporan memisah dua
+rejim dan melabeli median gabungan **TIDAK BOLEH DIKUTIP** - 5 assert baru di self-test. (c) Angka
+−519,4 **tidak** kujadikan vonis: n=25, satu lengan, tanpa kontrol acak sejawat (F-D8), dan
+retrospektif terhadap perbaikan alatnya sendiri. Ia jadi bahan **P55** (prospektif + kontrol acak) dan
+**P56** (mengisolasi titik masuk: `entry_px` vs `tx_p` vs microprice ⑨) - karena §4 menunjuk titik
+masuk sebagai penyebab, dan itu belum pernah diisolasi.
+
+**Aturan yang kubawa terus:** kalau sebuah "tembok" ternyata adalah bug di alatku sendiri, angka yang
+dibangun di atasnya ikut dicabut - bukan disimpan sebagai "sisi negatif". Dan median dari dua rejim
+yang berbeda BUKAN angka: dia pencampuran dua alat.
+

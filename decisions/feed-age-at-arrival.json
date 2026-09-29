@@ -1,0 +1,11 @@
+{
+ "definisi": "arr - t per baris tx/txc yang punya cap",
+ "max_detik": 248,
+ "median_detik": 112,
+ "min_detik": 2,
+ "n_baris": 2644,
+ "p75_detik": 164,
+ "p90_detik": 206,
+ "p95_detik": 225,
+ "sumber_waktu": "cap arr ditulis perekam (runner GitHub), bukan jam laptop"
+}

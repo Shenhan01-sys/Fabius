@@ -152,6 +152,24 @@ laporan kegagalan tanpa penyebab tidak bisa dijawab nanti.
 
 
 
+## 5d. Satu keputusan prosedur: daftar pantau TIDAK kulebarkan malam ini
+
+E16 berdiri di 26 simbol (median 16 snapshot/simbol), dan itu tipis. Godaannya jelas: tulis ulang
+`universe/book-venue.txt` jadi 40 simbol teratas dari irisan (kabar ⑦ × venue - hitungannya sudah
+ada: 90 simbol irisan) supaya malam ini juga sampelnya melompat, dan vonis 21:37:45Z jadi lebih
+berkuasa.
+
+Aku tidak melakukannya, dan ini bukan formalitas kosong: **E16 di-sha dengan frame sampel yang
+berjalan saat itu**, dan memperluas frame di tengah jendela = mengubah ujiannya, bukan sekadar
+mengisi kolom. Persis gerakan yang kami hukum sepekan ini di bentuk lain: F-D32 (control
+mempromosikan dirinya), F-D47 (cakupan berubah di tengah jendela dan harus kami akui), F-D51
+(peringkat berbalik saat budget diganti). Kalau angkanya butuh lebih banyak simbol, yang jujur
+dilakukan adalah **menggembirakan daftarnya setelah vonis, lalu membuka kunci berikutnya** atas
+frame baru itu - bukan memperluas frame di tengah jalan.
+
+Jadi: dijadwalkan sebagai **P54** (eksekusi setelah 21:37:45Z), dan E16 tetap pada 26 simbolnya.
+Kemungkinan besar hasilnya “BELUM BISA DIUJI” karena n - dan itu jawaban yang sah, bukan kegagalan.
+
 ## 6. Hasil
 
 _kosong sampai umur kunci cukup - dan kekosongan ini bagian dari spesifikasinya._

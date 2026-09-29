@@ -125,3 +125,21 @@ bekerja di crypto": belum diuji sama sekali.
 **Terkait:** [[FD1 - Struktur Pasar dan Rezim]] · [[EV4 - Point-in-Time dan Riwayat yang Tidak Bisa Disusulkan]] ·
 [[EV3 - Signifikansi dan Multiple Testing]] · [[EV5 - Reproduksibilitas dan Pra-Registrasi]] ·
 [[QT3 - Data Fitur dan Label]] · [[PL6 - Menilai Hasil]]
+
+## Koreksi 29 Sep 12:55Z - horisonnya bisa dikejar; yang belum pernah menghasilkan adalah titik masuknya (F-D54)
+
+Halaman ini memakai "kabar sudah berumur ±13,5 menit saat kami memutuskan" sebagai bukti bahwa horison
+2 menit mustahil kami kejar. **Bukti itu dicabut**: itu bug pemilihan kandidat di `tools/fast_lane.py`
+(kandidat diambil dari urutan berkas = yang tertua di jendela). Sesudah `b990ab5` mengambil yang
+tersegar, umur kabar saat memutuskan jadi **median 61 d** (n=182, p90 89 d, 97 % di bawah 180 d) - dan
+`arr − t` pada baris yang kami putuskan **24 d**. Sumbernya memang muda.
+
+Yang menggantikannya justru lebih tidak enak: dengan umur keputusan **median 58 d**, pada 25 lengan 5 m
+yang pengukurannya **sah**, hasilnya **mean winso −519,4 / median −76,4 bps**, positif cuma 5 dari 25
+(`tools/fast_lane.py --report`, 29 Sep 12:5xZ). Bentuk aturan yang benar karena itu bukan "horison 2
+menit tidak bisa dikejar", melainkan **"horison 2 menit bisa dikejar, dan tidak pernah berubah jadi
+hasil ketika harga masuknya adalah harga yang benar-benar bisa kami dapat"**. Lihat §4a (`delay`) yang
+sekarang punya padanan hidup, dan [[06-Results/26 - Masuk Segar, Terukur Benar]] untuk tabelnya.
+Aturan turunannya tidak berubah: horison dinyatakan **relatif terhadap peristiwa**, dan titik masuk
+dihitung dari harga yang bisa kami eksekusi - bukan dari harga yang dilihat sinyal.
+

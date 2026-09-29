@@ -34,6 +34,7 @@ Pakai:  python -X utf8 tools/fast_lane.py --run             # satu siklus (dipak
 from __future__ import annotations
 
 import argparse
+import calendar
 import hashlib
 import io
 import json
@@ -58,6 +59,35 @@ ARM_CEPAT = 5
 ARM_LAMBAT = 30
 JENDELAPAS = 3 * MIN
 
+# `beli_baru()` berhenti memilih kandidat dari URUTAN BERKAS pada commit b990ab5
+# (2026-09-29T18:22:56+07 = 11:22:56Z). Sebelum itu "12 teratas" = yang paling TUA di
+# jendela, jadi `latensi_keputusan_detik` yang tercatat sebelum jam itu mengukur alat yang
+# BERBEDA. Dua rejim tidak boleh digabung dalam satu median (F-D50/P50).
+BATAS_REJIM = "2026-09-29T11:22:56Z"
+REJIM_BARI = "terbaru-dulu"
+
+
+def rejim(r):
+    """Klasifikasi baris keputusan: mana yang dihasilkan pemilih terbaru-dulu, mana yang tidak."""
+    if r.get("pemilih"):
+        return str(r["pemilih"])
+    return "urutan-berkas" if str(r.get("dibuat_utc") or "") < BATAS_REJIM else REJIM_BARI
+
+
+def sah_arm(x, h):
+    """Apakah arm pada horison `h` menit menilai SESUDAH kami memutuskan - bukan sebelumnya.
+
+    Jendelanya `[t + h*60 - 180, t + h*60 + 180]` dengan `t` = waktu kejadian, sedangkan harga masuk
+    kami adalah harga pada saat keputusan. Jadi arm hanya berarti sebagai "hasil dari masuk kami"
+    kalau umur keputusan <= h*60 - 180. Baris lama (sebelum cap `sah` ada) dihitung dari
+    `latensi_keputusan_detik` yang tercatat di barisnya sendiri - tidak ditebak.
+    """
+    a = x.get("keluar_%dm" % h) or {}
+    if "sah" in a:
+        return bool(a["sah"])
+    lat = x.get("latensi_keputusan_detik")
+    return True if lat is None else lat <= h * MIN - JENDELAPAS
+
 
 def w(x):
     return max(-WINS, min(WINS, x))
@@ -65,6 +95,14 @@ def w(x):
 
 def iso(t):
     return time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime(t))
+
+
+def epoch(s):
+    """`2026-09-29T12:15:00Z` -> detik unix. Untuk baris lama yang belum punya cap `t_putus`."""
+    try:
+        return int(calendar.timegm(time.strptime(str(s), "%Y-%m-%dT%H:%M:%SZ")))
+    except (TypeError, ValueError):
+        return None
 
 
 def muat_log():
@@ -137,15 +175,27 @@ def wp_terakhir(seri, t):
     return {"px": seri[i][1], "umur_detik": t - seri[i][0]}
 
 
-def nilai_arm(seri, t, p0, h, rt):
+def nilai_arm(seri, t, p0, h, rt, t_putus=None):
+    """Satu lengan pada horison `h` menit, diukur dari HARGA KEJADIAN `t`.
+
+    _GUARD yang tidak boleh dihapus:_ jendela penilaian ada di `t + h m ± 3 m`. Kalau kami baru
+    memutuskan SETELAH tepi awal jendela itu, angka yang keluar mengukur masa lalu - bukan hasil
+    dari keputusan kami. Versi pertama alat ini tidak memeriksa itu, dan karena kandidatnya dipilih
+    dari urutan berkas (umur kabar median 812 d), SEMUA lengan 5 m-nya (58 dari 58) ternyata
+    mengukur sebelum kami masuk. Angka itu sudah telanjur dikutip; lihat F-D54.
+    """
     if not seri or not p0:
         return None
-    js = [p for tt, p in seri if t + (h * MIN - JENDELAPAS) <= tt <= t + (h * MIN + JENDELAPAS)]
-    ts = [tt for tt, p in seri if t + (h * MIN - JENDELAPAS) <= tt <= t + (h * MIN + JENDELAPAS)]
+    awal = t + (h * MIN - JENDELAPAS)
+    js = [p for tt, p in seri if awal <= tt <= t + (h * MIN + JENDELAPAS)]
+    ts = [tt for tt, p in seri if awal <= tt <= t + (h * MIN + JENDELAPAS)]
     if not js:
         return None
+    sah = True if t_putus is None else (t_putus <= awal)
     return {"net_bps": round(10000.0 * (FC.med(js) - p0) / p0 - rt, 1),
-            "umur_baris_detik": FC.med(ts) - (t + h * MIN)}
+            "umur_baris_detik": FC.med(ts) - (t + h * MIN),
+            "sah": sah, "tepi_jendela_d": awal - t,
+            "umur_keputusan_d": None if t_putus is None else t_putus - t}
 
 
 def jalankan(now, per_run, cari_menit, rt):
@@ -162,11 +212,19 @@ def jalankan(now, per_run, cari_menit, rt):
         seri = wp.get(r["tk"])
         if now - t < ARM_CEPAT * MIN:
             continue
-        cepat = nilai_arm(seri, t, p0, ARM_CEPAT, rt)
-        lambat = nilai_arm(seri, t, p0, ARM_LAMBAT, rt) if now - t >= ARM_LAMBAT * MIN else None
+        cepat = nilai_arm(seri, t, p0, ARM_CEPAT, rt,
+                          t_putus=r.get("t_putus") or epoch(r.get("dibuat_utc")) or now)
+        lambat = nilai_arm(seri, t, p0, ARM_LAMBAT, rt,
+                           t_putus=r.get("t_putus") or epoch(r.get("dibuat_utc")) or now) \
+            if now - t >= ARM_LAMBAT * MIN else None
         if cepat is None:
             baru = dict(r, status="TAK ADA DATA", dinilai_utc=iso(now), alasan="tidak ada baris "
                         "wp pada jendela %d m - ini BUKAN nol bps" % ARM_CEPAT)
+        elif not cepat.get("sah"):
+            baru = dict(r, status="DI LUAR JENDEL", dinilai_utc=iso(now),
+                        alasan="kami memutuskan %d d sesudah kejadian, tapi jendela %d m mulai di "
+                               "kejadian+%d d - arm ini mengukur MASA LALU, tidak dinilai (F-D54)"
+                               % (cepat["umur_keputusan_d"], ARM_CEPAT, cepat["tepi_jendela_d"]))
         else:
             baru = dict(r, status="dinilai", dinilai_utc=iso(now), keluar_5m=cepat,
                         keluar_30m=lambat,
@@ -192,6 +250,7 @@ def jalankan(now, per_run, cari_menit, rt):
                              {k: fg.get(k) for k in ("maker_jual", "jual_ada", "usd_jual")}),
                          "tk": c["tk"], "t_kejadian": c["t"], "kunci": c["kunci"],
                          "dibuat_utc": iso(now), "latensi_keputusan_detik": now - c["t"],
+                         "pemilih": REJIM_BARI,
                          "mode": "PAPER", "gerbang": "flow_gate ⑦ (satu arah)"})
             continue
         ent = wp_terakhir(wp.get(c["tk"]), now)
@@ -199,7 +258,7 @@ def jalankan(now, per_run, cari_menit, rt):
             tolak += 1
             rows.append({"slot_id": "N" + hashlib.sha256(c["kunci"].encode()).hexdigest()[:16],
                          "status": "TAK ADA DATA", "tk": c["tk"], "t_kejadian": c["t"],
-                         "kunci": c["kunci"], "dibuat_utc": iso(now),
+                         "kunci": c["kunci"], "dibuat_utc": iso(now), "pemilih": REJIM_BARI,
                          "alasan": "ticker `wp` tidak punya baris <= sekarang untuk token ini",
                          "mode": "PAPER"})
             continue
@@ -208,7 +267,8 @@ def jalankan(now, per_run, cari_menit, rt):
         tk_siklus.add(c["tk"])
         rows.append({"slot_id": sid, "status": "terbuka", "mode": "PAPER", "label": "FAST-5m",
                      "tk": c["tk"], "simbol": c["simbol"], "t_kejadian": c["t"],
-                     "kunci": c["kunci"], "dibuat_utc": iso(now),
+                     "kunci": c["kunci"], "dibuat_utc": iso(now), "t_putus": now,
+                     "pemilih": REJIM_BARI,
                      "latensi_keputusan_detik": now - c["t"], "entry_px": ent["px"],
                      "umur_baris_entry_detik": ent["umur_detik"], "tx_p": c["tx_p"],
                      "usd": c["usd"], "gerbang": fg["status"],
@@ -220,15 +280,34 @@ def jalankan(now, per_run, cari_menit, rt):
 def laporan_terpasang(latest, urutan, rt):
     """Angka yang paling jujur dari jalur cepat: apa hasil masuk dengan umur kabar yang kami dapat.
 
-    Ini bukan uji kebijakan baru - ini konsekuensi langsung dari F-D50: slot-slot ini dibuka pada
-    umur kabar median 808 detik, jadi delta 5m-vs-30m yang terukur di sini adalah apa yang tersisa
-    dari bump E11 setelah kabar menua 13 menit. Dievaluasi pada POSISI yang sama (paired), dengan
-    tanda-uji dan winsor seperti semua uji lain di repo ini.
+    Dua saringan, keduanya dicetak sebagai hitungan (bukan dibuang diam-diam):
+      (a) `sah` - jendela arm 5 m dimulai di kejadian+120 d; keputusan yang tiba sesudah itu
+          mengukur MASA LALU, bukan hasil masuk kami. Ini yang membongkar F-D54: 58 dari 58
+          lengan 5 m rejim lama tertolak oleh saringan ini.
+      (b) rejim - sebelum b990ab5 kandidatnya diambil dari urutan berkas (yang tertua di jendela).
+    Tanda-uji dan winsor seperti semua uji lain di repo ini.
     """
-    ps = [latest[sid] for sid in urutan
-          if latest[sid].get("status") == "dinilai"
-          and isinstance(latest[sid].get("keluar_5m"), dict)
-          and isinstance(latest[sid].get("keluar_30m"), dict)]
+    semua = [latest[sid] for sid in urutan
+             if latest[sid].get("status") == "dinilai"
+             and isinstance(latest[sid].get("keluar_5m"), dict)
+             and isinstance(latest[sid].get("keluar_30m"), dict)]
+
+    tak_sah = [x for x in semua if not (sah_arm(x, ARM_CEPAT) and sah_arm(x, ARM_LAMBAT))]
+    if tak_sah:
+        print("   pairing: %d slot DIBUANG karena salah satu armnya menilai SEBELUM kami memutuskan "
+              "(F-D54); %d tersisa" % (len(tak_sah), len(semua) - len(tak_sah)))
+    ps = [x for x in semua if x not in tak_sah]
+    seg = [x for x in ps if rejim(x) == REJIM_BARI]
+    if not seg:
+        print("   pairing REJIM SEGAR: 0 slot - belum ada posisi yang dibuka sesudah perbaikan "
+              "urutan DAN berumur 30 m. Yang di bawah ini rejim LAMA (kandidat tertua di jendela), "
+              "mengukur alat yang sudah tidak berjalan - BUKAN vonis alat sekarang.")
+    else:
+        dibuang = len(ps) - len(seg)
+        if dibuang:
+            print("   pairing: %d slot pasangan DIBUANG karena rejim lama (urutan berkas = kandidat "
+                  "paling tua di jendela) - tidak sejawat dengan alat yang berjalan sekarang" % dibuang)
+        ps = seg
     if not ps:
         print("   pairing: belum ada slot dengan DUA arm dinilai - ini BELUM BISA DIUJI")
         return None
@@ -259,11 +338,18 @@ def laporan_terpasang(latest, urutan, rt):
     print("      delta 5m-30m median %+0.1f bps | menang %d / kalah %d | tanda-uji p=%s"
           % (r["median_delta_5m_kurang_30m"], r["menang_5m"], r["kalah_5m"],
              "-" if r["p_tanda"] is None else "%.4f" % r["p_tanda"]))
-    print("      baca: ini bukan 'strategi 5 menit kalah', ini apa yang tersisa dari bump E11")
-    print("      SETELAH kabarnya menua %d menit (min %d, maks %d) - dan E11 sudah memprediksi"
-          % (r["usia_kabar_median_d"] // 60, r["usia_kabar_min_d"] // 60,
-             r["usia_kabar_maks_d"] // 60))
-    print("      `delay 5 m` -> mean@5m -166,4 bps; di sini kita masuk pada delay yang lebih besar.")
+    if r["usia_kabar_median_d"] >= 3 * MIN:
+        print("      baca: ini bukan 'strategi 5 menit kalah', ini apa yang tersisa dari bump E11")
+        print("      SETELAH kabarnya menua %d menit (min %d, maks %d) - dan E11 sudah memprediksi"
+              % (r["usia_kabar_median_d"] // 60, r["usia_kabar_min_d"] // 60,
+                 r["usia_kabar_maks_d"] // 60))
+        print("      `delay 5 m` -> mean@5m -166,4 bps; di sini kita masuk pada delay yang lebih besar.")
+    else:
+        print("      baca: kami masuk pada umur kabar median %d d - di DALAM jendela bump E11 "
+              "(±2 m), jadi delta ini bukan lagi 'apa yang tersisa setelah kabarnya menua'."
+              % r["usia_kabar_median_d"])
+        print("      n=%d masih kecil, dan E11 sendiri tidak pernah lolos tanda-uji pada n=24."
+              % r["n_terpasang"])
     return r
 
 
@@ -279,17 +365,62 @@ def report(rt):
           if isinstance(r.get("delta_cepat_kurang_lambat"), (int, float))]
     print("FAST-LANE | slot: %d dinilai, %d terbuka, %d ditolak gerbang, %d tanpa data"
           % (len(nilai), len(buka), len(tolak), len(hili)))
+    # DUA REJIM dipisah, tidak digabung: sebelum b990ab5 kandidatnya dipilih dari urutan berkas
+    # (= yang paling tua di jendela), sesudahnya dari yang paling segar. Satu median bersama akan
+    # berbohong tentang alat yang berjalan SEKARANG (F-D50/P50).
+    per = {}
+    for r in buka + nilai + tolak + hili:
+        x = r.get("latensi_keputusan_detik")
+        if isinstance(x, int):
+            per.setdefault(rejim(r), []).append(x)
+    for nama in sorted(per):
+        v = sorted(per[nama])
+        keterangan = {"urutan-berkas": "TUA - alat lama; jangan dikutip sebagai keadaan sekarang",
+                      REJIM_BARI: "SEGAR - alat yang berjalan sekarang"}.get(nama, "?")
+        print("   umur kabar saat memutuskan [%s]: median %d d | p90 %d | max %d | n=%d | <180 d %d%%"
+              % (nama, v[len(v) // 2], v[int(0.9 * (len(v) - 1))], v[-1], len(v),
+                 100 * sum(1 for x in v if x < 180) // len(v)))
+        print("      %s" % keterangan)
+    tua, baru = sorted(per.get("urutan-berkas", [])), sorted(per.get(REJIM_BARI, []))
+    if tua and baru:
+        print("   PERBAIKAN TERUKUR: %d d -> %d d (%.0f%% lebih muda) pada alat yang sama, hanya "
+              "karena urutan pilihannya dibetulkan - BUKAN karena sumbernya berubah"
+              % (tua[len(tua) // 2], baru[len(baru) // 2],
+                 100.0 * (1 - baru[len(baru) // 2] / float(tua[len(tua) // 2]))))
+    # validitas lengan: jendela 5m mulai di kejadian+120 d, jadi ini bukan formalitas
+    for h in (ARM_CEPAT, ARM_LAMBAT):
+        key = "keluar_%dm" % h
+        rek = [r for r in nilai if isinstance(r.get(key), dict)]
+        byr = {}
+        for r in rek:
+            byr.setdefault(rejim(r), [0, 0])
+            byr[rejim(r)][0 if sah_arm(r, h) else 1] += 1
+        if rek:
+            ringkas = " | ".join("%s: %d sah, %d mengukur MASA LALU" % (k, v[0], v[1])
+                                 for k, v in sorted(byr.items()))
+            print("   arm %2dm: %d tercatat -> %s" % (h, len(rek), ringkas))
+    if nilai:
+        print("      ambang sah: memutuskan <= %d d sesudah kejadian untuk 5m, <= %d d untuk 30m "
+              "(jendela +-3 m di sekitar horison)" % (ARM_CEPAT * MIN - JENDELAPAS,
+                                                      ARM_LAMBAT * MIN - JENDELAPAS))
     if lat:
-        print("   latensi keputusan (detik dari kejadian -> kami memutuskan): median %d | p90 %d | "
-              "max %d | n=%d" % (lat[len(lat) // 2], lat[int(0.9 * (len(lat) - 1))], lat[-1],
-                                 len(lat)))
+        print("   latensi keputusan GABUNGAN DUA REJIM: median %d | p90 %d | max %d | n=%d "
+              "- TIDAK BOLEH DIKUTIP; pakai angka per-rejim di atas"
+              % (lat[len(lat) // 2], lat[int(0.9 * (len(lat) - 1))], lat[-1], len(lat)))
     if dl:
         c = [r["keluar_5m"]["net_bps"] for r in nilai if r.get("keluar_5m")]
         l = [r["keluar_30m"]["net_bps"] for r in nilai if r.get("keluar_30m")]
+        cSah = [r["keluar_5m"]["net_bps"] for r in nilai if isinstance(r.get("keluar_5m"), dict)
+                and sah_arm(r, ARM_CEPAT)]
         print("   PROSPEKTIF pada posisi yang sama: 5m mean winso %+0.1f (n=%d) | 30m mean winso "
               "%+0.1f (n=%d) | delta median %+0.1f"
               % (sum(w(x) for x in c) / max(1, len(c)), len(c), sum(w(x) for x in l) / max(1, len(l)),
                  len(l), FC.med(dl)))
+        if cSah:
+            print("      5m HANYA yang sah (memutuskan <= %d d): mean winso %+0.1f | median %+0.1f "
+                  "| n=%d dari %d - sisanya mengukur masa lalu dan tidak boleh ikut rata-rata"
+                  % (ARM_CEPAT * MIN - JENDELAPAS, sum(w(x) for x in cSah) / len(cSah),
+                     FC.med(cSah), len(cSah), len(c)))
     if hili:
         print("   tanpa data: %d - ini KEHILANGAN, bukan hasil nol" % len(hili))
     rtp = laporan_terpasang(latest, urutan, rt)
@@ -334,6 +465,19 @@ def self_test():
         assert dib == 1 and rows[0]["status"] == "terbuka", rows
         assert rows[0]["latensi_keputusan_detik"] == 60, rows[0]
         assert rows[0]["umur_baris_entry_detik"] == 5 * MIN, rows[0]
+        # dua rejim harus terpisah: baris baru terbaca SEGAR, baris tanpa cap sebelum jam
+        # perbaikan terbaca TUA, dan sesudahnya SEGAR (median gabungan = alat yang berbohong)
+        assert rows[0]["pemilih"] == REJIM_BARI and rejim(rows[0]) == REJIM_BARI, rows[0]
+        assert rejim({"dibuat_utc": "2026-09-29T08:11:42Z"}) == "urutan-berkas"
+        assert rejim({"dibuat_utc": "2026-09-29T12:15:00Z"}) == REJIM_BARI
+        # guard F-D54: arm yang jendelanya sudah lewat saat kami memutuskan TIDAK dianggap sah
+        a = nilai_arm(seri["0xtok"], now - 60, 1.0, 5, 59.0, t_putus=now - 60 + 60)
+        assert a["sah"] is True, a
+        b = nilai_arm(seri["0xtok"], now - 60, 1.0, 5, 59.0, t_putus=now - 60 + 600)
+        assert b["sah"] is False and b["umur_keputusan_d"] == 600, b
+        assert sah_arm({"keluar_5m": b, "latensi_keputusan_detik": 600}, 5) is False
+        assert sah_arm({"keluar_5m": {"net_bps": 1.0}, "latensi_keputusan_detik": 100}, 5) is True
+        assert sah_arm({"keluar_5m": {"net_bps": 1.0}, "latensi_keputusan_detik": 534}, 5) is False
         tulis(rows)
         # siklus berikutnya: slot dinilai (5m lewat, 30m belum) -> delta masih None
         rows2, _, nil2, _ = jalankan(now + 6 * MIN, 3, 15, 59.0)

@@ -134,3 +134,17 @@ lewat time-stop, dengan hasil berlawanan 148 bps" — angka 148 itu aritmetika d
 **Terkait:** [[FD6 - Ukuran Posisi]] · [[FD3 - Likuiditas dan Dampak Harga]] ·
 [[FD2 - Support Resistance dan Level Psikologis]] · [[I6 - ATR dan Jarak Ternormalisasi]] ·
 [[U3 - Level Likuidasi dan Cascade]] · [[Concepts/One-Way Gate]] · [[PL5 - Mengeksekusi dan Keluar]]
+
+## Catatan 29 Sep 12:55Z (F-D54) - yang jatuh bukan aturan keluar, tapi dasar pengukurannya
+
+Blok `PAIRING` jalur cepat yang kupakai bicara "5 m vs 30 m pada posisi yang sama" (**−59,0 / +139,3 /
+delta −17,5**, n=3) **dicabut sebagai pengukuran**, bukan dijadikan hasil negatif: jendela arm 5 m
+(kejadian+120 d s/d +480 d) sudah lewat sebelum keputusan rejim lama tiba (median 812 d). Jadi yang
+dibandingkan adalah masa lalu dengan harga kami. Alatnya sekarang menolak lengan seperti itu (`sah` di
+`nilai_arm`, status **`DI LUAR JENDEL`**) dan melaporkan dua rejim terpisah.
+
+Kenapa ini penting di halaman tentang keluar: **di rejim segar belum ada satu pun pasangan sah** - yang
+ada hanya lengan 5 m (n=25, mean −519,4). Semua kalimat di halaman ini soal "time-stop menolong" tetap
+berstatus uji gagasan (E12, vonis 20:04:56Z), dan satu-satunya aturan yang bertahan tetap **rem**
+(E13/E14), yang prospectif-nya baru divonis 20:08:15Z (E22).
+

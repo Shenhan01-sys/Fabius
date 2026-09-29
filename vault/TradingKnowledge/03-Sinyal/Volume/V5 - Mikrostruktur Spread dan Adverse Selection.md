@@ -106,3 +106,23 @@ di atas **59 bps** (§D) sebelum kata "edge" boleh dipakai.
 **Terkait:** [[V4 - Order Book dan Liquidity Heatmap]] · [[V3 - CVD Delta dan Footprint]] ·
 [[FD4 - Ongkos Perdagangan]] · [[FD3 - Likuiditas dan Dampak Harga]] · [[QT7 - Market Making]] ·
 [[QT10 - Eksekusi Algoritmik]] · [[Concepts/Cost Is Fixed]]
+
+## Koreksi 29 Sep 12:55Z - "biaya menunggu" akhirnya terukur pada posisi kami sendiri (F-D54)
+
+Halaman ini menulis bahwa pergerakan harga **dari order whale sampai keputusan kami** belum terukur di
+jalur kami. Sekarang terukur, dan arahnya bukan yang kita mau. Setelah kandidat diambil dari yang
+tersegar kami masuk pada umur kabar **median 58 d** (min 42, maks 96) di 24 token berbeda; pada menit
+ke-5, dari 25 lengan yang pengukurannya **sah**: **mean winso −519,4 | median −76,4 | mean mentah
+−1.016,6 | positif 5 dari 25 | 9 posisi jatuh > 1.000 bps** (`tools/fast_lane.py --report`).
+
+Yang membuatnya contoh adverse selection dan bukan nasib: harga masuk kami sudah **di atas** harga
+transaksi whale pada **16 dari 25** posisi - `entry_px − tx_p` median **+25,7 bps**, p90 **+1.199,6**.
+Kami tidak membeli pada harga yang dilihat sinyal; kami membeli pada harga **hasil** sinyal itu. Bentuk
+umumnya sudah di L3 (Almgren: dampak ≈ akar kuadrat volume) dan FD3 §5 - harga bergerak *karena* order,
+bukan *setelah* order, dan order berikutnya membayar selisihnya. Dari sini **microprice bukan peramal,
+dia tagihan** (P48), dan `i` +245 bps (E21) adalah versi lain tagihan yang sama.
+
+Yang masih belum terukur: (a) berapa bagian dari −519,4 yang datang dari titik masuk vs dari horison -
+itu **P55** (prospektif, kontrol acak sejawat); (b) apakah `entry_px` kami terlalu muda untuk dipercaya
+(umur barisnya median 38 d).
+

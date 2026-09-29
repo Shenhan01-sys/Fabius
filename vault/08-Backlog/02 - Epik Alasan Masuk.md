@@ -259,3 +259,29 @@ berani melaporkan apa pun. Tidak ada satu pun ambang yang diubah - itu akan butu
 **Terkait:** [[06-Results/13 - Apakah Tidak Trading Itu Gratis]] · [[06-Results/14 - Buku Paper]] ·
 [[06-Results/12 - Harga Masuk yang Benar]] · [[TradingKnowledge/O5 - Whale dan Kohor Smart Money]] ·
 [[TradingKnowledge/FD5 - Expectancy Bukan Win Rate]] · [[TradingKnowledge/QT2 - Backtesting yang Jujur]] · [[Concepts/One-Way Gate]] · [[00-Overview/03 - Decisions]] F-D31/F-D32/F-D33
+
+## 3g. F-D54 (29 Sep 12:55Z) - kecepatan bukan lagi alasan, dan angkanya baru sekarang boleh dipakai
+
+Epik ini berdiri di atas satu kalimat yang kutulis di §3e/§3f: *"bump-nya nyata, tapi kabarnya tiba
+pada umur 13,5 menit, sedangkan bump hidup ±2 menit"*. Kalimat itu **dicabut sebagai bukti** - ia
+mengukur bug di `beli_baru()` (kandidat diambil dari urutan berkas = yang tertua di jendela), bukan
+dunia. Sesudah `b990ab5` umur kabar saat memutuskan **61 d** (n=182, p90 89 d).
+
+Dan begitu pengukurannya benar, epik ini akhirnya punya angka masuk yang sah - bukan positif:
+**n=25 lengan 5 m, mean winso −519,4 / median −76,4 bps, positif 5 dari 25, umur keputusan median
+58 d, 24 token berbeda.** Penyebab yang terukur, bukan diduga: `entry_px − tx_p` median **+25,7 bps**
+dan sudah **di atas** harga whale pada **16 dari 25** posisi - kami membeli pada harga *hasil* sinyal,
+bukan harga yang dilihat sinyal (V5, FD3 §5, L3).
+
+**Yang berubah untuk urutan kerja di halaman ini.** Tidak ada lagi tempat untuk alasan "kami belum
+cepat". Sisa yang menahan `## Alasan masuk` adalah: (1) **titik masuk vs horison belum dipisah**
+-> **P55/P56** (prospektif + kontrol acak sejawat); (2) **cakupan venue 3,1 %** (F-D43) belum berubah;
+(3) `i` **+245 bps** (E21) belum berubah; (4) semua ini n=25 dan **retrospektif terhadap perbaikan
+alatnya sendiri** - jadi belum bisa dijual, hanya bisa dijadikan kunci berikutnya. Tabel T1-T7 di
+[[08-Backlog/03 - Epik Teori Baru]] ikut bergerak: T4 (trailing) masih buntu data, T2/T3 tetap nol,
+dan sekarang ada **T8 - titik masuk sebagai objek uji** yang sebelumnya tidak pernah bisa diuji
+karena alatnya sendiri salah.
+
+Lihat: [[06-Results/26 - Masuk Segar, Terukur Benar]] · [[06-Results/19 - Umur Posisi]] §2b ·
+`00-Overview/03 - Decisions.md` F-D54.
+

@@ -72,6 +72,15 @@ kami), bump-nya menyusut tapi tidak hilang:
 ```
 
 Tunda dua menit dan median@5m sudah **negatif**; tunda lima menit dan yang tersisa cuma kerugian.
+> **⚠ KOREKSI KEDUA 29 Sep 12:55Z (F-D54) - angka 808 d itu Benar, tapi ia deskripsi alat yang
+> sudah tidak berjalan.** Setelah `beli_baru()` diambil dari yang paling segar (commit `b990ab5`,
+> 11:22:56Z), rejim yang sama memberi **median 61 d** (n=182, p90 89 d, 97 % di bawah 180 d) - bukan
+> 808 d. Tembok "kabar menua 13,5 menit" ternyata tembokku sendiri. DAN: 0 dari 58 lengan 5 m rejim
+> lama adalah pengukuran yang sah, karena jendelanya (kejadian+120 d..+480 d) sudah lewat sebelum kami
+> memutuskan. Angka masuk-yang-sah pertama ada di [[06-Results/26 - Masuk Segar, Terukur Benar]]:
+> n=25, mean winso **−519,4**, median **−76,4**. Dua tembok lain di §3 (venue 3,1 %, `i` +245 bps)
+> TIDAK berubah oleh koreksi ini - bahkan menguat.
+
 > **⚠ KOREKSI 29 Sep 11:1xZ (F-D50) - angka di bawah ini benar, simpulannya salah.**
 > `median 0,2 menit` itu adalah `commit − t(baris TERBARU dalam commit itu)`: umur potongan
 > paling segar dalam satu muatan, **bukan** umur peristiwa yang kami olah. Ukuran langsung -

@@ -34,6 +34,8 @@ fitur yang tidak bisa diverifikasi.
 | **17:13:25Z** | **vonis E9** - `vol-rendah` vs `vol-tinggi` | `tools/vol_ab.py` dengan tiga syarat + komposisi 25/25 slot |
 | **20:04:56Z** | **vonis E12** - keluar 5 m vs tahan 30 m, posisi yang sama | `tools/hold_ab.py` empat syarat (termasuk umur baris harga keluar) |
 | **21:37:45Z** | **vonis E16** - state imbalance buku order | `tools/book_prereg.py` + WAJIB komposisi simbol (jangkar vs simbol kabar) |
+| **20:08:15Z** | **vonis E22** - rem diuji prospectif (`BOLEH` vs `VETO` @5 m, kejadian setelah kunci) | `python -X utf8 tools/gate_ab.py` (empat syarat serentak + dua kontrol arah) - hasilnya ditulis di halaman 25 sebagai koreksi terlihat |
+| ✔ **12:55Z sudah jatuh** | **F-D54** - tembok "kabar 13,5 menit" ternyata alatku; 0 dari 58 lengan 5 m rejim lama sah | `tools/fast_lane.py --report` memisah dua rejim + saringan `sah`; halaman 26 menulis angka pertamanya (n=25 sah: **−519,4 bps**) |
 | setelah vonis | **P42** satuan dampak ke `tools/costs.py` + `skema_dampak` per slot | tiga varian `tools/impact_audit.py` jadi satu angka yang punya varian jelas |
 | sebelum submit | **P2-P6b** jalur submission (host, kartu agen, form satu kontrak) | URL publik + form terisi dengan angka yang baris perintahnya ada di registry |
 | kalau ada ruang | **P49/E17** trailing sebagai uji bentuk-distribusi (random-barrier placebo) | tabel `P(net <= -X)` + median vs placebo, bukan "untung/tidak" |
