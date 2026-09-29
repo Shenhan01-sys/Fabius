@@ -215,11 +215,14 @@ Dua hal yang bila digabung saling menihilkan:
 
 ## Batas yang tidak boleh hilang bersama vonisnya
 
-- **n=4.255 bukan 4.255 observasi bebas.** Cadence ⑨ ~200 d dengan horison 300 d membuat jendela
-  return saling tumpang tindih; CI bootstrap dan p MW-nya karena itu **lebih optimis** dari yang
-  terlihat. Karena hasilnya nol (bukan positif tipis yang selamat), tumpang tindih ini tidak
-  mengubah vonis - tapi ia mengubah cara membaca "p=0,060" di arah yang salah itu, dan itu masuk
-  **P66** (uji ulang dengan jendela non-overlap di kunci berikutnya).
+- **n=4.255 bukan 4.255 observasi bebas - tapi selisihnya kecil, dan itu kuukur, bukan
+  kuperkirakan.** Horison 300 d pada snapshot yang berjarak **median 244 d** (p90 248 d,
+  min 32 d; 4.318 jarak antar-snapshot dalam 26 simbol ⑨) membuat **99,7 %** pasangan
+  beririsan - namun irisan per pasangan hanya **56 d, 19 % dari jendela**, sehingga
+  observasi efektif kira-kira 4.255 x 244/300 **~3.460**. Deflasi 1,23x ini TIDAK mengubah
+  vonis (hasilnya nol, bukan positif tipis yang selamat) dan tidak membuat p=0,060 di arah
+  yang salah jadi berarti; ia hanya membuat CI bootstrap dan p MW sedikit lebih optimis dari
+  yang terlihat. Perbaikan masuk **P66** (jendela non-overlap di kunci berikutnya).
 - **Versi CEPAT dari teori ini tidak pernah bisa dipalsukan di sini** - itu tertulis di spesifikasi
   (`cadence_batas`) dan E11 (kabar hidup ±2 m) menjadikannya fakta, bukan kekhawatiran. Yang
   dijatuhkan vonis ini adalah versi lambat dari "baca orderbook", pada cadence kami.
