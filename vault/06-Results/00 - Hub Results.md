@@ -47,6 +47,11 @@ hasil keluar — koreksi lewat halaman baru, supaya urutannya bisa dipertanggung
   CI **[−7.379; −3]** (n=40), `stack≥2` **−1.124,3** CI [−3.310; −3]. Arahnya terbalik dan CI-nya
   tidak menyentuh nol, tapi aturan halaman itu menutup **dua** arah: fade tidak boleh dijual
   tanpa kuncinya sendiri. Sensor: 7.294 beli dibuang tanpa harga keluar -> P33.
+- [[20 - Keluar Cepat, Terkunci]] - E12: kunci kelima, dipasang 29 Sep **08:04:56Z** setelah E11
+  dilihat dan sebelum satu pasangan pun dihitung. Arm kebijakan = keluar di menit ke-5, arm kontrol =
+  tahan sampai menit ke-30 **pada posisi yang sama**, empat syarat serentak termasuk syarat baru F-D41
+  (laporkan umur baris harga keluar + `P(ada harga keluar)` atau angkanya tidak masuk vault). Vonis
+  **20:04:56Z**.
 - [[19 - Umur Posisi]] - untuk pertama kalinya ada angka **positif yang lolos placebo**: harapan
   +192,7 bps di menit ke-2 dan +202,6 di menit ke-5, lalu meluruh jadi −182,5 di menit ke-30
   (placebo asal-mula: datar −180). Tapi menunda masuk **2 menit** saja sudah membalik mediannya,

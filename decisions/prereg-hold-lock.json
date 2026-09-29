@@ -1,0 +1,12 @@
+{
+ "arm_kebijakan_menit": 5,
+ "arm_kontrol_menit": 30,
+ "dibuat_utc": "2026-09-29T08:04:56Z",
+ "n_min": 20,
+ "spec_sha256": "0x7f4e12fd9202e7a482166deb567247a81262eca6f7697b3c0064807c084f6957",
+ "spek_teks": "E12 - uji terkunci 'keluar cepat' sebagai kebijakan.\n\narm_kebijakan : keluar pada horison 5 menit setelah kejadian beli kerumunan pintar\narm_kontrol   : horison 30 menit pada POSISI yang sama (bukan nol)\ndelta         : net(5m) - net(30m), winsor +/-2.000 bps, ongkos 59 bps RT di kedua sisi\nharga_masuk   : `wp` terakhir dengan t <= t_kejadian (kanonis E7/E11); varian `tx.p` dilaporkan\n                sebagai pemeriksaan, BUKAN sebagai lengan yang boleh dipilih setelah lihat hasil\nharga_keluar  : median `wp` pada t+[H-3m, H+3m]; umur median itu dilaporkan apa adanya\nperhitungan   : HANYA kejadian dengan t > t_kunci; non-overlap 1 per 30 m per token\nvonis_layak   : (1) n >= 20 DAN (2) median > 0 DAN CI bawah bootstrap 4000 (seed 20260928) > 0\n                DAN (3) tanda-uji eksak satu arah p < 0,05\n                DAN (4) P(ada harga keluar) + umur baris harga keluar dilaporkan untuk dua arm\nkalau_kecil   : tulis 'BELUM BISA DIUJI', jangan 'TIDAK ADA EFEK'; ambang tidak diturunkan\nkalau_gagal   : horison pendek ditutup sebagai kebijakan; TIDAK dibalik jadi 'tahan lebih lama'\nlapor_wajib   : n pasangan, token unik, median & mean winso delta, CI, p, umur harga tiap arm,\n                P(ada harga keluar) tiap arm, selisih `wp` vs `tx.p`\neksekusi      : alat ini tidak mengirim order; klaim 'bisa diambil' butuh P40 (jalur < 2 menit)\n",
+ "spesifikasi": "vault/06-Results/20 - Keluar Cepat, Terkunci.md",
+ "t_kunci": 1790669096,
+ "t_kunci_iso": "2026-09-29T08:04:56Z",
+ "umur_jam_min": 12
+}
