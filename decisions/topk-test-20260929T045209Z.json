@@ -1,0 +1,139 @@
+{
+ "batas_jelajah_utc": "2026-09-29T02:59:06Z",
+ "dibuat_utc": "2026-09-29T04:52:09Z",
+ "e7": [
+  {
+   "acak_ci_atas": 126.3,
+   "acak_mean": -123.9,
+   "di_atas": false,
+   "h": "kluster_beli",
+   "mean": -345.8,
+   "median": -767.4,
+   "n": 95,
+   "p_ge_500": 31.6,
+   "siklus": 19
+  },
+  {
+   "acak_ci_atas": 131.2,
+   "acak_mean": -115.1,
+   "di_atas": false,
+   "h": "maker_ge3",
+   "mean": -357.3,
+   "median": -635.0,
+   "n": 95,
+   "p_ge_500": 30.5,
+   "siklus": 19
+  },
+  {
+   "acak_ci_atas": 114.1,
+   "acak_mean": -125.4,
+   "di_atas": false,
+   "h": "spread_ok",
+   "mean": -348.7,
+   "median": -789.1,
+   "n": 95,
+   "p_ge_500": 31.6,
+   "siklus": 19
+  },
+  {
+   "acak_ci_atas": 175.2,
+   "acak_mean": -130.8,
+   "di_atas": false,
+   "h": "usd_ge_1k",
+   "mean": -350.5,
+   "median": -509.7,
+   "n": 95,
+   "p_ge_500": 30.5,
+   "siklus": 19
+  },
+  {
+   "acak_ci_atas": 101.0,
+   "acak_mean": -141.6,
+   "di_atas": false,
+   "h": "vol_tinggi",
+   "mean": -391.6,
+   "median": -744.1,
+   "n": 95,
+   "p_ge_500": 30.5,
+   "siklus": 19
+  },
+  {
+   "acak_ci_atas": 116.1,
+   "acak_mean": -135.6,
+   "di_atas": false,
+   "h": "vol_rendah",
+   "mean": 35.0,
+   "median": -61.9,
+   "n": 95,
+   "p_ge_500": 27.4,
+   "siklus": 19
+  },
+  {
+   "acak_ci_atas": 122.6,
+   "acak_mean": -130.5,
+   "di_atas": false,
+   "h": "di_atas_puncak60",
+   "mean": -221.5,
+   "median": -292.1,
+   "n": 95,
+   "p_ge_500": 32.6,
+   "siklus": 19
+  },
+  {
+   "acak_ci_atas": 116.8,
+   "acak_mean": -126.3,
+   "di_atas": false,
+   "h": "di_bawah_puncak60",
+   "mean": -23.5,
+   "median": -94.4,
+   "n": 95,
+   "p_ge_500": 37.9,
+   "siklus": 19
+  },
+  {
+   "acak_ci_atas": 109.2,
+   "acak_mean": -125.8,
+   "di_atas": false,
+   "h": "sepi_total",
+   "mean": -350.5,
+   "median": -509.7,
+   "n": 95,
+   "p_ge_500": 30.5,
+   "siklus": 19
+  },
+  {
+   "acak_ci_atas": 118.0,
+   "acak_mean": -129.8,
+   "di_atas": false,
+   "h": "banyak_jual",
+   "mean": -476.0,
+   "median": -821.2,
+   "n": 95,
+   "p_ge_500": 25.3,
+   "siklus": 19
+  }
+ ],
+ "e8": {
+  "delta_persentil_5_95": [
+   -2000.0,
+   2000.0
+  ],
+  "keluar_dini_kalah": 45,
+  "keluar_dini_menang": 69,
+  "mean_winso_delta": 316.6,
+  "median_delta_bps": 116.5,
+  "posisi_dipantau": 122
+ },
+ "horizon_menit": 30,
+ "k": 5,
+ "kejadian": 403,
+ "ongkos_bps_rt": 59.0,
+ "pool_mean_winso": -183.7,
+ "sensor": {
+  "n_oleh_batas": 837,
+  "tanpa_wp_keluar": 393,
+  "tanpa_wp_masuk": 6512,
+  "token_tanpa_wp": 10712
+ },
+ "sha": "0x241228db0a72289e4e77cdd5073012e7f9409273e5a88086af8aa0af42660361"
+}

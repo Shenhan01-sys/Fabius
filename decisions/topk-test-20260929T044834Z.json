@@ -1,0 +1,28 @@
+{
+ "batas_jelajah_utc": "2026-09-29T02:59:06Z",
+ "dibuat_utc": "2026-09-29T04:48:34Z",
+ "e7": [],
+ "e8": {
+  "delta_persentil_5_95": [
+   -2000.0,
+   2000.0
+  ],
+  "keluar_dini_kalah": 45,
+  "keluar_dini_menang": 69,
+  "mean_winso_delta": 316.6,
+  "median_delta_bps": 116.5,
+  "posisi_dipantau": 122
+ },
+ "horizon_menit": 30,
+ "k": 5,
+ "kejadian": 403,
+ "ongkos_bps_rt": 59.0,
+ "pool_mean_winso": -183.7,
+ "sensor": {
+  "n_oleh_batas": 837,
+  "tanpa_wp_keluar": 393,
+  "tanpa_wp_masuk": 6512,
+  "token_tanpa_wp": 10712
+ },
+ "sha": "0x2003c8efc082be8e8bc04d5a1abbd3860eb68fa3b6366799c9f9c1d42910aac4"
+}
