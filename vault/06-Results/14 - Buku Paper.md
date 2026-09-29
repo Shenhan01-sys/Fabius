@@ -100,8 +100,7 @@ hasilnya jadi positif; dia hanya membuat kita boleh mengukurnya sekarang.
 Buku ini bisa dijalankan **tanpa keputusan manusia** dan tiap jalannya mencetak `rows_sha256`
 **atas isi bukunya** (daftar slot, bukan tabel perbandingan - tabel punya hash sendiri,
 `sha_perbandingan`) sehingga sha yang diperiksa orang di chain adalah sha dari daftar posisi
-yang sama, yang nanti akan ditambal posisi asli. Bisa di-anchor lewat `attest-dataset` yang
-sudah ada. Itu artinya: kalau kita pasang dia di rantai
+yang sama, yang nanti akan ditambal posisi asli. Yang meng-anchornya: `tools/anchor.py` (kirim hash keputusan nyata lalu baca ulang dari chain dan bandingkan word per word). Itu artinya: kalau kita pasang dia di rantai
 harian, maka mulai besok tiap hari ada **rekaman keputusan + hasilnya yang terikat waktu**, bukan
 satu tabel yang dibuat malam sebelum tenggat. Itu P28.
 

@@ -1,0 +1,88 @@
+name: paper-book
+
+# P30 - buku posisi BOONGAN Fabius dijalankan MESIN, bukan diingat-ingat.
+#
+# Kenapa perlu job sendiri: `tools/paper_book.py` dan `tools/policy_test.py` sampai 29 Sep
+# hanya menghasilkan tabel pada jam aku menekannya. Untuk kelas klaim "hasil analisis kami
+# tervalidasi sebelum uang turun", yang dibutuhkan adalah deretan artefak yang waktunya dicatat
+# mesin pihak ketiga - sama seperti keputusan ⑧ dan dataset yang kami anchor.
+#
+# Kenapa tiap 4 jam (bukan tiap siklus 202 detik): buku ini menilai posisi pada horison 30-120
+# menit dari deret harga peristiwa; memanggilnya tiap 3 menit hanya menghasilkan baris dobel dan
+# membakar menit runner. Cron "23 */4" sengaja di menit 23 supaya tidak bertabrakan dengan
+# wallet-flow-watchdog yang menembak di menit 00 dan 30.
+#
+# Yang TIDAK dilakukan job ini: menandatangani apa pun. `pengganti_real` dibiarkan kosong -
+# mengisi kolom itu adalah pekerjaan jalur eksekusi asli (`execute_live.py`), bukan pekerjaan
+# scheduler. Anchor sha juga sengaja TIDAK di sini: Actions tidak punya (dan tidak boleh punya)
+# kunci penandatangan, jadi anchornya dibuat dari mesin lokal dengan
+# `python -X utf8 tools/anchor.py --file decisions/ledger-*.jsonl` (flag nyata: --file/--only/
+# --dry-run/--verify). SHA buku dicetak tiap jalan, jadi siapapun bisa membandingkannya dengan
+# yang ter-anchor.
+
+on:
+  schedule:
+    - cron: "23 */4 * * *"
+  workflow_dispatch:
+    inputs:
+      per_day:
+        description: "budget posisi paper per hari"
+        required: false
+        default: "20"
+      size_quote:
+        description: "nominal BNB per posisi paper (untuk haircut dampak 2*s/L)"
+        required: false
+        default: "0.01"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: paper-book
+  cancel-in-progress: false
+
+jobs:
+  buku:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Jalankan buku paper (slot berlabel PAPER, tidak pernah digabung dengan CHAIN)
+        run: |
+          python -u tools/paper_book.py \
+            --per-day "${{ github.event.inputs.per_day || '20' }}" \
+            --size-quote "${{ github.event.inputs.size_quote || '0.01' }}" \
+            --emit
+
+      - name: Commit + dorong (dengan retry; kalau push gagal, JANGAN diam)
+        run: |
+          git config user.name "paper-book-recorder"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git config merge.ours.driver true
+          git add decisions/paper-book-positions.jsonl decisions/paper-book-2*.json
+          if git diff --cached --quiet; then
+            echo "::error::buku paper tidak bertambah - tidak ada slot baru yang tercatat"
+            exit 1
+          fi
+          git commit -q -m "buku paper $(date -u +%Y-%m-%dT%H:%M:%SZ) [skip ci]"
+          for t in 1 2 3 4 5; do
+            if git pull --rebase -q origin "$GITHUB_REF_NAME" && git push -q; then
+              echo "push OK (percobaan $t)"; exit 0
+            fi
+            echo "push ditolak (percobaan $t) - rantai data mungkin bergerak duluan"
+            sleep 12
+          done
+          echo "::error::5x push gagal - buku tercatat di runner tapi tidak sampai ke branch"
+          exit 1
+
+      - name: Cetak vonis kebijakan hari ini (bacaan, bukan keputusan)
+        if: always()
+        run: |
+          python -u tools/policy_test.py --horizon 30 || true
+          python -u universe/record_watch_prices.py --report || true
+          head -n 14 decisions/prereg-watch-lock.json || true

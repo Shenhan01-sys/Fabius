@@ -71,7 +71,7 @@ Status kursi (kita pakai ambang **korpus HeliQuant**, disebut per file - Fabius 
 | drawdown akun >= 0,20 | semua kursi paksa SAFE | `trade_ticket.py:41` |
 | biaya | 5,5 bps taker + 4,5 bps spread/slippage **per sisi** = 20 bps round-trip; syarat edge net>20 bps ⇒ **gross>40 bps** — **angka korpus rujukan; jalur uji kami sejak 28 Sep memakai 59 bps terukur ([[Concepts/Cost Is Fixed]])** | `edge_lab.py:23,24,28,121,125` → `tools/costs.py` |
 
-Kenapa "1 rugi ≠ lepas" - angkanya: win-rate SUI di korpus lama **58,2%** ⇒ peluang satu trade rugi ≈ 42%; dengan 5 kursi aturan itu membuang ~2 kursi/hari **karena noise**. Lab HeliQuant sudah menamai penyakit ini: HYPE **+92% OOS** → **65% dari satu fold** → buang fold terbaik = **+1,9%** (`scripts/59_onboard_asset.py` + `edge_lab.py`, temuan #20).
+Kenapa "1 rugi ≠ lepas" - angkanya: win-rate SUI di korpus lama **58,2%** ⇒ peluang satu trade rugi ≈ 42%; dengan 5 kursi aturan itu membuang ~2 kursi/hari **karena noise**. Lab HeliQuant sudah menamai penyakit ini: HYPE **+92% OOS** → **65% dari satu fold** → buang fold terbaik = **+1,9%** (diagnostik **lab eksternal HeliQuant**: `scripts/59_onboard_asset.py` + `edge_lab.py` di repo itu, bukan alat kami - temuan #20).
 
 ## 4. Horizon: 4 jam, dan alasannya jujur
 

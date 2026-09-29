@@ -49,7 +49,7 @@ Dua catatan yang wajib ikut kalau angka ini dikutip siapa pun:
 
 1. **"cost-aware ~20 bps" di dokumen itu BIAYA-nya, bukan ambangnya.** `avg_bps` sudah dikurangi
    `2*COST`, lalu gerbangnya meminta `avg_bps > rt_fee_bps` — jadi ambang efektifnya dua kali
-   biaya. Spanduk `scripts/59_onboard_asset.py:39` salah cetak (memakai `FEE` → 11 bps) sementara
+   biaya. Spanduk `scripts/59_onboard_asset.py:39` (lab eksternal HeliQuant) salah cetak (memakai `FEE` → 11 bps) sementara
    gerbang sejatinya memakai `COST` → 20. Satu run mencetak dua angka ambang.
 2. **jalur backtest OHLC tidak memakai model biaya yang sama.** `scripts/15_validate_universe.py:40,96`
    = 10 bps/sisi **fee-only, nol slippage**, dan `LOOKAHEAD = 8` artinya horizon **8 jam cooldown**,

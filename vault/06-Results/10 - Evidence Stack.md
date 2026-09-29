@@ -72,7 +72,7 @@ yang dipakai, jangan memetik satu dan menyebutnya "uji yang sama".
 
 ## 2. Tumpukan: aspek yang lulus diuji lagi sebagai kombinasi
 
-Semua baris dihitung oleh `_research/stack_final.py` (28 Sep 07:40Z) di atas kejadian yang sama:
+Semua baris dihitung oleh `tools/evidence_variants.py` (28 Sep 07:40Z) di atas kejadian yang sama:
 
 | kombinasi | token | n | median selisih | CI 95 % | % positif | p |
 |---|---|---|---|---|---|---|

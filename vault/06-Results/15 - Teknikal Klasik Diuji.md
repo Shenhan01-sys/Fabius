@@ -9,7 +9,7 @@ terkunci `decisions/prereg-technic-lock.json` (`sha=0x6032bda0…`, ditulis sebe
 · 28 Sep ±15:52Z · bahan: deret harga PERISTIWA dari aliran ⑦
 
 **Ringkas:** builder bertanya apakah lapisan `TradingKnowledge` (Fibonacci, swing, scalping, moving
-average) terpakai atau cuma rapi. Audit `_research/audit_ujian_pengetahuan.py` menjawab jujur:
+average) terpakai atau cuma rapi. Audit `tools/coverage_knowledge_audit.py` menjawab jujur:
 **dari 86 catatan metode, 31 tanpa penanda "belum diuji", dan `04-Setup` berisi tujuh persona tanpa satu pun angka.** Satu aturan teknikal memang pernah diuji sebelumnya
 (`tools/backtest.py`: gap SMA24 ±1 % searah `ret24`, di bar hourly majors) dan hasilnya nol -
 momentum yang menyala semuanya dipadamkan gerbang |acf|. Sisanya belum. Malam ini alatnya ada.
@@ -80,7 +80,7 @@ Angka `+218,0` untuk pool dan `+450,8` untuk kohort token muda dipotong oleh [[0
   dengan riwayat panjang (`tools/bars.py`) - bukan deret peristiwa memecoin. Itu **P32**.
 
 Baca ulang: `python -X utf8 tools/technic_lab.py` · `python -X utf8 tools/backtest.py --top 5` ·
-`python -X utf8 _research/audit_ujian_pengetahuan.py` (workspace; audit cakupan uji)
+`python -X utf8 tools/coverage_knowledge_audit.py` (workspace; audit cakupan uji)
 
 **Terkait:** [[08-Backlog/02 - Epik Alasan Masuk]] · [[06-Results/13 - Apakah Tidak Trading Itu Gratis]] · [[06-Results/14 - Buku Paper]] · [[06-Results/04 - Negative Results]] ·
 [[TradingKnowledge/I1 - Moving Average]] · [[TradingKnowledge/I2 - RSI dan Divergence]] ·
