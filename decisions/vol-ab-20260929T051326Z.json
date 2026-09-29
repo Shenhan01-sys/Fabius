@@ -1,0 +1,24 @@
+{
+ "dibuat_utc": "2026-09-29T05:13:26Z",
+ "lengan_A": {
+  "n": 0
+ },
+ "lengan_B": {
+  "n": 0
+ },
+ "prefill": {
+  "A": 0,
+  "B": 0
+ },
+ "spec_sha256": "0x9d70c5809e5df3704858132407a50d6b4d2e510b729cc2217cbd0f62598c1034",
+ "t_kunci_iso": "2026-09-29T05:13:25Z",
+ "umur_jam": 0.0,
+ "vonis": {
+  "fehlbar": "BELUM BISA DIUJI - n lengan A 0 < 20",
+  "layak": false,
+  "p_mann_whitney_a_lewat_b": null,
+  "syarat_1_n_cukup": false,
+  "syarat_2_median_di_atas_nol": false,
+  "syarat_3_melampaui_kontrol": false
+ }
+}

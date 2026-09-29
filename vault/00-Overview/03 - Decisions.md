@@ -924,8 +924,7 @@ dijalankan sampai selesai**.
 
 **Skop yang tidak boleh dilewati.** Koreksi ini tidak membuat `lock_percent` hidup lagi: dia tetap
 mati sebagai kebijakan (F-D32) dan sekarang kehilangan satu tiang penyangga lagi. Dan MW yang benar
-tidak membuat `vol_rendah` jadi klaim - dia tetap kandidat sampai E9 jatuh ([[06-Results/18 -
-Kandidat Pertama, Diuji Hidup]]).
+tidak membuat `vol_rendah` jadi klaim - dia tetap kandidat sampai E9 jatuh ([[06-Results/18 - Kandidat Pertama, Diuji Hidup]]).
 
 ## F-D38 — Kandidat masuk pertama diuji HIDUP, bukan di backtest: kunci keempat 05:13:25Z · 29 Sep 2026
 
