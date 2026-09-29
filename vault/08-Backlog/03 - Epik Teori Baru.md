@@ -36,7 +36,50 @@ Maka T1 mengikat satu pembacaan sebagai primer *sebelum* ada data, dan sisanya s
 | **T6** | slope kedalaman (likuiditas per jarak harga) memprediksi besarnya price impact order kita | L2 multi-level | direkam sekarang (20 level) | **E20**: cocokkan order-size aktual vs pergeseran mid berikutnya; hasilnya dipakai mengoreksi `haircut` (P42/F-D46) | x·y=k dengan `liq` $1 di desil terbawah sudah terbukti jadi sampah; kalau kurva kalibrasi tidak monoton, model dampangnya yang salah |
 | **T7** | funding/OI basis & likuidasi berantai sebagai penanda arah di venue kami | kline + funding perp | ada sebagian (②) | di luar epik ini - sudah punya jalur sendiri | - |
 
-## 3. Yang harus terjadi sebelum teori mana pun boleh dijual
+## 3. Aritmetika trailing stop lebih dulu (ini yang membatasi klaim T2)
+
+Builder: "SL pakai trailing, pokoknya jangan sampai rugi, jaraknya sudah hitung spread + fee supaya
+tetap untung". Tulis sebagai matematika, dengan angka kami sendiri:
+
+```
+  C     = ongkos penuh satu round-trip = 59,0 bps TERUKUR (fee+gas+slip, `tools/costs.py`)
+          + spread penuh dua kaki (= satu spread; run pertama 0,01-7,77 bps di jangkar likuid,
+            dan simbol kabar belum terukur - E19)
+  M     = kenaikan maksimum harga sejak masuk, bps di atas harga masuk
+  d     = jarak trailing dari puncak, bps
+  PnL   = (M - d) - C   kalau pemicu terisi di harga trigger
+  lock  = PnL >= 0  <=>  M >= C + d
+```
+
+Tiga konsekuensi yang tidak bisa dinegosiasi aritmatika:
+
+1. **"Jangan sampai rugi" bukan keadaan yang bisa dijamin sejak awal.** Ia baru mulai mungkin
+   setelah harga sudah naik **lebih besar dari C + d**. Sebelum titik itu, trailing stop hanya
+   memotong kerugian - dan kalau C = 60-80 bps sementara pergerakan 5 menit simbol kami biasa
+   berada di dalam rentang itu, mayoritas posisi tidak pernah masuk zona terkunci sama sekali.
+2. **Yang dikunci bukan angka yang tertulis di trigger.** Trigger dieksekusi di bid, dan harga
+   bergerak *menembus* level itu: selisih antara "menyentuh" dan "terisi" tidak ada di
+   rumus di atas. Pada cadence ⑨ (snapshot ~200 detik) kami bahkan tidak bisa melihat apa yang
+   terjadi di antara dua snapshot - jadi "pokoknya jangan rugi" persis hilang di tempat yang
+   paling kami tidak lihat.
+3. **Trailing stop mengubah BENTUK distribusi, bukan arah drift.** Ini pelajaran yang sudah kami
+   bayar di tempat lain (F-D30/E2): **median boleh naik dan "persen positif" membaik sementara
+   harapan tetap diam**, karena yang dipotong adalah ekor kiri. Kalau E17 menemukan itu, klaimnya
+   adalah **"mengurangi buntut buruk"** - sebuah hipotesis baru dengan kuncinya sendiri - bukan
+   "ada edge".
+
+Karena itu desain E17 (belum ditulis) dipaksa begini:
+* **satu populasi posisi yang sama** (bukan dua cohort), dieksekusi pada `wp` tick,
+* lengan = trailing dengan beberapa `d` (mis. 30/60/120/250 bps) dan **kunci-penguncian hanya aktif
+  setelah M ≥ C + d**,
+* kontrol = **keluar di waktu acak pada jendela yang sama** (F-D40: "lebih cepat keluar" bukan
+  sinyal), bukan "tahan sampai horison",
+* vonis utama = **mean dengan bootstrap CI vs kontrol**, dilaporkan winsor DAN tanpa-winsor,
+  plus `P(net ≤ -200 bps)` sebelum/sesudah sebagai bukti mekanisme, plus P(≥+500),
+* ambang hidup = di atas CI **kontrol**, bukan di atas nol, dan tidak ada angka yang boleh dijual
+  sebelum lewat placebo dua ekor + grid `d` (F-D45).
+
+## 4. Yang harus terjadi sebelum teori mana pun boleh dijual
 
 1. **Histori ⑨** terkumpul dulu (target: ≥ 8 jam snapshot sebelum E16divoniskan; alatnya menolak
    sebelum 12 jam dan menolak `n < 40`).
@@ -49,14 +92,14 @@ Maka T1 mengikat satu pembacaan sebagai primer *sebelum* ada data, dan sisanya s
 5. **Venue dulu, sinyal kemudian.** T1/T2/T4 hidup di 61-90 simbol yang bisa kami pegang (F-D43).
    Teori sekuat apa pun di 2.163 token yang tidak bisa kami perdagangkan tetap bukan PnL.
 
-## 4. Riset pendukung
+## 5. Riset pendukung
 
 Empat agen riset paralel dijalankan 29 Sep 09:3xZ (order book imbalance; microprice & queue;
 VPIN/order-flow/toxicity; matematika stop-loss & trailing). Hasilnya ditulis di
 [[08-Backlog/04 - Riset Teori (Sitasi)]] dengan aturan: **hanya sumber yang benar-benar dibaca,
 URL + tanggal akses untuk setiap angka, dan "tidak terverifikasi" eksplisit untuk sisanya.**
 
-## 5. Terkait
+## 6. Terkait
 
 [[06-Results/22 - Buku Order, Terkunci Lebih Dulu]] · [[06-Results/19 - Umur Posisi]] ·
 [[06-Results/21 - Rem di Horison Cepat]] · [[08-Backlog/02 - Epik Alasan Masuk]] ·

@@ -17,7 +17,7 @@ jangan sampai rugi", dengan jarak trailing sudah menghitung spread + fee.
 
 Dua hal dari kalimat itu bisa diuji, dan keduanya kami uji di alat yang berbeda:
 **arah** (imbalance buku → return) di halaman ini, **dinamika exit** (trailing yang mengunci) di
-[[08-Backlog/03 - Epik Teori Baru]] §4 dengan aritmatika biaya yang jujur.
+[[08-Backlog/03 - Epik Teori Baru]] §3 dengan aritmatika biaya yang jujur.
 
 ## 2. Kenapa halaman ini ditulis sebelum ada datanya
 
