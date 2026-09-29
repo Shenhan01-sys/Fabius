@@ -91,6 +91,39 @@ def haircut(net, liq, size_quote):
     return net - imp, True
 
 
+SKEMA_ISI = None      # diiset dari --isi; None = v1 (perilaku buku paper sampai 29 Sep)
+_BNB = {}
+
+
+def isi_dampak(net, liq, ukuran, skema=None):
+    """Satu pintu untuk 'berapa kami benar-benar membayar', dan dia melaporkan skemanya.
+
+    v1 = `haircut()` lama: BNB dibagi USD, dampak ~600x terlalu kecil (F-D46). Default masih v1
+    sampai E9 (yang membaca berkas slot ini) divonis: menukar penggaris di tengah uji terkunci
+    bukan memperbaiki eksperimen, itu mengganti eksperimennya (F-D53/F-D54).
+    v2 = `costs.dampak_round_trip` dengan harga BNB TERUKUR + lantai likuiditas; yang di bawah
+    lantai jadi TIDAK SAH (net None), BUKAN nol - kehilangan dicatat, bukan dijadikan nol.
+    """
+    skema = skema or SKEMA_ISI or costs.ISI_V1
+    if skema == costs.ISI_V1:
+        v, ok = haircut(net, liq, ukuran)
+        return v, ok, {"skema": costs.ISI_V1, "dampak_bps": round(net - v, 6), "sah": True,
+                       "alasan": None if ok else "liq tidak dilaporkan -> dampak dianggap 0"}
+    if not _BNB.get("h"):
+        _BNB["h"] = costs.harga_bnb()
+    h = _BNB["h"]
+    d = costs.dampak_round_trip(ukuran, liq, bnb_usd=h["px"], skema=costs.ISI_V2)
+    info = {"skema": costs.ISI_V2, "harga_bnb_usd": h["px"], "umur_harga_bnb_menit": h["umur_menit"],
+            "lantai_liq_usd": costs.LIQ_LANTAI_USD, "ukuran_usd": d.get("ukuran_usd"),
+            "dampak_bps": d.get("dampak_bps"), "sah": bool(d["sah"]), "alasan": d.get("alasan")}
+    if not h["sah"]:
+        info["alasan"] = "harga BNB tidak segar: " + str(h["alasan"])
+        return None, False, info
+    if not d["sah"]:
+        return None, False, info
+    return round(net - d["dampak_bps"], 4), True, info
+
+
 _WP = {}
 
 
@@ -139,7 +172,7 @@ def bangun(kebijakan, horizon, per_hari, ukuran, seed=20260928):
         e["lock"] = f.get("lock_percent")
         e["vol24"] = f.get("volume_24h")
         raw = e["net"]
-        e["net_persenliq"], e["hcd"] = haircut(raw, e["liq"], ukuran)
+        e["net_persenliq"], e["hcd"], e["isi"] = isi_dampak(raw, e["liq"], ukuran)
         e["vol"] = vol_sebelum(e["tk"], e["t"])
     boleh = [e for e in ev if not (e["jual_2"] or e["jual_bersih"])]
     hari = sorted({e["t"] // HARI for e in boleh})
@@ -181,6 +214,7 @@ def bangun(kebijakan, horizon, per_hari, ukuran, seed=20260928):
 
 
 def ringkas(xs, label):
+    xs = [e for e in xs if e.get("net_persenliq") is not None]   # v2: slot TIDAK SAH keluar, bukan nol
     if not xs:
         return {"kebijakan": label, "n": 0}
     net = [e["net_persenliq"] for e in xs]
@@ -209,7 +243,13 @@ def main():
                          "posisi ASLI (aturan builder 28 Sep: '2 kali benar dulu baru berani')")
     ap.add_argument("--emit", action="store_true",
                     help="tulis slot ke decisions/paper-book-positions.jsonl (append-only)")
+    ap.add_argument("--isi", default="v1", choices=("v1", "v2"),
+                    help="v1 = model lama (BNB dibagi USD, F-D46); v2 = harga BNB terukur + lantai "
+                         "likuiditas. Default sengaja v1: berkas slot ini dibaca tools/vol_ab.py "
+                         "untuk vonis E9 yang masih hidup")
     a = ap.parse_args()
+    global SKEMA_ISI
+    SKEMA_ISI = costs.ISI_V2 if a.isi == "v2" else costs.ISI_V1
     rt = costs.rt_cost()
     baris = []
     print("buku PAPER | harga peristiwa | ongkos %.1f bps RT + dampak s/L | budget paper %d/hari "
@@ -228,10 +268,28 @@ def main():
         else:
             print("  %-14s tidak ada posisi" % pol)
     ev, boleh, dip = bangun(a.rank, a.horizon, a.per_day, a.size_quote)
-    harian = {}
-    for e in dip:
+    # Satu saringan, di sini, untuk SEMUA hilir: harian, streak, vonis, CI. Kalau tidak, salah satu
+    # hilir akan menghitung populasi berbeda dan kita kembali punya dua buku paper satu berkas.
+    sah_isi = [e for e in dip if e.get("net_persenliq") is not None]
+    tolak = len(dip) - len(sah_isi)
+    harian, dibuang_harian = {}, tolak
+    for e in sah_isi:
         harian.setdefault(e["t"] // HARI, []).append(wINS(e["net_persenliq"]))
+    if tolak:
+        sebab = {}
+        for e in dip:
+            if e.get("net_persenliq") is None:
+                k = str((e.get("isi") or {}).get("alasan") or "?")[:58]
+                sebab[k] = sebab.get(k, 0) + 1
+        print("   model isi %s menolak %d dari %d posisi:" % (SKEMA_ISI, tolak, len(dip)))
+        for k, n in sorted(sebab.items(), key=lambda kv: -kv[1]):
+            print("      %3d x %s" % (n, k))
+        print("      -> yang dinilai di bawah ini hanya %d sisanya; yang menolak BUKAN hasil nol"
+              % len(sah_isi))
     print("\nharian (kebijakan %s):" % a.rank)
+    if dibuang_harian:
+        print("   %d posisi TIDAK SAH menurut model isi (%s) - keluar dari rata-rata harian, "
+              "bukan dihitung nol" % (dibuang_harian, SKEMA_ISI))
     for d in sorted(harian):
         xs = harian[d]
         print("   hari +%d  posisi=%-3d mean %+8.1f bps | median %+8.1f | %5.1f%% positif"
@@ -243,6 +301,19 @@ def main():
     slots, streak = [], 0
     for e in sorted(dip, key=lambda x: x["t"]):
         net = e["net_persenliq"]
+        if net is None:
+            slots.append({"slot_id": hashlib.sha256(("%s|%d|%s" % (e["tk"], e["t"], a.rank)).encode())
+                          .hexdigest()[:16],
+                          "mode": "PAPER", "kebijakan": a.rank, "tk": e["tk"],
+                          "open_utc": iso(e["t"]), "net_bps": None, "gross_bps": round(e["net"] + rt, 1),
+                          "liq_usd": e.get("liq"), "size_quote_paper": a.size_quote,
+                          "skema_dampak": (e.get("isi") or {}).get("skema"),
+                          "alasan_tidak_sah": (e.get("isi") or {}).get("alasan"),
+                          "harga_bnb_usd": (e.get("isi") or {}).get("harga_bnb_usd"),
+                          "umur_harga_bnb_menit": (e.get("isi") or {}).get("umur_harga_bnb_menit"),
+                          "status": "TIDAK SAH (isi)", "streak_benar": streak,
+                          "promosi": "BELUM", "pengganti_real": None})
+            continue
         streak = streak + 1 if net > 0 else 0
         slots.append({
             "slot_id": hashlib.sha256(("%s|%d|%s" % (e["tk"], e["t"], a.rank)).encode()).hexdigest()[:16],
@@ -255,6 +326,9 @@ def main():
             "dampak_bps": round(e["net"] - net, 1) if e.get("hcd") else 0.0,
             "likuiditas_diketahui": bool(e.get("hcd")), "liq_usd": e.get("liq"),
             "size_quote_paper": a.size_quote, "streak_benar": streak,
+            "skema_dampak": (e.get("isi") or {}).get("skema", costs.ISI_V1),
+            "ukuran_usd": (e.get("isi") or {}).get("ukuran_usd"),
+            "harga_bnb_usd": (e.get("isi") or {}).get("harga_bnb_usd"),
             "promosi": "STREAK CUKUP" if streak >= a.promote_after else "BELUM",
             "pengganti_real": None, "status": "dinilai"})
     siap = [x for x in slots if x["promosi"] == "STREAK CUKUP"]
@@ -266,7 +340,11 @@ def main():
     # kredensial, dia kebetulan yang urutannya kita pilih sendiri. Karena itu keputusan "layak REAL"
     # memakai gerbang F-D16/F-D22 yang sudah ada di vault: n>=20 DAN harapan bersih > 0 DAN batas
     # bawah CI bootstrap > 0 - streak tetap dicetak, karena itu permintaanmu, tapi dia bukan vonis.
-    xs = [x["net_bps"] for x in slots]
+    # slot TIDAK SAH tidak ikut vonis - dan itu memang seluruh gunanya: n yang jujur
+    # adalah n yang bisa diisi. Kalau ia ikut, v2 cuma memindahkan kebohongan dari
+    # dampak ke sampel.
+    ditolak = sum(1 for x in slots if x.get("net_bps") is None)
+    xs = [x["net_bps"] for x in slots if x.get("net_bps") is not None]
     ws = [wINS(v) for v in xs]
     wr = sum(1 for v in xs if v > 0) / max(len(xs), 1)
     lo, hi = boot_mean(ws)
@@ -295,6 +373,9 @@ def main():
     print("   control (random + gerbang yang sama) = %+0.1f bps winso -> kebijakan harus DI ATAS "
           "ini, kalau tidak: yang terukur universe, bukan pilihan" % (c_mean if c_mean is not None
                                                                        else 0.0))
+    if ditolak:
+        print("   %d slot TIDAK SAH menurut model isi (%s) - tidak ikut vonis: n yang "
+              "dihitung adalah n yang bisa diisi" % (ditolak, SKEMA_ISI))
     print("vonis kebijakan %s: %s   (n=%d>=20:%s | winso %+0.1f CI lo %+0.1f | di atas acak:%s | "
           "streak maks %d>=%d:%s)"
           % (a.rank,
@@ -314,6 +395,12 @@ def main():
     else:
         print("   -> belum ada. Semua posisi malam ini tetap berlabel PAPER, dan tidak ada yang "
               "boleh ditulis 'akan dipasang'")
+    if a.emit and SKEMA_ISI == costs.ISI_V2:
+        print("\nEMIT DITOLAK - decisions/paper-book-positions.jsonl dibaca tools/vol_ab.py untuk "
+              "vonis E9 (matang 17:13:25Z). Menulis slot berv2 ke sana = mencampur dua penggaris "
+              "dalam satu uji (F-D54). Jalankan v2 tanpa --emit untuk audit; default dibalik setelah "
+              "E9 divonis (P42).")
+        return
     if a.emit:
         ada = set()
         if os.path.exists(SLOT):

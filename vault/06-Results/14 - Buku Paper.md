@@ -19,6 +19,39 @@ kesalahan, yang kedua sebagai izin.
 kelas dari *larangan* jadi *kewajiban melapor*. Alat ini jadi buku yang bisa dijalankan tiap hari -
 dan scoreboard pertamanya langsung membatalkan kandidat masuk terbaikku.
 
+
+## Koreksi 29 Sep 15:2xZ (F-D62) - buku paper ini selama ini murah hati, dan bukan karena pasarnya
+
+**Apa yang salah.** `haircut()` menghitung dampak dengan `2 * size_quote / liq`, padahal `size_quote`
+dalam **BNB** dan `liq` dalam **USD** (F-D46). Untuk posisi 0,01 BNB di pool likuiditas median kami
+($132.022) itu memberi **0,0015 bps** - dibulatkan, nol. Model yang dibetulkan (`costs.dampak_round_trip`
+dengan harga BNB **terukur** dari klines Aster, saat ini **$764,21**, umur 14,6 menit) memberi
+**1,16 bps**. Rasionya 650×, persis sebesar angka yang hilang.
+
+**Yang lebih penting dari selisih bps itu: lantainya.** `--isi v2` menolak posisi di pool berlikuiditas
+< **$50.000** (syarat kursi ⑥, `direction.py:LIQ_MIN_USD`) sebagai **TIDAK SAH** - bukan angka besar,
+karena di pool $1 yang terjadi bukan slippage, tapi tidak ada buku untuk diisi (F-D61 mengukur 5 dari
+26 simbol kami nol kedalaman dalam ±10 bps).
+
+```text
+v1 (default, sampai E9 divonis)      : lock n=20 | mean winso -86,1 | CI [-533,9; +414,9] | control -94,1 | di atas acak True
+v2 (--isi v2, 0,01 BNB, budget 5/h): lock n=14 | mean winso -91,2 | CI [-484,7; +359,5] | control +358,0 (n=2!) | di atas acak False
+   6 dari 20 posisi DITOLAK model isi: 2 x liq $0 | 2 x liq tidak dilaporkan | 1 x liq $3 | 1 x liq $1
+```
+
+**Baca yang benar.** Koreksi ini **tidak** membuat ruginya lebih besar - dampaknya cuma ~1-3 bps. Yang
+dia buat adalah **sampel yang jujur**: pada budget kontrak kami (5 posisi/hari), hanya **14 dari 20**
+posisi punya pool yang mampu menampung 0,01 BNB. Vonis berubah (`di atas acak` True → False) justru
+karena lengan control menyusut jadi 2 slot - itu bukan kabar baik, itu **laporan bahwa perbandingannya
+kini terlalu tipis untuk dipercaya**. Kesimpulan yang tahan: buku paper pada budget kontrak **tidak
+punya sampel yang cukup untuk menyebut apa pun layak**, sebelum maupun sesudah koreksi ini.
+
+**Yang sengaja belum berubah.** Default tetap **v1**, dan `--emit` **ditolak** kalau `--isi v2`: berkas
+`decisions/paper-book-positions.jsonl` adalah yang dibaca `tools/vol_ab.py` untuk vonis E9 (matang
+17:13:25Z). Memasuki dua penggaris ke satu berkas uji = F-D54 terulang atas tangan sendiri. Default
+dibalik oleh **P42** setelah E9 divonis. Paritas v1 diverifikasi: angka vonis sebelum/sesudah patch
+identik (n=20, -86,1, CI sama, streak 1).
+
 ## 1. Empat kebijakan pada buku yang sama
 
 Semua: harga PERISTIWA (`tx.t`,`tx.p`), ongkos 59 bps round-trip (`measured-own-venue`), horison

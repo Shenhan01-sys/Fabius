@@ -1893,3 +1893,30 @@ HIDUP (MARSCOIN/ZEC/DOGE/LINK) masih belum ada bukunya - itu P60 yang sesungguhn
 E16 divonis. Dan `book_stale.py` baru sekali jalan: self-test-nya lolos (kutipan beku vs hidup terpisah,
 run terputus oleh celah waktu, <3 snapshot = TERLALU-SEDIKIT bukan nol).
 
+## F-D62 - Buku paper dibetulkan sebagai varian, bukan sebagai tambalan diam-diam: dampak 0,0015 -> 1,16 bps, dan 6 dari 20 posisi ternyata tidak punya buku · 29 Sep 2026 15:24Z
+
+**Yang diperbaiki.** `costs.py` kini punya MODEL ISI satu pintu: `harga_bnb()` (terukur dari klines
+Aster BNBUSDT 1h, **$764,21 umur 14,6 m**, menolak kalau cache basi - dan cache yang basi kini
+DiAMBIL ULANG, karena guard yang hanya menolak membuat v2 mati diam-diam di mesin ber-cache 4,8 hari),
+`dampak_round_trip(size_bnb, liq_usd, skema)` (v1 = Bug F-D46; v2 = konversi ke USD + lantai
+$50.000), `isi_buku(levels, mid, usd)` (VWAP nyata dari level ⑨, dengan `penuh=False` kalau buku
+habis). `paper_book.py` memakai pintu itu lewat `--isi v1|v2` dan menyimpan `skema_dampak` +
+`harga_bnb_usd` + `ukuran_usd` di SETIAP slot, jadi berkasnya tidak bisa lagi dibaca dengan dua arti.
+
+**Yang keluar dari angka.** v2 tidak memperbesar kerugian - dia **memperkecil sampel yang sah**: 6 dari
+20 posisi pada budget kontrak ditolak (liq $0, $1, $3, dan dua tanpa angka likuiditas sama sekali),
+mean lock -86,1 -> -91,2, dan `di atas acak` berubah True -> False hanya karena lengan control tinggal
+2 slot. Itu bukan hasil, itu peringatan: **pada 0,01 BNB di universe yang bisa kami isi, paper ini
+tidak punya n**. Paritas v1 dibuktikan identik sebelum dan sesudah patch.
+
+**Keputusan alat yang penting: default TIDAK kubalik.** `--emit` ditolak saat `--isi v2`, karena
+`decisions/paper-book-positions.jsonl` dibaca `tools/vol_ab.py` untuk vonis E9 yang masih hidup sampai
+17:13:25Z. Mengganti penggaris di tengah uji terkunci bukan memperbaiki eksperimen - itu mengganti
+eksperimennya (F-D53 menolak godaan yang sama delapan jam lalu; F-D54 menghukum versinya yang tidak
+sengaja). Pembalikan default dijadwalkan di P42, sesudah E9 divonis dan tercatat.
+
+**Yang tidak klaim ini boleh dapat.** Jangan tulis "paper sekarang bersih" atau "-91,2 bps adalah
+harapan kami yang sebenarnya". Yang terukur: dengan ongkos fee 59 bps + dampak 1-3 bps + lantai
+likuiditas, **hanya 70 % dari posisi paper kami yang bisa diisi sama sekali**, dan yang 30 % bukan
+rugi - itu tidak bisa terjadi. Untuk keputusan nyata (streak -> real), `promote-after` masih kosong dan
+sekarang ada satu alasan lagi selain sinyal: ukurannya tidak punya tempat masuk.
