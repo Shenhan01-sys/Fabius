@@ -57,6 +57,16 @@ sebuah keputusan berubah?** Untuk tiap baris, tulis keputusannya lebih dulu (`si
 `veto`, atau cuma `laporan`). Baris yang jawabannya "cuma laporan" tidak boleh mengalahkan baris
 yang jawabannya "veto" — dan itu justru urutan yang paling sering terjadi di proyek seperti ini.
 
+- **Exit dinamis pada bar 1-4 per jam (E17).** Bukan "belum sempat": pada 1-4 bar, level stop
+  sebagian besar posisi **tidak pernah tersentuh bar**, jadi tidak ada satupun perbandingan lengan
+  yang sah. Yang dibutuhkan: bar 1 menit atau streaming + `i` (gap isi) terukur (P45, P49).
+- **Microprice dan queue imbalance sebagai prediktor (T5).** `I`, `M`, `W`, `S` terbentuk dari
+  snapshot L1, tapi `g(I,S)` butuh waktu-jam per pergerakan harga; horison literaturnya satu
+  pergerakan mid-price, kami 20-100× lebih kasar. Kegunaan yang tersisa dan sah: **referensi nilai
+  wajar untuk mengaudit harga isi/keluar**, bukan arah.
+- **OFI pada venue kami.** Definisi aslinya adalah jumlah atas **event** order book; kami punya
+  potret berkala. Yang bisa dilakukan adalah mengukur **state imbalance** dan menyebutnya dengan
+  benar - bukan mengklaim OFI lalu meminjam R² 65 % milik orang lain (S1).
 ## Batas dan mode gagal
 
 - **K3 tidak selesai dengan membeli data.** Order block tetap punya tiga definisi setelah kami

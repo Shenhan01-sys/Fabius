@@ -35,14 +35,23 @@ mindmap
       expectancy
       ukuran posisi
       invalidation
+        trailing: bentuk bukan arah
+        lock butuh pi > 2s+i+C
+        stop tak tersentuh bar 1-4/jam
       volatilitas
       horizon
+        horison literatur = 1 pergerakan harga
+        anggaran biaya memutuskan timeframe
       korelasi
       aturan di atas intuisi
     03 Sinyal
       struktur dan price action
       indikator
       volume dan order flow
+        delta agresor  diuji: NOL
+        imbalance buku  state bukan aliran
+        microprice  audit isi, bukan arah
+        toksisitas aliran  VPIN tak stabil di bucket kasar
       turunan dan futures
       on-chain dan dompet
       narasi dan sentimen

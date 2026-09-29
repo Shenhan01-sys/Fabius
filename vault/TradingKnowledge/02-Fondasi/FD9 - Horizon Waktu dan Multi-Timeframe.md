@@ -73,6 +73,24 @@ angka tentang keputusan 4 jam. Perintah audit silang (belum ditulis): bandingkan
 
 ## Batas dan mode gagal
 
+- **"Timeframe" yang benar di mikrostruktur bukan jam dinding, tapi jumlah pergerakan harga.**
+  Queue/microprice memprediksi **pergerakan mid-price berikutnya** (arXiv:1512.03492v1 - samplingnya
+  bahkan diambil pada waktu acak *di antara* dua pergerakan), dan horison tempat dampaknya terukur
+  adalah **Δt = 10 detik** (arXiv:1011.6402v3); pada **1 menit ke depan**, R² out-of-sample justru
+  **negatif** di S&P 100 (arXiv:2112.13213v4: −0,37 … −0,36). Jadi menanyakan "entry di 5 menit
+  apakah sama dengan 15 menit?" di venue kecil adalah salah satuan: yang berubah bukan resolusinya,
+  tapi **jumlah berita yang sudah dicerna harga**.
+- **Punya kami, terukur (29 Sep):** kabar ⑦ hidup **±2 menit** (E11: +192,7 @2m → +45,0 @10m →
+  −182,5 @30m), ticker `wp` berdetak ±1 kali per beberapa puluh menit, dan siklus keputusan ⑦/⑨
+  ±200 detik. Artinya: horison tempat sinyal hidup **lebih pendek dari jeda antar-pengamatan kami**.
+  Bukan alasan untuk tidak menguji - alasan untuk tidak menyimpulkan "teorinya salah" dari nol yang
+  diukur di luar resolusi.
+- **Kalau dipaksa jadi satu kalimat kerja:** horison kami dibatasi oleh *biaya*, bukan oleh
+  *perkiraan*. Dengan ongkos 59,0 bps dan harapan **median** terbaik yang pernah kami ukur
+  (+79,8 bps, E13 menit ke-5), ruang spread tersisa **≈21 bps** - dan itu angka alat
+  (`tools/cost_budget.py`), bukan opini tentang timeframe.
+
+
 - **Overlap membuat p palsu kecil.** Jendela yang tumpang tindih berbagi hasil yang sama; aproksimasi
   normal kami sudah sistematis terlalu optimis pada n=20–40 (§E) — overlap menambahnya.
 - **Horizon boleh dipilih karena aritmetika sampel, bukan karena tesis.** Memilih 4 jam supaya

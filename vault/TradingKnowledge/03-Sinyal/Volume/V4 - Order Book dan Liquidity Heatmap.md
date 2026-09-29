@@ -76,6 +76,31 @@ pada model orang lain.
   angkanya lalu menyebutnya "data" adalah pencucian klaim (aturan `T0` di [[Aturan Subtree]]).
 - **AMM tidak punya buku order.** Memakai bahasa L2 (bid, ask, queue, spoof) untuk kolam x·y=k
   adalah salah kategori; bahasa yang benar ada di [[V5 - Mikrostruktur Spread dan Adverse Selection]].
+
+- **Per 29 Sep: kami punya buku order sungguhan - untuk 26 simbol venue, tiap ±200 detik.** ⑨
+  (`universe/record_book_depth.py`) merekam 20 level bid/ask + lima pembacaan imbalance (`bi1`,
+  `bi5`, `bi20`, `mi20`, `util20`) dan microprice (`pmicro`). Ini tidak mengubah kalimat di atas:
+  kabar ⑦ hidup di **kolam AMM** yang tidak punya buku order; yang kini punya buku adalah tempat
+  kami bisa berdiri (perp), dan irisan keduanya 3,1 % dari volume kabar
+  ([[08-Backlog/01 - Backlog]] P41).
+- **Yang paling cepat dipelajari darinya: "imbalance buku" bukan satu angka.** Snapshot pertama
+  sudah mematahkannya - `ETHUSDT bi1 −0,651` tapi `bi20 +0,525` (tanda berganti menurut **kedalaman**),
+  `BTCUSDT bi20 −0,010` vs `util20 −0,707` (berganti menurut **pembobotan**). Frasa "jumlahkan variasi
+  harga sisi beli kurangi sisi jual" jadi ambigu, dan perekam mencatat lima pembacaan alih-alih
+  memilih satu - memilih sebelum punya data adalah cara tercepat membuat penemuan sendiri.
+- **Snapshot ≠ aliran, dan ini batas yang bukan selera.** OFI (Cont-Kukanov-Stoikov, arXiv:1011.6402v3
+  §3) adalah **jumlah atas event** di best bid/ask; dari dua endpoint ia tidak dapat dipulihkan -
+  selisih potret mencampur update quote dengan transaksi yang memakan likuiditas. Jadi angka ⑨
+  kami adalah **state imbalance**, bukan OFI, dan jangan pernah disebut OFI. Yang bikin sakit:
+  R² 65 % yang selalu dikutip itu adalah kecocokan **kontemporer** pada Δt = 10 detik, dan paper-nya
+  sendiri menulis "the fit generally increases with Δt" - makin panjang interval, makin cocok dengan
+  pergerakan yang *sudah* terjadi. Itu bukan kalimat "bisa meramal 5 menit ke depan".
+- **Microprice: terhitung, tapi bukan prediktor di sini.** `I = Qb/(Qb+Qa)`, `W = I·pa + (1−I)·pb`
+  semuanya terbentuk dari snapshot L1. Yang tidak terbentuk adalah `g(I,S)` versi Stoikov (butuh
+  waktu-jam per pergerakan harga). Kegunaan jujurnya: **menilai apakah harga isi kita wajar** -
+  bukan arah. Horison literaturnya satu pergerakan mid-price (arXiv:1512.03492v1: AUC OOS
+  0,752-0,805 large-tick vs 0,581-0,642 small-tick); horison kami 20-100× lebih kasar.
+
 - **Deret yang tampak utuh lebih berbahaya dari yang bolong.** Pola ini sudah tercatat di vault:
   metadata provenance yang salah lebih buruk daripada kosong (catatan `save()` di `tools/bars.py`).
 

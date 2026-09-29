@@ -67,6 +67,27 @@ Yang belum dijalankan dan perlu diurut:
 
 ## Batas dan mode gagal
 
+- **Model dampak kami sempat salah satuan ±600x, dan median dampaknya terbaca 0,00 bps (F-D46).**
+  `haircut()` menghitung `2 × size_quote / liq` dengan `size_quote` dalam **BNB** dan `liq` dalam
+  **USD** - 0,01 BNB diperlakukan seolah $0,01. Perbaikan **sengaja ditunda** (P42) sampai vonis
+  E9/E12 jatuh, karena mengganti penggaris di tengah uji terkunci adalah cara termudah lulus ujian.
+  Tiga varian satu jalur data (`tools/impact_audit.py`, 702 slot): tercatat **+75,9** ·
+  satuan-dibetulkan **−715,7** · hanya-liq-sah (floor $1.000) **−87,8 bps**. Kata "dampak" tanpa
+  menyebut varian tidak masuk vault lagi.
+- **Bahan bakunya juga busuk di ekor bawah, dan itu bukan detail.** Desil terbawah `liq` adalah
+  **$1 dan $0** - di sana x·y=k memberi dampak 120.000 bps. Artinya ada dua kesalahan yang saling
+  menutupi: median dampak yang "nol" dan max 15.124 bps bisa berasal dari satu berkas yang sama.
+  Karena itu model dampak hanya sah di atas floor kedalaman, dan di bawahnya yang benar adalah
+  melaporkan `TIDAK SAH` - bukan angka besar, bukan nol.
+- **Literatur yang kami pegang buat kalibrasi berikutnya (T6/P46):** dampak permanen kira-kira
+  **linear** terhadap aliran bertanda dengan koefisien ∝ `AD^(-λ)`, λ̄ = **0,98**
+  (arXiv:1011.6402v3); Almgren dkk. 2005 melaporkan α = **0,891 ± 0,10** untuk komponen permanen
+  dan β = **0,600 ± 0,038** untuk yang sementara -akar-kuadrat ditolak pada level itu- dengan
+  **R² regresi "biasanya di bawah satu persen"** per order. Pelajaran terakhir itu yang paling
+  penting untuk kami: model dampak yang benar pun hampir tidak punya daya jelajah per transaksi -
+  jadi dia dipakai untuk **memilih kapan dan seberapa besar**, bukan untuk meramal arah.
+
+
 - **TVL ≠ likuiditas keluar.** Pooled USD tidak menjanjikan kedalaman di harga tertentu; satu sisi
   buku bisa kosong sementara TVL-nya besar. Angka yang kami pakai adalah proxy dan harus disebut begitu.
 - **Likuiditas bisa ditarik, bukan cuma menipis.** Karena itu `MIN_LOCK` 20 % ikut jadi gerbang

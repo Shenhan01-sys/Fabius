@@ -80,6 +80,19 @@ GROSS sampai diuji ulang (§H).
 
 ## Batas dan mode gagal
 
+- **Ongkos dijadikan anggaran, bukan asumsi (`tools/cost_budget.py`, 29 Sep).** Ruang yang tersedia
+  untuk sebuah aturan keluar = harapan **median** terbaik yang pernah kami ukur dikurangi ongkos
+  tetap: `79,8 − 59,0` → **spread penuh ≤ ~21 bps** supaya strategi 5 menit tidak kalah sebelum
+  pasar bergerak. Spread terukur ⑨ hari pertama: BTC/ETH/SOL/BNB 0,01-1,05 bps (lolos), CAKE/0G/APE
+  7,8-13,3 bps (lolos, mepet), **AIUSDT 40,8 bps dan ASTEROIDUSDT 519 bps (tidak)**. Jadi
+  "strategi cepat" di venue ini lebih dulu adalah soal **di pasar mana**, bukan jam berapa.
+  Memakai harapan **mean** (+285,5 bps) sebagai anggaran memberi ruang ~226 bps, tapi mean kami
+  ditopang ekor kanan (P(≥+500) 37-40 %) - memakai ekor sebagai anggaran berarti berharap undian.
+- **Komponen yang belum kami punya:** `i`, jarak antara menyentuh level dan terisi di bawahnya
+  (P45). Tanpa itu, setiap "net of biaya" masih optimis satu lapis lagi, dan dia paling besar
+  justru saat yang dibutuhkan (level tempat stop menumpuk - Osler 2002).
+
+
 - **Komponen tetap tidak ikut mengecil.** Menambah posisi jadi lebih kecil menaikkan ongkos per
   dolar; "$1 per posisi" bisa menuntut **+5 %** hanya untuk kembali ke nol (§D) — inilah yang membuat
   ukuran kecil terlihat rendah risiko padahal hanya rendah *harapan*.

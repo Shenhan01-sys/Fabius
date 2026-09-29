@@ -85,6 +85,41 @@ Catatan mana pun yang memakai #1 wajib menulis yang mana yang dimaksud.
 `https://www.bis.org/publ/work1087.htm`. Kalau metadata di halaman sumber tidak cocok dengan baris
 ini, barisnya yang dicabut.
 
+## Referensi yang dibaca 29 Sep 2026 - lapisan mikrostruktur (S1-S9)
+
+Dipisah dari daftar 28 Sep karena kelasnya beda: ini yang membatasi cara kami **membaca buku
+order**, bukan yang membiayai fitur lain. Yang ditandai ✔ kutipannya saya ambil sendiri dari
+halaman penerbit/arXiv; yang (agen) dibaca agen riset hari yang sama dan **belum diverifikasi
+ulang** - perlakukan sebagai perlu dicek, bukan sebagai sudah dicek. Pemetaan lengkap + yang
+tidak terverifikasi ada di [[08-Backlog/04 - Riset Teori (Sitasi)]].
+
+| ✔ | rujukan | alamat | apa yang dia pegang di lapisan ini |
+|---|---|---|---|
+| ✔ | Cont, Kukanov, Stoikov — *The Price Impact of Order Book Events* | arXiv `1011.6402v3` | OFI = **jumlah atas event**, bukan selisih snapshot; R² rata-rata **65 %** pada Δt = **10 detik**; ""fit meningkat dengan Δt"" = kecocokan **kontemporer**; λ̄ **0,98** → pegangan V4/GAP1 |
+| ✔ | Gould, Bonart, Donnelly, McDermott — queue imbalance | arXiv `1512.03492v1` | horison = **pergerakan mid-price berikutnya**, bukan jam dinding; AUC OOS large-tick **0,752-0,805**, small-tick **0,581-0,642**, null 0,5 → V4, FD9 |
+| ✔ | Lei, Li — *Do Stop-loss Strategies Add Value…?* | Financial Services Review 18(1):23-51 (2009), `openjournals.libs.uga.edu/fsr/article/view/4933` | ""neither reduce nor increase investors' losses … risk reduction rather than return improvement" → FD7, halaman 24 |
+| ✔ | Osler — *Stop-loss Orders and Price Cascades* | NY Fed Staff Report 150 (2002) | ""unusually rapid" di level tempat stop menumpuk; respons stop > take-profit → FD7, dan alasan `i` (gap isi) bukan nol (P45) |
+| ✔ | Ke, Lin — *An Improved Version of VPIN* | Critical Finance Review 6(2):357-376 (2017), DOI `10.1561/104.00000046` | VPIN **tidak stabil pada bucket kecil dan kejadian jarang** — dua hal yang justru dihasilkan granularitas kami → V3, E18 |
+| (agen) | Cont, Cucuringu, Zhang — integrated OFI; + preprint OFI Level-1 bar 10 s | arXiv `2112.13213v4`; SSRN 7053198 | **1-minute-ahead R² OOS NEGATIF** (−0,37 … −0,36); OFI 10 s: Sharpe gross **+0,981 → net −1,726**, biaya ~164× edge → FD4, FD9. **Catatan: kami sempat menyebut "Gu & Kelly (2014)" sebagai sumber rumus imbalance-nya; paper itu TIDAK ketemu di Crossref maupun arXiv, jadi nama itu dicabut dan rumus dipegang oleh paper di kolom alamat** |
+| (agen) | Xu, Gould, Pedersen — *Deep OFI* (MLOFI); Kolm, Westray | arXiv `1907.06230v2`; SSRN 4568641 | level diperlakukan **setara** (tanpa bobot jarak), kontribusi marginal per level mengecil → V4 (alasan `util20` kami bukan kanonis) |
+| (agen) | Albers, Cucuringu, Howison, Shestopaloff — microprice + maker contra | arXiv `2502.18625v2` | definisi microprice `W = I·pa + (1−I)·pb`; maker layak bergerak **kontra** imbalance dominan → V4, T5 |
+| (agen) | Almgren, Thum, Hauptmann, Li — *Direct estimation of market impact* | `cis.upenn.edu/~mkearns/finread/costestim.pdf` | α **0,891 ± 0,10** (permanen ~linear), β **0,600 ± 0,038** (sementara), γ **0,314 ± 0,041**; **R² "umumnya di bawah satu persen"** → FD3, T6 |
+| (agen) | kegagalan likuiditas nyata di DEX perp | arXiv `2603.09164`, `2512.01112`, `2607.27070` | depth-100bps −75 % dalam 36 jam; `realized = 0,42 + 1,12 × predicted` (model underpredict); sinyal peringatan **tidak invariant antar-cascade** → U3, FD3 |
+
+**Yang berubah di lapisan ini karena bacaan itu** (bukan karena selera):
+- `V4` turun kelas dari "tidak bisa diuji" menjadi **bisa diuji sebagai state, bukan sebagai
+  aliran** - dan karena itu E16 (halaman 22) dikunci untuk `bi5` saja, dengan `pi`/microprice
+  dilaporkan sebagai pembacaan tambahan, bukan sebagai kandidat yang dipilih setelah lihat hasil.
+- `V3` **punya hasil**: E18 = NOL untuk rasio berimbang dari agresor betulan, bukan dari label
+  candle. Keluarga delta tidak mati - yang mati adalah klaim "agresor → arah" pada horison menit
+  di substrate ini.
+- `FD7` berhenti jadi daftar jarak (ATR/k) dan mulai mencantumkan **syarat perlu lock** beserta
+  hasil E17: pada 1-4 bar/jam stop tidak tersentuh, jadi dia *belum bisa dinilai* - bukan salah.
+- `FD9` dapat jawaban operasional: horison di literatur = **satu pergerakan harga**, dan anggaran
+  biaya kami (`≤ ~21 bps` spread) yang memutuskan timeframe, bukan sebaliknya.
+- `FD3`/`FD4` sekarang punya angka internal (dampak 0,00 median karena salah satuan; spread
+  terukur 0,01-519 bps) yang membuat model x·y=k kami bisa dituduh, bukan dipercaya buta.
+
 ## Batas halaman ini
 
 - Ini **bukan** klaim bahwa metode di lapisan ini sudah diverifikasi terhadap literatur. Sebagian

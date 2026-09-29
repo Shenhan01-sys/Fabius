@@ -64,6 +64,23 @@ Dua langkah, dan langkah pertama belum selesai:
    kontrol (aturan kontrol di [[Fakta Terukur]] §B); `n >= 20` non-overlap, gross di atas
    **59 bps** (§D), drop-best-fold, BH α 0,10 (§E).
 
+3. **Sudah dijalankan 29 Sep, dan jawabannya NOL (E18).** Bukan dari bar, dari **⑦**: 51.669 baris
+   transaksi dengan sisi agresor betulan (`b`), maker, dan USD - jadi klasifikasi yang halaman ini
+   minta ada, hanya saja di venue spot BSC, bukan dari kline. `tools/flow_variasi.py` menguji
+   **lima** pembacaan rasio berimbang - (beli−jual)/(beli+jual) dalam 15 m dan 5 m, jumlah
+   transaksi, jumlah maker berbeda, dan bucket VPIN-style - pada 396 kejadian, outcome ticker `wp`
+   @2/5/30 m, ongkos 59 bps: **semua di dalam placebo dua ekor** (selisih kuantil atas−bawah di
+   menit ke-5 −41,4 … +9,6 bps; p2 0,75-0,93), **BH α 0,10 KOSONG**.
+   Dua jebakan yang alatnya tangkap sendiri, dan keduanya milik halaman ini: (i) satu pembagian
+   kuantil bukan hasil - tanda selisih berubah antar-eksekusi murni karena shuffle, jadi ia
+   dilaporkan sebagai distribusi 40 pembagian; (ii) placebo yang hanya menjaga ekor ATAS membuat
+   selisih NEGATIF (arah terbalik dari teori) terbaca "aman" - sekarang dua ekor, dan arah
+   terbalik itu tetap tidak ekstrem.
+   Yang TIDAK dibuktikan: bahwa delta pada bar 1 jam tidak berguna. Yang dibuktikan: **delta
+   searah-agresor di horison menit, pada substrate ini, tidak membedakan apa pun** - dan
+   `delta_bar` dari tanda candle tetap bukan delta.
+
+
 ## Batas dan mode gagal
 
 - **Menempel label "CVD" pada angka dari candle** adalah mode gagal utamanya, dan ia mudah sekali

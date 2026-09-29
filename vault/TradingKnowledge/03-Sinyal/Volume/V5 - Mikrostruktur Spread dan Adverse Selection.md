@@ -61,6 +61,18 @@ di atas **59 bps** (§D) sebelum kata "edge" boleh dipakai.
 
 ## Batas dan mode gagal
 
+- **Spread yang TERUKUR, bukan diasumsikan (⑨, 29 Sep):** 44 snapshot awal, 26 simbol → p50 **0,04
+  bps**, p90 **13,5 bps**, max **519 bps** (ASTEROIDUSDT 424 bps, 4STOCKUSDT 253 bps). Artinya ada
+  simbol di venue kami yang **setengah spread-nya lebih besar daripada seluruh harapan median** yang
+  pernah kami ukur (+79,8 bps, E13). Anggaran explisitnya di [[FD4 - Ongkos Perdagangan]] dan
+  alatnya `tools/cost_budget.py`.
+- **Satu variabel masih asumsi, dan itu yang paling jahat:** `i` - jarak antara *menyentuh* level dan
+  *terisi* di bawahnya. Kami belum mengukurnya (P45), dan Osler (NY Fed SR150) memberi alasan
+  kenapa dia bukan nol: pergerakan jadi *"unusually rapid"* tepat di level tempat stop menumpuk, dan
+  respons pada stop-loss **lebih besar** daripada pada take-profit. Selama `i` belum terukur, semua
+  angka "net of biaya" di lapisan ini masih kurang satu komponen.
+
+
 - **Memakai 20 bps sebagai ongkos** setelah punya 59 bps terukur = menguji strategi pada biaya yang
   tidak ada. Setiap angka yang digabung dengan 20 bps wajib menyebut rasionya (§D; P10 ditutup 28 Sep).
 - **Adverse selection tidak terlihat sebagai tagihan.** Ia muncul sebagai "kenapa harga bergerak

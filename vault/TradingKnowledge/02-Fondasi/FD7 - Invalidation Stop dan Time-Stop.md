@@ -61,6 +61,35 @@ bukan jalur stop).
 
 ## Batas dan mode gagal
 
+- **Algebra trailing yang lengkap, supaya klaimnya tidak mengambang (29 Sep).** Dengan `pi` = puncak
+  berjalan di atas masuk (bps), `d` = jarak trail, `s` = spread, `i` = gap isi, `C` = ongkos
+  round-trip terukur (59 bps): `PnL = pi − d − s − i − C`; mengunci (≥0) butuh `pi ≥ d+s+i+C`, dan
+  tidak dipicu pantulan bid/ask saja butuh `d > s`; digabung: **`pi > 2s + i + C`**.
+  ""pokoknya jangan sampai rugi"" menuntut `d ≤ −(s+i+C)` → **tidak ada `d ≥ 0` yang
+  memenuhi**: itu bukan batasan pasar, itu aritmetika. Yang bisa dibeli hanya **lock bersyarat**.
+- **Tapi "mustahil" tidak boleh berhenti di mana algebra berhenti.** Gate-nya diukur, bukan diduga
+  (`tools/trailing_gate.py`, F-D48): puncak median kami **+1.122 bps** (+747 bps kalau puncak harus
+  datang di paruh awal jendela), jadi **63-66 % kejadian punya jendela `d` yang sah**. Klaim
+  "jendelanya kosong" akan jadi klaim palsu ke arah yang menyenangkan.
+- **Uji kebijakannya (E17) malah tidak bisa dinilai - dan itu temuan, bukan kegagalan**
+  (`tools/trailing_policy.py`, F-D49, halaman 24). Pada **1-4 bar per jam**, **25 dari 28 lengan
+  ber-delta median tepat 0,0**: sebagian besar posisi tidak pernah *melihat* level stopnya. Saat bar
+  dijarangkan ×2 dan ×4, lengan "bersyarat" runtuh dari +105,2 → +9,2 → −83,9 sementara baseline
+  diam di −183. Yang kami hampir umumkan sebagai kebijakan adalah **resolusi sampel**.
+- **Yang tetap boleh dikatakan tentang stop, dan ini kata literatur:** stop mengubah **bentuk**
+  distribusi, bukan arah. Lei & Li 2009 (Financial Services Review 18(1):23-51, abstrak dibaca
+  langsung): *"neither reduce nor increase investors' losses … the value of stop loss strategies
+  may come largely from risk reduction rather than return improvement"*. E17 kami cocok:
+  `P(net ≤ −200)` 46,4 % → 35,2 % dan persen posisi positif 40,4 % → 51,8 %, sementara CI harapan
+  tetap menembus nol ke bawah. Jadi kalimat yang sah: **"risikonya turun"**, bukan "harapannya naik".
+- **Dua aturan metode yang lahir dari kecelakaan alat ini** (berlaku untuk semua uji exit-dinamis):
+  (1) **placebo tidak boleh punya hak melihat masa depan lebih besar dari lengan yang diuji** -
+  placebo pertama saya mengambil levelnya dari puncak *akhir* jendela dan "menang" +50,9 bps secara
+  artifisial; (2) **baseline pairing harus memakai fallback yang identik** - saya membandingkan
+  lengan ber-fallback-60m dengan baseline 30m, sementara 14 % posisi tidak punya baris di antaranya,
+  dan delta 0,0 menyamar sebagai "tidak ada beda".
+
+
 - **Stop adalah order, bukan dinding.** Setelah trigger, yang terjadi adalah penjualan pasar di
  spread + dampak yang tersedia waktu itu; saat berita buruk, keduanya melebar bersamaan
   ([[FD3 - Likuiditas dan Dampak Harga]], [[FD8 - Volatilitas]]).
