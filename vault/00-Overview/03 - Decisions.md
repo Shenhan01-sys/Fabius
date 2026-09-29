@@ -1591,6 +1591,32 @@ pertama kalinya perilaku Fabius lolos pada data yang belum ada saat rule-nya dit
 bukan "profit": tiga tembok hari ini tidak digeser oleh hasil mana pun (venue **3,1 %**,
 umur kabar **±13 menit** dengan bump **±2 menit**, `i` **+245 bps**).
 
+**ADDENDUM 29 Sep 20:32:34Z - cabang “kalau GAGAL” itulah yang terjadi, dan dua koreksi untuk diriku sendiri.**
+
+E22 jatuh **GAGAL** (kunci `12:08:15Z`, `spec 0x6f6e61f8…` tidak disentuh; 429 kejadian pasca-kunci,
+n BOLEH 319 / VETO 110): mean winso **−9,9 vs −121,4** (arah benar, selisih +111,5) tapi median
+**−57,9 vs −59,0**, CI selisih **[−134,0 ; +344,4]**, MW **p=0,159**, dan **CI atas placebo +223,7
+lebih tinggi dari efeknya**. Jadi seperti yang ditulis entri ini sendiri sebelum datanya ada:
+**“rem memperbaiki hasil” turun jadi klaim in-sample** - sudah kutulis di halaman 21 sebagai baris
+koreksi di atas angka lamanya, di halaman 25 §5, dan keputusannya di **F-D64**.
+
+Dua koreksi kecil yang tetap perlu dicatat karena halaman ini akan dibaca orang lain:
+
+1. **rujukan-nya salah**: entri ini menulis “...turun jadi klaim in-sample dan itu akan kutulis di
+   halaman 21 + **F-D44**”. Yang benar **F-D64**; F-D44 adalah keputusan lain (edge baris 0-3 menit).
+   Salah rujuk seperti ini tidak tergerbang `check_links` karena ia menyebut nomor, bukan jalur -
+   jadi kuperbaiki di sini, bukan dengan mengedit kalimat aslinya.
+2. **“tiga tembok hari ini” sudah bergerak dua kali sejak entri ini ditulis**, dan bukan ke arah yang
+   menguntungkan: umur kabar **bukan** ±13 menit lagi (61 d setelah bug urutan pemilihan kandidat dibetulkan, F-D54)
+   - dan justru karena itu temboknya pindah ke **titik masuk** (`i` +245 bps; `entry_px` di atas harga
+   whale pada 16/25). Venue juga bukan satu angka lagi: **2,26 %** pasangan / **5,86 %** aset (F-D57),
+   dan yang benar-benar hidup di resolusi menit cuma **5 dari 41** simbol (F-D56). Kalimat “hasil mana
+   pun tidak menggeser tiga tembok” tetap benar; daftar temboknya yang harus dibaca lewat halaman 26-28.
+
+Dan satu hal yang entri ini **tidak** boleh dijual: vonis LAYAK tidak akan berarti “Fabius bisa
+trading”. Ternyata yang terjadi malah kebalikannya - yang lulus prospectif malam ini bukan rem,
+melainkan **aturan keluar** (E12, n=685, CI bawah +135,9), dan mean lengan cepatnya cuma +8,1 bps.
+
 **Terkait:** [[06-Results/25 - Rem, Terkunci Prospectif]] · [[06-Results/21 - Rem di Horison Cepat]] · [[08-Backlog/02 - Epik Alasan Masuk]] §3f · [[07-Testing/01 - Test Commands]] baris 61 ·
 [[TradingKnowledge/QT4 - Overfitting dan Validasi]]
 
