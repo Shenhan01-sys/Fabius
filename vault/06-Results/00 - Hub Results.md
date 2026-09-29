@@ -53,6 +53,7 @@ hasil keluar — koreksi lewat halaman baru, supaya urutannya bisa dipertanggung
   (laporkan umur baris harga keluar + `P(ada harga keluar)` atau angkanya tidak masuk vault). Vonis
   **20:04:56Z**.
 - [[23 - Gerbang Trailing]] - algebra "jangan sampai rugi" diukur pada jalur harga kami sendiri.
+- [[24 - Trailing pada Bar yang Salah]] - E17 dieksekusi di posisi yang sama dengan placebo yang sah, dan kesimpulannya metodologis: **25 dari 28 lengan punya delta median tepat 0,0** - pada 1-4 bar per jam sebagian besar posisi tidak pernah melihat level stopnya. Saat bar dijarangkan, keunggulan +105,2 bps runtuh ke -83,9 sementara baseline diam: yang saya hampir umumkan sebagai kebijakan adalah resolusi sampel. P49 -> BLOCKED-BY-DATA.
   Hasilnya **membantah dugaan saya**: lock bersyarat justru umum (63 % kejadian punya puncak di paruh
   awal yang melewati ambang 2s+i+C) - yang tidak kami punya adalah **resolusi** (pada 5 menit 69 %
   kejadian tidak punya dua baris harga sama sekali), dan stop mengubah bentuk distribusi, bukan drift.

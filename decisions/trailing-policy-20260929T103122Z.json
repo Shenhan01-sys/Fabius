@@ -1,0 +1,255 @@
+{
+ "C_bps": 59.0,
+ "dibuat_utc": "2026-09-29T10:31:22Z",
+ "gap_bps": [
+  0.0,
+  100.0
+ ],
+ "hasil": [
+  {
+   "P_ge_500": 31.6,
+   "P_le_m200": 46.1,
+   "gap_bps": 0.0,
+   "lengan": "A tahan 30 m",
+   "mean_pure": 2314.3,
+   "mean_winso": -182.5,
+   "median": -79.6,
+   "n": 332,
+   "positif": 41.6
+  },
+  {
+   "P_ge_500": 33.1,
+   "P_le_m200": 44.1,
+   "gap_bps": 0.0,
+   "lengan": "B keluar waktu ACAK (kontrol)",
+   "mean_pure": 2018.2,
+   "mean_winso": -110.8,
+   "median": -66.6,
+   "n": 3360,
+   "positif": 43.1
+  },
+  {
+   "P_ge_500": 31.2,
+   "P_le_m200": 43.2,
+   "gap_bps": 0.0,
+   "lengan": "C trailing   60 bps",
+   "mean_pure": 2027.8,
+   "mean_winso": -0.9,
+   "median": -76.8,
+   "n": 336,
+   "positif": 42.6
+  },
+  {
+   "P_ge_500": 31.5,
+   "P_le_m200": 44.3,
+   "gap_bps": 0.0,
+   "lengan": "C trailing  120 bps",
+   "mean_pure": 2003.3,
+   "mean_winso": -15.4,
+   "median": -75.4,
+   "n": 336,
+   "positif": 42.0
+  },
+  {
+   "P_ge_500": 33.3,
+   "P_le_m200": 43.5,
+   "gap_bps": 0.0,
+   "lengan": "C trailing  250 bps",
+   "mean_pure": 2112.0,
+   "mean_winso": -9.0,
+   "median": -62.6,
+   "n": 336,
+   "positif": 44.0
+  },
+  {
+   "P_ge_500": 33.3,
+   "P_le_m200": 44.3,
+   "gap_bps": 0.0,
+   "lengan": "C trailing  500 bps",
+   "mean_pure": 1981.2,
+   "mean_winso": -43.7,
+   "median": -66.3,
+   "n": 336,
+   "positif": 42.9
+  },
+  {
+   "P_ge_500": 34.2,
+   "P_le_m200": 39.3,
+   "gap_bps": 0.0,
+   "lengan": "D statis @puncak-  60 (placebo)",
+   "mean_pure": 673.8,
+   "mean_winso": 50.9,
+   "median": -59.0,
+   "n": 336,
+   "positif": 46.1
+  },
+  {
+   "P_ge_500": 33.9,
+   "P_le_m200": 39.3,
+   "gap_bps": 0.0,
+   "lengan": "D statis @puncak- 120 (placebo)",
+   "mean_pure": 666.6,
+   "mean_winso": 43.7,
+   "median": -59.0,
+   "n": 336,
+   "positif": 45.5
+  },
+  {
+   "P_ge_500": 33.6,
+   "P_le_m200": 39.6,
+   "gap_bps": 0.0,
+   "lengan": "D statis @puncak- 250 (placebo)",
+   "mean_pure": 647.2,
+   "mean_winso": 34.5,
+   "median": -59.0,
+   "n": 336,
+   "positif": 46.1
+  },
+  {
+   "P_ge_500": 32.1,
+   "P_le_m200": 41.1,
+   "gap_bps": 0.0,
+   "lengan": "D statis @puncak- 500 (placebo)",
+   "mean_pure": 550.5,
+   "mean_winso": -8.3,
+   "median": -59.8,
+   "n": 336,
+   "positif": 44.6
+  },
+  {
+   "P_ge_500": 37.2,
+   "P_le_m200": 35.7,
+   "gap_bps": 0.0,
+   "lengan": "E trailing 120 bps hanya setelah biaya",
+   "mean_pure": 2081.4,
+   "mean_winso": 103.6,
+   "median": 28.2,
+   "n": 336,
+   "positif": 51.5
+  },
+  {
+   "P_ge_500": 31.6,
+   "P_le_m200": 46.1,
+   "gap_bps": 100.0,
+   "lengan": "A tahan 30 m",
+   "mean_pure": 2314.3,
+   "mean_winso": -182.5,
+   "median": -79.6,
+   "n": 332,
+   "positif": 41.6
+  },
+  {
+   "P_ge_500": 33.3,
+   "P_le_m200": 44.4,
+   "gap_bps": 100.0,
+   "lengan": "B keluar waktu ACAK (kontrol)",
+   "mean_pure": 2275.9,
+   "mean_winso": -106.2,
+   "median": -67.7,
+   "n": 3360,
+   "positif": 42.9
+  },
+  {
+   "P_ge_500": 30.7,
+   "P_le_m200": 48.5,
+   "gap_bps": 100.0,
+   "lengan": "C trailing   60 bps",
+   "mean_pure": 1936.1,
+   "mean_winso": -61.0,
+   "median": -119.2,
+   "n": 336,
+   "positif": 39.6
+  },
+  {
+   "P_ge_500": 30.7,
+   "P_le_m200": 47.3,
+   "gap_bps": 100.0,
+   "lengan": "C trailing  120 bps",
+   "mean_pure": 1913.7,
+   "mean_winso": -73.1,
+   "median": -118.8,
+   "n": 336,
+   "positif": 40.2
+  },
+  {
+   "P_ge_500": 31.5,
+   "P_le_m200": 44.9,
+   "gap_bps": 100.0,
+   "lengan": "C trailing  250 bps",
+   "mean_pure": 2026.9,
+   "mean_winso": -63.1,
+   "median": -77.4,
+   "n": 336,
+   "positif": 42.6
+  },
+  {
+   "P_ge_500": 31.8,
+   "P_le_m200": 45.2,
+   "gap_bps": 100.0,
+   "lengan": "C trailing  500 bps",
+   "mean_pure": 1901.2,
+   "mean_winso": -92.8,
+   "median": -103.5,
+   "n": 336,
+   "positif": 42.0
+  },
+  {
+   "P_ge_500": 32.1,
+   "P_le_m200": 43.8,
+   "gap_bps": 100.0,
+   "lengan": "D statis @puncak-  60 (placebo)",
+   "mean_pure": 581.8,
+   "mean_winso": -8.6,
+   "median": -68.0,
+   "n": 336,
+   "positif": 42.3
+  },
+  {
+   "P_ge_500": 31.8,
+   "P_le_m200": 42.9,
+   "gap_bps": 100.0,
+   "lengan": "D statis @puncak- 120 (placebo)",
+   "mean_pure": 576.4,
+   "mean_winso": -14.1,
+   "median": -68.0,
+   "n": 336,
+   "positif": 42.3
+  },
+  {
+   "P_ge_500": 31.8,
+   "P_le_m200": 42.3,
+   "gap_bps": 100.0,
+   "lengan": "D statis @puncak- 250 (placebo)",
+   "mean_pure": 559.4,
+   "mean_winso": -20.9,
+   "median": -62.6,
+   "n": 336,
+   "positif": 43.5
+  },
+  {
+   "P_ge_500": 31.0,
+   "P_le_m200": 43.5,
+   "gap_bps": 100.0,
+   "lengan": "D statis @puncak- 500 (placebo)",
+   "mean_pure": 466.2,
+   "mean_winso": -61.0,
+   "median": -67.5,
+   "n": 336,
+   "positif": 42.9
+  },
+  {
+   "P_ge_500": 35.4,
+   "P_le_m200": 36.9,
+   "gap_bps": 100.0,
+   "lengan": "E trailing 120 bps hanya setelah biaya",
+   "mean_pure": 2023.1,
+   "mean_winso": 66.1,
+   "median": -13.0,
+   "n": 336,
+   "positif": 49.4
+  }
+ ],
+ "perintah": "python -X utf8 tools/trailing_policy.py --gap 0,100",
+ "posisi": 336,
+ "sha": "0x9f97b7388ef9fdaa64bda0e8d528255cd31f8c12521535b5056f4086f8057a82"
+}

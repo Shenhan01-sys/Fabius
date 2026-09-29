@@ -1429,3 +1429,35 @@ membatalkan kalimat yang sudah saya siapkan di kepala; itu bukan kegagalan, itu 
 [[08-Backlog/04 - Riset Teori (Sitasi)]] S6-S9 · [[07-Testing/01 - Test Commands]] baris 55 ·
 [[TradingKnowledge/FD7 - Invalidation Stop dan Time-Stop]]
 
+## F-D49 — Placebo pertama saya curang (look-ahead), dan baseline pairing yang benar mengubah kesimpulan · 29 Sep 2026 10:39Z
+
+**Dua kesalahan yang ketahuan sebelum kesimpulan ditulis.** (1) Placebo penjangkaran saya
+(`level_statis`) mengambil levelnya dari `max(seluruh jalur)` - puncak **akhir** jendela. Placebo
+yang boleh melihat masa depannya pun menang atas trailing dengan **+50,9 bps** yang sepenuhnya
+artifisial. (2) Baseline pairing pertama saya adalah `A tahan 30 m`, tapi lengan lain memakai
+fallback "keluar di baris terakhir jalur (60 m)" - dan **45/332 posisi (14 %) tidak punya baris
+harga antara 30 dan 60 menit**, jadi di sana "tahan 30" dan "tahan 60" adalah harga yang sama
+secara harfiah: delta 0,0 persis, dan placebo kelihatan "menyamai". Setelah baseline diganti jadi
+A2 (fallback yang sama untuk semua lengan), tabelnya berubah arah di beberapa baris.
+
+**Hasil akhirnya justru lebih penting dari kedua bug-nya: E17 tidak bisa dinilai dengan data kami.**
+25 dari 28 lengan punya **delta median tepat 0,0** - pada 1-4 bar per jam, level stop sebagian besar
+posisi **tidak pernah tersentuh bar**. Saat bar dijarangkan x2 dan x4, keunggulan lengan
+"bersyarat" runtuh (+105,2 → +9,2 → −83,9) sementara baseline diam di −183: yang saya hampir
+umumkan sebagai kebijakan adalah **resolusi sampel**.
+
+**Keputusan.** (a) P49 → **BLOCKED-BY-DATA**, bukan "belum sempat": uji exit dinamis apa pun di repo
+ini butuh bar lebih rapat (streaming/1m), dan itu pekerjaan yang sama dengan P40. (b) Aturan alat
+baru: **placebo tidak boleh punya hak melihat masa depan yang lebih besar dari lengan yang diuji**,
+dan baseline pairing harus memakai **fallback yang identik** - kalau tidak, delta 0,0 menyamar
+sebagai "tidak ada beda". (c) Yang boleh tetap ditulis dari E17: stop mengubah **bentuk**
+distribusi (P(≤−200) 46,4 % → 35,2 %; persen positif 40,4 % → 51,8 %) dan bukan harapan -
+sesuai Lei & Li (2009).
+
+**Ini koreksi kesembilan alat kami dalam enam hari** (F-D30, F-D32, F-D37, F-D39, F-D40, F-D43,
+F-D46, F-D47, F-D49), dan pola barunya: kali ini yang salah bukan angkanya, tapi **siapa yang boleh
+melihat masa depan** saat angka itu dihitung.
+
+**Terkait:** [[06-Results/24 - Trailing pada Bar yang Salah]] · [[06-Results/23 - Gerbang Trailing]] ·
+[[08-Backlog/01 - Backlog]] P49 · [[07-Testing/01 - Test Commands]] baris 56
+

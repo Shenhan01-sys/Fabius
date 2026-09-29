@@ -1,0 +1,533 @@
+{
+ "C_bps": 59.0,
+ "dibuat_utc": "2026-09-29T10:38:03Z",
+ "gap_bps": [
+  0.0,
+  100.0
+ ],
+ "hasil": [
+  {
+   "P_ge_500": 31.6,
+   "P_le_m200": 46.1,
+   "gap_bps": 0.0,
+   "lengan": "A tahan 30 m (baseline)",
+   "mean_pure": 2314.3,
+   "mean_winso": -182.5,
+   "median": -79.6,
+   "n": 332,
+   "positif": 41.6
+  },
+  {
+   "P_ge_500": 31.3,
+   "P_le_m200": 43.1,
+   "ci_delta": [
+    -917.7,
+    194.9
+   ],
+   "delta_median": 30.7,
+   "gap_bps": 0.0,
+   "lengan": "C trailing   60 bps (terus-armed)",
+   "mean_pure": 2004.4,
+   "mean_winso": -1.6,
+   "median": -76.8,
+   "n": 332,
+   "p_tanda": 0.00075,
+   "positif": 42.5
+  },
+  {
+   "P_ge_500": 31.6,
+   "P_le_m200": 44.3,
+   "ci_delta": [
+    -941.6,
+    174.1
+   ],
+   "delta_median": 23.2,
+   "gap_bps": 0.0,
+   "lengan": "C trailing  120 bps (terus-armed)",
+   "mean_pure": 1979.8,
+   "mean_winso": -16.1,
+   "median": -75.4,
+   "n": 332,
+   "p_tanda": 0.00152,
+   "positif": 42.2
+  },
+  {
+   "P_ge_500": 33.4,
+   "P_le_m200": 43.1,
+   "ci_delta": [
+    -747.0,
+    229.8
+   ],
+   "delta_median": 29.1,
+   "gap_bps": 0.0,
+   "lengan": "C trailing  250 bps (terus-armed)",
+   "mean_pure": 2090.5,
+   "mean_winso": -8.8,
+   "median": -59.8,
+   "n": 332,
+   "p_tanda": 0.00073,
+   "positif": 44.3
+  },
+  {
+   "P_ge_500": 33.4,
+   "P_le_m200": 44.0,
+   "ci_delta": [
+    -874.7,
+    90.3
+   ],
+   "delta_median": 18.5,
+   "gap_bps": 0.0,
+   "lengan": "C trailing  500 bps (terus-armed)",
+   "mean_pure": 1958.2,
+   "mean_winso": -44.0,
+   "median": -65.5,
+   "n": 332,
+   "p_tanda": 0.00312,
+   "positif": 43.1
+  },
+  {
+   "P_ge_500": 37.3,
+   "P_le_m200": 35.2,
+   "ci_delta": [
+    -759.4,
+    192.0
+   ],
+   "delta_median": 5.0,
+   "gap_bps": 0.0,
+   "lengan": "D trailing 120 BERSYARAT (arm>=biaya)",
+   "mean_pure": 2059.7,
+   "mean_winso": 105.2,
+   "median": 34.0,
+   "n": 332,
+   "p_tanda": 0.00528,
+   "positif": 51.8
+  },
+  {
+   "P_ge_500": 22.9,
+   "P_le_m200": 56.6,
+   "ci_delta": [
+    -908.9,
+    86.3
+   ],
+   "delta_median": 0.0,
+   "gap_bps": 0.0,
+   "lengan": "E statis -  60 dr masuk (placebo C)",
+   "mean_pure": 1931.0,
+   "mean_winso": -309.4,
+   "median": -321.9,
+   "n": 332,
+   "p_tanda": 0.22945,
+   "positif": 28.6
+  },
+  {
+   "P_ge_500": 23.5,
+   "P_le_m200": 59.0,
+   "ci_delta": [
+    -916.0,
+    76.9
+   ],
+   "delta_median": 0.0,
+   "gap_bps": 0.0,
+   "lengan": "E statis - 120 dr masuk (placebo C)",
+   "mean_pure": 1923.6,
+   "mean_winso": -313.6,
+   "median": -374.2,
+   "n": 332,
+   "p_tanda": 0.26409,
+   "positif": 29.5
+  },
+  {
+   "P_ge_500": 24.4,
+   "P_le_m200": 58.1,
+   "ci_delta": [
+    -592.6,
+    603.0
+   ],
+   "delta_median": 0.0,
+   "gap_bps": 0.0,
+   "lengan": "E statis - 250 dr masuk (placebo C)",
+   "mean_pure": 2253.2,
+   "mean_winso": -329.8,
+   "median": -438.6,
+   "n": 332,
+   "p_tanda": 0.24532,
+   "positif": 30.7
+  },
+  {
+   "P_ge_500": 26.5,
+   "P_le_m200": 55.4,
+   "ci_delta": [
+    -584.4,
+    608.2
+   ],
+   "delta_median": 0.0,
+   "gap_bps": 0.0,
+   "lengan": "E statis - 500 dr masuk (placebo C)",
+   "mean_pure": 2259.8,
+   "mean_winso": -329.6,
+   "median": -630.8,
+   "n": 332,
+   "p_tanda": 0.24388,
+   "positif": 32.8
+  },
+  {
+   "P_ge_500": 26.8,
+   "P_le_m200": 52.1,
+   "ci_delta": [
+    -615.2,
+    563.0
+   ],
+   "delta_median": 0.0,
+   "gap_bps": 0.0,
+   "lengan": "F statis-arm>=biaya   60 (placebo D)",
+   "mean_pure": 2221.8,
+   "mean_winso": -243.3,
+   "median": -224.4,
+   "n": 332,
+   "p_tanda": 0.74009,
+   "positif": 33.7
+  },
+  {
+   "P_ge_500": 27.7,
+   "P_le_m200": 53.3,
+   "ci_delta": [
+    -567.2,
+    609.0
+   ],
+   "delta_median": 0.0,
+   "gap_bps": 0.0,
+   "lengan": "F statis-arm>=biaya  120 (placebo D)",
+   "mean_pure": 2268.6,
+   "mean_winso": -226.3,
+   "median": -237.8,
+   "n": 332,
+   "p_tanda": 0.63744,
+   "positif": 34.6
+  },
+  {
+   "P_ge_500": 28.3,
+   "P_le_m200": 53.0,
+   "ci_delta": [
+    -609.5,
+    565.6
+   ],
+   "delta_median": 0.0,
+   "gap_bps": 0.0,
+   "lengan": "F statis-arm>=biaya  250 (placebo D)",
+   "mean_pure": 2227.4,
+   "mean_winso": -252.1,
+   "median": -362.8,
+   "n": 332,
+   "p_tanda": 0.77814,
+   "positif": 35.2
+  },
+  {
+   "P_ge_500": 30.1,
+   "P_le_m200": 49.4,
+   "ci_delta": [
+    -575.2,
+    601.1
+   ],
+   "delta_median": 0.0,
+   "gap_bps": 0.0,
+   "lengan": "F statis-arm>=biaya  500 (placebo D)",
+   "mean_pure": 2259.8,
+   "mean_winso": -227.4,
+   "median": -169.6,
+   "n": 332,
+   "p_tanda": 0.85517,
+   "positif": 37.7
+  },
+  {
+   "P_ge_500": 34.3,
+   "P_le_m200": 40.4,
+   "ci_delta": [
+    -764.6,
+    214.3
+   ],
+   "delta_median": 21.7,
+   "gap_bps": 0.0,
+   "lengan": "G d + armed diacak (placebo gabungan)",
+   "mean_pure": 2078.4,
+   "mean_winso": 42.6,
+   "median": -49.4,
+   "n": 332,
+   "p_tanda": 0.0005,
+   "positif": 47.3
+  },
+  {
+   "P_ge_500": 33.1,
+   "P_le_m200": 44.1,
+   "gap_bps": 0.0,
+   "lengan": "B keluar waktu ACAK (kontrol F-D40)",
+   "mean_pure": 2018.2,
+   "mean_winso": -110.8,
+   "median": -66.6,
+   "n": 3360,
+   "positif": 43.1
+  },
+  {
+   "P_ge_500": 31.6,
+   "P_le_m200": 46.1,
+   "gap_bps": 100.0,
+   "lengan": "A tahan 30 m (baseline)",
+   "mean_pure": 2314.3,
+   "mean_winso": -182.5,
+   "median": -79.6,
+   "n": 332,
+   "positif": 41.6
+  },
+  {
+   "P_ge_500": 30.7,
+   "P_le_m200": 48.5,
+   "ci_delta": [
+    -1009.3,
+    103.6
+   ],
+   "delta_median": -1.9,
+   "gap_bps": 100.0,
+   "lengan": "C trailing   60 bps (terus-armed)",
+   "mean_pure": 1912.8,
+   "mean_winso": -61.5,
+   "median": -119.2,
+   "n": 332,
+   "p_tanda": 0.79911,
+   "positif": 39.8
+  },
+  {
+   "P_ge_500": 30.7,
+   "P_le_m200": 47.3,
+   "ci_delta": [
+    -1031.6,
+    83.8
+   ],
+   "delta_median": 0.0,
+   "gap_bps": 100.0,
+   "lengan": "C trailing  120 bps (terus-armed)",
+   "mean_pure": 1890.3,
+   "mean_winso": -73.5,
+   "median": -109.5,
+   "n": 332,
+   "p_tanda": 0.76697,
+   "positif": 40.4
+  },
+  {
+   "P_ge_500": 31.6,
+   "P_le_m200": 44.6,
+   "ci_delta": [
+    -831.4,
+    144.0
+   ],
+   "delta_median": 0.0,
+   "gap_bps": 100.0,
+   "lengan": "C trailing  250 bps (terus-armed)",
+   "mean_pure": 2005.6,
+   "mean_winso": -62.6,
+   "median": -68.0,
+   "n": 332,
+   "p_tanda": 0.5,
+   "positif": 42.8
+  },
+  {
+   "P_ge_500": 31.9,
+   "P_le_m200": 44.9,
+   "ci_delta": [
+    -955.8,
+    10.0
+   ],
+   "delta_median": 0.0,
+   "gap_bps": 100.0,
+   "lengan": "C trailing  500 bps (terus-armed)",
+   "mean_pure": 1878.1,
+   "mean_winso": -93.0,
+   "median": -100.5,
+   "n": 332,
+   "p_tanda": 0.61107,
+   "positif": 42.2
+  },
+  {
+   "P_ge_500": 35.5,
+   "P_le_m200": 36.4,
+   "ci_delta": [
+    -816.9,
+    134.1
+   ],
+   "delta_median": 0.0,
+   "gap_bps": 100.0,
+   "lengan": "D trailing 120 BERSYARAT (arm>=biaya)",
+   "mean_pure": 2001.3,
+   "mean_winso": 67.6,
+   "median": -8.7,
+   "n": 332,
+   "p_tanda": 0.3023,
+   "positif": 49.7
+  },
+  {
+   "P_ge_500": 22.9,
+   "P_le_m200": 63.9,
+   "ci_delta": [
+    -972.8,
+    19.9
+   ],
+   "delta_median": -24.5,
+   "gap_bps": 100.0,
+   "lengan": "E statis -  60 dr masuk (placebo C)",
+   "mean_pure": 1867.1,
+   "mean_winso": -355.2,
+   "median": -421.9,
+   "n": 332,
+   "p_tanda": 0.97915,
+   "positif": 28.6
+  },
+  {
+   "P_ge_500": 23.5,
+   "P_le_m200": 60.8,
+   "ci_delta": [
+    -976.8,
+    15.1
+   ],
+   "delta_median": -2.8,
+   "gap_bps": 100.0,
+   "lengan": "E statis - 120 dr masuk (placebo C)",
+   "mean_pure": 1862.8,
+   "mean_winso": -356.0,
+   "median": -474.2,
+   "n": 332,
+   "p_tanda": 0.95614,
+   "positif": 29.5
+  },
+  {
+   "P_ge_500": 24.4,
+   "P_le_m200": 58.1,
+   "ci_delta": [
+    -650.4,
+    542.7
+   ],
+   "delta_median": -2.8,
+   "gap_bps": 100.0,
+   "lengan": "E statis - 250 dr masuk (placebo C)",
+   "mean_pure": 2195.4,
+   "mean_winso": -368.5,
+   "median": -538.6,
+   "n": 332,
+   "p_tanda": 0.96142,
+   "positif": 30.7
+  },
+  {
+   "P_ge_500": 26.5,
+   "P_le_m200": 55.4,
+   "ci_delta": [
+    -639.7,
+    554.8
+   ],
+   "delta_median": -1.9,
+   "gap_bps": 100.0,
+   "lengan": "E statis - 500 dr masuk (placebo C)",
+   "mean_pure": 2206.2,
+   "mean_winso": -363.5,
+   "median": -730.8,
+   "n": 332,
+   "p_tanda": 0.95717,
+   "positif": 32.8
+  },
+  {
+   "P_ge_500": 26.8,
+   "P_le_m200": 56.0,
+   "ci_delta": [
+    -644.8,
+    533.0
+   ],
+   "delta_median": 0.0,
+   "gap_bps": 100.0,
+   "lengan": "F statis-arm>=biaya   60 (placebo D)",
+   "mean_pure": 2191.7,
+   "mean_winso": -266.2,
+   "median": -313.1,
+   "n": 332,
+   "p_tanda": 0.86611,
+   "positif": 33.7
+  },
+  {
+   "P_ge_500": 27.7,
+   "P_le_m200": 53.9,
+   "ci_delta": [
+    -596.4,
+    578.4
+   ],
+   "delta_median": 0.0,
+   "gap_bps": 100.0,
+   "lengan": "F statis-arm>=biaya  120 (placebo D)",
+   "mean_pure": 2240.6,
+   "mean_winso": -247.1,
+   "median": -323.9,
+   "n": 332,
+   "p_tanda": 0.79327,
+   "positif": 34.6
+  },
+  {
+   "P_ge_500": 28.3,
+   "P_le_m200": 53.0,
+   "ci_delta": [
+    -635.5,
+    540.1
+   ],
+   "delta_median": 0.0,
+   "gap_bps": 100.0,
+   "lengan": "F statis-arm>=biaya  250 (placebo D)",
+   "mean_pure": 2201.5,
+   "mean_winso": -270.5,
+   "median": -447.7,
+   "n": 332,
+   "p_tanda": 0.92033,
+   "positif": 35.2
+  },
+  {
+   "P_ge_500": 30.1,
+   "P_le_m200": 49.4,
+   "ci_delta": [
+    -596.8,
+    582.3
+   ],
+   "delta_median": 0.0,
+   "gap_bps": 100.0,
+   "lengan": "F statis-arm>=biaya  500 (placebo D)",
+   "mean_pure": 2239.6,
+   "mean_winso": -240.7,
+   "median": -169.6,
+   "n": 332,
+   "p_tanda": 0.91164,
+   "positif": 37.7
+  },
+  {
+   "P_ge_500": 32.8,
+   "P_le_m200": 41.9,
+   "ci_delta": [
+    -833.6,
+    141.5
+   ],
+   "delta_median": 0.0,
+   "gap_bps": 100.0,
+   "lengan": "G d + armed diacak (placebo gabungan)",
+   "mean_pure": 2007.9,
+   "mean_winso": -3.5,
+   "median": -59.0,
+   "n": 332,
+   "p_tanda": 0.16557,
+   "positif": 45.8
+  },
+  {
+   "P_ge_500": 33.3,
+   "P_le_m200": 44.4,
+   "gap_bps": 100.0,
+   "lengan": "B keluar waktu ACAK (kontrol F-D40)",
+   "mean_pure": 2275.9,
+   "mean_winso": -106.2,
+   "median": -67.7,
+   "n": 3360,
+   "positif": 42.9
+  }
+ ],
+ "perintah": "python -X utf8 tools/trailing_policy.py --gap 0,100",
+ "posisi": 336,
+ "sha": "0x91f080f91e38d612b8d656e95b342c09176d4a28a7909c4ac42455afb8a524f9"
+}
