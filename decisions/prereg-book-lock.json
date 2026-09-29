@@ -1,0 +1,18 @@
+{
+ "dibuat_utc": "2026-09-29T09:37:45Z",
+ "horizon_detik": 300,
+ "n_min": 40,
+ "primer": "bi5",
+ "sekunder": [
+  "bi1",
+  "bi20",
+  "mi20",
+  "util20"
+ ],
+ "spec_sha256": "0xeba3e0c510cb8470961f9b94b7cc68f490d5aa41c849c6b14baba6cd81cdebe2",
+ "spek_teks": "E16 - buku order sebagai prediktor, terkunci sebelum historinya ada.\n\nsumber_teori  : builder (29 Sep), dari trader yang dia hormati: 'total variasi harga beli - jual'\nhipotesis_primer : kuantil-atas `bi5` (imbalance kuantitas 5 level) menghasilkan return-ahead\n                   5 menit lebih tinggi dari kuantil-bawah, pada simbol yang sama\nhipotesis_sekunder : bi1, bi20, mi20, util20 - masing-masing diuji, Benjamini-Hochberg alpha 0,10\nreturn_ahead  : 10000 * (mid(t+300s) - mid(t)) / mid(t), mid dari snapshot berikutnya yang\n                |t' - t - 300s| <= 150s; kalau tidak ada -> TIDAK DIHITUNG, bukan nol\nbiaya         : dikurangi setengah spread (bps) pada snapshot t - syarat (4) vonis adalah\n                net-of-cost, bukan gross\nperhitungan   : HANYA snapshot dengan detik > t_kunci; jangkar likuid (BTC/ETH/SOL) dilaporkan\n                TERPISAH dari simbol kabar - menggabungkannya akan menyembunyikan bentuknya\nvonis_layak   : (1) n >= 40 DAN (2) median > 0 DAN CI bawah bootstrap 4000 (seed 20260929) > 0\n                DAN (3) Mann-Whitney satu arah atas-vs-bawah p < 0,05 DAN (4) mean net-of-cost > 0\nkalau_kecil   : 'BELUM BISA DIUJI' - ambang tidak diturunkan, horison tidak diperpanjang diam-diam\nkalau_gagal   : buku order ditutup sebagai jalur prediksi pada cadence kami; TIDAK dibalik\n                jadi 'contra-imbalance' tanpa kunci baru\ncadence_batas : ~200 s/simbol dari loop \u2466; E11 mengukur kabar hidup \u00b12 menit, jadi uji ini tidak\n                bisa memalsukan versi CEPAT dari teori - hanya versi lambatnya\n",
+ "spesifikasi": "vault/06-Results/22 - Buku Order, Terkunci Lebih Dulu.md",
+ "t_kunci": 1790674665,
+ "t_kunci_iso": "2026-09-29T09:37:45Z",
+ "umur_jam_min": 12
+}
