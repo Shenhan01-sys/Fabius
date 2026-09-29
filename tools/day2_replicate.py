@@ -39,6 +39,7 @@ SPEC = os.path.join(ROOT, "vault", "06-Results", "11 - Pra-Registrasi Hari Kedua
 LOCK = os.path.join(ROOT, "decisions", "prereg-day2-lock.json")
 OUT_DIR = os.path.join(ROOT, "decisions")
 FLOW = os.path.join(ROOT, "universe", "wallet-flow.jsonl")
+WATCH = os.path.join(ROOT, "universe", "watch-prices.jsonl")
 ASPEK_LULUS = ["cluster_ge2", "cluster_ge3", "repeat_maker", "money_spread", "buy_usd_ge_1k"]
 
 for _s in (sys.stdout, sys.stderr):
@@ -72,22 +73,31 @@ def read_spec(spec_path=SPEC):
     return kv, sha
 
 
-def last_flow_stamp():
+def last_flow_stamp(sumber="flow"):
     """Stempel terakhir di SALINAN LOKAL - dan itu persis yang menipu kami dua kali (27 & 28 Sep).
 
-    Umur aliran menentukan kapan alat ini boleh bicara. Salinan yang basi membuat jam replikasi
-    terbaca salah arah, jadi penjaga ini membandingkan dengan commit data terbaru di `origin/*` dan
-    BERTERIA kalau bedanya > 10 menit. Vonis tetap dihitung dari berkas lokal - itu satu-satunya
-    berkas yang bisa dibaca utuh - tapi pembacanya tahu kalau tanahnya gompal.
+    Umur data SUMUR YANG DIUJI menentukan kapan alat ini boleh bicara. `watch` punya nyawanya
+    sendiri: aliran bisa tetap menetes sementara pantau berhenti (atau sebaliknya) - mengukur umur
+    `wp` dari jam `flow` akan menyebut sumur yang diam sebagai 'cukup umur', kelas kegagalan yang
+    sudah dua kali kami bayar hari ini. Salinan lokal yang basi juga menipu: penjaga ini
+    membandingkan dengan commit data terbaru di `origin/*` dan BERTERIA kalau bedanya > 10 menit.
+    Vonis tetap dihitung dari berkas lokal - itu satu-satunya berkas yang bisa dibaca utuh - tapi
+    pembacanya tahu kalau tanahnya gompal.
     """
+    berkas = WATCH if sumber == "watch" else FLOW
+    jenis = ("wp", "wp0") if sumber == "watch" else ("tx", "txc")
+    if not os.path.exists(berkas):
+        return 0
     t = 0
-    for ln in io.open(FLOW, encoding="utf-8", errors="replace"):
+    for ln in io.open(berkas, encoding="utf-8", errors="replace"):
         ln = ln.strip()
         if not ln or ln.startswith("#"):
             continue
         try:
             d = json.loads(ln)
         except ValueError:
+            continue
+        if d.get("k") not in jenis:
             continue
         x = int(d.get("t") or 0)
         if x > t:
@@ -122,18 +132,25 @@ def verdict(r):
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--status", action="store_true", help="hanya: terkunci kapan, berapa jam lagi")
-    ap.add_argument("--halaman", default="11", choices=("11", "12"),
-                    help="11 = spesifikasi lama (harga px, sudah DIKUNCI 28 Sep 08:30Z); "
-                         "12 = spesifikasi jujur (harga peristiwa). Masing-masing punya berkas "
-                         "kunci sendiri - mengedit yang satu tidak mengubah yang lain.")
+    ap.add_argument("--halaman", default="11", choices=("11", "12", "17"),
+                    help="11 = harga `px` (DIKUNCI 28 Sep 08:30Z; vonis TIDAK ADA REPLIKASI); "
+                         "12 = harga peristiwa (DIKUNCI 28 Sep 09:49Z; vonis TIDAK ADA "
+                         "REPLIKASI); 17 = harga PANTAU `wp` - satu-satunya deret yang berdetak "
+                         "sendiri. Tiap halaman punya berkas kunci sendiri; mengedit yang satu "
+                         "tidak mengubah yang lain.")
     a = ap.parse_args()
     if a.halaman == "12":
         spec = os.path.join(ROOT, "vault", "06-Results", "12 - Harga Masuk yang Benar.md")
         lock_p = os.path.join(OUT_DIR, "prereg-honest-lock.json")
         prefix = "day2h"
+    elif a.halaman == "17":
+        spec = os.path.join(ROOT, "vault", "06-Results", "17 - Pra-Registrasi Watch.md")
+        lock_p = os.path.join(OUT_DIR, "prereg-watch-lock.json")
+        prefix = "day2w"
     else:
         spec, lock_p, prefix = SPEC, LOCK, "day2"
     kv, sha = read_spec(spec)
+    sumber = kv["sumber_harga"]
     umur_butuh = int(kv["syarat_umur_jam"])
     now = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())
 
@@ -141,7 +158,7 @@ def main():
         if a.status:
             print("BELUM DIKUNCI - jalankan tanpa --status untuk mengunci sekarang.")
             return
-        t_kunci = last_flow_stamp()
+        t_kunci = last_flow_stamp(sumber)
         if not t_kunci:
             raise SystemExit("aliran kosong - tidak ada yang bisa dikunci")
         assert 1_700_000_000 < t_kunci < 2_000_000_000, "t_kunci bukan detik Unix: %d" % t_kunci
@@ -166,7 +183,7 @@ def main():
                          "yang berubah bukan datanya, aturan mainnya."
                          % (str(lock.get("spec_sha256"))[:18], sha[:18]))
     t_kunci = int(lock["t_kunci"])
-    t_now = last_flow_stamp()
+    t_now = last_flow_stamp(sumber)
     baru_jam = (t_now - t_kunci) / 3600.0
     print("terkunci %s | spec %s | rekaman baru %.2f jam dari kebutuhan %d jam"
           % (lock["dibuat_utc"], sha[:18], max(baru_jam, 0.0), umur_butuh))

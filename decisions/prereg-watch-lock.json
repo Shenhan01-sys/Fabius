@@ -1,0 +1,36 @@
+{
+ "aspek_lulus_28Sep": [
+  "cluster_ge2",
+  "cluster_ge3",
+  "repeat_maker",
+  "money_spread",
+  "buy_usd_ge_1k"
+ ],
+ "dibuat_utc": "2026-09-29T03:05:05Z",
+ "parameter_terkunci": {
+  "data_replikasi": "HANYA kejadian dengan t > t_kunci",
+  "halaman_spesifikasi": "17",
+  "harga_keluar": "median wp pada t+[H-15m, H+15m]; TIDAK ADA transaksi yang diperlukan agar keluaran ada",
+  "harga_masuk": "wp terakhir dengan t <= t_keputusan (umur maksimal 10 menit, umur sebenarnya dilaporkan)",
+  "horison_menit": "30",
+  "jendela_menit": "15",
+  "kalau_gagal": "kerumunan maker ditutup sebagai jalur masuk untuk jendela ini; TIDAK dibalik jadi fade",
+  "kalau_hasil_terlalu_kecil": "tulis \"belum bisa diuji\", jangan \"tidak ada efek\" - dan jangan turunkan",
+  "koreksi": "Benjamini-Hochberg alpha 0.10, dihitung DI DALAM run replikasi",
+  "lapor_wajib": "[P(ada harga keluar), umur median harga masuk, n, token, CI bawah harapan]",
+  "non_overlap": "1 per horison per token",
+  "ongkos_bps_roundtrip": "59.0",
+  "pasangan": "berpasangan dalam token yang sama (acuan = kejadian pada token itu yang tidak memicu aspek)",
+  "statistik": "median + bootstrap 4000 (seed 20260928) + tanda-uji eksak satu arah",
+  "sumber_harga": "watch",
+  "syarat_umur_jam": "12",
+  "uji_kedua": "money_spread (beli terbesar <= 60% dari USD beli di jendela)",
+  "uji_ketiga": "stack_ge2 (>=2 dari lima aspek lulus 28 Sep menyala bersamaan)",
+  "uji_primer": "cluster_ge2 (>=2 maker berbeda beli dalam jendela)",
+  "vonis_replikasi": "median > 0 DAN CI bawah > 0 DAN p < 0,05 sesudah BH dalam run itu - tiga-tiganya"
+ },
+ "spec_sha256": "0xc4105c1732ebfca73ea8cb4412db9f988ca26dc1f399f447c8b343ac69a962d3",
+ "spesifikasi": "vault/06-Results/17 - Pra-Registrasi Watch.md",
+ "t_kunci": 1790650746,
+ "t_kunci_iso": "2026-09-29T02:59:06Z"
+}
