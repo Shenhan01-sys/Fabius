@@ -12,6 +12,17 @@ yang boleh disebut temuan sebelum (a) placebonya ada di alat yang sama, (b) satu
 F-D43, F-D46 adalah tujuh kali kami melanggar versi berbeda dari aturan ini dan selalu angkanya
 terlihat bagus sebelum ketahuan.
 
+> **T1 DITUTUP SEBAGAI HASIL - 29 Sep 21:46:56Z (E16, `decisions/book-prereg-20260929T214656Z.json`).**
+> Lima pembacaan buku order (`bi5` primer + `bi1`/`bi20`/`mi20`/`util20`) pada n=4.255 pasangan
+> pasca-kunci semuanya **GAGAL**, tidak ada yang lolos BH α 0,10. Dipecah per kelompok seperti
+> diwajibkan spesifikasi: jangkar likuid **selisih +1,45 bps tapi net +0,03** (p=0,104) dan simbol
+> kabar **selisih −0,95, arah terbalik** (p=0,075). Teori trader itu tidak salah di dunia - ia tidak
+> bekerja **pada cadence 200 detik kami**, dan halaman ini tidak boleh membaliknya jadi
+> "contra-imbalance": itu hipotesis baru, dengan kunci dan n-nya sendiri (F-D67). Yang tetap terbuka
+> dan sudah ada namanya: uji ulang dengan jendela **non-overlap** (P66) dan frame yang lebih luas
+> (E25 lewat P54, kini boleh jalan karena vonis sudah tercatat).
+
+
 ## 1. Teori builder, dibedah jadi dua yang bisa diuji
 
 > "Baca order book-nya, buy/sell, lalu total variasi harga yang ada. Buy dikurangi sell: positif →

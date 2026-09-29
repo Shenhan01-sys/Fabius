@@ -172,8 +172,67 @@ Kemungkinan besar hasilnya “BELUM BISA DIUJI” karena n - dan itu jawaban yan
 
 ## 6. Hasil
 
-_kosong sampai umur kunci cukup - dan kekosongan ini bagian dari spesifikasinya._
+**Dibaca 29 Sep 2026 21:46:56Z** oleh `python -X utf8 tools/book_prereg.py` (kunci `09:37:45Z`,
+syarat umur **12,12/12 jam**; `spec_sha256=0xeba3e0c510cb8470…` - blok §2 tidak kusentuh). Artefak:
+`decisions/book-prereg-20260929T214656Z.json`.
 
-**Terkait:** [[06-Results/19 - Umur Posisi]] · [[06-Results/21 - Rem di Horison Cepat]] ·
-[[08-Backlog/03 - Epik Teori Baru]] · [[00-Overview/03 - Decisions]] F-D43/F-D46/F-D47 ·
-[[Concepts/Unmeasured Is Not Clean]]
+## Vonis primer (`bi5`): **GAGAL**
+
+```text
+snapshot: semua 4.294 di 26 simbol | PASCA-KUNCI 4.289 di 25 simbol | sensor {bdx 198, pra_kunci 5}
+pasangan yang dinilai: n=4.255
+komposisi pasangan   : 25 simbol | teratas BTCUSDT=179, ETHUSDT=179, SOLUSDT=179, 0GUSDT=169,
+                       4USDT=169 | share 4 jangkar likuid = 13 %
+bi5   n=4255 | ret atas -1,45 (net -62,23) | bawah +0,00 | selisih -0,72 | p=0,06024
+        syarat: (1) n>=40 LOLOS | (2) median>0 & CI bawah>0 GAGAL | (3) MW p<0,05 GAGAL |
+                (4) mean net-of-cost > 0 GAGAL
+sekunder (semua GAGAL, tidak ada yang lolos BH alpha 0,10):
+   bi1 n=4255 selisih -1,25 p=0,220 | bi20 selisih -2,13 p=0,166 | mi20 selisih -0,91 p=0,169 |
+   util20 selisih -3,23 p=0,443
+```
+
+## Kelompok terpisah - dan inilah alasan clauses itu ada di spesifikasi
+
+Spesifikasi E16 mewajibkan jangkar likuid dilaporkan **terpisah** dari simbol kabar. Saat cetakan
+pertama hanya menampilkan `share 13 %`, aku menambahkan pemisahan itu ke alatnya (murni pelaporan -
+aturan vonisnya tidak berubah) dan ternyata di situlah bentuk aslinya kelihatan:
+
+```text
+jangkar (BTC/ETH/SOL/BNB) n=  537 | ret atas +0,22 (net +0,03) | selisih +1,45 | p=0,104 | GAGAL
+kabar (simbol berita ⑦)   n= 3.718 | ret atas -1,65 (net -69,62) | selisih -0,95 | p=0,075 | GAGAL
+```
+
+Dua hal yang bila digabung saling menihilkan:
+
+1. **Di buku yang benar-benar hidup, arah teorinya terlihat - tapi besarnya +1,45 bps**, dan
+   net-of-cost **+0,03 bps**. Itu tiga perempat dari satu basis point, atau 1/40 dari ongkos
+   round-trip kami (59 bps). Bukan "hampir signifikan secara ekonomi" - tidak signifikan secara
+   ekonomi sama sekali; p=0,104 juga tidak lolos.
+2. **Di simbol kabar - bagian yang 87 % dan yang sebenarnya kami inginkan - arahnya terbalik**
+   (imbalance tinggi memberi return lebih rendah). Sesuai `kalau_gagal` di spesifikasi: **tidak
+   dibalik** jadi "contra-imbalance". Itu akan jadi hipotesis baru dengan kuncinya sendiri, bukan
+   penafsiran ulang halaman ini.
+
+## Batas yang tidak boleh hilang bersama vonisnya
+
+- **n=4.255 bukan 4.255 observasi bebas.** Cadence ⑨ ~200 d dengan horison 300 d membuat jendela
+  return saling tumpang tindih; CI bootstrap dan p MW-nya karena itu **lebih optimis** dari yang
+  terlihat. Karena hasilnya nol (bukan positif tipis yang selamat), tumpang tindih ini tidak
+  mengubah vonis - tapi ia mengubah cara membaca "p=0,060" di arah yang salah itu, dan itu masuk
+  **P66** (uji ulang dengan jendela non-overlap di kunci berikutnya).
+- **Versi CEPAT dari teori ini tidak pernah bisa dipalsukan di sini** - itu tertulis di spesifikasi
+  (`cadence_batas`) dan E11 (kabar hidup ±2 m) menjadikannya fakta, bukan kekhawatiran. Yang
+  dijatuhkan vonis ini adalah versi lambat dari "baca orderbook", pada cadence kami.
+- **Cakupan jendela berubah di tengah jalan (F-D47)**: daftar pantau baru dibetulkan 09:5xZ, dan
+  pembacaan pagi (10:0xZ) masih 100 % jangkar; sekarang 13 %. Jadi komposisi di atas bukan
+  hiasan - ia menjelaskan kenapa angka gabungannya tidak boleh dibandingkan dengan mana pun.
+- **Daftar pantau TIDAK kulebarkan untuk menyelamatkan ini** (F-D53). Pelebaran itu **P54/E25**,
+  sesudah vonis ini tercatat - yang barusan terjadi, jadi P54 kini boleh jalan.
+
+## Yang ditutup halaman ini
+
+Buku order **pada cadence kami** ditutup sebagai jalur prediksi: `bi5`, `bi1`, `bi20`, `mi20`,
+`util20` semuanya GAGAL, tidak ada satu pun lolos BH, dan satu-satunya kelompok dengan arah benar
+adalah kelompok yang sudah likuid tempat efeknya +0,03 bps net. Lihat keputusan **F-D67** dan
+penutupan T1 di [[08-Backlog/03 - Epik Teori Baru]].
+

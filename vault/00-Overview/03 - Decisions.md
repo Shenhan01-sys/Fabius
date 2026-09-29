@@ -2102,3 +2102,44 @@ baik dari acak?" saja - dia menanyakan "lebih baik dari acak **dan di atas nol**
 microprice ⑨ - karena §6b menunjuk biaya sebagai penyumbang utama dan itu belum dipisahkan dari
 horison) dan **P62** (venue: F-D59 lebih hidup, F-D60 tidak memanggil bump). E24 tidak membuka jalur
 baru; dia menutup yang terakhir.
+
+## F-D67 - E16 jatuh: orderbook pada cadence 200 detik kami tidak memprediksi apa pun - dan satu-satunya kelompok dengan arah benar memberi +0,03 bps net · 29 Sep 2026 21:46:56Z
+
+**Yang dijanjikan teori ini.** Ini teori yang dibawa builder langsung dari seorang trader yang ia
+hormati: baca orderbook, total variasi harga beli dikurangi jual, positif = mantul. Kami mengubahnya
+jadi `bi5` (state imbalance 5 level), menguncinya jam **09:37:45Z** sebelum historinya ada
+(`spec_sha256=0xeba3e0c510cb8470…`), dan menunggu 12 jam.
+
+**Yang keluar (n=4.255 pasangan pasca-kunci, 25 simbol):** `bi5` GAGAL di syarat (2)(3)(4);
+sekunder `bi1`/`bi20`/`mi20`/`util20` GAGAL semua; BH α 0,10: **nol** yang lolos.
+
+**Yang membuat halaman ini tidak bisa ditutup dengan satu angka.** Spesifikasi mewajibkan jangkar
+likuid dilaporkan **terpisah** dari simbol kabar - dan saat cetakan pertama cuma menampilkan
+`share 13 %`, aku menambahkan pemisahan itu ke alatnya (murni pelaporan, aturan vonis tidak
+berubah). Hasilnya justru intinya:
+
+```text
+jangkar (BTC/ETH/SOL/BNB) n=  537 | selisih +1,45 bps | net-of-cost +0,03 bps | p=0,104
+kabar   (simbol ⑦)        n= 3.718 | selisih -0,95 bps | net -69,62          | p=0,075
+```
+
+Di buku yang benar-benar hidup, arah teorinya **ada** - dan besarnya **sepertiga basis point setelah
+ongkos**, yaitu 1/40 dari ongkos round-trip kami. Di buku simbol kabar - 87 % populasi dan yang
+sebenarnya kami incar - arahnya **terbalik**. Digabung, dua hal itu saling menihilkan jadi −0,72.
+Ini alasan clauses "laporkan terpisah" ada, dan ini juga yang membuat angka gabungan mana pun di
+proyek ini layak dicurigai kalau kelompoknya tidak disebut.
+
+**Keputusan.** (a) **T1 ditutup sebagai hasil** di [[08-Backlog/03 - Epik Teori Baru]]; (b) **tidak
+dibalik** jadi "contra-imbalance" - itu hipotesis baru dengan kunci + n sendiri, persis yang
+dilarang `kalau_gagal` di spesifikasinya sendiri; (c) **tidak** ada ambang yang diturunkan;
+(d) batas yang tertulis di spesifikasi tetap berlaku dan kuulang di halaman 22: cadence 200 d
+**tidak pernah bisa** memalsukan versi cepat teori ini - E11 sudah mengukur kabar hidup ±2 menit.
+
+**Batas baru yang kutemukan sambil menulis vonis ini: n=4.255 bukan 4.255 observasi bebas.**
+Jendela return 300 d pada snapshot tiap ~200 d saling tumpang tindih, jadi CI dan p-nya optimis.
+Karena hasilnya nol, ini tidak membalikkan vonis - tapi ia membuat "p=0,060 di arah yang salah"
+tidak boleh dibaca apa pun. Diperbaiki di kunci berikutnya dengan jendela **non-overlap** -> **P66**.
+
+**Status proyek setelah ini:** lima uji prospectif selesai (E9, watch, E22, E24, E16) - **semua
+GAGAL**; satu-satunya yang lulus adalah **E12** (aturan keluar). Teori builder yang terakhir
+(E25, frame lebih luas + non-overlap) sudah boleh dijalankan: **P54 22:25Z**.

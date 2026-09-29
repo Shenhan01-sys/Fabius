@@ -175,6 +175,21 @@ def pasangan(per, horizon=HORIZON_DTK, tolerance=150):
     return out
 
 
+JANGKAR = ("BTCUSDT", "ETHUSDT", "SOLUSDT", "BNBUSDT")
+
+
+def bagi_kelompok(ps):
+    """Spesifikasi E16 mewajibkan jangkar likuid dilaporkan TERPISAH dari simbol kabar.
+
+    Bukan hiasan: 87 % pasangan di jendela ini bukan jangkar, dan buku simbol kabar kami terbukti
+    beku (F-D61: 5 dari 26 simbol nol kedalaman dalam +-10 bps) - jadi angka gabungan bisa
+    ditutupi oleh kelompok yang harganya tidak pernah bergerak.
+    """
+    jk = [p for p in ps if p["sym"] in JANGKAR]
+    kb = [p for p in ps if p["sym"] not in JANGKAR]
+    return {"jangkar": jk, "kabar": kb}
+
+
 def uji(ps, kunci):
     xs = [p for p in ps if isinstance(p.get(kunci), (int, float))]
     if len(xs) < N_MIN:
@@ -266,6 +281,22 @@ def utama():
               % (len(dari), ", ".join("%s=%d" % kv for kv in top[:5]),
                  100.0 * jangkar / len(ps)))
     res = [uji(ps, k) for k in (PRIMER,) + tuple(SEKUNDER)]
+    kel = bagi_kelompok(ps)
+    kelompok = {}
+    print("   --- kelompok terpisah (syarat spesifikasi E16) ---")
+    for nama, sub in sorted(kel.items()):
+        if len(sub) < 10:
+            print("      %-8s n=%-5d TERLALU KECIL untuk dibaca - bukan nol" % (nama, len(sub)))
+            kelompok[nama] = {"n": len(sub), "status": "TERLALU-KECIL"}
+            continue
+        rr = uji(sub, PRIMER)
+        kelompok[nama] = {"n": rr["n"], "token": len({x["sym"] for x in sub}),
+                          "mean_ret_atas": rr["mean_ret_atas"], "mean_net_atas": rr["mean_net_atas"],
+                          "selisih_mean": rr["selisih_mean"], "p_mw": rr["p_mw"],
+                          "syarat": rr["syarat"], "layak": rr["layak"]}
+        print("      %-8s n=%-5d | ret atas %+7.2f (net %+8.2f) | selisih %+7.2f | p=%-8s | "
+              "layak %s" % (nama, rr["n"], rr["mean_ret_atas"], rr["mean_net_atas"],
+                            rr["selisih_mean"], rr["p_mw"], rr["layak"]))
     for r in res:
         if r.get("status"):
             print("   %-8s %-12s %s" % (r["hipotesis"], "n=%d" % r["n"], r["status"]))
