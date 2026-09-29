@@ -1518,3 +1518,43 @@ bump 2 menit ini. Sebelum ada >= 30 baris bercap, alatnya menolak dan berkata BE
 [[07-Testing/01 - Test Commands]] baris 47/58 · F-D41 (batas waktu yang menghormati horison) ·
 [[TradingKnowledge/FD5 - Expectancy Bukan Win Rate]]
 
+## F-D51 — "+188,3 bps" itu artefak budget: pada 200 posisi/hari control-nya +165,7; pada 24/hari −100,2; pada 5/hari (kontrak) −26,7 · 29 Sep 2026 11:5xZ
+
+**Yang memicu.** Builder bertanya "di papernya lolos tidak?" - pertanyaan yang benar, karena
+imenolak uang asli. Aku jalankan alatnya tiga kali di berkas **peristiwa yang sama** (1.884
+kesempatan, 4 hari, ongkos 59 bps), hanya budget yang berubah:
+
+| `--per-day` | n | control `random` | `lock` | `first` | `vol-rendah` | `vol-tinggi` | median control | % posisi positif |
+|---|---|---|---|---|---|---|---|---|
+| 200 | 800 | **+165,7** | +79,4 | +164,3 | +90,1 | −98,3 | −54,4 | 45,2 % |
+| 24 (yang CI tulis) | 96 | **−100,2** | −160,8 | −57,1 | −98,0 | **+43,3** | −79,6 | 35,4 % |
+| 5 (kontrak kita) | 20 | **−26,7** | −161,5 | −489,9 | −318,8 | −1.022,7 | +201,1 | 50,0 % |
+
+**Tiga hal yang harus dibaca bersamaan.**
+1. **Tidak ada yang berubah di pasar; yang berubah adalah berapa banyak posisi yang kami berani
+   ambil.** Ini bukan kontradiksi - pada n=20 dan n=96 selisih antar-kebijakan jauh lebih besar
+   daripada selisih antar-arm di n=800. Yang salah adalah kalimat kami sebelumnya
+   ("random+veto **+188,3**", halaman 14 + Fakta §F + registry baris 26/27) yang dikutip
+   seolah itu properti strategi, padahal itu properti **satu jendela pada satu budget**.
+2. **Di budget kontrak (5/hari) semua arm negatif** dan `lock` lebih buruk dari `random`. Jadi
+   jawaban untuk "lolos di paper?" adalah **TIDAK**, dan alatnya sendiri yang mengatakannya:
+   `vonis kebijakan lock: BELUM LAYAK - belum di atas control`, dengan CI bawah **−382,8** (syarat
+   F-D16 "CI bawah > 0" gagal) dan `di atas acak: False`. Streak 2 beruntun tercapai di 7/96
+   slot, dan alatnya mencetak sendiri "STREAK CUKUP != kebijakan layak".
+3. **Peringkat lengan E9 berbalik menurut budget** (`vol-rendah` > `vol-tinggi` di 200 dan di 5;
+   **kalah** di 24). E9 diuji pada 24/hari dengan **n=26**. Ini kutulis **sebelum** jam vonisnya
+   (17:13:25Z), supaya tidak ada yang - termasuk aku - membaca hasil 26 slot itu sebagai
+   penemuan arah: yang akan kita dapatkan paling banter adalah "pada satu budget, 26 posisi".
+   Kuncinya tidak kusentuh; yang kutambah adalah peringatan ini, persis seperti §5c.
+
+**Keputusan.** (a) Setiap angka buku paper yang dikutip di vault/README **wajib menyebut
+`--per-day` dan `n`-nya**; tanpa itu angkanya bukan hasil, itu potongan jendela. (b) Halaman 14
+diberi banner koreksi (bukan penghapusan - `+188,3` memang terukur pada jendela 28 Sep, dan
+menghapusnya akan menghilangkan jejak bahwa kami pernah membacanya terlalu jauh). (c) Untuk
+submission, klaim paper yang benar adalah: *"pada budget kontrak 5 posisi/hari, tidak ada satu pun
+kebijakan yang mengalahkan control acaknya dan tidak ada yang punya CI harapan di atas nol"* -
+dan justru itu bukti sistemnya bekerja: gerbang promosi menahan kami sendiri.
+
+**Terkait:** [[06-Results/14 - Buku Paper]] · [[06-Results/18 - Kandidat Pertama, Diuji Hidup]] §5c/§5d ·
+[[07-Testing/01 - Test Commands]] baris 60 · [[08-Backlog/01 - Backlog]] P52
+

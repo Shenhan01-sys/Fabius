@@ -150,6 +150,13 @@ vonisnya berbicara soal *pilihan posisi*, bukan soal harapan yang bisa diambil. 
 sekalipun, angka buku yang sama menyebut varian dampaknya (tercatat +75,9 / satuan-dibetulkan
 −715,7 / hanya-liq-sah −87,8 bps) - dan itu ditulis di halaman ini, bukan di slide.
 
+**Peringatan sebelum vonis dibaca (F-D51, ditulis 11:5xZ - sebelum jam 17:13:25Z).** Peringkat
+dua lengan ini **berbalik menurut budget**: pada `--per-day 200` lengan `vol-rendah` **+90,1** vs
+`vol-tinggi` −98,3; pada 5/hari −318,8 vs −1.022,7 (rendah tetap lebih baik); pada **24/hari**
+- yang dipakai uji ini - justru −98,0 vs **+43,3**. Dengan n=26 per lengan, apa pun yang keluar
+malam ini adalah "satu budget, 26 posisi", bukan arah pasar. Kuncinya tidak kusentuh;
+peringatan ini yang kutambah, seperti §5c.
+
 ## 5. Hasil
 
 _kosong sampai umur kunci cukup — alatnya menolak mencetak angka sebelum itu, dan kekosongan ini

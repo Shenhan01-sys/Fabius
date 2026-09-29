@@ -97,6 +97,13 @@ Vonis malam ini, pada 556 slot (0,01 BNB, 200 posisi/hari paper):
 > **tercatat +75,9 · satuan-dibetulkan −715,7 · hanya-liq-sah −87,8 bps**.
 > Kodenya sengaja belum diubah karena E9/E12 terkunci pada definisi yang dicatat - tapi nomor
 > tabel di bawah tidak boleh lagi dikutip tanpa kalimat ini.
+> **⚠ KOREKSI KEDUA (29 Sep 11:5xZ, F-D51) - tabel ini juga artefak budget.** Di berkas peristiwa
+> yang sama (1.884 kesempatan, 4 hari), control `random` memberi **+165,7 pada 200 posisi/hari**
+> (n=800), **−100,2 pada 24/hari** (n=96, yang CI tulis), dan **−26,7 pada 5/hari** (n=20, budget
+> kontrak kita). `lock` berturut-turut +79,4 / −160,8 / −161,5. Jadi angka +188,3/
+> "veto bernilai ~+93 bps" adalah properti **satu jendela pada satu budget**, bukan properti
+> strategi - dan di budget nyata kita **tidak ada arm yang mengalahkan control-nya sendiri**.
+
 | kebijakan | winso mean | CI 95 % | vs control (+188,3) | layak posisi asli? |
 |---|---|---|---|---|
 | `first` (datang dulu, diloloskan gerbang) | +140,9 | [+35,0; +249,2] | di bawah | **BELUM** |
