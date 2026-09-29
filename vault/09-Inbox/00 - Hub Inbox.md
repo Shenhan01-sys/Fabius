@@ -18,6 +18,7 @@ jangan gandakan kalimatnya.
 - [[Session-2026-09-28]] — lapisan `TradingKnowledge` dibangun + gerbang bentuknya; angka hidup
   diukur ulang (19 anchor / 13 terpelacak, chain n=3, ⑦ 21.907 tx dari `origin/master`); P10–P15
   lahir; push masih menunggu kata builder
+- [[Session-2026-09-29]] ← tulis penjelasannya
 
 <!-- di atas: append-only oleh scripts/sync_vault.py; gloss tulisan tangan utuh -->
 ```dataview

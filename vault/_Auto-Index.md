@@ -2,7 +2,7 @@
 tags: [generated]
 ---
 
-_Auto-Index — 6 halaman · 2026-09-29T04:20Z · dari `vault/scripts/sync_vault.py`_
+_Auto-Index — 6 halaman · 2026-09-29T05:29Z · dari `vault/scripts/sync_vault.py`_
 
 ### 00-Overview (8)
 - [[00-Overview/00 - Hub Overview]]
@@ -54,7 +54,7 @@ _Auto-Index — 6 halaman · 2026-09-29T04:20Z · dari `vault/scripts/sync_vault
 - [[05-Ecosystem/02 - x402 Payment]]
 - [[05-Ecosystem/03 - Discovery Gap]]
 
-### 06-Results (18)
+### 06-Results (19)
 - [[06-Results/00 - Hub Results]]
 - [[06-Results/01 - Claims and Limits]]
 - [[06-Results/02 - Thresholds]]
@@ -73,6 +73,7 @@ _Auto-Index — 6 halaman · 2026-09-29T04:20Z · dari `vault/scripts/sync_vault
 - [[06-Results/15 - Teknikal Klasik Diuji]]
 - [[06-Results/16 - Harga Keluar yang Hilang]]
 - [[06-Results/17 - Pra-Registrasi Watch]]
+- [[06-Results/18 - Kandidat Pertama, Diuji Hidup]]
 
 ### 07-Testing (8)
 - [[07-Testing/00 - Hub Testing]]
@@ -88,11 +89,12 @@ _Auto-Index — 6 halaman · 2026-09-29T04:20Z · dari `vault/scripts/sync_vault
 - [[08-Backlog/01 - Backlog]]
 - [[08-Backlog/02 - Epik Alasan Masuk]]
 
-### 09-Inbox (4)
+### 09-Inbox (5)
 - [[09-Inbox/00 - Hub Inbox]]
 - [[09-Inbox/Session-2026-09-26-27]]
 - [[09-Inbox/Session-2026-09-27-siang]]
 - [[09-Inbox/Session-2026-09-28]]
+- [[09-Inbox/Session-2026-09-29]]
 
 ### 10-Submissions (4)
 - [[10-Submissions/00 - Hub Submissions]]
