@@ -1,0 +1,24 @@
+# ⑨ daftar pantau buku order: irisan (kabar ⑦) x (venue perp kami) + jangkar likuid
+# ditambah beberapa book tipis supaya kami bisa melihat bedanya 'buku sesak' vs 'buku kosong'
+0G
+4
+4STOCK
+AEON
+AI
+APE
+ARIA
+ASTER
+ASTEROID
+ATH
+ATOM
+B-MONEY
+BAN
+BASED
+BB
+BILL
+BOME
+BREW
+BULLA
+C
+CAKE
+CASHCAT

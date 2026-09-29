@@ -148,6 +148,12 @@ jobs:
             # harus seluas yang kita simpulkan.
             python -u universe/record_watch_prices.py --watch-min 120 --max-batches 40 \
               || echo "watchPrices gagal di siklus $K - lanjut"
+            # ⑨ BUKU ORDER - teori builder (29 Sep): "jumlahkan variasi harga sisi beli, kurangi sisi
+            # jual". Kami baru punya endpointnya, bukan historinya; satu-satunya cara menguji teori
+            # buku order adalah menjalankan jamnya. Limit 25 simbol x ~200 detik = cukup untuk
+            # membedakan 'perekam mati' dari 'bukunya tipis'.
+            python -u universe/record_book_depth.py --limit-simbol 25 --gap 1.0 \
+              || echo "book_depth gagal di siklus $K - lanjut"
             # P40 - JALUR CEPAT: keputusan diambil atas berkas yang BARU SAJA ditulis, pada runner
             # yang sama, jadi "berapa lama dari kejadian sampai kami memutuskan" terukur dan bukan
             # diklaim. E11 (tools/horizon_decay.py) mengukur kabar itu hidup sekitar dua menit;
@@ -156,6 +162,7 @@ jobs:
             python -u tools/fast_lane.py --run --per-run 3 || echo "fast_lane gagal di siklus $K - lanjut"
             git add universe/wallet-flow.jsonl universe/wallet-flow-manifest.txt \
                     universe/watch-prices.jsonl universe/watch-prices-manifest.txt \
+                    universe/book-depth.jsonl universe/book-depth-manifest.txt \
                     decisions/fast-lane.jsonl
             if git diff --cached --quiet; then
               echo "tidak ada baris baru di siklus $K"
