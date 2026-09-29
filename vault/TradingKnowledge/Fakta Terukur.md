@@ -82,6 +82,7 @@ yang struktural (jendela 8–13 menit, tanpa riwayat, 0 % tanpa tag).
 
 Baca ulang sebelum mengutip: `python -X utf8 tools/whale_report.py`.
 
+| **harapan posisi MELURUH cepat setelah buy kerumunan pintar - dan kabar itu mati dalam ±2 menit** | `tools/horizon_decay.py` 29 Sep 07:58Z (393 kejadian, jendela E7): mean winso **+192,7 @2m -> +202,6 @5m -> +45,0 @10m -> -42,0 @15m -> -182,5 @30m**; berpasangan vs 30m pada posisi yang sama **5/5 horison pendek menang** (median +120,8 s/d +5,3; p<=0,00002); **placebo asal digeser 30-90 m: datar -184,7..-113,9** (jadi kemiringan milik peristiwa, bukan jam); P(ada harga keluar) 84-85% rata; kalau masuk ditunda 2 m, median@5m jadi **-56,2**, ditunda 5 m -> **-166,4**; latensi feed kami sendiri **median 0,2 menit** (stempel commit) | `python -X utf8 tools/horizon_decay.py` - [[06-Results/19 - Umur Posisi]] · F-D41. **Bukan** klaim bisa trading: median +20..+60 bps, harapan di ekor kanan, bump menyusut -24..-41 bps kalau harga masuk dari `tx.p`, dan tanpa kedalaman (P33) tidak bisa dinyatakan bisa diambil |
 ## C. Yang mati, dan itu properti pasangan sumber × jaringan
 
 Terukur 24 Sep ([[06-Results/03 - Not Yet Proven]] baris 15): di **runner** `api.binance.com` →

@@ -1,0 +1,279 @@
+{
+ "berpasangan": [
+  {
+   "kalah": 120,
+   "lebih_pendek_lebih_baik": true,
+   "mean_winso_delta": 336.4,
+   "median_delta_bps": 120.8,
+   "menang": 196,
+   "n_sepasang": 330,
+   "p_tanda": 1e-05,
+   "umur_m": 2
+  },
+  {
+   "kalah": 117,
+   "lebih_pendek_lebih_baik": true,
+   "mean_winso_delta": 284.2,
+   "median_delta_bps": 50.5,
+   "menang": 195,
+   "n_sepasang": 330,
+   "p_tanda": 1e-05,
+   "umur_m": 5
+  },
+  {
+   "kalah": 108,
+   "lebih_pendek_lebih_baik": true,
+   "mean_winso_delta": 196.5,
+   "median_delta_bps": 41.8,
+   "menang": 193,
+   "n_sepasang": 330,
+   "p_tanda": 0.0,
+   "umur_m": 10
+  },
+  {
+   "kalah": 104,
+   "lebih_pendek_lebih_baik": true,
+   "mean_winso_delta": 158.6,
+   "median_delta_bps": 17.7,
+   "menang": 187,
+   "n_sepasang": 331,
+   "p_tanda": 0.0,
+   "umur_m": 15
+  },
+  {
+   "kalah": 104,
+   "lebih_pendek_lebih_baik": true,
+   "mean_winso_delta": 108.3,
+   "median_delta_bps": 5.3,
+   "menang": 173,
+   "n_sepasang": 331,
+   "p_tanda": 2e-05,
+   "umur_m": 20
+  },
+  {
+   "kalah": 152,
+   "lebih_pendek_lebih_baik": false,
+   "mean_winso_delta": -101.5,
+   "median_delta_bps": 0.0,
+   "menang": 122,
+   "n_sepasang": 331,
+   "p_tanda": 0.96955,
+   "umur_m": 45
+  },
+  {
+   "kalah": 159,
+   "lebih_pendek_lebih_baik": false,
+   "mean_winso_delta": -115.6,
+   "median_delta_bps": 0.0,
+   "menang": 128,
+   "n_sepasang": 328,
+   "p_tanda": 0.97064,
+   "umur_m": 60
+  }
+ ],
+ "dasar_menit": 30,
+ "dibuat_utc": "2026-09-29T07:58:46Z",
+ "dua_sumber": {
+  "tx@10": {
+   "mean": 19.4,
+   "median": -11.0,
+   "n": 334
+  },
+  "tx@2": {
+   "mean": 168.8,
+   "median": 26.6,
+   "n": 335
+  },
+  "tx@30": {
+   "mean": -168.6,
+   "median": -99.5,
+   "n": 332
+  },
+  "tx@5": {
+   "mean": 161.5,
+   "median": 20.2,
+   "n": 334
+  },
+  "wp@10": {
+   "mean": 45.0,
+   "median": -36.9,
+   "n": 334
+  },
+  "wp@2": {
+   "mean": 192.7,
+   "median": -5.1,
+   "n": 335
+  },
+  "wp@30": {
+   "mean": -182.5,
+   "median": -79.6,
+   "n": 332
+  },
+  "wp@5": {
+   "mean": 202.6,
+   "median": 59.9,
+   "n": 334
+  }
+ },
+ "horison_menit": [
+  2,
+  5,
+  10,
+  15,
+  20,
+  30,
+  45,
+  60
+ ],
+ "kejadian": 393,
+ "kemudi": true,
+ "kurva": {
+  "10": {
+   "mean_winso": 45.0,
+   "median": -36.9,
+   "n_ada": 334
+  },
+  "15": {
+   "mean_winso": -42.0,
+   "median": -59.0,
+   "n_ada": 335
+  },
+  "2": {
+   "mean_winso": 192.7,
+   "median": -5.1,
+   "n_ada": 335
+  },
+  "20": {
+   "mean_winso": -101.7,
+   "median": -64.8,
+   "n_ada": 335
+  },
+  "30": {
+   "mean_winso": -182.5,
+   "median": -79.6,
+   "n_ada": 332
+  },
+  "45": {
+   "mean_winso": -216.1,
+   "median": -125.2,
+   "n_ada": 332
+  },
+  "5": {
+   "mean_winso": 202.6,
+   "median": 59.9,
+   "n_ada": 334
+  },
+  "60": {
+   "mean_winso": -190.1,
+   "median": -123.1,
+   "n_ada": 331
+  }
+ },
+ "ongkos_bps_rt": 59.0,
+ "placebo": {
+  "mean": {
+   "2": -184.7,
+   "5": -180.9,
+   "10": -181.8,
+   "15": -181.8,
+   "20": -177.3,
+   "30": -181.2,
+   "45": -156.5,
+   "60": -113.9
+  },
+  "median": {
+   "2": -123.0,
+   "5": -115.0,
+   "10": -115.0,
+   "15": -116.6,
+   "20": -116.6,
+   "30": -123.3,
+   "45": -118.3,
+   "60": -98.8
+  },
+  "n": {
+   "2": 8257,
+   "5": 8256,
+   "10": 8246,
+   "15": 8237,
+   "20": 8227,
+   "30": 8209,
+   "45": 7418,
+   "60": 6318
+  },
+  "shifts": 25
+ },
+ "scan_delay": {
+  "0": {
+   "30": {
+    "mean": -182.5,
+    "median": -79.6,
+    "n": 332
+   },
+   "5": {
+    "mean": 202.6,
+    "median": 59.9,
+    "n": 334
+   }
+  },
+  "10": {
+   "30": {
+    "mean": -303.5,
+    "median": -120.6,
+    "n": 331
+   },
+   "5": {
+    "mean": -189.4,
+    "median": -62.1,
+    "n": 335
+   }
+  },
+  "2": {
+   "30": {
+    "mean": -358.5,
+    "median": -167.9,
+    "n": 331
+   },
+   "5": {
+    "mean": 47.3,
+    "median": -56.2,
+    "n": 334
+   }
+  },
+  "20": {
+   "30": {
+    "mean": -212.7,
+    "median": -90.6,
+    "n": 331
+   },
+   "5": {
+    "mean": -117.5,
+    "median": -59.0,
+    "n": 334
+   }
+  },
+  "5": {
+   "30": {
+    "mean": -351.9,
+    "median": -146.7,
+    "n": 331
+   },
+   "5": {
+    "mean": -166.4,
+    "median": -61.7,
+    "n": 334
+   }
+  }
+ },
+ "selisih_harga_masuk_bps": {
+  "mean": 589.8,
+  "median": 65.8,
+  "persen_positif": 57.3
+ },
+ "sensor": {
+  "n_oleh_batas": 4409,
+  "tanpa_wp_masuk": 6561,
+  "token_tanpa_wp": 2553
+ },
+ "sha": "0x6135656c8126704fb33cbebd1f8f8fa92a9a747c8cff054f581ab0c4a39fc405"
+}

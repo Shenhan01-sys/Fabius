@@ -47,6 +47,10 @@ hasil keluar — koreksi lewat halaman baru, supaya urutannya bisa dipertanggung
   CI **[−7.379; −3]** (n=40), `stack≥2` **−1.124,3** CI [−3.310; −3]. Arahnya terbalik dan CI-nya
   tidak menyentuh nol, tapi aturan halaman itu menutup **dua** arah: fade tidak boleh dijual
   tanpa kuncinya sendiri. Sensor: 7.294 beli dibuang tanpa harga keluar -> P33.
+- [[19 - Umur Posisi]] - untuk pertama kalinya ada angka **positif yang lolos placebo**: harapan
+  +192,7 bps di menit ke-2 dan +202,6 di menit ke-5, lalu meluruh jadi −182,5 di menit ke-30
+  (placebo asal-mula: datar −180). Tapi menunda masuk **2 menit** saja sudah membalik mediannya,
+  dan mesin keputusan kami bangun tiap 4 jam - jadi yang menahan bukan sinyal, tapi jalur.
 - [[17 - Pra-Registrasi Watch]] - spesifikasi KETIGA, ditulis dan dikunci sebelum satu angka pun dilihat (29 Sep 03:0xZ, `spec_sha256=0xc4105c17…`, `t_kunci=02:59:06Z`): uji kerumunan pada **`wp`** - satu-satunya deret yang berdetak tanpa menunggu transaksi. Yang membuatnya bukan pengulangan: pada `wp`, token yang mendatar TETAP punya keluaran, jadi "tidak bergerak" dihitung, bukan dibuang (penyensoran yang membunuh halaman 12/16). Umur datanya dibaca dari berkas `wp` sendiri, bukan dari jam aliran.
 - [[13 - Apakah Tidak Trading Itu Gratis]] - jawaban terukur untuk "apa gunanya kalau cuma tahu
   jangan masuk": tidak trading **tidak gratis** (harapan winso **+82,7 bps/posisi**, **33,9 %**

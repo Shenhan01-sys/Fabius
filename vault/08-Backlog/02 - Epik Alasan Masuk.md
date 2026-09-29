@@ -185,6 +185,28 @@ ke jawaban "kapan boleh masuk", dan dia sudah terkunci sebelum koreksi ini - kun
 (n≥20, median>0 DAN CI bawah>0, Mann-Whitney satu arah A>B p<0,05 - sekarang dengan fungsi yang
 sudah dibetulkan). Kalau n<20 saat matang: "BELUM BISA DIUJI", ambang tidak diturunkan.
 
+## 3e. E11 - kabar itu ada, dan dia berumur dua menit (29 Sep 07:58Z)
+
+Setelah semua kandidat masuk dan keluar dicabut oleh kontrolnya sendiri, satu pertanyaan belum
+diukur: **berapa lama boleh memegang**. Jawabannya (`tools/horizon_decay.py`,
+`decisions/horizon-decay-20260929T075846Z.json`): harapan **naik** di menit-menit pertama setelah
+buy kerumunan pintar lalu **meluruh** menjadi rugi - mean winso +192,7 @2m, +202,6 @5m, +45,0 @10m,
+−42,0 @15m, −182,5 @30m - dan berpasangan pada posisi yang sama **5 dari 5 horison pendek mengalahkan
+30 m** (p ≤ 0,00002). Placebo asal-mula (digeser acak 30–90 m) **datar di −180**: kemiringannya
+milik peristiwa, bukan milik jam.
+
+Ini bukan "Fabius bisa trading", dan tiga alasan yang menahan kami tetap tulis: mediannya +20…+60
+bps (harapan ada di ekor kanan, P(≥+500) 37–40 %), **bump-nya menyusut −24…−41 bps** kalau harga
+masuk diambil dari `tx.p` (F-D30 mengingatkan kami dari arah yang sama), dan - yang paling menentukan -
+**menunda masuk 2 menit saja sudah membuat median@5m jadi −56,2**, sementara cron keputusan kami
+berjalan tiap 4 jam. Latensi data bukan masalahnya (median 0,2 menit, dari stempel commit GitHub);
+yang belum ada adalah jalur sinyal→order dalam dua menit (P40).
+
+Karena itu E11 dipindah ke depan, bukan dijual: **P39** mengunci horison pendek sebagai *kebijakan*
+dan mengujinya prospectif pada data yang belum terlihat, dengan horison 30 m sebagai kontrol pada
+posisi yang sama. [[06-Results/19 - Umur Posisi]] adalah halaman angkanya; F-D41 adalah keputusan
+dan empat kontrolnya.
+
 ## 4. Non-goal eksplisit
 
 - Tidak menaikkan `promote-after` di bawah gerbang F-D16 walau streak tercapai.

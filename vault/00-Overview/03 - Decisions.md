@@ -1053,3 +1053,46 @@ buatan - kerumunan awal menolong, kerumunan telat kalah).
 
 **Terkait:** [[06-Results/13 - Apakah Tidak Trading Itu Gratis]] §3b · [[08-Backlog/02 - Epik Alasan Masuk]] §3d · [[07-Testing/01 - Test Commands]] baris 43 · [[Concepts/Unmeasured Is Not Clean]]
 
+## F-D41 — Untuk pertama kalinya ada sesuatu yang POSITIF dan lolos placebo: kabar pasca-buy hidup ±2 menit · 29 Sep 2026 07:58Z
+
+**Yang diukur.** `tools/horizon_decay.py` (E11): harapan sebagai fungsi **umur posisi**, 393
+kejadian beli, harga `wp`, ongkos 59 bps RT, jendela sama dengan E7/E8/E10 (berhenti di `t_kunci`
+watch). Mean winso: **+192,7 (2 m) → +202,6 (5 m) → +45,0 (10 m) → −42,0 (15 m) → −101,7 (20 m) →
+−182,5 (30 m)**; uji berpasangan pada posisi yang sama vs 30 m: **5 dari 5 horison pendek menang**
+(median +120,8 / +50,5 / +41,8 / +17,7 / +5,3 bps; tanda-uji p dari 0,00000 sampai 0,00002).
+
+**Kenapa ini bukan F-D40 kedua.** Kami pasangkan tiga kontrol sebelum menulis satu kata pun:
+
+| kontrol | hasil |
+|---|---|
+| placebo asal-mula digeser acak 30–90 m | **datar −184,7 … −113,9 di semua horison** → kemiringan menempel pada peristiwa, bukan pada jam |
+| `P(ada harga keluar)` per horison | 84–85 % rata → bukan korban penyensoran selektif |
+| umur baris `wp` yang dipakai keluar | median −6…+8 detik dari horison yang diklaim; `basi` 0 % → label "5 menit" adalah ukuran, bukan nama |
+| harga masuk diganti sumber (`tx.p`) | bump 2 m +192,7 → **+168,8**; 5 m +202,6 → **+161,5** → menyusut, tidak hilang |
+
+**Tapi inilah keputusan sebenarnya, dan dia tidak menyenangkan.** Scan latensi pada kurva yang sama:
+`delay 0` mean@5m **+202,6** · `delay 2` **+47,3 dengan median −56,2** · `delay 5` **−166,4**.
+Sementara latensi **data** kami diukur dari stempel commit GitHub: **median 0,2 menit**
+(`_research/ukur_latensi_feed.py 25`). Artinya: kabar sampai dalam ±12 detik, acaranya selesai dalam
+±2 menit, dan mesin keputusan kami dibangunkan **tiap 4 jam** (cron `paper-book`). Yang menahan
+Fabius bukan ketiadaan sinyal - yang menahan adalah **belum ada jalur dari sinyal ke order pada
+kecepatan sinyal itu hidup**.
+
+**Keputusan.** (a) E11 **tidak** dijual sebagai kemampuan trading: mediannya +20…+60 bps pada dua
+horison pertama, harapan datang dari ekor kanan (P(≥+500) 37–40 %), dan tanpa kedalaman (P33) kami
+tidak bisa mengklaim bump setipis itu bisa diambil setelah dampak. (b) Dibuat uji terkunci baru
+(P39): horison pendek sebagai **kebijakan**, diukur prospectif pada data setelah kunci, dengan
+kontrol horison 30 m pada posisi yang sama - bukan dibalik jadi headline hari ini. (c) Dibuka
+P40: jalur keputusan per-siklus (bukan cron 4 jam) dengan anggaran waktu yang jujur - dan itu
+pekerjaan infrastruktur, bukan pekerjaan klaim. (d) Aturan baru untuk SEMUA uji horison: laporkan
+**umur baris harga keluar** dan `P(ada harga keluar)` di samping kurva; kalau keduanya tidak
+dilaporkan, angka horison tidak masuk vault.
+
+**Skop yang tidak boleh dilewati.** E11 menguji **umur**, bukan arah masuk. Veto `jual_*` tetap
+satu-satunya rem yang berdiri (F-D16/policy test), dan E9 tetap berjalan dengan aturan lamanya:
+kunci 05:13:25Z TIDAK digeser walau kami sekarang tahu horison 30 m tempat ia dinilai sedang
+bocor - itu harga dari pra-registrasi, dan kami membayarnya dengan sadar.
+
+**Terkait:** [[06-Results/19 - Umur Posisi]] · [[08-Backlog/02 - Epik Alasan Masuk]] §3e ·
+[[07-Testing/01 - Test Commands]] baris 44 · [[Concepts/Unmeasured Is Not Clean]]
+

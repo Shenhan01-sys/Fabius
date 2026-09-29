@@ -2,7 +2,7 @@
 tags: [generated]
 ---
 
-_Auto-Index — 6 halaman · 2026-09-29T07:46Z · dari `vault/scripts/sync_vault.py`_
+_Auto-Index — 6 halaman · 2026-09-29T08:01Z · dari `vault/scripts/sync_vault.py`_
 
 ### 00-Overview (8)
 - [[00-Overview/00 - Hub Overview]]
@@ -54,7 +54,7 @@ _Auto-Index — 6 halaman · 2026-09-29T07:46Z · dari `vault/scripts/sync_vault
 - [[05-Ecosystem/02 - x402 Payment]]
 - [[05-Ecosystem/03 - Discovery Gap]]
 
-### 06-Results (19)
+### 06-Results (20)
 - [[06-Results/00 - Hub Results]]
 - [[06-Results/01 - Claims and Limits]]
 - [[06-Results/02 - Thresholds]]
@@ -74,6 +74,7 @@ _Auto-Index — 6 halaman · 2026-09-29T07:46Z · dari `vault/scripts/sync_vault
 - [[06-Results/16 - Harga Keluar yang Hilang]]
 - [[06-Results/17 - Pra-Registrasi Watch]]
 - [[06-Results/18 - Kandidat Pertama, Diuji Hidup]]
+- [[06-Results/19 - Umur Posisi]]
 
 ### 07-Testing (8)
 - [[07-Testing/00 - Hub Testing]]
