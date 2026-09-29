@@ -898,14 +898,16 @@ lebih rendah dari A (kasus paling bersih sekalipun), daftar gabungannya turun, d
 dihitung `sum(ranks[v])` = rata-rata peringkat **× ukuran kelompok ties**, bukan rata-rata
 peringkatnya sendiri; dan harga yang "diam" adalah isi utama feed kami, jadi ties bukan kasus tepi.
 
-**Ukuran dampaknya, bukan dramanya.** Jalur yang sama, data yang sama, hanya fungsinya ditukar
-(`_research/mw_lama_baru.py`):
+**Ukuran dampaknya, bukan dramanya - dan jumlah kasusnya bukan hiasan.** `tools/instrument_proof.py`
+mencetak **3 dari 5 kasus mengubah VONIS**, bukan cuma angka. Kasus terakhir di tabel itu yang paling memalukan: dua distribusi yang identik - tidak ada perbedaan apa pun antara A dan B - mendapat **p = 0,000000** dari fungsi lama. Kalau data kami kebetulan berbentuk begitu, kami mengumumkan penemuan dari nol. Jalur yang sama, data yang sama, hanya fungsinya ditukar
+(`tools/instrument_proof.py`, dipindah dari `_research/` 29 Sep supaya bisa dijalankan dari clone - P35):
 
 | kasus | MW lama | MW benar |
 |---|---|---|
 | A terpisah menang telak | 1,000000 | 0,000000 |
 | A tumpang tindih ringan lebih tinggi | 0,022311 | 0,999995 |
 | ties penuh (20×1,0 + 5×2,0 vs 20×1,0 + 5×0,0) | 0,000000 | 0,012837 |
+| dua distribusi **IDENTIK** (tidak ada beda apa pun) | **0,000000** | 0,500000 |
 
 Yang ikut bergerak di vault: kolom **"MW p"** di [[06-Results/13 - Apakah Tidak Trading Itu Gratis]]
 §3d. Dijalankan ulang dengan fungsi benar: `lock_percent` **0,6441** (yang terbit 0,0000),

@@ -72,7 +72,7 @@ kami), bump-nya menyusut tapi tidak hilang:
 ```
 
 Tunda dua menit dan median@5m sudah **negatif**; tunda lima menit dan yang tersisa cuma kerugian.
-Sementara itu latensi **data** kami terukur baik: `python -X utf8 ..\_research\ukur_latensi_feed.py 25`
+Sementara itu latensi **data** kami terukur baik: `python -X utf8 tools/feed_latency.py 25`
 → **median 0,2 menit** (p90 0,2) dari kejadian ke baris yang sudah masuk git, dihitung dari stempel
 commit GitHub, bukan jam laptop.
 
@@ -99,7 +99,7 @@ dibangun pada kecepatan sinyal itu hidup**.
 python -X utf8 tools/horizon_decay.py --self-test     # drift turun/naik/datar dikenali; bolong -> None
 python -X utf8 tools/horizon_decay.py                 # kurva + berpasangan + placebo + dua kontrol
 python -X utf8 tools/horizon_decay.py --horisons 2,5,10,30 --dasar 30
-python -X utf8 ..\_research\ukur_latensi_feed.py 25   # latensi feed dari stempel commit
+python -X utf8 tools/feed_latency.py 25                # latensi feed dari stempel commit
 ```
 
 **Terkait:** [[06-Results/13 - Apakah Tidak Trading Itu Gratis]] ·

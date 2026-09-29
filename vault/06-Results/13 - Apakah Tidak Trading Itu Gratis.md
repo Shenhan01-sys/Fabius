@@ -142,7 +142,7 @@ satu arah (`ekor_hipergeo`), dan kolomnya sekarang konsisten dengan arahnya.
 > terukur, bukan dugaan: pada dua kelompok yang jelas terpisah (A = +120…+144, B = −300…−324) alat
 > lama mengembalikan **p = 1,000000** (arah terbalik), dan pada tumpang tindih ringan
 > **0,022311** vs yang benar **0,999995**. Jalur lama-vs-baru:
-> `python -X utf8 _research/mw_lama_baru.py`.
+> `python -X utf8 tools/instrument_proof.py`.
 >
 > Dijalankan ulang 29 Sep 05:14Z dengan fungsi yang dibetulkan (`tools/flow_cluster_test.py`
 > sekarang punya `mw_self_test()`): **kolom Mann-Whitney kehilangan semua "lolos"-nya** -
