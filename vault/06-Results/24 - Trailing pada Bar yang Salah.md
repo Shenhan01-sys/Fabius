@@ -62,7 +62,29 @@ di baris D adalah **keunggulan resolusi**, bukan keunggulan kebijakan - dan urut
 - Batas yang menempel: `gap` 0/100 bps adalah parameter (belum ada `i` terukur - P45), jendela jalur
   60 m, dan harga dari ticker `wp` (bukan tick bursa).
 
-## 4. Cara menjalankan
+## 4. `i` akhirnya diukur (E21) - dan angkanya menutup pintu E17 dari sisi lain
+
+`tools/fill_gap.py` mengukur apa yang sebenarnya terjadi di antara dua rekaman: untuk level di bawah
+harga kini, apakah bar berikutnya **sudah di bawah level itu** (lompat), dan seberapa jauh kami
+sudah lewat saat sempat melihatnya.
+
+| substrat | pasangan bar | % lompat | gap saat terlihat |
+|---|---|---|---|
+| ⑨ buku order venue (level 25 bps di bawah mid) | 170 | **11,2 %** | median **+9,2** · p90 **+39,3** · maks +84,5 bps |
+| ⑨ level 50 / 100 / 200 bps | 170 | 2,9 / 0,6 / 0,6 % | +30,4 · +9,4 · +123,9 bps (median per simbol) |
+| `wp` substrat kabar (40 simbol) | **21.895** | **13,6 %** | median **+245,3** · p90 **+752,4** · maks +1.580,1 bps |
+
+Angka yang memotong diskusi: di substrate tempat kabar hidup, ketika level stop dilewati di antara dua
+rekaman, **median kami sudah 245 bps di bawah level itu saat melihatnya** - sekitar **tiga kali
+seluruh harapan median** yang pernah kami ukur (+79,8 bps). Jadi bukan cuma "E17 tidak bisa dinilai"
+(karena levelnya tidak tersentuh, §2); bahkan saat tersentuh pun, **yang terisi bukan levelnya**.
+
+Dua batas yang jujur: ini agregat **lintas simbol dari median tiap simbol** (bukan distribusi satu
+peristiwa), dan ini **batas bawah** slippage - order nyata memakan likuiditas yang bahkan tidak sempat
+terekam (arXiv:2603.09164: `realized = 0,42 + 1,12 × predicted`, status dibaca-agen). Satu level
+diukur terhadap mid (⑨) / harga (wp), bukan terhadap order yang dikirim.
+
+## 5. Cara menjalankan
 
 ```bash
 python -X utf8 tools/trailing_policy.py --self-test    # memotong kejatuhan, TIDAK memotong tren,

@@ -1,0 +1,57 @@
+{
+ "buku_per_level": {
+  "25": {
+   "i_maks_antar_simbol": 84.5,
+   "i_median_dari_median_simbol": 9.2,
+   "i_p90_antar_simbol": 39.3,
+   "n_pasangan": 170,
+   "persen_lompat": 11.2
+  },
+  "50": {
+   "i_maks_antar_simbol": 59.6,
+   "i_median_dari_median_simbol": 30.4,
+   "i_p90_antar_simbol": 14.3,
+   "n_pasangan": 170,
+   "persen_lompat": 2.9
+  },
+  "100": {
+   "i_maks_antar_simbol": 9.4,
+   "i_median_dari_median_simbol": 9.4,
+   "i_p90_antar_simbol": 9.4,
+   "n_pasangan": 170,
+   "persen_lompat": 0.6
+  },
+  "200": {
+   "i_maks_antar_simbol": 123.9,
+   "i_median_dari_median_simbol": 123.9,
+   "i_p90_antar_simbol": 123.9,
+   "n_pasangan": 170,
+   "persen_lompat": 0.6
+  },
+  "400": {
+   "i_maks_antar_simbol": null,
+   "i_median_dari_median_simbol": null,
+   "i_p90_antar_simbol": null,
+   "n_pasangan": 170,
+   "persen_lompat": 0.0
+  }
+ },
+ "buku_simbol": 25,
+ "dibuat_utc": "2026-09-29T11:08:05Z",
+ "levels_bps": [
+  25,
+  50,
+  100,
+  200,
+  400
+ ],
+ "perintah": "python -X utf8 tools/fill_gap.py --levels 25,50,100,200,400",
+ "sha": "0x26e86ec1a91d3bea6e40c2eebc2fb286eefadefbbd100a82cb75d57634b71222",
+ "wp_gabungan": {
+  "i_median_lintasan_per_simbol": 245.3,
+  "i_p90_lintasan_per_simbol": 752.4,
+  "n_pasangan": 21895,
+  "persen_lompat": 13.6
+ },
+ "wp_simbol": 40
+}

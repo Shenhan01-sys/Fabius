@@ -60,6 +60,15 @@ yang tersedia `tools/ledger.py` dan `tools/backtest.py` (yang terakhir hanya men
 bukan jalur stop).
 
 ## Batas dan mode gagal
+- **`i` berhenti jadi asumsi - dan dia lebih besar dari edge-nya (29 Sep 11:0xZ, E21).**
+  `tools/fill_gap.py` mengukur seberapa sering harga melewati level stop **di antara dua
+  rekaman**, dan seberapa jauh kami sudah lewat saat sempat melihatnya: di buku order venue
+  kami sendiri (⑨, 170 pasangan bar) **11,2 %** dari lompatan terjadi pada level 25 bps
+  dengan gap median **+9,2 bps**; di ticker tempat kabar hidup (`wp`, 21.895 pasangan)
+  **13,6 %** dengan gap median **+245 bps** dan p90 **+752 bps**. Lawankan itu dengan
+  harapan median terbaik yang pernah kami ukur (+79,8 bps, E13): **jarang menyentuh dan
+  terisi di level yang sama adalah dua peristiwa berbeda**, dan di cadence kami bedanya
+  ~3x besar edge. Stop yang dikunci di atas kertas tidak berhenti di kertas itu.
 
 - **Algebra trailing yang lengkap, supaya klaimnya tidak mengambang (29 Sep).** Dengan `pi` = puncak
   berjalan di atas masuk (bps), `d` = jarak trail, `s` = spread, `i` = gap isi, `C` = ongkos

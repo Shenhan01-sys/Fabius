@@ -1,0 +1,57 @@
+{
+ "buku_per_level": {
+  "25": {
+   "i_maks_bps": 84.5,
+   "i_median_bps": 9.2,
+   "i_p90_bps": 39.3,
+   "n_pasangan": 170,
+   "persen_lompat": 11.2
+  },
+  "50": {
+   "i_maks_bps": 59.6,
+   "i_median_bps": 30.4,
+   "i_p90_bps": 14.3,
+   "n_pasangan": 170,
+   "persen_lompat": 2.9
+  },
+  "100": {
+   "i_maks_bps": 9.4,
+   "i_median_bps": 9.4,
+   "i_p90_bps": 9.4,
+   "n_pasangan": 170,
+   "persen_lompat": 0.6
+  },
+  "200": {
+   "i_maks_bps": 123.9,
+   "i_median_bps": 123.9,
+   "i_p90_bps": 123.9,
+   "n_pasangan": 170,
+   "persen_lompat": 0.6
+  },
+  "400": {
+   "i_maks_bps": null,
+   "i_median_bps": null,
+   "i_p90_bps": null,
+   "n_pasangan": 170,
+   "persen_lompat": 0.0
+  }
+ },
+ "buku_simbol": 25,
+ "dibuat_utc": "2026-09-29T11:07:19Z",
+ "levels_bps": [
+  25,
+  50,
+  100,
+  200,
+  400
+ ],
+ "perintah": "python -X utf8 tools/fill_gap.py --levels 25,50,100,200,400",
+ "sha": "0x671041956ad0a30d4cf8dde7440a22c7a1fb2dad78f7d182ffbf517797c556ce",
+ "wp_gabungan": {
+  "i_median_bps": 245.3,
+  "i_p90_bps": 752.4,
+  "n_pasangan": 21895,
+  "persen_lompat": 13.6
+ },
+ "wp_simbol": 40
+}

@@ -66,11 +66,14 @@ di atas **59 bps** (§D) sebelum kata "edge" boleh dipakai.
   simbol di venue kami yang **setengah spread-nya lebih besar daripada seluruh harapan median** yang
   pernah kami ukur (+79,8 bps, E13). Anggaran explisitnya di [[FD4 - Ongkos Perdagangan]] dan
   alatnya `tools/cost_budget.py`.
-- **Satu variabel masih asumsi, dan itu yang paling jahat:** `i` - jarak antara *menyentuh* level dan
-  *terisi* di bawahnya. Kami belum mengukurnya (P45), dan Osler (NY Fed SR150) memberi alasan
-  kenapa dia bukan nol: pergerakan jadi *"unusually rapid"* tepat di level tempat stop menumpuk, dan
-  respons pada stop-loss **lebih besar** daripada pada take-profit. Selama `i` belum terukur, semua
-  angka "net of biaya" di lapisan ini masih kurang satu komponen.
+- **Komponen yang tadinya asumsi sekarang punya angka batas bawah (`tools/fill_gap.py`, 29 Sep):**
+  `i` - jarak antara *menyentuh* level dan *terisi* di bawahnya. Di buku order venue kami sendiri,
+  **11,2 %** pasangan bar melompati level 25 bps sebelum sempat terlihat (gap median +9,2 bps);
+  di ticker tempat kabar hidup, **13,6 %** dengan gap median **+245 bps** (p90 +752). Osler (NY
+  Fed SR150) sudah memberi alasannya: pergerakan *"unusually rapid"* tepat di level tempat stop
+  menumpuk, dan respons pada stop-loss **lebih besar** daripada pada take-profit. Yang belum
+  terukur: fill order nyata - angka di atas adalah **batas bawah**, dan model fill pun sudah diketahui underpredict
+  (`realized = 0,42 + 1,12 x predicted`, arXiv:2603.09164; status dibaca-agen, belum diverifikasi).
 
 
 - **Memakai 20 bps sebagai ongkos** setelah punya 59 bps terukur = menguji strategi pada biaya yang
