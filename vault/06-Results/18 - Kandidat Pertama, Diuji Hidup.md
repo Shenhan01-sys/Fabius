@@ -119,10 +119,13 @@ ingin kita klaim.** Tidak ada satu pun dari ketiganya boleh dijual; lihat
 
 ## 4c. Catatan yang ditulis SETELAH lengan pertama terisi tapi SEBELUM vonis dibaca (29 Sep ±06:25Z)
 
-Kedua lengan terisi penuh pada hari yang sama: **24 slot pasca-kunci di tiap lengan**
+Kedua lengan terisi pada hari yang sama: **24 slot pasca-kunci di tiap lengan**
 (`decisions/paper-book-positions.jsonl`, `rows_sha256` A `0xcff59af824a927…` / B `0x99e803ff8b00ec…`).
-`--per-day 24` adalah **budget harian**, jadi hari 29 Sep sudah habis dan **n akan tetap 24/24 pada
-saat matang** - itu yang dikunci, dan itu yang akan dipakai.
+Yang dikunci dan tidak boleh berubah: **aturan vonis, budget `--per-day 24`, dan ember hari 29 Sep**.
+`n` sendiri masih bisa **bertambah** sampai 17:13:25Z (tiap siklus `paper-book` melihat kejadian baru
+setelah kunci, dan separuh-bawah menurut volatilitas bisa berisi kandidat yang berbeda) - itu bukan
+pelonggaran, itu konsekuensi dari aturan yang sudah ditulis. Yang TIDAK boleh: menyentuh `n_min`,
+`--per-day`, atau isi blok spesifikasi.
 
 Dua rem yang dipasang sekarang, sebelum vonis apa pun dibaca, dan TIDAK boleh dipakai membalik
 keadaan kalau hasilnya jelek:
