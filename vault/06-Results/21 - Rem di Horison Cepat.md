@@ -44,6 +44,14 @@ berakhir minus. Jadi rem yang terbukti di 30 menit belum tentu berguna di tempat
 berarti gerbang tidak pernah buta pada jendela ini - bukan kegagalan, dan bukan pula alasan untuk
 mengecilkan yang lain).
 
+> **⚠ 29 Sep 21:27:32Z (E24) - pembanding acak yang sama menjatuhkan sisa harapan kedua.**
+> Lengan `BOLEH` kami memberi median **−59,0 bps** (n=195) melawan kontrol acak **−62,2** (n=65) pada
+> jam yang sama, kolom yang sama, aturan yang sama. Selisih **+23,4 bps** tidak terbedakan dari nol
+> (CI bawah −215,0; p=0,208). Karena gross median kedua lengan **≈ 0** pada ongkos 59 bps, yang
+> terukur adalah **tiket masuk, bukan arah pasar** - jadi "rem memisahkan yang layak" tidak punya sisa
+> tempat untuk berdiri: yang dipisahkan rem dan bukan-rem malam ini sama-sama di bawah nol.
+> Lihat [[06-Results/27 - Masuk Terpilih vs Masuk Acak]] §6b-§6c.
+
 ## 2. Yang membuat ini berbeda dari semua "kandidat" minggu ini
 
 1. **Median dan mean searah.** Pada `BOLEH` di menit ke-5: mean **+285,5** dan median **+79,8** -

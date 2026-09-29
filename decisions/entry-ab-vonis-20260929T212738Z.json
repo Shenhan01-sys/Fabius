@@ -1,0 +1,41 @@
+{
+  "boot_n": 4000,
+  "ci_bawah_selisih": -215.0,
+  "komposisi_K": {
+    "latensi_max_d": 120,
+    "n": 65,
+    "token_berbeda": 49,
+    "umur_baris_median_d": 35,
+    "umur_keputusan_median_d": 102
+  },
+  "komposisi_T": {
+    "latensi_max_d": 118,
+    "n": 195,
+    "token_berbeda": 134,
+    "umur_baris_median_d": 35,
+    "umur_keputusan_median_d": 71
+  },
+  "kontrol_kosong": 53,
+  "kunci": "E24",
+  "mean_winso_K": -98.0,
+  "mean_winso_T": -74.6,
+  "median_K": -62.2,
+  "median_T": -59.0,
+  "n_K": 65,
+  "n_T": 195,
+  "p_mann_whitney": 0.208,
+  "perintah": "python -X utf8 tools/entry_ab.py",
+  "seed": 20260929,
+  "selisih_mean": 23.4,
+  "spec_sha256": "0x4c90bb27ac947420d5be198643c46a572cc66c4e8837206263a619f615270473",
+  "syarat": {
+    "median_ci": false,
+    "mw": false,
+    "n_cukup": true,
+    "sebanding": true
+  },
+  "t_kunci": "2026-09-29T13:19:04Z",
+  "vonis": "GAGAL",
+  "vonis_utc": "2026-09-29T21:27:38Z",
+  "winsor_bps": 1500.0
+}

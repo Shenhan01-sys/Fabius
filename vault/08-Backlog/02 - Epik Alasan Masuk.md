@@ -388,3 +388,24 @@ agen di hackathon ini.
 Lihat: [[06-Results/25 - Rem, Terkunci Prospectif]] §5 · [[06-Results/21 - Rem di Horison Cepat]]
 (koreksi 20:32Z) · F-D64 · halaman 20 §5-§6.
 
+## 3l. 29 Sep 21:27Z - E24 menutup jalur terakhir dengan kontrol acak, dan gross-nya nol
+
+Empat jalur masuk diuji prospectif malam ini dan keempatnya gagal; yang terakhir (E24) adalah yang
+pertama kalinya membandingkan pilihan kami dengan **lemparan undian pada jam, kolom, dan aturan yang
+sama**: T mean −74,6 / median −59,0 (n=195) melawan K −98,0 / −62,2 (n=65); selisih +23,4 bps dengan
+CI bawah −215,0 dan p=0,208. **GAGAL.**
+
+Yang membuat vonis ini bukan sekadar "sekali lagi tidak": dibandingkan ongkos round-trip 59 bps,
+**gross median T ≈ +0,0 dan K ≈ −3,2**. Tidak ada arah yang salah. Tidak ada sinyal yang tertukar
+tanda. Pada horison lima menit harga tidak bergerak, dan angka negatif kami adalah **tiket masuk**.
+Konsekuensinya untuk epik ini langsung: tidak ada gunanya mencari "fitur masuk berikutnya" di kolom
+yang sama, karena yang membatasi bukan kualitas urutan calon - melainkan (a) biaya masuk vs harga yang
+dilihat sinyal (**P56**), dan (b) apakah venue punya kedalaman untuk dimasuki sama sekali (F-D61,
+**P62**).
+
+Daftar yang tidak boleh dibalik: **fade**. K juga di bawah nol; membalik tanda butuh **kunci sendiri
+(E25+)**, bukan reinterpretasi halaman 27 (F-D39/F-D51/F-D66).
+
+Lihat: [[06-Results/27 - Masuk Terpilih vs Masuk Acak]] §6b-§6c · F-D66 · halaman 21 §2 dan halaman
+26 §4b untuk baris koreksinya.
+

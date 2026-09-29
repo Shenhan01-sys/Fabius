@@ -82,6 +82,20 @@ terukur:
 Jadi yang patah bukan "kabar punya bump" - itu tetap hasil E11 yang lolos placebo. Yang patah adalah
 **penerjemahan bump itu jadi posisi kami**, dan sekarang ada angkanya, bukan ada dugaannya.
 
+## 4b. E24 (21:27:32Z) memberi kontrol acak yang halaman ini tidak punya - hasilnya sama
+
+Angka −519,4 bps di §3 lahir **tanpa pembanding**. Delapan jam kemudian `tools/entry_ab.py` menguji
+populasi yang sama dengan **kontrol acak dari siklus yang sama**: T (terpilih) mean **−74,6** / median
+**−59,0** (n=195) melawan K (acak) mean **−98,0** / median **−62,2** (n=65). Selisih **+23,4 bps**,
+CI bawah **−215,0**, Mann-Whitney p=0,208 → **GAGAL**.
+
+Yang paling berguna dari perbandingan itu bukan vonisnya, melainkan apa yang keluar ketika kedua lengan
+dibandingkan ke ongkos: gross median T **≈ +0,0 bps** dan K **≈ −3,2 bps** pada biaya round-trip 59 bps.
+Jadi yang kami catat sepanjang malam ini sebagai "rugi" sebagian besar adalah **harga tiket masuk**,
+bukan arah pasar - dan itu membuat pertanyaan "kapan harus masuk" tidak lagi bisa dijawab dengan
+mencari sinyal yang lebih bagus di kolom yang sama. Lihat §6b-§6c
+[[06-Results/27 - Masuk Terpilih vs Masuk Acak]].
+
 ## 5. Batas halaman ini (baca sebelum mengutip)
 
 n=25, **satu lengan**, tanpa kontrol acak sejawat (F-D8), dan angkanya **retrospektif terhadap

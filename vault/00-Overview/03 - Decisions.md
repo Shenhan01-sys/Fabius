@@ -2063,3 +2063,42 @@ bersamanya.
 terukur dan lantai likuiditas institusional; pada budget kontrak itu menyisakan 15 dari 20 posisi -
 di bawah ambang sampel kami sendiri - jadi tidak ada angka paper malam ini yang kami jual sebagai
 kelayakan."* Yang tidak boleh: menyebut −80,3 bps sebagai perbaikan.
+
+## F-D66 - Uji terakhir "kapan masuk" gagal dengan kontrol acak, dan yang tembus justru bukan arah: gross median kedua lengan nol, ongkos 59 bps - kami mengukur tiket, bukan pasar · 29 Sep 2026 21:27:32Z
+
+**Yang dijanjikan E24.** F-D54 memberi angka masuk pertama yang sah tapi tanpa pembanding; F-D55
+memasang kontrol acak per siklus dan menguncinya jam 13:19:04Z dengan **0 kejadian pasca-kunci**. Ini
+satu-satunya uji di proyek ini yang menjawab pertanyaan yang benar: bukan "apakah masuk kita untung",
+melainkan "**apakah masuk kita lebih baik dari masuk tanpa alasan**".
+
+**Yang keluar (n T=195 / K=65, umur keputusan median 71 d vs 102 d - syarat komposisi LOLOS):**
+
+```text
+T mean winso -74,6 | median -59,0        K mean winso -98,0 | median -62,2
+selisih mean +23,4 bps | CI bawah -215,0 | Mann-Whitney satu arah p=0,2080
+53 siklus tanpa kandidat kontrol (tercatat, bukan hilang)
+VONIS: GAGAL - syarat (2) median(T)>0 dan (3) p<0,05 gagal
+```
+
+**Yang lebih penting dari vonisnya.** Ongkos round-trip terukur kami di venue sendiri **59,0 bps**.
+Dibandingkan ke itu: **gross median T ≈ +0,0 bps, K ≈ −3,2 bps.** Artinya pada horison lima menit harga
+**hampir tepat tidak bergerak** dan yang kami catat sebagai kerugian adalah **tiket masuk**. Ini
+menutup rangkaian tiga alat: F-D54 (kami tidak lambat), F-D60 (bukan venue beku), F-D66 (bukan
+seleksinya) — sisanya cuma biaya yang tidak bisa dihilangkan dengan memilih kolom lebih baik.
+
+**Keputusan.** (a) Status pertanyaan "kapan masuk" di proyek ini sekarang: **empat jalur diuji
+prospectif (E9 vol-rendah, watch kerumunan maker, E22 rem, E24 masuk-vs-acak) - keempatnya GAGAL, nol
+alasan masuk tersisa**, dan satu-satunya perilaku yang lulus prospectif adalah aturan **keluar** (E12).
+(b) **Tidak** membalik jadi fade: K juga di bawah nol, dan arah terbalik butuh kunci baru - dinamai
+**E25+** di backlog, bukan reinterpretasi halaman 27. (c) **Tidak** menyebut +23,4 bps sebagai edge
+(di bawah ½ ongkos, CI −215). (d) **Tidak** menyentuh n_min 40 / winsor ±1.500 / jam kunci.
+
+**Yang kucatat agar tidak dianggap kemenangan.** T mengalahkan K di mean maupun median. Kalau besok
+seseorang (atau aku) menulis "seleksinya bekerja, hanya levelnya yang belum", itu salah dua kali:
+selisihnya tidak terbedakan dari nol, dan keduanya berada di sisi rugi. F-D8 tidak menanyakan "lebih
+baik dari acak?" saja - dia menanyakan "lebih baik dari acak **dan di atas nol**?".
+
+**Sisa yang terbuka dan namanya sudah ada:** **P56** (isolasi titik masuk `entry_px` vs `tx_p` vs
+microprice ⑨ - karena §6b menunjuk biaya sebagai penyumbang utama dan itu belum dipisahkan dari
+horison) dan **P62** (venue: F-D59 lebih hidup, F-D60 tidak memanggil bump). E24 tidak membuka jalur
+baru; dia menutup yang terakhir.
