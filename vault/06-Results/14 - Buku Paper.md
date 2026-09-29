@@ -20,6 +20,41 @@ kelas dari *larangan* jadi *kewajiban melapor*. Alat ini jadi buku yang bisa dij
 dan scoreboard pertamanya langsung membatalkan kandidat masuk terbaikku.
 
 
+
+## Koreksi kedua 29 Sep 21:16Z (P42) - default buku kini v2, dan itu MENURUNKAN sampel di bawah gerbang
+
+**Yang berubah.** `tools/paper_book.py --isi` sekarang default **v2** (harga BNB terukur + lantai
+likuiditas $50.000). Rumus dampak tidak hidup di dua tempat lagi: `entry_lab.py` dan
+`impact_audit.py` sudah mengimpor dari `tools/costs.py`, dan keduanya lolos uji paritas - entry_lab
+memberi hasil **identik pada 3.955 kombinasi liq×net nyata**, impact_audit memberi tiga varian yang
+samapersis sebelum/sesudah (`+77,3 / −694,9 / −91,1`). E1/E2/E3 sengaja tetap memakai v1 lewat
+`SKEMA_ENTRY = costs.ISI_V1`, karena kuncinya (`0x3ecad842…`) menyebut rumus itu; itu dicatat, bukan
+diam-diam.
+
+**Yang terjadi pada angkanya (0,01 BNB, 5 posisi/hari, berkas peristiwa yang sama):**
+
+```text
+v1  n=20 | mean winso -182,5 | median -63,1 | CI lo -582,7 | control  +358,0 (n=?) | streak maks 1
+v2  n=15 | mean winso  -80,3 | median -52,1 | CI lo -446,6 | control  +358,0        | streak maks 3
+    model isi menolak 5 dari 20 posisi - yang dinilai hanya 15 sisanya
+```
+
+**Ini bukan perbaikan dan bukan kemunduran - ini laporan.** Mean v2 terlihat “lebih baik” karena yang
+dibuang justru pool-pool kecil tempat longsor terjadi (median liq yang ditolak **$2,75**; ada pool
+berliq **$0,31**). Sementara itu `n` jatuh **20 → 15**, di bawah syarat F-D16 - artinya buku paper
+pada budget kontrak **tidak lagi punya sampel yang cukup untuk menjudulkan apa pun**, dan itu
+konsekuensi langsung dari berhenti menghitung posisi yang tidak bisa diisi. Lantai $50.000 TIDAK
+kuturunkan untuk mengembalikan n; itu justru gerakan yang dihukum F-D51.
+
+**Yang membuat dua penggaris boleh hidup di satu berkas.** `tools/vol_ab.py` (E9) dan
+`tools/winlog.py` (bukti streak → `promote-after`) sekarang **membuang** baris yang
+`skema_dampak`-nya bukan v1, dan `paper_book --self-test` membuktikannya pada berkas campuran:
+slot v2 dibuang dua-duanya oleh kedua pembaca. Tanpa itu, vonis yang sudah jatuh bisa berubah
+diam-diam di pembacaan berikutnya - F-D54 dalam bentuk paling senyap, karena tidak ada yang salah
+ketik.
+
+Lihat: [[06-Results/18 - Kandidat Pertama, Diuji Hidup]] §5c (E9 dikunci dengan v1) ·
+`00-Overview/03 - Decisions.md` F-D62, **F-D65** · registry baris 69 dan 72.
 ## Koreksi 29 Sep 15:2xZ (F-D62) - buku paper ini selama ini murah hati, dan bukan karena pasarnya
 
 **Apa yang salah.** `haircut()` menghitung dampak dengan `2 * size_quote / liq`, padahal `size_quote`

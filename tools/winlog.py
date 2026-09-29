@@ -20,6 +20,14 @@ import json
 import os
 import sys
 
+# `paper-book-positions.jsonl` bisa berisi DUA penggaris sejak P42 (v1 salah satuan F-D46,
+# v2 harga BNB terukur + lantai likuiditas F-D62). Streak yang dipakai sebagai bukti
+# `promote-after` tidak boleh mencampur keduanya - satu deret, satu aturan hitung.
+SKEMA_BUKU = "v1-bnb-dianggap-usd"
+SKEMA_DIBUANG = {"n": 0, "contoh": None}
+
+
+
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 if not os.path.isfile(os.path.join(ROOT, "foundry.toml")):
     sys.exit(f"ROOT bukan akar Fabius: {ROOT} - harus berisi foundry.toml")
@@ -114,6 +122,12 @@ def book_events():
             continue
         if r.get("status") != "dinilai" or r.get("net_bps") is None:
             continue
+        sk = r.get("skema_dampak")
+        if sk is not None and sk != SKEMA_BUKU:
+            # tanpa cap = v1 (ditulis sebelum F-D62); cap yang BEDA baru dibuang
+            SKEMA_DIBUANG["n"] += 1
+            SKEMA_DIBUANG["contoh"] = sk
+            continue
         w = max(-2000.0, min(2000.0, float(r["net_bps"])))
         out.append({"when": r.get("due_utc"), "symbol": r.get("tk"), "net": w,
                     "net_tanpa_batas": r["net_bps"], "win": r["net_bps"] > 0,
@@ -193,6 +207,10 @@ def main():
     if konflik:
         print(f"  ! {len(konflik)} decisionHash dengan net berbeda antar artefak: {konflik[:3]}")
     gate(dinilai, "PAPER - keputusan ter-anchor vs harga pasar nyata (Aster)")
+    if SKEMA_DIBUANG["n"]:
+        print(f"  {SKEMA_DIBUANG['n']} slot buku paper memakai penggaris lain "
+              f"({SKEMA_DIBUANG['contoh']}) - tidak masuk streak; bukti `promote-after` harus satu "
+              f"aturan hitung (P42/F-D62)")
     if ambigu:
         print(f"  AMBIGU yang sengaja dikecualikan dari streak: {len(ambigu)}")
     buku = book_events()

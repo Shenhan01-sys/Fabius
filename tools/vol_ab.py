@@ -60,6 +60,12 @@ LOCK = os.path.join(ROOT, "decisions", "prereg-vol-lock.json")
 UMUR_JAM_MIN = 12
 N_MIN = 20
 WINS = 2000.0
+# E9 dikunci dengan specification "harga_masuk: ... + haircut dampak s/L" - itu model v1
+# (F-D46/F-D62). Sejak 29 Sep paper_book bisa menulis slot berv2 ke BERKAS YANG SAMA, jadi
+# pembaca yang tidak menyaring penggaris akan mencampur dua aturan hitung ke dalam satu
+# vonis yang sudah dijatuhkan. Baris di bawah adalah pagar itu.
+SKEMA_KUNCI_E9 = "v1-bnb-dianggap-usd"
+SKEMA_DIBUANG = {"n": 0, "contoh": None}
 ARML = "vol-rendah"
 ARMH = "vol-tinggi"
 
@@ -132,6 +138,12 @@ def baca_slot(lock=None):
         if kb not in out or d.get("status") != "dinilai":
             continue
         if isinstance(d.get("net_bps"), (int, float)) is False:
+            continue
+        sk = d.get("skema_dampak")
+        if sk is not None and sk != SKEMA_KUNCI_E9:
+            # slot tanpa bercap = v1 (dituliskan sebelum F-D62 ada), jadi cap yang BEDA baru dibuang
+            SKEMA_DIBUANG["n"] += 1
+            SKEMA_DIBUANG["contoh"] = sk
             continue
         if tk_kunci is not None:
             try:
@@ -218,6 +230,9 @@ def utama():
     jam = (time.time() - lock["t_kunci"]) / 3600.0
     print("kunci %s | spec %s | umur %.2f jam dari kebutuhan %d"
           % (lock["dibuat_utc"], lock["spec_sha256"][:18], jam, lock["umur_jam_min"]))
+    if SKEMA_DIBUANG["n"]:
+        print("   %d slot DINILAI pakai penggaris lain (%s) - dibuang: spesifikasi E9 dikunci dengan "
+              "haircut v1 (F-D46/F-D62)" % (SKEMA_DIBUANG["n"], SKEMA_DIBUANG["contoh"]))
     print("slot: prefill A/B = %d/%d | PASCA-KUNCI A/B = %d/%d (hanya yang kanan ikut vonis)"
           % (len(semua[ARML]), len(semua[ARMH]), len(pasca[ARML]), len(pasca[ARMH])))
     if a.status:
@@ -279,11 +294,20 @@ def self_test():
         rows.append(slot(100 + i, ARMH, -300.0 - i, kunci_t + 600 + i * 60))  # B pasca, negatif
     for i in range(9):
         rows.append(slot(200 + i, ARML, 9000.0, kunci_t - 3600))            # PREFILL: harus dibuang
+    for i in range(3):
+        # slot berv2 (setelah F-D62) tidak boleh masuk vonis yang dikunci dengan v1
+        rows.append(json.dumps({"slot_id": "v2%02d" % i, "kebijakan": ARML, "tk": "0xtok%d" % i,
+                                "status": "dinilai", "net_bps": 4000.0,
+                                "open_utc": iso(kunci_t + 700 + i * 60),
+                                "skema_dampak": "v2-terukur+floor"}, sort_keys=True))
     io.open(tmp, "w", encoding="utf-8", newline="\n").write("\n".join(rows) + "\n")
     SLOT = tmp
     try:
         lk = {"t_kunci": kunci_t}
+        SKEMA_DIBUANG["n"] = 0
         got = baca_slot(lk)
+        assert SKEMA_DIBUANG["n"] == 3, SKEMA_DIBUANG
+        assert all(not x.get("skema_dampak") for x in got[ARML]), "slot v2 lolos ke vonis"
         assert len(got[ARML]) == 25, "prefill ikut terhitung: %d" % len(got[ARML])
         assert len(got[ARMH]) == 25, got
         v = vonis(got[ARML], got[ARMH])

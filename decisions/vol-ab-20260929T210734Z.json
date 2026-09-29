@@ -1,0 +1,42 @@
+{
+ "dibuat_utc": "2026-09-29T21:07:34Z",
+ "lengan_A": {
+  "ci_bootstrap": [
+   -437.6,
+   117.9
+  ],
+  "mean_winso_bps": -168.4,
+  "median_bps": -58.7,
+  "n": 29,
+  "p_ge_500": 10.3,
+  "p_positif": 24.1,
+  "token_unik": 22
+ },
+ "lengan_B": {
+  "ci_bootstrap": [
+   -624.9,
+   477.9
+  ],
+  "mean_winso_bps": -80.4,
+  "median_bps": -527.5,
+  "n": 29,
+  "p_ge_500": 37.9,
+  "p_positif": 44.8,
+  "token_unik": 23
+ },
+ "prefill": {
+  "A": 0,
+  "B": 0
+ },
+ "spec_sha256": "0x9d70c5809e5df3704858132407a50d6b4d2e510b729cc2217cbd0f62598c1034",
+ "t_kunci_iso": "2026-09-29T05:13:25Z",
+ "umur_jam": 15.9,
+ "vonis": {
+  "fehlbar": "GAGAL",
+  "layak": false,
+  "p_mann_whitney_a_lewat_b": 0.4413,
+  "syarat_1_n_cukup": true,
+  "syarat_2_median_di_atas_nol": false,
+  "syarat_3_melampaui_kontrol": false
+ }
+}

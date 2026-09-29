@@ -53,6 +53,13 @@ SPEC = {"versi": "1", "horison_menit": H, "jendela_menit": W, "sepi_usd_maks": 2
         "draws_control": 400, "sumber_harga": "peristiwa (tx)",
         "kontrol": "acak-dari-pool-lolos-veto-CI-atas-400-undian"}
 
+# P42: dampak tidak lagi dihitung di sini. E1/E2/E3 DIKUNCI dengan rumus v1 (yang salah satuan,
+# F-D46) - jadi alatnya sengaja memakai v1 supaya angka lama tetap bisa direproduksi, dan itu
+# tercatat, bukan diam-diam. Mau melihat versi yang dibetulkan? ubah ke costs.ISI_V2 dan sebut
+# bahwa kunci E1/E2/E3 tidak lagi setara.
+SKEMA_ENTRY = costs.ISI_V1
+
+
 
 def w(x):
     return max(-SPEC["winsor_bps"], min(SPEC["winsor_bps"], x))
@@ -144,8 +151,9 @@ def kejadian():
             f = QT.ambil(snap, tk, t) or {}
             liq = f.get("liquidity")
             liq = liq if isinstance(liq, (int, float)) and liq > 0 else None
-            if liq:
-                net = round(net - 10000.0 * (2.0 * SPEC["ukuran_bnb"] / liq), 1)
+            dk = costs.dampak_round_trip(SPEC["ukuran_bnb"], liq, skema=SKEMA_ENTRY)
+            if dk["sah"] and dk["dampak_bps"]:
+                net = round(net - dk["dampak_bps"], 1)
             risk = jendela(t, SPEC["risk_on_jendela_menit"])
             lalu = [v for tt, v in base if tt <= t and tt >= t - 24 * 3600]
             m24 = FC.med(lalu) if len(lalu) >= 20 else None

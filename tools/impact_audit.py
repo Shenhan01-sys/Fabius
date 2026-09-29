@@ -39,6 +39,7 @@ import time
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(HERE)
 sys.path.insert(0, HERE)
+import costs as C  # noqa: E402
 import flow_cluster_test as FC  # noqa: E402
 
 SLOT = os.path.join(ROOT, "decisions", "paper-book-positions.jsonl")
@@ -76,7 +77,11 @@ def varian(sl, bnb_usd, liq_floor):
             nol_liq += 1
             continue
         tahu_liq += 1
-        benar = 10000.0 * (2.0 * s * bnb_usd / L)
+        # P42: rumusnya tidak lagi hidup di dua tempat. `lantai=0.0` di sini sengaja -
+        # varian ini justru ingin melihat berapa dampak di pool kecil, dan varian
+        # "hanya_liq_sah" di bawah yang menangani floor.
+        benar = C.dampak_round_trip(s, L, bnb_usd=bnb_usd, skema=C.ISI_V2,
+                                  lantai=0.0)["dampak_bps"] or 0.0
         sudah = float(r.get("dampak_bps") or 0.0)
         dibetulkan.append(w(n - (benar - sudah)))
         if L >= liq_floor:

@@ -2030,3 +2030,36 @@ pertama untuk perilaku, E24 yang pertama membandingkan masuk kita dengan masuk a
 (F-D63) menemukan bug yang membuat sebuah "belum bisa diuji" berubah menjadi "GAGAL". Empat vonis
 malam ini semuanya menghasilkan angka yang bisa dipercaya. Itu bukan kemenangan - tapi itu satu-satunya
 dasar yang boleh dipakai bicara di depan juri tanggal 30 Sep 23:59 WIB.
+
+## F-D65 - Default buku paper dibalik ke v2: mean membaik, sampel jatuh di bawah gerbang, dan dua pembaca dikunci pada satu penggaris · 29 Sep 2026 21:16Z
+
+**Isinya satu kalimat:** setelah penggarisnya dibetulkan, buku paper kami **kehampuan menyimpulkan
+apa pun** - dan itu harga yang harus dibayar, bukan alasan untuk membatalkan perbaikan.
+
+v1 → v2 pada berkas peristiwa yang sama (0,01 BNB, 5 posisi/hari): `n 20 → 15`, mean winso
+**−182,5 → −80,3**, CI bawah **−582,7 → −446,6**, streak maks 1 → 3. Lima posisi dibuang
+(`liq $0` ×2, `liq $3`, `liq $1`, satu tanpa angka); median likuiditas yang ditolak **$2,75**.
+Syarat F-D16 minta n≥20 - sekarang 15. **Aku tidak menurunkan lantai $50.000** untuk mengembalikan
+n: itu persis gerakan yang sudah kuhukum di F-D51 (budget) dan F-D47 (cakupan).
+
+**Yang membuat pengembalian default ini aman.** Tiga hal dikerjakan sebelum, bukan sesudah:
+1. `vol_ab.py` (E9) dan `winlog.py` (bukti streak/`promote-after`) **menyaring `skema_dampak`** -
+   slot v2 tidak bisa masuk vonis yang dikunci dengan v1. Tanpa ini, mengembalikan `vol_ab` nanti
+   bisa mengubah vonis yang sudah jatuh secara diam-diam.
+2. `paper_book --self-test` (baru) membuktikan penyaringan itu pada berkas campuran: 2 dari 4 slot
+   dibuang oleh KEDUA pembaca. Ini uji lintas-alat, bukan uji unit yang memuji dirinya sendiri.
+3. Rumus dampak tidak lagi ada di dua tempat: `entry_lab.py` dan `impact_audit.py` mengimpor dari
+   `costs.py`, dan **paritas diukur** - entry_lab identik pada 3.955 kombinasi liq×net nyata,
+   impact_audit identik di tiga variannya (+77,3 / −694,9 / −91,1). `SKEMA_ENTRY` dibiarkan v1
+   karena kunci E1/E2/E3 menyebut rumus itu; itu keputusan sadar, tertulis di kode.
+
+**Yang belum selesai dan sengaja tidak kupalsukan.** `impact_audit` masih membawa `--liq-floor`
+$1.000 miliknya sendiri sementara `costs.LIQ_LANTAI_USD` = $50.000 - dua lantai, dua jawaban untuk
+pertanyaan "pool mana yang boleh dihitung". Aku tidak menyamakannya malam ini karena itu mengubah
+varian E15 yang sudah dikutip halaman 24/26; itu **P65**, dengan konsekuensi yang harus ditulis
+bersamanya.
+
+**Kalimat yang boleh dipakai di submission:** *"Buku paper kami memakai model isi dengan harga BNB
+terukur dan lantai likuiditas institusional; pada budget kontrak itu menyisakan 15 dari 20 posisi -
+di bawah ambang sampel kami sendiri - jadi tidak ada angka paper malam ini yang kami jual sebagai
+kelayakan."* Yang tidak boleh: menyebut −80,3 bps sebagai perbaikan.

@@ -91,7 +91,10 @@ def haircut(net, liq, size_quote):
     return net - imp, True
 
 
-SKEMA_ISI = None      # diiset dari --isi; None = v1 (perilaku buku paper sampai 29 Sep)
+SKEMA_ISI = None      # diiset dari --isi; None = P42: model ISI SEKARANG v2 (harga BNB
+#                       terukur + lantai likuiditas). v1 tetap bisa diminta lewat --isi v1
+#                       untuk mereproduksi angka lama - dan v1-lah yang dipakai semua slot
+#                       yang sudah tercatat sebelum 29 Sep 21:1xZ, termasuk vonis E9/E12.
 _BNB = {}
 
 
@@ -104,7 +107,7 @@ def isi_dampak(net, liq, ukuran, skema=None):
     v2 = `costs.dampak_round_trip` dengan harga BNB TERUKUR + lantai likuiditas; yang di bawah
     lantai jadi TIDAK SAH (net None), BUKAN nol - kehilangan dicatat, bukan dijadikan nol.
     """
-    skema = skema or SKEMA_ISI or costs.ISI_V1
+    skema = skema or SKEMA_ISI or costs.ISI_V2      # P42: default baru
     if skema == costs.ISI_V1:
         v, ok = haircut(net, liq, ukuran)
         return v, ok, {"skema": costs.ISI_V1, "dampak_bps": round(net - v, 6), "sah": True,
@@ -230,6 +233,78 @@ def ringkas(xs, label):
             "tanpa_liq": sum(1 for e in xs if not e["hcd"])}
 
 
+
+def self_test():
+    """Dua penggaris, satu berkas: pembacanya HARUS menolak mencampurnya.
+
+    Bukan uji estetika. E9 divonis dengan haircut v1; sejak P42 default buku jadi v2 dan CI terus
+    menulis ke berkas yang sama. Kalau satu pembaca tidak menyaring `skema_dampak`, vonis yang
+    sudah jatuh bisa BERUBAH diam-diam pada pembacaan berikutnya - itu F-D54 dalam bentuk paling
+    senyap, karena tidak ada yang salah mengetik apa pun.
+    """
+    global SLOT, SKEMA_ISI, _BNB
+    asli_slot, asli_skema = SLOT, SKEMA_ISI
+    tmp = os.path.join(OUT_DIR, "_paper_book_uji.jsonl")
+    assert "_uji" in tmp
+    SLOT = tmp
+
+    def iso(t):
+        return time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime(t))
+
+    try:
+        ukuran = 0.01
+        a1, ok1, i1 = isi_dampak(500.0, 132022.0, ukuran, skema=costs.ISI_V1)
+        a2, ok2, i2 = isi_dampak(500.0, 132022.0, ukuran, skema=costs.ISI_V2)
+        assert ok1 and ok2 and abs(a1 - a2) > 0.9, (a1, a2)
+        assert i1["skema"] == costs.ISI_V1 and i2["skema"] == costs.ISI_V2, (i1, i2)
+        for L in (0.0, 1.0, 12000.0):
+            netv, okv, info = isi_dampak(300.0, L, ukuran, skema=costs.ISI_V2)
+            if not L or L < costs.LIQ_LANTAI_USD:
+                assert netv is None and not okv and info["alasan"], (L, netv, info)
+            else:
+                assert netv is not None and okv, (L, netv, info)
+        # v1 TIDAK menolak pool kecil - di situlah letak kesombongannya
+        n1, ok1b, inf1 = isi_dampak(300.0, 1.0, ukuran, skema=costs.ISI_V1)
+        assert ok1b and n1 is not None and inf1["dampak_bps"] > 0, (n1, inf1)
+
+        # `kebijakan` harus nama lengan yang dikenali vol_ab - selain itu dia dibuang karena
+        # kebijakan, bukan karena penggaris, dan ujinya tidak membuktikan apa-apa (F-D42)
+        import vol_ab as VA
+        import winlog as WL
+        baris = [
+            {"slot_id": "s1", "kebijakan": VA.ARML, "tk": "0xtA", "status": "dinilai",
+             "net_bps": -50.0, "open_utc": iso(1_800_000_100), "skema_dampak": costs.ISI_V1},
+            {"slot_id": "s2", "kebijakan": VA.ARML, "tk": "0xtB", "status": "dinilai",
+             "net_bps": 3000.0, "open_utc": iso(1_800_000_200), "skema_dampak": costs.ISI_V2},
+            {"slot_id": "s3", "kebijakan": VA.ARML, "tk": "0xtC", "status": "dinilai",
+             "net_bps": -70.0, "open_utc": iso(1_800_000_300)},
+            {"slot_id": "s4", "kebijakan": VA.ARMH, "tk": "0xtD", "status": "dinilai",
+             "net_bps": 900.0, "open_utc": iso(1_800_000_400), "skema_dampak": costs.ISI_V2}]
+        with io.open(tmp, "w", encoding="utf-8", newline="\n") as fh:
+            for b in baris:
+                fh.write(json.dumps(b, sort_keys=True) + "\n")
+
+        VA.SLOT = tmp
+        VA.SKEMA_DIBUANG["n"] = 0
+        got = VA.baca_slot(None)
+        assert sorted(x["slot_id"] for x in got[VA.ARML]) == ["s1", "s3"], got
+        assert got[VA.ARMH] == [], got                       # satu-satunya slot B berv2 -> nol
+        assert VA.SKEMA_DIBUANG["n"] == 2, VA.SKEMA_DIBUANG  # s2 + s4 dibuang oleh penggaris
+
+        WL.BOOK = tmp
+        WL.SKEMA_DIBUANG["n"] = 0
+        rows = WL.book_events()
+        assert sorted(r["slot"] for r in rows) == ["s1", "s3"], rows
+        assert WL.SKEMA_DIBUANG["n"] == 2, WL.SKEMA_DIBUANG
+        print("self-test buku OK: v2 menolak pool kecil yang diterima v1 | berkas boleh berisi dua "
+              "penggaris karena vol_ab DAN winlog hanya membaca yang sesuai vonisnya")
+    finally:
+        SLOT, SKEMA_ISI = asli_slot, asli_skema
+        _BNB = {}
+        if os.path.exists(tmp):
+            os.remove(tmp)
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--horizon", type=int, default=30)
@@ -243,11 +318,16 @@ def main():
                          "posisi ASLI (aturan builder 28 Sep: '2 kali benar dulu baru berani')")
     ap.add_argument("--emit", action="store_true",
                     help="tulis slot ke decisions/paper-book-positions.jsonl (append-only)")
-    ap.add_argument("--isi", default="v1", choices=("v1", "v2"),
-                    help="v1 = model lama (BNB dibagi USD, F-D46); v2 = harga BNB terukur + lantai "
-                         "likuiditas. Default sengaja v1: berkas slot ini dibaca tools/vol_ab.py "
-                         "untuk vonis E9 yang masih hidup")
+    ap.add_argument("--self-test", dest="uji", action="store_true")
+    ap.add_argument("--isi", default="v2", choices=("v1", "v2"),
+                    help="v2 (DEFAULT sejak P42) = harga BNB terukur + lantai likuiditas $50.000; "
+                         "v1 = model lama yang salah satuan (F-D46), tetap bisa diminta untuk "
+                         "mereproduksi angka lama. Pembaca bersama berkas slot (vol_ab, winlog) "
+                         "menyaring pada `skema_dampak`, jadi dua penggaris tidak bisa lagi "
+                         "masuk satu vonis")
     a = ap.parse_args()
+    if a.uji:
+        return self_test()
     global SKEMA_ISI
     SKEMA_ISI = costs.ISI_V2 if a.isi == "v2" else costs.ISI_V1
     rt = costs.rt_cost()
@@ -395,12 +475,11 @@ def main():
     else:
         print("   -> belum ada. Semua posisi malam ini tetap berlabel PAPER, dan tidak ada yang "
               "boleh ditulis 'akan dipasang'")
-    if a.emit and SKEMA_ISI == costs.ISI_V2:
-        print("\nEMIT DITOLAK - decisions/paper-book-positions.jsonl dibaca tools/vol_ab.py untuk "
-              "vonis E9 (matang 17:13:25Z). Menulis slot berv2 ke sana = mencampur dua penggaris "
-              "dalam satu uji (F-D54). Jalankan v2 tanpa --emit untuk audit; default dibalik setelah "
-              "E9 divonis (P42).")
-        return
+    if a.emit and SKEMA_ISI != costs.ISI_V1:
+        print("\nCATATAN P42: berkas slot ini dipakai bersama. `tools/vol_ab.py` (vonis E9) dan "
+              "`tools/winlog.py` (bukti streak/promote-after) MEMBUANG baris yang `skema_dampak`-nya "
+              "bukan %s - jadi v1 dan v2 boleh hidup dalam satu berkas tanpa saling menodai vonis. "
+              "Terbukti di --self-test." % SKEMA_ISI)
     if a.emit:
         ada = set()
         if os.path.exists(SLOT):
