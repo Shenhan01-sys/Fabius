@@ -1,0 +1,13 @@
+{
+ "dibuat_utc": "2026-09-29T12:08:15Z",
+ "horison_menit": 5,
+ "n_boleh_min": 40,
+ "n_veto_min": 15,
+ "spec_sha256": "0x6f6e61f8a29bed68390b4050c1eaa8cea508a7bff79db7bf987e0d094d40c1a0",
+ "spek_teks": "E22 - rem diuji prospectif pada horison tempat kabar hidup.\n\npopulasi       : kejadian BELI dari \u2466 (k=tx/txc, b=true) dengan t > t_kunci; non-overlap 1 per 30 m\n                 per token; harga masuk = `wp` terakhir dengan t_kejadian >= t\nlengan         : BOLEH (flow_gate.state lulus) vs VETO (ditolak) - aturan ambang TIDAK diubah\noutcome        : median `wp` pada t+[2m, 8m] minus harga masuk, minus ongkos round-trip terukur\nwinsor         : +/-1.500 bps pada mean (bukan 2.000 seperti E11 - dipilih sebelum lihat hasil);\n                 median dilaporkan tanpa winsor\nvonis_primer   : selisih = mean_winso(BOLEH) - mean_winso(VETO)\nsyarat_layak   : (1) n_boleh >= 40 DAN n_veto >= 15\n                 (2) median(BOLEH) > 0 DAN CI bawah bootstrap 4000 (seed 20260929) dari selisih > 0\n                 (3) Mann-Whitney satu arah BOLEH > VETO p < 0,05 DAN selisih > CI atas placebo\n                     (penandaan ulang label, 1000 undian)\n                 (4) P(ada harga keluar) >= 60 % pada KEDUA lengan DAN umur baris harga keluar\n                     dilaporkan dalam menit, per lengan\numur_kunci     : 8 jam (disetujui sebelum ada angka; tenggat 30 Sep 16:59Z)\nkalau_kecil    : 'BELUM BISA DIUJI' - ambang, winsor, dan umur tidak diubah setelah hasil dilihat\nkalau_gagal    : klaim 'rem memperbaiki hasil' tetap in-sample; TIDAK dibalik menjadi\n                 'VETO justru untung' tanpa kunci baru\njangan         : tidak mengubah flow_gate.py; tidak mengirim order; tidak mengutip OFI/buku order\n                 (halaman itu punya kuncinya sendiri, E16)\n",
+ "spesifikasi": "vault/06-Results/25 - Rem, Terkunci Prospectif.md",
+ "t_kunci": 1790683695,
+ "t_kunci_iso": "2026-09-29T12:08:15Z",
+ "umur_jam_min": 8,
+ "winsor_bps": 1500.0
+}

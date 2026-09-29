@@ -1558,3 +1558,39 @@ dan justru itu bukti sistemnya bekerja: gerbang promosi menahan kami sendiri.
 **Terkait:** [[06-Results/14 - Buku Paper]] · [[06-Results/18 - Kandidat Pertama, Diuji Hidup]] §5c/§5d ·
 [[07-Testing/01 - Test Commands]] baris 60 · [[08-Backlog/01 - Backlog]] P52
 
+## F-D52 — Perilaku satu-satunya yang kita punya kini punya uji prospectif-nya sendiri: E22, kunci 12:08:15Z, vonis 20:08:15Z · 29 Sep 2026
+
+**Kenapa.** Semua bukti untuk rem `jual_*` berasal dari jendela yang sama: F-D31 (+82,7 → +162,3 bps
+di 30 menit) dan F-D44 (menit ke-5: `BOLEH` +285,5 vs `VETO` −230,3, plus 16/16 grid ambang dari
+F-D45) berhenti di jam `t_kunci` watch. Kami sudah lima kali membawa angka in-sample ke dokumen dan
+lima kali menariknya kembali (F-D30, F-D32, F-D39, F-D40, F-D46). Bedanya dengan lima kejadian itu:
+sekarang kunci dipasang **sebelum** ada satu pun pasangan pasca-kunci - `tools/gate_ab.py --status`
+mencetak "kejadian pasca-kunci: 0" pada saat rule-nya ditulis.
+
+**Yang diikat** (`decisions/prereg-gate-lock.json`, `spec_sha256=0x6f6e61f8a29bed68…`, halaman
+[[06-Results/25 - Rem, Terkunci Prospectif]]): populasi = beli ⑦ dengan `t > t_kunci`, non-overlap
+1/30 m/token; outcome = median `wp` pada t+[2m, 8m] − harga masuk − 59,0 bps; winsor **1.500** bps
+(lebih ketat dari E11/E13 karena puncak micro-cap kami mencapai 8000x - angka ini dipilih sebelum
+lihat hasil, bukan sesudah); empat syarat serentak: (1) n≥40 `BOLEH` dan n≥15 `VETO`; (2)
+median(BOLEH) > 0 **dan** CI bawah bootstrap 4000 dari **selisih dua mean** > 0 (bootstrap-nya
+terpisah per lengan, bukan zip posisional - itu kesalahan yang sama yang baru kami hukum di F-D49);
+(3) satu arah lewat **dua** kontrol sekaligus (Mann-Whitney p<0,05 DAN selisih > CI atas placebo
+penandaan ulang 1.000 undian); (4) `P(ada harga keluar)` ≥ 60 % di kedua lengan **dan** umur baris
+harga keluar dilaporkan per lengan.
+
+**Satu kompromi yang dinyatakan di muka.** Syarat umurnya **8 jam**, bukan 12 seperti tiga kunci
+sebelumnya. Alasannya ditulis sekarang, bukan nanti: tenggat submission 30 Sep 16:59Z, dan 8 jam
+siklus ⑦ (~200 detik) memberi ratusan kejadian. Ini bukan mengendurkan ambang supaya vonisnya keluar
+- itu justru yang dilarang halaman 12/20/22 - karena saat aturan ditulis, n-nya nol dan tidak ada
+seorang pun tahu apakah 8 jam cukup. Kalau saat matang n masih kurang, vonisnya "BELUM BISA
+DIUJI" dan itu jawaban yang sah.
+
+**Kalau GAGAL**, yang bergerak adalah kalimat kami, bukan aturannya: "rem memperbaiki hasil"
+turun jadi klaim in-sample dan itu akan kutulis di halaman 21 + F-D44. **Kalau LAYAK**, ini untuk
+pertama kalinya perilaku Fabius lolos pada data yang belum ada saat rule-nya ditulis - dan tetap
+bukan "profit": tiga tembok hari ini tidak digeser oleh hasil mana pun (venue **3,1 %**,
+umur kabar **±13 menit** dengan bump **±2 menit**, `i` **+245 bps**).
+
+**Terkait:** [[06-Results/25 - Rem, Terkunci Prospectif]] · [[06-Results/21 - Rem di Horison Cepat]] · [[08-Backlog/02 - Epik Alasan Masuk]] §3f · [[07-Testing/01 - Test Commands]] baris 61 ·
+[[TradingKnowledge/QT4 - Overfitting dan Validasi]]
+
