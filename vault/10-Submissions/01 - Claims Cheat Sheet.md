@@ -24,4 +24,16 @@ runtuh saat ada juri yang tahu x402.
 | "data real-time" | "aliran live GMGN (jendela 8–13 menit) untuk keputusan; Dune punya lag ±1 jam dan dipakai untuk sejarah" | `03-Data/D4` |
 | angka win-rate apa pun dengan n < 20 | "n=2, satu menang +1,5 bps / satu rugi −146,3 bps; belum membuktikan apa pun" | `MIN_TRADES=20` (`06-Results/02`) |
 
+| "Fabius tahu kapan masuk" | "sepuluh fitur diuji terhadap kontrol terpilih dari kandidat siklus yang sama; **tidak ada yang melewati kontrol itu** setelah pembandingnya dibuat setara - dan dua uji prospectif sedang berjalan dengan kunci tertanggal" | F-D39 (`tools/topk_test.py`): pemenang pertama (+132,9 vs CI atas +116,1) ternyata SATU UNDIAN; dengan median 40 pengulangan jadi +112,7 vs CI atas **+137,5** |
+| "Fabius tahu kapan keluar" | "klaim keluar kami gugur saat kontrolnya dibetulkan jadi 'keluar di waktu acak pada jendela yang sama' (64 menang / 50 kalah, p=0,112); yang tersisa cuma memotong umur posisi" | F-D40 (`tools/exit_control.py`) |
+| "ada edge dua menit, jadi kami hampir bisa" | "ada bump **+192,7 → +202,6 bps** pada menit 2-5 yang **lolos placebo asal-mula** (datar −180) — dan **hanya 3,1 %** dari kabar itu terjadi di token yang bisa kami perdagangkan" | E11 (`tools/horizon_decay.py`) + F-D43 (`tools/venue_bridge.py`, `decisions/p41-venue-bridge.json`). Dua-duanya wajib disebut berpasangan: yang satu bikin kami kelihatan pintar, yang lain bikin kami jujur |
+| "karenanya agen ini siap uang asli" | "yang siap dengan bukti adalah **rem-nya** (`jual_*`: +82,7 → +162,3 bps vs kontrol buta). Masuk/keluar belum. Dan `promote-after` paper→real tetap kosong sampai uji prospectif jatuh" | `tools/policy_test.py`, [[06-Results/14 - Buku Paper]], P30 |
+| "hasil uji prospectif kami menunjukkan…" (sebelum jamnya) | "kunci E9 dipasang 05:13:25Z (vonis 17:13:25Z) dan E12 08:04:56Z (vonis 20:04:56Z); sebelum jam itu halaman hasilnya **sengaja kosong**" | `tools/vol_ab.py --status`, `tools/hold_ab.py --status` — dan kekosongan itu yang membuktikan urutannya, bukan angka di dalamnya |
+
 Lihat juga: [[06-Results/01 - Claims and Limits]] · [[00-Overview/02 - Business Process]]
+
+**Satu kalimat yang boleh dipakai kalau semua di atas dicabut.** *Kami membangun
+agen yang menerbitkan keputusannya ke chain sebelum hasilnya ada, lalu memakai mekanisme itu untuk
+membatalkan klaim kami sendiri empat kali dalam empat hari - dan masih menjalankan dua uji yang
+sudah dikunci sebelum tenggat.* Itu bukan permintaan maaf; itu satu-satunya hal yang bisa dibuktikan
+orang lain tanpa percaya kepada kami.
