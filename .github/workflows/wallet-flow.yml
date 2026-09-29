@@ -148,8 +148,15 @@ jobs:
             # harus seluas yang kita simpulkan.
             python -u universe/record_watch_prices.py --watch-min 120 --max-batches 40 \
               || echo "watchPrices gagal di siklus $K - lanjut"
+            # P40 - JALUR CEPAT: keputusan diambil atas berkas yang BARU SAJA ditulis, pada runner
+            # yang sama, jadi "berapa lama dari kejadian sampai kami memutuskan" terukur dan bukan
+            # diklaim. E11 (tools/horizon_decay.py) mengukur kabar itu hidup sekitar dua menit;
+            # latensi data kami 0,2 menit (stempel commit GitHub). Kalau alat ini gagal, rantai
+            # tetap jalan - dia perekam keputusan, bukan penahan aliran.
+            python -u tools/fast_lane.py --run --per-run 3 || echo "fast_lane gagal di siklus $K - lanjut"
             git add universe/wallet-flow.jsonl universe/wallet-flow-manifest.txt \
-                    universe/watch-prices.jsonl universe/watch-prices-manifest.txt
+                    universe/watch-prices.jsonl universe/watch-prices-manifest.txt \
+                    decisions/fast-lane.jsonl
             if git diff --cached --quiet; then
               echo "tidak ada baris baru di siklus $K"
             else
