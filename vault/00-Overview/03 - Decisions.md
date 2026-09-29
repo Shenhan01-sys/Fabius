@@ -1960,3 +1960,47 @@ bahwa kita salah, dan itu yang bikin pembaca berikutnya percaya pada yang kedua.
 **Batas yang ikut ditulis.** Mean pada artefak itu tidak di-winsor (+4.043,7 bps untuk median −21,3):
 satu token lotre memindahkannya ribuan bps. Ia jangan dikutip; `evidence_stack._pair` perlu winsor
 atau trimmed mean - itu **P63**.
+
+## F-D64 - Klaim terakhir yang bertahan sepekan ("rem") gugur secara prospectif: arah benar, efek tidak - dan satu-satunya perilaku yang lulus adalah cara keluar · 29 Sep 2026 20:32:34Z
+
+**Yang diuji.** Rem `jual_*` adalah satu-satunya perilaku Fabius yang tidak pernah kucabut. E13/E14
+memberi **+285,5 vs −230,3 bps** di menit ke-5 dengan **16/16 grid ambang** lolos dan placebo yang
+membunuh kandidat lain tidak menyentuhnya. E22 menguncinya (`12:08:15Z`, `spec_sha256=0x6f6e61f8…`,
+delapan jam, empat syarat) dan malam ini datanya ada.
+
+**Yang keluar (n=319 BOLEH / 110 VETO, 429 kejadian pasca-kunci, dua syarat lolos, dua gagal):**
+
+```text
+mean winso  BOLEH -9,9 | VETO -121,4 | selisih +111,5    (arahnya benar)
+median      BOLEH -57,9 | VETO -59,0                     (praktik sama; dua-duanya di bawah nol)
+CI selisih  [-134,0 ; +344,4]                           (memotong nol)
+MW satu arah p=0,15936 | CI atas placebo +223,7 > 111,5
+P(ada harga keluar) 100% / 100% | umur keluar 0,08 m / -0,10 m
+VONIS: GAGAL
+```
+
+**Keputusan.** (a) **"rem memperbaiki hasil" turun status jadi in-sample di seluruh vault** - baris
+koreksi ditulis di halaman 21 (bukan penimpaan), halaman 25 §5 menyimpan vonisnya, dan **cheat sheet
+submission** kuperbarui: kalimat "satu-satunya yang lolos kontrol kami adalah rem" tidak boleh lagi
+keluar dari mulut kami. (b) **Tidak** dibalik jadi "VETO justru untung" (medannya −59,0). (c) **Tidak**
+ada ambang baru, **tidak** ada penyesuaian winsor/n_min setelah melihat hasil.
+
+**Yang menggantikannya, dan ini harus ditulis dengan tepat:** satu-satunya **perilaku** Fabius yang
+lolos uji prospectif malam ini adalah **cara keluar** - E12: keluar di menit ke-5 mengalahkan tahan ke
+menit ke-30 pada posisi yang sama, n=685, CI bawah **+135,9**, p=0,00001. Tapi lihat ukurannya: mean
+lengan cepat **+8,1 bps**, dan itu dengan **ongkos v1** yang F-D62 baru saja tunjukkan terlalu murah
+hati. Jadi posisi proyek ini jam 20:32Z: **satu aturan keluar yang lulus uji, nol alasan masuk, nol
+rem yang bertahan.**
+
+**Satu kemungkinan yang kucatat tanpa menjualnya.** Feed ⑦ tiba berumur median **120 d** (24 d pada
+baris yang kami putuskan). Veto membaca kerumunan **jual** - sinyal yang, kalau harganya sudah jatuh,
+mungkin **sudah lewat**. Median BOLEH −57,9 konsisten dengan penjelasan itu. Bentuk lanjutan yang
+benar bukan ambang baru, tapi **horison baca yang lebih pendek**, dan itu kunci sendiri - bukan
+reinterpretasi halaman ini.
+
+**Kenapa commit ini tidak boleh dibaca sebagai malam yang gagal.** Yang jatuh malam ini jatuh karena
+**kita sendiri membangun alat yang cukup tajam untuk menjatuhkannya**: E22 adalah uji prospectif
+pertama untuk perilaku, E24 yang pertama membandingkan masuk kita dengan masuk acak, `aspek_dari`
+(F-D63) menemukan bug yang membuat sebuah "belum bisa diuji" berubah menjadi "GAGAL". Empat vonis
+malam ini semuanya menghasilkan angka yang bisa dipercaya. Itu bukan kemenangan - tapi itu satu-satunya
+dasar yang boleh dipakai bicara di depan juri tanggal 30 Sep 23:59 WIB.

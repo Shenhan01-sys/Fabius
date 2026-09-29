@@ -359,3 +359,32 @@ dugaan.** P55/E24 (masuk terpilih vs masuk **acak**, matang 21:19:04Z) adalah uj
 tersedia sebelum tenggat; kalau ia juga GAGAL, kalimat submission yang benar sudah tertulis di
 halaman 28 dan tidak perlu diubah lagi.
 
+## 3k. 29 Sep 20:32Z - rem gugur, dan peta klaim malam ini jadi bersih (untuk pertama kalinya)
+
+Setelah E22, hitungan klaim perilaku Fabius yang **lolos uji prospectif** tinggal satu:
+
+| klaim | status 20:32Z | angka terakhir |
+|---|---|---|
+| masuk `vol-rendah` (E7→E9) | ❌ GAGAL prospectif | median −58,7; MW p=0,4413 |
+| masuk kerumunan maker `cluster_ge2`/`money_spread` (E4/E5→watch) | ❌ GAGAL prospectif, 3x | median −21,3 / 0,0; p=0,936/0,706 |
+| **rem `jual_*`** (E13/E14→E22) | ❌ **GAGAL prospectif malam ini** | median −57,9 vs −59,0; CI [−134,0; +344,4]; placebo +223,7 > efek +111,5 |
+| **keluar di menit ke-5** (E11→E12) | ✅ **LAYAK prospectif** | n=685; mean winso delta +215,8; CI bawah +135,9; p=0,00001 |
+| masuk kita vs masuk **acak** (E24) | ⏳ 21:19:04Z | n T=47 / K=12 pada 14:53Z, laju ~18/jam |
+| state imbalance buku order (E16) | ⏳ 21:37:45Z | 26 simbol, frame tidak dilebarkan (F-D53) |
+
+Yang tersisa untuk ditulis di submission **bukan** "agen kami tahu kapan masuk" dan juga bukan "rem kami
+menyelamatkan hasil". Yang tersisa, dan itu punya angka: (1) kami mengukur **horison** tempat kabar
+hidup dan menunjukkan ia membusuk pada menit ke-30 (E11, E12); (2) kami **mencabut** setiap klaim masuk
+yang kami bangun sendiri, dengan n, jam, dan perintah (E9, watch, E22); (3) kami menemukan tiga bug
+instrumen yang membuat angka kita salah - dan ketiganya ditemukan **sebelum** ada yang menjualnya
+(F-D54, F-D57, F-D63).
+
+**Sisa yang harus dikejar malam ini, berurutan:** E24 (21:19:04Z) - kalau GAGAL, alasan masuk resmi
+nol untuk semua jalur yang kami punya; E16 (21:37:45Z); lalu P42 (21:05Z) dan P54 (22:25Z) supaya
+P60/P61 punya buku untuk dibaca. Tidak ada lagi waktu untuk jalur masuk baru: yang bisa dibeli malam
+ini adalah **kejujuran yang terukur**, dan itu sudah lebih dari yang bisa ditunjukkan sebagian besar
+agen di hackathon ini.
+
+Lihat: [[06-Results/25 - Rem, Terkunci Prospectif]] §5 · [[06-Results/21 - Rem di Horison Cepat]]
+(koreksi 20:32Z) · F-D64 · halaman 20 §5-§6.
+

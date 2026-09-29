@@ -74,6 +74,45 @@ python -X utf8 tools/gate_ab.py             # vonis (menolak cetak angka sebelum
 
 ## 5. Hasil
 
+**Dibaca 29 Sep 2026 20:32:34Z** oleh `python -X utf8 tools/gate_ab.py` (kunci `12:08:15Z`, umur
+**8,40/8 jam**, `spec_sha256=0x6f6e61f8a29bed68…` - blok §2 tidak kusentuh). Artefak:
+`decisions/gate-ab-20260929T203234Z.json`.
+
+## Vonis: **GAGAL**
+
+```text
+kejadian pasca-kunci        429   (sensor: tanpa deret harga 434, tanpa harga keluar 16, pra-kunci 0)
+n BOLEH 319 | n VETO 110            -> syarat (1) n: LOLOS
+mean winso  BOLEH -9,9 | VETO -121,4 | selisih +111,5 bps
+median      BOLEH -57,9 | VETO -59,0                              -> syarat (2) GAGAL
+CI bootstrap selisih [-134,0 ; +344,4]                            -> syarat (2) GAGAL (bawah < 0)
+Mann-Whitney satu arah BOLEH > VETO  p = 0,15936                  -> syarat (3) GAGAL
+CI atas placebo (pelabelan ulang acak) = +223,7  >  selisih 111,5  -> syarat (3) GAGAL
+cakupan + umur harga keluar: P(ada harga) 100 %/100 %, umur median 0,08 m / -0,10 m  -> syarat (4) LOLOS
+```
+
+**Arahnya benar, dan itu tidak cukup.** BOLEH memang berada di atas VETO (+111,5 bps) - tapi
+**kedua** medannya negatif dan praktis sama (−57,9 vs −59,0), CI selisihnya memotong nol, dan
+pelabelan acak mengirim kontrol lebih tinggi (+223,7) daripada efek yang diukur. Empat syarat itu
+ditulis sebelum ada satu pun kejadian ini; dua di antaranya gagal. Jadi kalimat yang benar:
+**rem `jual_*` tidak menambah apa pun di atas "jangan masuk saat kerumunan menjual" pada horison
+tempat kabar masih hidup** - dan itu penolakan terhadap klaim kami sendiri, bukan angka yang
+dipertajam.
+
+**Yang TIDAK kulakukan atas hasil ini** (aturan §3 + halaman 21 + F-D39/F-D51):
+- **tidak** membalik menjadi "VETO justru untung" - medannya −59,0; membalik tanda setelah vonis
+  adalah gerakan yang sama yang membunuh +393,4 dan +188,3;
+- **tidak** menurunkan `n_min`, mengganti winsor ±1.500, atau memotong jam kunci lebih awal;
+- **tidak** menghapus pembacaan in-sample (§3 halaman 21: +285,5 vs −230,3, 16/16 grid) - ia
+  tetap benar **sebagai pengukuran jendela itu**, dan sekarang jelas statusnya: in-sample.
+
+**Satu kemungkinan yang harus disebut, bukan dikubur:** yang gagal mungkin bukan idenya, tapi
+**waktu bacanya**. Rem kami membaca kerumunan jual dari feed ⑦ yang tiba dengan umur median 120 d
+(24 d pada baris yang kami putuskan). Veto pada harga yang sedang jatuh setelah penjual besar keluar
+memberi sinyal yang **sudah lewat** - dan median −57,9 di lengan BOLEH konsisten dengan itu. Kalau
+jalur ini dikejar lagi, bentuknya bukan ambang baru tapi horizon baca yang lebih pendek, dan itu
+kunci sendiri (bukan reinterpretasi halaman ini).
+
 _kosong sampai umur kunci cukup - kekosongan ini bagian dari spesifikasinya._
 
 **Terkait:** [[06-Results/21 - Rem di Horison Cepat]] · [[06-Results/18 - Kandidat Pertama, Diuji Hidup]] · [[06-Results/20 - Keluar Cepat, Terkunci]] · [[06-Results/13 - Apakah Tidak Trading Itu Gratis]] · [[00-Overview/03 - Decisions]] F-D31/F-D44/F-D45/F-D52

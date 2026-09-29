@@ -1,0 +1,47 @@
+{
+ "dibuat_utc": "2026-09-29T20:32:34Z",
+ "hasil": {
+  "ci_atas_selisih_bps": 344.4,
+  "ci_bawah_selisih_bps": -134.0,
+  "horison_menit": 5,
+  "layak": false,
+  "lengkap_boleh": {
+   "P_ada_harga_keluar": 100.0,
+   "n": 319,
+   "umur_keluar_menit_median": 0.08
+  },
+  "lengkap_veto": {
+   "P_ada_harga_keluar": 100.0,
+   "n": 110,
+   "umur_keluar_menit_median": -0.1
+  },
+  "mean_winso_boleh": -9.9,
+  "mean_winso_veto": -121.4,
+  "median_boleh": -57.9,
+  "median_veto": -59.0,
+  "n_boleh": 319,
+  "n_veto": 110,
+  "p_mw": 0.15936,
+  "placebo_ci_atas": 223.7,
+  "selisih_bps": 111.5,
+  "syarat": {
+   "1_n": true,
+   "2_median_dan_ci": false,
+   "3_arah_dua_kontrol": false,
+   "4_cakupan_dan_umur": true
+  },
+  "vonis": "GAGAL",
+  "winsor_bps": 1500.0
+ },
+ "kejadian": 429,
+ "ongkos_bps_rt": 59.0,
+ "sensor": {
+  "pra_kunci": 0,
+  "tak_ada_data": 0,
+  "tanpa_keluar": 16,
+  "tanpa_wp": 434
+ },
+ "spec_sha256": "0x6f6e61f8a29bed68390b4050c1eaa8cea508a7bff79db7bf987e0d094d40c1a0",
+ "t_kunci_iso": "2026-09-29T12:08:15Z",
+ "umur_jam": 8.4
+}

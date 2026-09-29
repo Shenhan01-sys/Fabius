@@ -9,7 +9,21 @@ tags: [hasil, "E13", "veto", "umur-posisi"]
 **Status:** **EKSPLORASI** pada data sampai `t_kunci` watch (02:59:06Z). Yang berdiri di depan
 sebagai uji prospectif tetap E12 ([[06-Results/20 - Keluar Cepat, Terkunci]]).
 
-## 1. Pertanyaannya bukan "apakah rem bekerja" - itu sudah dijawab
+> **⚠ KOREKSI 29 Sep 20:32:34Z (E22, F-D64) - semua angka di halaman ini adalah in-sample.** Uji
+> prospectif yang dikunci untuk ini (kunci `12:08:15Z`, `spec 0x6f6e61f8a29bed68…`, n=319 BOLEH /
+> 110 VETO pasca-kunci) memberi: mean winso **−9,9 vs −121,4** (selisih **+111,5**, arahnya benar),
+> median **−57,9 vs −59,0** (praktik sama, dua-duanya di bawah nol), CI selisih **[−134,0 ; +344,4]**,
+> Mann-Whitney **p=0,159**, dan placebo yang lebih tinggi (**+223,7**) daripada efeknya.
+> **Vonis: GAGAL.** Jadi "+285,5 vs −230,3 di menit ke-5" dan "16/16 grid ambang" bertahan hanya
+> sebagai pengukuran pada jendela tempat ia ditemukan - BUKAN sebagai perilaku yang bekerja. Kalimat
+> "rem memperbaiki hasil" turun status di seluruh vault, termasuk cheat sheet submission. Yang
+> bertahan secara prospectif justru **E12** (keluar di menit ke-5 mengalahkan tahan ke menit ke-30,
+> n=685, CI bawah +135,9) - dan itu aturan **keluar**, bukan alasan masuk.
+>
+> Yang tidak dilakukan: tidak dibalik jadi "VETO justru untung", tidak ada ambang baru dicari-cari,
+> tidak ada n_min/winsor yang diturunkan. Kemungkinan yang dicatat tanpa dijual: veto membaca kerumunan
+> jual dari feed yang berumur - mungkin yang salah bukan idenya, tapi **waktu bacanya**.
+ Pertanyaannya bukan "apakah rem bekerja" - itu sudah dijawab
 
 F-D31 memasang gerbang ⑦ (`jual_*`) karena diukur **menguntungkan di horison 30 menit**: harapan
 winso naik dari **+82,7 ke +162,3 bps** dengan menolak 13,6 % kejadian (n=1.014). Masalahnya, sejak
