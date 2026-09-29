@@ -38,6 +38,20 @@ fitur yang tidak bisa diverifikasi.
 | sebelum submit | **P2-P6b** jalur submission (host, kartu agen, form satu kontrak) | URL publik + form terisi dengan angka yang baris perintahnya ada di registry |
 | kalau ada ruang | **P49/E17** trailing sebagai uji bentuk-distribusi (random-barrier placebo) | tabel `P(net <= -X)` + median vs placebo, bukan "untung/tidak" |
 
+**Item yang lahir 29 Sep, satu baris masing-masing (status = yang bisa dibuktikan hari ini):**
+
+| item | status sekarang |
+|---|---|
+| P41 jembatan substrat (spot→perp) | 🟡 cakupan terukur: **3,1 %** kabar bisa dieksekusi; `--hanya-venue` sisakan 24 kejadian/13 simbol -> belum bisa menguji arah |
+| P42 satuan dampak ke `costs.py` | ⏳ sengaja ditunda sampai vonis E9/E12/E16 jatuh (F-D46) |
+| P43 E17 trailing sebagai kebijakan | ⛔ **BLOCKED-BY-DATA** (F-D49): level stop tidak pernah tersentuh bar kami |
+| P44 E18 signed-volume imbalance | ✅ **DIUJI: NOL** (BH kosong; sebar pembagian ±200-470 bps) |
+| P45 E19 anggaran biaya per simbol | 🟡 alat jalan; ambang spread **~21 bps**; baru jangkar likuid + 26 simbol ⑨ - `i` (gap fill) masih belum terukur |
+| P46 E20 slope kedalaman | ⏳ butuh 24 jam histori ⑨ (sekarang 9 snapshot/simbol) |
+| P47 ⑨ perekam buku order | 🟢 **hidup dan benar**: run CI 10:4xZ = 26 simbol × 9 snapshot; bug daftar pantau + driver merge ditutup (F-D47) |
+| P48 T5 microprice/queue | 🚫 tidak terukur pada cadence 200 detik - ditulis sebagai "belum", bukan "tidak ada" |
+| P49 vonis E17 | ⛔ sama dengan P43; syarat baru buat semua uji exit-dinamis: **placebo tanpa look-ahead + baseline pairing dengan fallback identik** |
+
 Yang **tidak** dikejar: mengubah ambang karena grid menunjukkan angka lebih bagus (P45/F-D45 memilih
 maker=4 = mengulang F-D32), membalik arah E18/F-D44 yang gugur jadi "fade" (halaman 12 dan 22
 menutup dua arah), dan menambah uji terkunci baru yang matang **setelah** tenggat - itu cuma
