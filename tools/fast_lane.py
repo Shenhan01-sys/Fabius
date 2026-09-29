@@ -95,7 +95,14 @@ def tulis(rows):
 
 
 def beli_baru(now, cari_menit, sudah):
-    """Baris beli ⑦ yang tiba dalam jendela cari, urut berkas, belum pernah disentuh."""
+    """Baris beli ⑦ yang belum pernah disentuh, **diurut dari yang paling segar**.
+
+    Versi pertama mengembalikan urutan berkas, dan karena satu muatan bisa berisi baris yang
+    rentang umurnya lebar, "12 teratas dari urutan berkas" = systematically yang paling TUA di
+    jendela. Itu yang membuat `latensi_keputusan_detik` terlihat 534-899 detik: sebagian bukan
+    umur kabar saat tiba, tapi urutan pilihanku. Perbaikan ini juga membuat angka latensi yang
+    tercatat selanjutnya berarti apa-apa (F-D50/P50).
+    """
     out = []
     for ln in io.open(FLOW, encoding="utf-8", errors="replace"):
         ln = ln.strip()
@@ -170,7 +177,8 @@ def jalankan(now, per_run, cari_menit, rt):
 
     # 2) buka baru
     tk_siklus = set()
-    for c in beli_baru(now, cari_menit, sudah)[:max(per_run * 4, 12)]:
+    kandidat = beli_baru(now, cari_menit, sudah)
+    for c in sorted(kandidat, key=lambda x: -x["t"])[:max(per_run * 4, 12)]:
         if dibuka >= per_run:
             break
         if c["tk"] in tk_siklus or now - c["t"] < 5:

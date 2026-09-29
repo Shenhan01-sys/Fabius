@@ -77,7 +77,12 @@ Tunda dua menit dan median@5m sudah **negatif**; tunda lima menit dan yang tersi
 > paling segar dalam satu muatan, **bukan** umur peristiwa yang kami olah. Ukuran langsung -
 > `tools/fast_lane.py` mencatat `latensi_keputusan_detik` untuk tiap keputusan yang benar-benar
 > diambil CI atas berkas yang baru ditulisnya - memberi **median 808 detik = 13,5 menit**
-> (min 534, p90 874, max 899; 276 baris, jam 09-11Z).
+> (min 534, p90 874, max 899; 276 baris, jam 09-11Z). **Angka itu BATAS ATAS, bukan temuan:**
+> jalur cepat saat itu memilih kandidat "12 teratas dari urutan berkas" sementara satu muatan
+> GMGN membentang puluhan menit - yang terpilih sistematis yang paling tua. Sudah dibetulkan
+> (urut dari yang paling segar), dan yang memutus soal ini adalah cap baru `arr` di perekam:
+> `python -X utf8 tools/feed_latency.py --kedatangan` membaca `arr - t`. Sebelum >= 30 baris
+> bercap, alatnya menolak dan berkata BELUM TERUKUR (addendum F-D50).
 
 Keadaan yang jujur, setelah koreksi: **kabar tiba di kami sudah berumur ±9-13 menit**, acaranya
 selesai dalam ±2 menit, dan pemroses kami bangun tiap 4 jam. Jadi yang menunda Fabius **bukan

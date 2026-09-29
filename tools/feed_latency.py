@@ -106,9 +106,42 @@ def saat_ditemukan(n_commit):
     return sorted(lag)
 
 
+def umur_kedatangan(min_baris=30):
+    """Umur peristiwa SAAT TIBA di runner, diukur dari cap `arr` milik baris itu sendiri.
+
+    Ini jawaban langsung untuk P50, dan ia bukan inferensi: `arr` ditulis oleh perekam pada saat ia
+    menerima barisnya, jadi `arr - t` adalah umur kabar sebelum kami bahkan menyentuhnya. Baris
+    lama (sebelum cap dipasang) tidak punya `arr` dan TIDAK dihitung diam-diam - kalau n-nya
+    kurang, alatnya bilang kurang.
+    """
+    xs, lewat = [], 0
+    for ln in io.open(os.path.join(ROOT, PATH), encoding="utf-8", errors="replace"):
+        if not ln.startswith("{"):
+            continue
+        try:
+            d = json.loads(ln)
+        except ValueError:
+            continue
+        if d.get("k") not in ("tx", "txc") or not isinstance(d.get("arr"), int):
+            continue
+        t = d.get("t")
+        if not isinstance(t, int) or t <= 0:
+            continue
+        xs.append(d["arr"] - t)
+        lewat += 1
+    xs.sort()
+    if len(xs) < min_baris:
+        raise SystemExit("baru %d baris punya cap kedatangan (butuh >= %d) - ini BELUM TERUKUR, "
+                         "bukan 'latensi nol'. Jalankan perekam beberapa siklus dulu."
+                         % (len(xs), min_baris))
+    return xs, lewat
+
+
 def utama():
     ap = argparse.ArgumentParser()
     ap.add_argument("n", nargs="?", type=int, default=40, help="berapa commit terakhir")
+    ap.add_argument("--kedatangan", action="store_true",
+                    help="umur kabar saat TIBA di runner, dari cap `arr` tiap baris (P50)")
     ap.add_argument("--saat-ditemukan", action="store_true",
                     help="ukur umur peristiwa SAAT pertama kali kami melihatnya (bukan yang terbaru)")
     ap.add_argument("--self-test", action="store_true")
@@ -121,6 +154,25 @@ def utama():
         assert len(xs) == 3, "self-test harus pakai sampel kecil yang explisit"
         print("self-test latensi OK: median/p90 diambil dari daftar terurut (n=3: p90 floor-index "
               "= nilai tengah - itu sebabnya run asli butuh >=20 pasangan)")
+        return
+    if a.kedatangan:
+        xs3, n3 = umur_kedatangan()
+        print("baris bercap `arr`: %d | umur kabar SAAT TIBA di runner (MENIT):" % n3)
+        print("   median %.2f | p75 %.2f | p90 %.2f | p95 %.2f | max %.2f | min %.2f"
+              % (xs3[len(xs3) // 2] / 60.0, pct(xs3, .75) / 60.0, pct(xs3, .9) / 60.0,
+                 pct(xs3, .95) / 60.0, xs3[-1] / 60.0, xs3[0] / 60.0))
+        print("   dalam DETIK: median %d | p90 %d" % (xs3[len(xs3) // 2], pct(xs3, .9)))
+        p3 = os.path.join(ROOT, "decisions", "feed-age-at-arrival.json")
+        json.dump({"n_baris": len(xs3), "median_detik": xs3[len(xs3) // 2],
+                   "p75_detik": pct(xs3, .75), "p90_detik": pct(xs3, .9),
+                   "p95_detik": pct(xs3, .95), "max_detik": xs3[-1], "min_detik": xs3[0],
+                   "sumber_waktu": "cap arr ditulis perekam (runner GitHub), bukan jam laptop",
+                   "definisi": "arr - t per baris tx/txc yang punya cap"},
+                  io.open(p3, "w", encoding="utf-8", newline="\n"), indent=1, sort_keys=True)
+        print("artefak: decisions/%s" % os.path.basename(p3))
+        print("Ini yang memvonis P50: kalau median-nya << umur keputusan kami (808 d), kabar memang")
+        print("bisa tiba cepat dan yang lambat adalah kami; kalau median-nya sebanding, SUMBERNYA")
+        print("yang tidak bisa dipakai untuk bump berumur 2 menit (E11) - dan P40 tidak akan menolong.")
         return
     if a.saat_ditemukan:
         xs2 = saat_ditemukan(a.n)

@@ -1504,6 +1504,16 @@ Angkanya tidak kucabut diam-diam: `tools/feed_latency.py --saat-ditemukan` sekar
 **"TIDAK BOLEH DIKUTIP"** di outputnya dan **tidak menulis artefak**, supaya tidak ada yang
 (melainkan saya nanti) mengutipnya sebagai angka.
 
+**Addendum 11:3xZ - angka 808 d itu BATAS ATAS, dan sebagian karena alatku sendiri.**
+`tools/fast_lane.py` mengambil kandidat "12 teratas dari urutan berkas", padahal satu muatan GMGN
+membentang puluhan menit: yang terpilih sistematis yang **paling tua** di jendela. Perbaikannya sudah
+masuk (`sorted(..., key=-t)`), dan yang benar ditulis sekarang: **808 d adalah batas atas umur kabar
+saat kami memutuskan**, bukan ukuran temunya. Yang memutus soal ini bukan argumen tapi cap baru:
+perekam sekarang menulis `arr` (waktu baris tiba di runner) per baris, dan
+`python -X utf8 tools/feed_latency.py --kedatangan` membacanya sebagai `arr - t` - kalau median itu
+jauh di bawah 808 d, yang lambat memang kami; kalau sebanding, P50 mati bersama harapan mengambil
+bump 2 menit ini. Sebelum ada >= 30 baris bercap, alatnya menolak dan berkata BELUM TERUKUR.
+
 **Terkait:** [[06-Results/19 - Umur Posisi]] §2b · [[08-Backlog/01 - Backlog]] P40/P50 ·
 [[07-Testing/01 - Test Commands]] baris 47/58 · F-D41 (batas waktu yang menghormati horison) ·
 [[TradingKnowledge/FD5 - Expectancy Bukan Win Rate]]

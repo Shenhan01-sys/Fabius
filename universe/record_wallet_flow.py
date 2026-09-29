@@ -102,7 +102,7 @@ def load_seen():
 def normalize(src, row):
     """Satu baris GMGN -> baris rekaman yang ramping (ukuran berkas = biaya, tiap byte dibayar juri)."""
     tags = ((row.get("maker_info") or {}).get("tags") or [])
-    return {"k": "tx", "s": src,
+    return {"k": "tx", "arr": int(time.time()), "s": src,
             "h": str(row.get("transaction_hash") or ""),
             "m": str(row.get("maker") or "").lower(),
             "t": int(row.get("timestamp") or 0),
