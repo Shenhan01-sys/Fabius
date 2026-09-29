@@ -2,7 +2,7 @@
 tags: [generated]
 ---
 
-_Auto-Index — 6 halaman · 2026-09-29T10:16Z · dari `vault/scripts/sync_vault.py`_
+_Auto-Index — 6 halaman · 2026-09-29T10:27Z · dari `vault/scripts/sync_vault.py`_
 
 ### 00-Overview (8)
 - [[00-Overview/00 - Hub Overview]]
@@ -90,7 +90,8 @@ _Auto-Index — 6 halaman · 2026-09-29T10:16Z · dari `vault/scripts/sync_vault
 - [[07-Testing/T7 - Pre-Push Gate]]
 - [[07-Testing/01 - Test Commands]]
 
-### 08-Backlog (4)
+### 08-Backlog (5)
+- [[08-Backlog/00 - Hub Backlog]]
 - [[08-Backlog/01 - Backlog]]
 - [[08-Backlog/02 - Epik Alasan Masuk]]
 - [[08-Backlog/03 - Epik Teori Baru]]

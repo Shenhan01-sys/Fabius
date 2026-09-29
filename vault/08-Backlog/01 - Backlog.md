@@ -74,9 +74,9 @@ tags: [backlog, hub]
 
 ## Bagian
 
-- [[02 - Epik Alasan Masuk]] ← tulis penjelasannya
-- [[03 - Epik Teori Baru]] ← tulis penjelasannya
-- [[04 - Riset Teori (Sitasi)]] ← tulis penjelasannya
+- [[02 - Epik Alasan Masuk]] — jantung proyek: 12 elemen e-course lalu gimmick on-chain; di sini semua kandidat alas masuk **dilahirkan dan dicabut** (E1–E8), plus §3e/§3f untuk E11 dan E13/E14
+- [[03 - Epik Teori Baru]] — T1–T7 dari teori builder (baca order book + trailing stop dinamis): tiap teori punya rumus, status data, desain uji + placebo, dan apa yang akan membunuhnya; §3 berisi aritmatika trailing yang **sudah diukur** (F-D48)
+- [[04 - Riset Teori (Sitasi)]] — S1–S9 dengan URL + tanggal akses; tiga kutipan saya baca langsung dari halaman penerbit (Lei & Li; Osler; Ke & Lin), dan satu halaman khusus **yang tidak terverifikasi** - termasuk sitasi 'Gu & Kelly' yang saya tarik
 
 <!-- di atas: append-only oleh scripts/sync_vault.py; gloss tulisan tangan utuh -->
 ```dataview

@@ -16,6 +16,7 @@ dan cara menjalankan. **Bukan** tempat angka hasil pengukuran — itu di `06-Res
 - [[02 - Business Process]] — siapa membayar, untuk apa, uangnya lewat mana
 - [[03 - Decisions]] — keputusan F-D## beserta alasannya
 - [[04 - Run It]] — semua perintah, sekali copy
+- [[08-Backlog/00 - Hub Backlog]] - indeks kerja + epik alasan masuk + epik teori baru + halaman sitasi
 - [[05 - Corrections]] — klaim kami yang salah dan apa yang membuktikannya
 - [[06 - Roadmap]] — hitung mundur ke tenggat 30 Sep WIB
 - [[07 - Ecosystem Positioning]] — jawaban terukur atas "ini jangan-jangan cuma project trading?"

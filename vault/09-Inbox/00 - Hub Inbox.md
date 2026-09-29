@@ -18,7 +18,7 @@ jangan gandakan kalimatnya.
 - [[Session-2026-09-28]] — lapisan `TradingKnowledge` dibangun + gerbang bentuknya; angka hidup
   diukur ulang (19 anchor / 13 terpelacak, chain n=3, ⑦ 21.907 tx dari `origin/master`); P10–P15
   lahir; push masih menunggu kata builder
-- [[Session-2026-09-29]] ← tulis penjelasannya
+- [[Session-2026-09-29]] — hari pencabutan yang jujur: E7/F-D39 dan E8/F-D40 dibatalkan oleh kontrol yang dibetulkan, E11 menemukan bump 2 menit (lolos placebo), E13/E14 membuktikan rem bertahan di 16/16 grid ambang; F-D46 (satuan `haircut` ±600x), F-D47 (⑨ menulis 110 `Invalid symbol` + driver merge lupa dipasang), F-D48 (algebra trailing membantah dugaan saya sendiri); E9/E12/E16 dikunci dan epik T1–T7 dibuka
 
 <!-- di atas: append-only oleh scripts/sync_vault.py; gloss tulisan tangan utuh -->
 ```dataview
