@@ -171,27 +171,30 @@ def sign_p(k, n):
 def mann_whitney_p(a, b):
     """p satu arah: distribusi `a` bergeser NAIK terhadap `b` (kohor vs maker-tunggal).
 
-    Aproksimasi normal dengan koreksi seri setara (ties). n=39 vs n=2.566 tidak butuh eksak, dan
-    ties besar di sini (harga "diam") justru membuat aproksimasi lebih berhati-hati: ties
-    dikoreksi di penyebut, bukan diabaikan.
+    DIPERBAIKI 29 Sep 2026 - dan ini bukan kosmetik. Versi pertama menyusun daftar untuk ranking
+    dengan `sorted(a) + sorted(b)`, jadi dua kelompok yang tidak tumpang tindih masuk dalam urutan
+    TURUN dan `a` dapat peringkat paling rendah: pada A=+120..+144 vs B=-300..-324 (A jelas menang)
+    alat ini mengembalikan p=1,0, bukan p~0. Bug kedua: pada nilai sama (ties), tiap elemen `a`
+    dijumlah dengan `sum(ranks[v])` = rata-rata peringkat x jumlah anggota kelompok, bukan rata-rata
+    peringkatnya sendiri. Keduanya membuat p bergantung pada bentuk data, bukan pada arahnya - dan
+    harga yang "diam" di feed kami penuh ties. Semua angka yang dikutip dari fungsi ini di vault
+    WAJIB dihitung ulang (registry T1 baris 38 mencatat perintahnya).
     """
     na, nb = len(a), len(b)
     if na < 5 or nb < 5:
         return None
-    allv = sorted((x, 0) for x in a) + sorted((x, 1) for x in b)
-    ranks, i, tie_groups = {}, 0, []
-    vals = [v for v, _ in allv]
+    vals = sorted(list(a) + list(b))
+    rank, i, tie_groups = {}, 0, []
     while i < len(vals):
         j = i
         while j + 1 < len(vals) and vals[j + 1] == vals[i]:
             j += 1
-        avg = (i + j) / 2.0 + 1.0
-        for k in range(i, j + 1):
-            ranks.setdefault(vals[k], []).append(avg)
+        avg = (i + j) / 2.0 + 1.0          # peringkat rata-rata untuk semua anggota ties
+        rank[vals[i]] = avg
         if j > i:
             tie_groups.append(j - i + 1)
         i = j + 1
-    ra = sum(sum(ranks[v]) for v in a)
+    ra = sum(rank[v] for v in a)
     mu = na * (na + nb + 1) / 2.0
     n = na + nb
     tie_corr = sum(t ** 3 - t for t in tie_groups) / 12.0
@@ -200,6 +203,20 @@ def mann_whitney_p(a, b):
         return None
     z = (ra - mu) / math.sqrt(var)
     return 0.5 * math.erfc(z / math.sqrt(2.0)) if z > 0 else 1.0 - 0.5 * math.erfc(-z / math.sqrt(2.0))
+
+
+def mw_self_test():
+    """Dua kasus yang versi lama jawab SALAH, plus satu kasus ties."""
+    a = [120.0 + i for i in range(25)]
+    b = [-300.0 - i for i in range(25)]
+    p = mann_whitney_p(a, b)
+    assert p is not None and p < 1e-6, ("A jelas di atas B tapi p=%s" % p)
+    assert mann_whitney_p(b, a) > 0.999, "arah terbalik harus memberi p besar"
+    x = [1.0] * 20 + [2.0] * 5
+    y = [1.0] * 20 + [0.0] * 5
+    assert mann_whitney_p(x, y) < 0.05, "ties: x seharusnya di atas y"
+    assert abs(mann_whitney_p([1.0, 2.0, 3.0, 4.0, 5.0], [1.0, 2.0, 3.0, 4.0, 5.0]) - 0.5) < 0.06
+    print("self-test mann_whitney_p OK: arah, terpisah total, ties, identik -> 0,5")
 
 
 def fisher_p(a_pos, a_n, b_pos, b_n):

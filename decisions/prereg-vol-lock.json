@@ -1,0 +1,15 @@
+{
+ "dibuat_utc": "2026-09-29T05:13:25Z",
+ "n_min": 20,
+ "parameter_terkunci": {
+  "data": "HANYA open_utc > t_kunci",
+  "kontrol": "lengan vol-tinggi pada jam/feed/gerbang yang sama",
+  "vonis": "tiga syarat serentak (lihat spesifikasi)"
+ },
+ "spec_sha256": "0x9d70c5809e5df3704858132407a50d6b4d2e510b729cc2217cbd0f62598c1034",
+ "spek_teks": "E9 - A/B terkunci: lengan `vol-rendah` vs lengan `vol-tinggi` pada buku paper.\n\nsumber_aturan : tools/topk_test.py E7 (10 fitur; hanya vol_rendah melewati acak-siklus)\nlengan_A      : kebijakan == \"vol-rendah\" (separuh volatilitas wp terendah kandidat layak harian)\nlengan_B      : kebijakan == \"vol-tinggi\" (kontrolnya, bukan nol)\nharga_masuk   : seperti yang dicatat paper_book (tx.peristiwa + haircut dampak s/L)\nhasil         : net_bps yang sudah dinilai paper_book (ongkos 59 bps RT sudah dipotong)\nperhitungan   : HANYA slot dengan open_utc > t_kunci; slot sebelum kunci = prefill\nvonis_layak   : (1) n_A >= 20 DAN (2) median_A > 0 DAN CI bawah bootstrap 4000 (seed 20260928) > 0\n                DAN (3) Mann-Whitney satu arah A > B p < 0,05\nkalau_kecil   : tulis \"BELUM BISA DIUJI\", jangan \"TIDAK ADA EFEK\"; ambang tidak diturunkan\nlapor_wajib   : n tiap lengan, P(ada harga keluar), median, mean winso + CI, p MW, token unik\nwinso         : +/-2.000 bps pada mean (ekornya tebal di dua arah; median dilaporkan terpisah)\njangan        : tidak ada order, tidak ada rantai, tidak ada perubahan promote-after\n",
+ "spesifikasi": "vault/06-Results/18 - Kandidat Pertama, Diuji Hidup.md",
+ "t_kunci": 1790658805,
+ "t_kunci_iso": "2026-09-29T05:13:25Z",
+ "umur_jam_min": 12
+}

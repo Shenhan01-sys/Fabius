@@ -38,7 +38,9 @@ import hashlib
 import io
 import json
 import os
+import prices as PR  # noqa: E402
 import random
+import statistics
 import sys
 import time
 
@@ -89,6 +91,45 @@ def haircut(net, liq, size_quote):
     return net - imp, True
 
 
+_WP = {}
+
+
+def wp_map():
+    if not _WP:
+        _WP.update(PR.load(os.path.join(ROOT, "universe", "watch-prices.jsonl"), "wp")["rows"])
+    return _WP
+
+
+def vol_sebelum(tk, t, ekor=40):
+    """Volatilitas dari `ekor` baris ticker `wp` TERAKHIR sebelum masuk - definisi yang SAMA dengan
+    yang diukur `tools/topk_test.py`, bukan "window 30 menit" yang mirip.
+
+    Versi pertama fungsi ini membatasi jendelanya ke 30 menit dan mengembalikan None untuk SEMUA
+    kejadian: ticker watch hanya berdetak sekali per siklus rekaman (±35 menit), jadi 12 baris dalam
+    30 menit tidak pernah ada. Kalau A/B hidup memakai definisi yang berbeda dari backtest, yang
+    diuji adalah aturan lain - dan itu kegagalan yang tidak kelihatan dari angkanya sendiri.
+    """
+    ser = wp_map().get(str(tk or "").lower()) or []
+    ps = [p for tt, p in ser if tt <= t][-ekor:]
+    if len(ps) < 12:
+        return None
+    dr = [b / a - 1.0 for a, b in zip(ps[:-1], ps[1:]) if a > 0]
+    if len(dr) < 8:
+        return None
+    return statistics.pstdev(dr)
+
+
+def e9_kunci():
+    """`t_kunci` E9 (kalau ada) - dibaca tiap jalan, bukan disalin sebagai angka."""
+    p = os.path.join(ROOT, "decisions", "prereg-vol-lock.json")
+    if not os.path.exists(p):
+        return None
+    try:
+        return int(json.load(io.open(p, encoding="utf-8")).get("t_kunci") or 0) or None
+    except (ValueError, OSError):
+        return None
+
+
 def bangun(kebijakan, horizon, per_hari, ukuran, seed=20260928):
     ev = MT.bangun(horizon, 15)
     snap = QT.snapshots()
@@ -99,6 +140,7 @@ def bangun(kebijakan, horizon, per_hari, ukuran, seed=20260928):
         e["vol24"] = f.get("volume_24h")
         raw = e["net"]
         e["net_persenliq"], e["hcd"] = haircut(raw, e["liq"], ukuran)
+        e["vol"] = vol_sebelum(e["tk"], e["t"])
     boleh = [e for e in ev if not (e["jual_2"] or e["jual_bersih"])]
     hari = sorted({e["t"] // HARI for e in boleh})
     dipilih, rnd = [], random.Random(seed)
@@ -116,6 +158,23 @@ def bangun(kebijakan, horizon, per_hari, ukuran, seed=20260928):
             dipilih += sorted(tahu, key=lambda e: -(e["lock"] or 0))[:per_hari]
             if len(dipilih) < per_hari * (hari.index(d) + 1):
                 dipilih += buta[:max(0, per_hari - len(tahu))]
+        elif kebijakan in ("vol-rendah", "vol-tinggi"):
+            # A/B HIDUP dari kandidat E7. Yang boleh dipilih hanya yang volatilitasnya TERUKUR;
+            # sisanya dicatat, tidak diisi diam-diam dengan urutan waktu.
+            #
+            # `open_utc` slot adalah WAKTU PERISTIWA, bukan waktu jalan. Tanpa penyaring ini,
+            # semua slot yang dibuka hari pertama justru berselang 05:13Z-nya kunci E9 dan
+            # `tools/vol_ab.py` membuangnya sebagai prefill: alatnya kelihatan hijau, eksperimennya
+            # kosong. Yang dipegang hidup hanyalah kejadian setelah kunci.
+            tk9 = e9_kunci()
+            if tk9 is not None:
+                k = [e for e in k if e["t"] > tk9]
+            tahu = [e for e in k if isinstance(e.get("vol"), (int, float))]
+            separuh = max(1, len(tahu) // 2)
+            xs = sorted(tahu, key=lambda e: e["vol"])
+            ambil = xs[:separuh] if kebijakan == "vol-rendah" else xs[-separuh:]
+            rnd.shuffle(ambil)
+            dipilih += sorted(ambil, key=lambda e: e["t"])[:per_hari]
         elif kebijakan == "tanpa-gerbang":
             dipilih += sorted([e for e in ev if e["t"] // HARI == d], key=lambda e: e["t"])[:per_hari]
     return ev, boleh, dipilih
@@ -142,7 +201,7 @@ def main():
     ap.add_argument("--horizon", type=int, default=30)
     ap.add_argument("--per-day", type=int, default=20, help="budget posisi PAPER per hari")
     ap.add_argument("--size-quote", type=float, default=1.0, help="nominal BNB per posisi (paper)")
-    ap.add_argument("--rank", default="lock", choices=("lock", "first", "random", "tanpa-gerbang"))
+    ap.add_argument("--rank", default="lock", choices=("lock", "first", "random", "tanpa-gerbang", "vol-rendah", "vol-tinggi"))
     ap.add_argument("--kontrak-cap", type=int, default=5,
                     help="dailyCap kontrak - dicetak sebagai pembanding, BUKAN dipakai di paper")
     ap.add_argument("--promote-after", type=int, default=2,
@@ -156,7 +215,7 @@ def main():
     print("buku PAPER | harga peristiwa | ongkos %.1f bps RT + dampak s/L | budget paper %d/hari "
           "(kontrak: %d/hari) | nominal %.2f BNB/posisi" % (rt, a.per_day, a.kontrak_cap,
                                                             a.size_quote))
-    for pol in ("first", "random", "lock", "tanpa-gerbang"):
+    for pol in ("first", "random", "lock", "tanpa-gerbang", "vol-rendah", "vol-tinggi"):
         ev, boleh, dip = bangun(pol, a.horizon, a.per_day, a.size_quote)
         r = ringkas(dip, pol)
         baris.append(r)

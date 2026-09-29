@@ -136,8 +136,29 @@ teramati (ekor **dua-arah**), jadi kuintil yang justru jauh lebih buruk pun meng
 `volume_24h` "lolos" dengan P(≥+500) **0,0 % vs 31,4 %**. Sudah diganti dengan ekor hipergeometrik
 satu arah (`ekor_hipergeo`), dan kolomnya sekarang konsisten dengan arahnya.
 
+> **⚠ KOREKSI 29 Sep 2026 - kolom "MW p" di tabel di bawah DICABUT.** `mann_whitney_p` kami
+> menyusun daftar peringkat dengan `sorted(a) + sorted(b)` (dua kelompok terurut, digabung - bukan
+> digabung lalu diurut) dan menjumlah peringkat ties sebagai `avg × ukuran kelompok`. Efeknya
+> terukur, bukan dugaan: pada dua kelompok yang jelas terpisah (A = +120…+144, B = −300…−324) alat
+> lama mengembalikan **p = 1,000000** (arah terbalik), dan pada tumpang tindih ringan
+> **0,022311** vs yang benar **0,999995**. Jalur lama-vs-baru:
+> `python -X utf8 _research/mw_lama_baru.py`.
+>
+> Dijalankan ulang 29 Sep 05:14Z dengan fungsi yang dibetulkan (`tools/flow_cluster_test.py`
+> sekarang punya `mw_self_test()`): **kolom Mann-Whitney kehilangan semua "lolos"-nya** -
+> `lock_percent` **0,6441** (bukan 0,0000), `n_maker_jendela` 0,2066, `usd_b_jendela` 0,4027,
+> `sniper_count` 0,2801, `bundler_rate` 0,3288; BH pada harapan winso = **TIDAK ADA fitur**. Yang
+> tetap berdiri adalah uji Fisher satu arah (`ekor_hipergeo`) pada P(≥+500): `lock_percent`,
+> `n_maker_jendela`, `sniper_count`, `usd_b_jendela`. Jadi klaim "bertahan dari DUA uji berbeda"
+> turun jadi **satu uji** - dan itu bukan detail redaksi, itu separuh dayanya.
+>
+> Angka kuintil di bawah adalah run 28 Sep; run 29 Sep (1.763 kejadian, 1.531 lolos gerbang, 398
+> berfitur = 26,0 %, baseline berfitur **−61,3 bps**, P(≥+500) **16,8 %**, median −59,2) memberi
+> `lock_percent` Q1 −137,3 → Q5 −52,1 - **dua-duanya minus**, sedangkan 28 Sep −60,1 → +66,0.
+> Kandidatnya bergeser turun bahkan sebelum koreksi alat; setelah koreksi, dia tinggal satu uji.
+
 Yang bertahan dari **dua** uji berbeda (Mann-Whitney pada harapan winso + Fisher satu arah pada
-P(≥+500 bps)), BH α 0,10:
+P(≥+500 bps)), BH α 0,10 - **kolom MW dicabut 29 Sep, lihat kotak di atas**:
 
 | fitur | Q1 → Q5 harapan winso (bps) | P(≥+500) Q5 vs Q1 | MW p | Fisher p |
 |---|---|---|---|---|

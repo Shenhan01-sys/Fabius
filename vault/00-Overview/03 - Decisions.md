@@ -882,3 +882,78 @@ perhitungan tambahan di atas data yang sama.
 **Terkait:** [[06-Results/16 - Harga Keluar yang Hilang]] · [[03-Data/D5 - Record Schemas]] ·
 [[03-Data/D2 - Wallet Flow]] · [[Concepts/Unmeasured Is Not Clean]] ·
 [[08-Backlog/01 - Backlog]] P33/P34/P29 · [[00-Overview/03 - Decisions]] F-D34
+
+## F-D37 — `mann_whitney_p` kami salah urut dan salah ties: satu baris vault dicabut, dan ini kali KETIGA alat kami membatalkan klaim kami · 29 Sep 2026 05:14Z
+
+**Gejalanya bukan angka aneh - gejalanya alat baru yang tidak mau menang.** `tools/vol_ab.py` saya
+buat untuk menguji `vol_rendah` vs `vol-tinggi`; self-test-nya menuntut lengan A yang jelas-jelas
+positif (+120…+144) melawan lengan B yang jelas-jelas negatif (−300…−324) bisa lulus. Fungsi
+`flow_cluster_test.mann_whitney_p` mengembalikan **p = 1,0** untuk itu. Tidak ada hipotesis pasar
+yang bisa menjelaskan angka tersebut; yang ada cuma kode.
+
+**Sebabnya dua, dan keduanya struktural.** (1) Daftar untuk peringkat disusun dengan
+`sorted(a) + sorted(b)` - dua kelompok terurut lalu ditempel, bukan ditempel lalu diurut. Kalau B
+lebih rendah dari A (kasus paling bersih sekalipun), daftar gabungannya turun, dan A dapat peringkat
+1..na: A yang menang dibaca sebagai A yang paling buruk. (2) Pada ties, kontribusi tiap elemen A
+dihitung `sum(ranks[v])` = rata-rata peringkat **× ukuran kelompok ties**, bukan rata-rata
+peringkatnya sendiri; dan harga yang "diam" adalah isi utama feed kami, jadi ties bukan kasus tepi.
+
+**Ukuran dampaknya, bukan dramanya.** Jalur yang sama, data yang sama, hanya fungsinya ditukar
+(`_research/mw_lama_baru.py`):
+
+| kasus | MW lama | MW benar |
+|---|---|---|
+| A terpisah menang telak | 1,000000 | 0,000000 |
+| A tumpang tindih ringan lebih tinggi | 0,022311 | 0,999995 |
+| ties penuh (20×1,0 + 5×2,0 vs 20×1,0 + 5×0,0) | 0,000000 | 0,012837 |
+
+Yang ikut bergerak di vault: kolom **"MW p"** di [[06-Results/13 - Apakah Tidak Trading Itu Gratis]]
+§3d. Dijalankan ulang dengan fungsi benar: `lock_percent` **0,6441** (yang terbit 0,0000),
+`n_maker_jendela` 0,2066, `usd_b_jendela` 0,4027, `bundler_rate` 0,3288 - **BH pada harapan winso
+menjadi kosong**, dan kalimat "satu-satunya fitur yang lolos **dua** uji" turun jadi satu uji.
+[[TradingKnowledge/Fakta Terukur]] §F dan baris 25 registry ikut dikoreksi dengan angka 29 Sep.
+Teknikal (12 fitur) dan E5 **tidak** berubah vonisnya - di sana MW bukan yang memutuskan.
+
+**Keputusan.** (a) Perbaiki fungsinya, jangan cuma kutip ulang angkanya, dan letakkan
+`mw_self_test()` **di sebelah** `mann_whitney_p` supaya siapa pun yang memakai ulang melihat batasnya;
+(b) setiap p yang dikutip dari fungsi ini sebelum 29 Sep 05:00Z dianggap belum terverifikasi sampai
+alatnya dijalankan lagi; (c) aturan baru di epik: *tidak ada `p` dari alat kami yang boleh masuk
+vault tanpa satu kasus uji yang bisa membuatnya gagal* - `fisher_p` (dua-arah) dan parser `receipt`
+adalah dua korban sebelumnya, dan ketiganya ketahuan bukan oleh review, tapi oleh **perintah yang
+dijalankan sampai selesai**.
+
+**Skop yang tidak boleh dilewati.** Koreksi ini tidak membuat `lock_percent` hidup lagi: dia tetap
+mati sebagai kebijakan (F-D32) dan sekarang kehilangan satu tiang penyangga lagi. Dan MW yang benar
+tidak membuat `vol_rendah` jadi klaim - dia tetap kandidat sampai E9 jatuh ([[06-Results/18 -
+Kandidat Pertama, Diuji Hidup]]).
+
+## F-D38 — Kandidat masuk pertama diuji HIDUP, bukan di backtest: kunci keempat 05:13:25Z · 29 Sep 2026
+
+**Kenapa bukan backtest lagi.** E7 (`tools/topk_test.py`, 29 Sep 04:55Z) menghasilkan pemenang
+pertama dalam proyek ini yang melewati kontrolnya sendiri: `vol_rendah` **+132,9 bps** vs acak-siklus
+−134,3 dengan CI atas acak **+116,1**. Tapi sepuluh fitur diuji sekaligus, jadi peluang satu "menang"
+tanpa efek ≈ 10 × 0,025 = **0,25**; dengan Bonferroni hasilnya **tidak signifikan**. Mengumumkan ini
+sebagai temuan adalah persis kesalahan yang sudah dua kali kami bayar (F-D30 harga masuk beku,
+F-D32 control mempromosikan dirinya sendiri): klaim yang lahir dari bentuk uji, bukan dari pasar.
+
+**Yang diputuskan.** `vol_rendah` dipindah dari backtest ke **buku paper yang berjalan terus**:
+job `paper-book` membuka dua lengan tiap siklus - `vol-rendah` dan `vol-tinggi` - pada jam yang sama,
+feed yang sama, gerbang veto yang sama, dan hanya berbeda di peringkat volatilitas ticker `wp`.
+Kuncinya: `decisions/prereg-vol-lock.json`, `spec_sha256=0x9d70c580…`, dipasang **SEBELUM** ada satu
+slot pasca-kunci; syarat umur 12 jam; vonis tiga syarat serentak (n≥20, median>0 DAN CI bawah>0,
+Mann-Whitney satu arah A>B p<0,05 - dengan fungsi yang baru dibetulkan di F-D37). Kalau n<20 saat
+matang, vonisnya tertulis **"BELUM BISA DIUJI"**, ambang tidak diturunkan, dan itu bukan "tidak ada
+efek".
+
+**Dua bug desain yang ketahuan sebelum kunci sempat dipakai - keduanya bentuk kegagalan yang tidak
+kelihatan dari angkanya sendiri.** (1) `vol_sebelum()` versi pertama membatasi jendela ke 30 menit,
+padahal ticker watch berdetak sekali per ±35 menit: hasil `None` untuk SEMUA kejadian, dan "0 posisi"
+terlihat seperti "belum ada yang layak", bukan seperti aturan yang berbeda dari yang diukur. (2)
+`open_utc` slot adalah **waktu peristiwa**, bukan waktu jalan: tanpa penyaring `t > t_kunci`, semua
+slot yang dibuka hari itu dibuang `vol_ab.py` sebagai prefill - percobaan tampak hidup padahal
+kosong. Satu rem tambahan dipasang di `paper_book.py`: kebijakan dengan **nol** posisi tidak boleh
+lagi dicetak "di atas control" (sebelumnya itu terjadi begitu saja saat acaknya kebetulan negatif).
+
+**Konsekuensi untuk halaman produk.** Yang boleh ditulis hari ini cuma: *"kami punya satu kandidat
+alas masuk, ia sedang diuji pada data yang belum terjadi, dan vonisnya jatuh 17:13Z."* Bukan
+"Fabius sekarang tahu kapan masuk". 

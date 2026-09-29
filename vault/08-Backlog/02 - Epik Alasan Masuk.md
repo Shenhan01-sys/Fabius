@@ -59,7 +59,7 @@ dijalankan*, dan jawabannya hari ini: pada 5/hari @1 BNB, buku ini **−708,9 bp
 | **E2** | **jendela risiko pasar**: hanya masuk saat major (BTC/ETH di `tools/bars.py`) sedang naik & volatil | payoff ekor memecoin bergantung rezim, bukan token; kita sudah punya bar major panjang (Hyperliquid/Aster/Binance) | ada (bar major + aliran) | **YA** |
 | **E3** | **identitas kohor, bukan jumlah**: maker yang menang pada kohor sebelumnya vs maker baru | panel GMGN tidak netral (keanggotaan = pilihan vendor), jadi klaim apa pun di sini wajib diuji terhadap "maker acak dari kerumunan yang sama" | ada, tapi cohort lama terbatas | sebagian - n kecil |
 | **E4** | **siklus hidup pool**: umur, `liq_usd`, `vol_h1`, rasio `buys/sells` per jam | kandidat terbaik kita (`lock_percent`) muncul dari sini lalu mati karena **cakupan**, bukan karena idenya salah | `wp` seragam + snapshot yang tidak dipilih daftar panas (P29) | BELUM - 25,1 % kejadian, dan subset itu baseline-nya −64,7 |
-| **E5** | **posisi dalam pump** (`tarik dari puncak`, `jatuh dalam`) | "beli darah" adalah intuisi masuk yang paling umum | ada | **SUDAH DIUJI - SALAH**: −2.853 bps (MW p=1,0) vs baseline; buy-the-dip justru yang paling buruk |
+| **E5** | **posisi dalam pump** (`tarik dari puncak`, `jatuh dalam`) | "beli darah" adalah intuisi masuk yang paling umum | ada | **SUDAH DIUJI - SALAH**: −2.853 bps vs baseline (tanda-uji satu arah; label "MW p=1,0" yang dulu ditulis di sel ini **dicabut** - angka itu keluar dari `mann_whitney_p` yang ternyata salah urut, lihat [[00-Overview/03 - Decisions]] F-D37); buy-the-dip justru yang paling buruk |
 
 E5 sudah mati hari ini. E4 butuh P29. **Malam ini yang bisa kujalankan: E1 dan E2.**
 
@@ -124,6 +124,54 @@ dengan kunci sendiri, bukan E2 yang direvisi.
 
 **Vonis epik sejauh ini: kerumunan maker bukan gas, dan belum terbukti rem yang berdiri sendiri di luar `jual_*` yang sudah terukur.** Yang TIDAK boleh dilakukan karena angka terakhir: membalik tanda jadi sinyal fade - aturan halaman 12 menutup dua arah, dan 40 pasangan bukan dasar untuk mengganti teori. Kalau fade dikejar: spesifikasi baru, kunci baru, data yang belum dilihat (P32/P33/P34 tetap jalan lebih dulu).
 
+## 3d. E7: untuk pertama kalinya ada satu fitur yang melewati kontrolnya - dan dia belum boleh dijual
+
+`tools/topk_test.py` (29 Sep 04:52Z, artefak `decisions/topk-test-20260929T045553Z.json`;
+403 kejadian, 24 siklus 30 menit, harga masuk/keluar dari ticker `wp`, ongkos 59 bps, penjelajahan
+berhenti di `t_kunci` watch 02:59:06Z). Kontrolnya diubah bentuk dulu: bukan acak sepanjang jendela,
+tapi **acak sesama kandidat di siklus yang sama** - karena yang agen hadapi bukan "kerumunan vs
+rata-rata sepanjang masa", tapi "lima kursi dari kandidat yang ada detik ini".
+
+| fitur | n | mean winso | median | acak-siklus (CI atas) | vonis |
+|---|---|---|---|---|---|
+| **`vol_rendah`** | 95 | **+132,9** | −59,0 | −134,3 (**+116,1**) | **DI ATAS ACAK** |
+| `di_bawah_puncak60` | 95 | +107,1 | −47,1 | −125,8 (+115,8) | di bawah acak (selisih 8,7 bps) |
+| `usd_ge_1k` | 95 | −132,0 | −121,9 | −129,6 (+175,2) | di bawah acak |
+| `sepi_total` | 95 | −41,1 | −65,2 | −126,8 (+109,2) | di bawah acak |
+| `vol_tinggi` | 95 | −199,2 | −509,7 | −141,8 (+101,0) | di bawah acak |
+| `di_atas_puncak60` | 95 | −161,9 | −67,3 | −131,6 (+128,6) | di bawah acak |
+| `spread_ok` | 95 | −396,9 | −811,0 | −125,7 (+114,1) | di bawah acak |
+| `banyak_jual` | 95 | −403,3 | −811,0 | −130,2 (+123,1) | di bawah acak |
+| `maker_ge3` | 95 | −434,4 | −789,1 | −115,7 (+131,2) | di bawah acak |
+| `kluster_beli` | 95 | −425,7 | −751,1 | −123,8 (+126,3) | di bawah acak |
+
+Tiga hal yang wajib disebut bersama tabel itu:
+
+1. **Sepuluh uji sekaligus.** Peluang satu "menang" tanpa efek apa pun ≈ 10 × 0,025 = **0,25**.
+   Dengan koreksi Bonferroni, `vol_rendah` **tidak signifikan**. Ini kandidat pertama yang arahnya
+   bertahan saat kontrolnya diperketat - bukan hasil.
+2. **Mediannya tetap −59,0 bps** (= persis lantai ongkos). Keuntungannya ada di ekor kanan
+   (P(≥+500) 31,6 %), bukan di posisi tipikal. Harapan yang datang dari ekor tidak bisa dijual
+   sebagai pendapatan - dan tanpa kedalaman (P33) kita tidak bisa mengklaim bisa mengambilnya.
+3. **Pool-nya tetap −183,7 bps** sebelum penyortiran apa pun. Jadi kalau `vol_rendah` benar, yang
+   ia lakukan adalah *memilih dari kolam yang bocor*, bukan mengeringkannya.
+
+**E8 - sisi keluar, dan ini yang pertama bisa dipasang sebagai perilaku.** Keluar saat **kerumunan
+beli datang** (≥2 maker berbeda dalam 15 menit) vs menahan sampai horison, diukur pada **posisi yang
+sama** (`tools/topk_test.py` `uji_keluar()`, artefak yang sama): 122 posisi dipantau, keluar dini
+menolong **69**, merugikan **45**, median **+116,5 bps**, mean winso **+316,6 bps**, persentil
+5-95 **[−2.000; +2.000]** - ekornya menyentuh lantai di dua arah, jadi angka ini perbaikan rata-rata
+pada pool yang sangat miring, bukan gaji. Perilaku ini sudah jadi alat: `tools/exit_policy.py`
+(tiga pemicu: kerumunan datang, harga kini ≥ puncak 60 menit pertama, jaring +4 %; `TAK ADA DATA`
+kalau ticker basi - tidak diperlakukan sebagai "bersih").
+
+**E9 - kunci keempat dipasang 29 Sep 05:13Z** sebelum satu byte data replikasi ada:
+[[06-Results/18 - Kandidat Pertama, Diuji Hidup]], `spec_sha256=0x9d70c580…`, matang **17:13:25Z**,
+`tools/vol_ab.py`. Dua lengan dibuka hidup-hidup oleh job `paper-book` (`vol-rendah` vs
+`vol-tinggi`, jam yang sama, feed yang sama, gerbang yang sama) dan vonisnya tiga syarat serentak
+(n≥20, median>0 DAN CI bawah>0, Mann-Whitney satu arah A>B p<0,05 - sekarang dengan fungsi yang
+sudah dibetulkan). Kalau n<20 saat matang: "BELUM BISA DIUJI", ambang tidak diturunkan.
+
 ## 4. Non-goal eksplisit
 
 - Tidak menaikkan `promote-after` di bawah gerbang F-D16 walau streak tercapai.
@@ -131,6 +179,11 @@ dengan kunci sendiri, bukan E2 yang direvisi.
 - Tidak menjual `lock_percent` lagi: ia sudah hidup sekali sebagai kandidat dan **mati sebagai
   kebijakan** karena memilih subset yang punya data (baseline −64,7), bukan karena pasar menolak idenya.
 - Tidak menulis satu pun angka halaman ini sebagai PnL. Belum ada fill, belum ada kedalaman.
+- Tidak menjual `vol_rendah` sebagai "Fabius tahu kapan masuk" sebelum E9 jatuh: satu pemenang dari
+  sepuluh uji adalah **kandidat**, dan kita sudah dua kali melihat kandidat mati di hari kedua
+  (`lock_percent`, kerumunan maker).
+- Tidak mengutip satu pun `p` dari `mann_whitney_p` versi sebelum 29 Sep 05:00Z tanpa menghitung
+  ulang - fungsi itu salah urut dan salah ties (F-D37), dan ia sudah menggerakkan satu baris vault.
 
 **Terkait:** [[06-Results/13 - Apakah Tidak Trading Itu Gratis]] · [[06-Results/14 - Buku Paper]] ·
 [[06-Results/12 - Harga Masuk yang Benar]] · [[TradingKnowledge/O5 - Whale dan Kohor Smart Money]] ·

@@ -59,6 +59,18 @@ jobs:
             --size-quote "${{ github.event.inputs.size_quote || '0.01' }}" \
             --emit
 
+      - name: A/B hidup kandidat E7 (dua lengan dibuka sekaligus, berlabel)
+        run: |
+          # `vol_rendah` adalah satu-satunya dari 10 fitur di tools/topk_test.py yang melewati
+          # acak-siklus di backtest - dan backtest itu tetap TIDAK boleh dijual, karena 10 fitur
+          # diuji sekaligus (Bonferroni 0,025 x 10 = 0,25). Yang membuatnya berarti adalah kiriman
+          # yang belum terjadi: kedua lengan dibuka pada jam yang sama, feed yang sama, gerbang
+          # yang sama, dan hanya beda di peringkat volatilitas.
+          python -u tools/paper_book.py --rank vol-rendah --per-day 6 \
+            --size-quote "${{ github.event.inputs.size_quote || '0.01' }}" --emit
+          python -u tools/paper_book.py --rank vol-tinggi --per-day 6 \
+            --size-quote "${{ github.event.inputs.size_quote || '0.01' }}" --emit
+
       - name: Commit + dorong (dengan retry; kalau push gagal, JANGAN diam)
         run: |
           git config user.name "paper-book-recorder"
