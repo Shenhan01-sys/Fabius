@@ -38,6 +38,18 @@ fitur yang tidak bisa diverifikasi.
 | sebelum submit | **P2-P6b** jalur submission (host, kartu agen, form satu kontrak) | URL publik + form terisi dengan angka yang baris perintahnya ada di registry |
 | kalau ada ruang | **P49/E17** trailing sebagai uji bentuk-distribusi (random-barrier placebo) | tabel `P(net <= -X)` + median vs placebo, bukan "untung/tidak" |
 
+**Teori → alat → vonis (satu tatapan, detail di [[08-Backlog/03 - Epik Teori Baru]]):**
+
+| teori | alat | vonis sekarang |
+|---|---|---|
+| T1 imbalance buku order | `tools/book_prereg.py` (⑨) | 🔒 terkunci, vonis 21:37:45Z - dan yang diuji **state**, bukan OFI |
+| T2 trailing/SL dinamis | `tools/trailing_gate.py` + `tools/trailing_policy.py` | 🟠 algebra lolos (63-66 % jendela sah), **E17 tidak bisa dinilai** pada 1-4 bar/jam |
+| T3 signed-volume dari transaksi | `tools/flow_variasi.py` | ✅ **NOL** (BH kosong, sebar pembagian ±200-470 bps) |
+| T4 spread/depth sebagai batas | `tools/cost_budget.py` + `tools/venue_bridge.py` | 🟡 ambang spread ~21 bps; venue cuma menyentuh **3,1 %** kabar |
+| T5 microprice/queue | (belum ada alat - tidak terukur) | 🚫 ditulis sebagai "belum", bukan "tidak ada" |
+| T6 slope kedalaman → model dampak | menunggu 24 jam ⑨ | ⏳ satu paket dengan P42 (bug satuan dampak) |
+| T7 funding/OI + cascade | ②/`tools/backtest.py` | jalur sendiri (U1-U3, sudah ada vonisnya) |
+
 **Item yang lahir 29 Sep, satu baris masing-masing (status = yang bisa dibuktikan hari ini):**
 
 | item | status sekarang |
