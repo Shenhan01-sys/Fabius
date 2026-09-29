@@ -1,0 +1,142 @@
+{
+ "C_bps": 59.0,
+ "catatan_arah": "pi dari ticker wp adalah BATAS BAWAH puncak (bar jarang) - gate ini pesimis terhadap klaim lock",
+ "dibuat_utc": "2026-09-29T10:13:32Z",
+ "gate": [
+  {
+   "ambang_pi_bps": 59.1,
+   "fraksi_ada_jendela": 0.661,
+   "fraksi_puncak_awal": 0.63,
+   "i_mode": "0",
+   "median_pi_bps": 1122.05,
+   "s_bps": 0.04
+  },
+  {
+   "ambang_pi_bps": 59.1,
+   "fraksi_ada_jendela": 0.661,
+   "fraksi_puncak_awal": 0.63,
+   "i_mode": "s",
+   "median_pi_bps": 1122.05,
+   "s_bps": 0.04
+  },
+  {
+   "ambang_pi_bps": 86.1,
+   "fraksi_ada_jendela": 0.651,
+   "fraksi_puncak_awal": 0.62,
+   "i_mode": "0",
+   "median_pi_bps": 1122.05,
+   "s_bps": 13.54
+  },
+  {
+   "ambang_pi_bps": 99.6,
+   "fraksi_ada_jendela": 0.649,
+   "fraksi_puncak_awal": 0.615,
+   "i_mode": "s",
+   "median_pi_bps": 1122.05,
+   "s_bps": 13.54
+  },
+  {
+   "ambang_pi_bps": 101.0,
+   "fraksi_ada_jendela": 0.649,
+   "fraksi_puncak_awal": 0.615,
+   "i_mode": "0",
+   "median_pi_bps": 1122.05,
+   "s_bps": 21.0
+  },
+  {
+   "ambang_pi_bps": 122.0,
+   "fraksi_ada_jendela": 0.644,
+   "fraksi_puncak_awal": 0.613,
+   "i_mode": "s",
+   "median_pi_bps": 1122.05,
+   "s_bps": 21.0
+  },
+  {
+   "ambang_pi_bps": 179.0,
+   "fraksi_ada_jendela": 0.634,
+   "fraksi_puncak_awal": 0.605,
+   "i_mode": "0",
+   "median_pi_bps": 1122.05,
+   "s_bps": 60.0
+  },
+  {
+   "ambang_pi_bps": 239.0,
+   "fraksi_ada_jendela": 0.624,
+   "fraksi_puncak_awal": 0.588,
+   "i_mode": "s",
+   "median_pi_bps": 1122.05,
+   "s_bps": 60.0
+  },
+  {
+   "ambang_pi_bps": 459.0,
+   "fraksi_ada_jendela": 0.589,
+   "fraksi_puncak_awal": 0.553,
+   "i_mode": "0",
+   "median_pi_bps": 1122.05,
+   "s_bps": 200.0
+  },
+  {
+   "ambang_pi_bps": 659.0,
+   "fraksi_ada_jendela": 0.557,
+   "fraksi_puncak_awal": 0.519,
+   "i_mode": "s",
+   "median_pi_bps": 1122.05,
+   "s_bps": 200.0
+  }
+ ],
+ "horison_menit": 60,
+ "kejadian": 404,
+ "perintah": "python -X utf8 tools/trailing_gate.py --horison 5",
+ "pi": {
+  "max": 827665.0,
+  "median": 1122.05,
+  "p75": 4234.0,
+  "p90": 10474.5,
+  "p95": 19487.5
+ },
+ "resolusi": [
+  {
+   "horison_menit": 5,
+   "persen_terlihat": 31.1,
+   "terlihat": 150,
+   "total": 482
+  },
+  {
+   "horison_menit": 30,
+   "persen_terlihat": 83.6,
+   "terlihat": 403,
+   "total": 482
+  },
+  {
+   "horison_menit": 60,
+   "persen_terlihat": 83.8,
+   "terlihat": 404,
+   "total": 482
+  }
+ ],
+ "sha": "0x8914a0f5a32e78ec52ffe4312cfd44197f73075ce3aa1972c639e9fb3ec7b01b",
+ "spread": {
+  "max": 519.48,
+  "n_simbol": 14,
+  "n_snapshot": 44,
+  "p50": 0.04,
+  "p90": 13.54,
+  "per_simbol": {
+   "0GUSDT": 10.09,
+   "4STOCKUSDT": 422.28,
+   "4USDT": 13.54,
+   "AEONUSDT": 20.2,
+   "AIUSDT": 40.84,
+   "APEUSDT": 13.29,
+   "ARIAUSDT": 18.97,
+   "ASTEROIDUSDT": 519.48,
+   "ASTERUSDT": 1.38,
+   "BNBUSDT": 1.05,
+   "BTCUSDT": 0.01,
+   "CAKEUSDT": 7.77,
+   "ETHUSDT": 0.04,
+   "SOLUSDT": 0.84
+  }
+ },
+ "tp_cap_bps": 500.0
+}

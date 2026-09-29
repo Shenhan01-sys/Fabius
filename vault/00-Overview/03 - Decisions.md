@@ -1380,3 +1380,52 @@ sebelum dianggap hidup (sudah ada di laporan ⑨: `bd=… bdx=…`).
 **Terkait:** [[06-Results/22 - Buku Order, Terkunci Lebih Dulu]] §5c · [[08-Backlog/01 - Backlog]]
 P47 · [[07-Testing/01 - Test Commands]] baris 51/53 · [[08-Backlog/03 - Epik Teori Baru]] T1/T4
 
+## F-D48 — Algebra trailing diukur pada jalur harga kami, dan angkanya membantah dugaan saya · 29 Sep 2026 10:12Z
+
+**Awalnya saya ingin menulis "jendelanya kosong".** Teori builder (trailing stop "pokoknya
+jangan sampai rugi", jaraknya sudah hitung spread + fee) punya penurunan yang jelas:
+
+```
+  PnL = pi - d - s - i - C      LOCK>=0 <=> pi >= d+s+i+C      anti-bounce <=> d > s
+  =>  syarat perlu  pi > 2s + i + C ;  jendela sah  s < d <= pi - s - i - C
+  =>  "jangan sampai rugi" (semua path) butuh d <= -(s+i+C) : TIDAK ADA d >= 0
+```
+
+dengan C = 59,0 bps (terukur, `tools/costs.py`). Dugaan saya: puncak tipikal kami cuma +192,7 bps
+(E11 @2m), jadi dengan spread saja jendelanya sempit. `tools/trailing_gate.py` mengukur
+**puncak sebenarnya pada jalur yang kami punya**, dan dugaannya salah:
+
+| | angka |
+|---|---|
+| puncak median, jendela 60 m | **+1.122,0 bps** (p75 +4.234,0) |
+| puncak median di **paruh awal** jendela | **+747,1 bps** |
+| spread TERUKUR ⑨ (44 snapshot, 14 simbol) | p50 **0,04** · p90 **13,54** · max 519,48 bps |
+| fraksi kejadian dengan jendela d sah | **66,1 %** (pi) · **63,0 %** (pi_awal) |
+| bahkan di s = 200 bps dengan i = s | masih **51,9 %** |
+
+**Yang benar ditulis apa adanya:** "jangan sampai rugi" tetap mustahil - itu algebra, bukan
+pengukuran. Tapi **lock bersyarat adalah hal yang lazim di substrate ini**, dan klaim bahwa idenya
+"tidak mungkin" akan jadi klaim palsu dari saya. Yang benar-benar membatasi tiga hal lain:
+(1) **resolusi** - pada 5 menit, 69 % kejadian tidak punya dua baris harga sama sekali (31 %
+terlihat), jadi trigger tidak bisa diletakkan di tempat kabar hidup; (2) **waktu** - `pi_awal`
+hanya proksi "cukup awal", bukan replika pemicu; (3) **bukan drift** - stop mengubah bentuk
+distribusi, dan itu persis yang dikatakan literatur: *"neither reduce nor increase investors'
+losses ... the value of stop loss strategies may come largely from risk reduction rather than return
+improvement"* (Lei & Li 2009, Financial Services Review 18(1):23-51 - abstrak saya baca langsung,
+S6). Osler (NY Fed SR150, S7) menambah sisi eksekusinya: tren "unusually rapid" di level tempat
+stop berkerumun, dan respons stop **lebih besar** daripada take-profit - jadi `i` bukan nol, dan
+belum kami ukur.
+
+**Keputusan.** (a) E17 boleh dibangun, tapi **vonisnya bukan "apakah trailing menguntungkan"**:
+yang diukur adalah perubahan `P(net ≤ −X)` dan median pada posisi yang sama, lawan **random-barrier
+placebo** (level stop digambar dari distribusi yang sama tanpa berjangkar ke puncak) - karena
+kombinasi algebra + Lei&Li meramalkan bentuk, bukan arah. (b) `i` (gap fill−trigger) jadi variabel
+yang HARUS direkam ⑨ sebelum angka "net of cost" di venue dipakai - tambahkan ke P45. (c) Satu
+aturan metode lagi, dari kejadian nyata ini: **turunkan algebra-nya lebih dulu, lalu ukur
+distribusinya - dan biarkan distribusi membantah Anda.** Vonis yang keluar dari alat ini
+membatalkan kalimat yang sudah saya siapkan di kepala; itu bukan kegagalan, itu gunanya.
+
+**Terkait:** [[06-Results/23 - Gerbang Trailing]] · [[08-Backlog/03 - Epik Teori Baru]] T2 ·
+[[08-Backlog/04 - Riset Teori (Sitasi)]] S6-S9 · [[07-Testing/01 - Test Commands]] baris 55 ·
+[[TradingKnowledge/FD7 - Invalidation Stop dan Time-Stop]]
+

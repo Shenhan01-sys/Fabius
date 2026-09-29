@@ -52,6 +52,10 @@ hasil keluar — koreksi lewat halaman baru, supaya urutannya bisa dipertanggung
   tahan sampai menit ke-30 **pada posisi yang sama**, empat syarat serentak termasuk syarat baru F-D41
   (laporkan umur baris harga keluar + `P(ada harga keluar)` atau angkanya tidak masuk vault). Vonis
   **20:04:56Z**.
+- [[23 - Gerbang Trailing]] - algebra "jangan sampai rugi" diukur pada jalur harga kami sendiri.
+  Hasilnya **membantah dugaan saya**: lock bersyarat justru umum (63 % kejadian punya puncak di paruh
+  awal yang melewati ambang 2s+i+C) - yang tidak kami punya adalah **resolusi** (pada 5 menit 69 %
+  kejadian tidak punya dua baris harga sama sekali), dan stop mengubah bentuk distribusi, bukan drift.
 - [[21 - Rem di Horison Cepat]] - E13: satu-satunya hal yang **masuk** di horison tempat kabar hidup
   adalah menolak. Di menit ke-5 `BOLEH` **+285,5 bps** (median **+79,8**) vs `VETO` **−230,3**
   (median −377,8); selisih +515,8 melawan CI atas placebo +397,2. Eksplorasi tanpa kunci, dan

@@ -106,6 +106,58 @@ lama** daripada take-profit; signifikan per jam, bukan per hari.
 200 detik, pergerakan cepat menembus level trailing justru terjadi di antara dua rekaman kami -
 di area yang paling buta bagi alat kami.
 
+### S6 — Stop-loss tidak mengubah harapan; yang diubah risikonya. (kutipan verbatim)
+
+**Sumber:** Lei & Li, *Do Stop-loss Strategies Add Value for Individual Investors?*, Financial
+Services Review 18(1):23–51 (2009) —
+https://openjournals.libs.uga.edu/fsr/article/view/4933 (abstrak dibaca langsung 29 Sep 2026)
+
+> "Our results indicate that these strategies **neither reduce nor increase investors' losses**
+> relative to a buy-and-hold strategy once we extend security returns from past realizations to
+> possible future paths. One unique stop loss mechanism, nevertheless, helps investors to reduce
+> investment risk. These findings suggest that the value of stop loss strategies may come largely
+> from **risk reduction rather than return improvement**."
+
+**Untuk kita:** ini sandaran literatur untuk penurunan algebra di [[06-Results/23 - Gerbang Trailing]] §1 dan untuk bentuk vonis E17: yang boleh diklaim adalah perubahan **bentuk** distribusi
+(`P(net ≤ −X)`, median), bukan kenaikan harapan.
+
+### S7 — Stop yang berkerumun menghasilkan cascades, dan responsnya lebih besar daripada take-profit
+
+**Sumber:** Osler, *Stop-loss Orders and Price Cascades in Currency Markets*, NY Fed Staff Report
+150 (2002) — https://ideas.repec.org/p/fip/fednsr/150.html (abstrak dibaca langsung 29 Sep 2026)
+
+> "Exchange rate trends are **unusually rapid** when rates reach exchange rate levels at which
+> stop-loss order have been documented to cluster."
+> "The response to **stop-loss orders is larger** than the response to take-profit orders, which
+> generate negative-feedback trading and are therefore unlikely to contribute to price cascades."
+
+**Untuk kita:** jawaban untuk `i` (slippage menembus bid saat trigger). Arahnya jelas: fill stop bukan
+di trigger. Besarnya di venue kami **belum diukur** - dan tidak ada literatur yang memberi angka
+spread untuk perp micro-cap BNB Chain, jadi itu tugas ⑨, bukan tugas pustaka.
+
+### S8 — VPIN: versi primernya terbukti TIDAK STABIL pada bucket kecil
+
+**Sumber:** Ke & Lin, *An Improved Version of the Volume-Synchronized Probability of Informed
+Trading*, Critical Finance Review 6(2):357–376 (2017), DOI 10.1561/104.00000046 —
+https://ideas.repec.org/a/now/jnlcfr/104.00000046.html (abstrak dibaca langsung 29 Sep 2026)
+
+> "We show mathematically that Easley et al.'s VPIN metric **becomes unstable for small volume
+> buckets and for infrequent informed trades**."
+
+**Untuk kita:** granularitas data ⑦/⑩ kami membuat bucket-nya justru kasar DAN kejadiannya jarang -
+dua syarat ketidakstabilan sekaligus. Artinya kalau E18/T3 mencoba varian VPIN, yang diuji adalah
+versi yang literaturnya sendiri bilang tidak stabil; itu harus ditulis di halaman hasilnya, bukan
+disembunyikan di belakang kata "VPIN-style".
+
+### S9 — Order book crypto bisa menutup 75 % dalam sehari, dan model dampak salah prediksi fill
+
+**Sumber (dibaca agen, belum saya verifikasi teksnya):** arXiv:2603.09164 (Hyperliquid, episode
+10 Okt 2025): depth-100bps turun $1,12 miliar → $284 juta (−75 %) dalam 36 jam; market maker efektif
+8,7 → 2,8; dan **`realized = 0,42 + 1,12 × predicted`** - model underpredict likuidasi nyata.
+arXiv:2607.27070: 7 cascade, event $19 miliar; sinyal peringatan dini **tidak invariant antar-event**
+(harga muncul di 5 dari 7, diam di 2 shock berita). arXiv:2512.01112: ADL menutup $2,1 miliar dalam
+12 menit. **Status: angka ini dari agen riset; tandai "belum diverifikasi ulang" di setiap pemakaian.**
+
 ## 3. Yang TIDAK terverifikasi - dan karena itu tidak boleh dikutip
 
 | klaim | status |
@@ -116,6 +168,8 @@ di area yang paling buta bagi alat kami.
 | uji formal "jarak trailing < spread ⇒ rugi" | **tidak ada literatur yang saya temukan**; aritmatikanya kami turunkan sendiri di [[08-Backlog/03 - Epik Teori Baru]] §3 dan itu harus dibaca sebagai matematika kami, bukan temuan orang |
 | Silantyev (2019) "trade-flow imbalance > book imbalance" | muncul dari ringkasan mesin pencari, **teksnya belum dibaca** - jangan dipakai sampai dibaca |
 | isi buku Bouchaud/Lefebvre/Zenou dan paper quote-stuffing | belum dibaca; tidak dikutip |
+| angka **effect size Chordia & Subrahmanyam** dan **Kyle (1985)** formal | abstrak/bibliografi terverifikasi, isi tidak - jangan kutip angka |
+| spread (bps) untuk perp micro-cap BNB Chain | **tidak ada di literatur**; satu-satunya jalan adalah mengukur ⑨ - dan itu yang sekarang berjalan |
 
 ## 4. Terkait
 
