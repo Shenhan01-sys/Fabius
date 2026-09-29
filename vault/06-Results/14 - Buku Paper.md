@@ -47,6 +47,14 @@ Tiga bacaan, dan yang kedua tidak enak:
 - **Ukuran itu nyata walau di paper.** Naik dari 0,01 → 1,00 BNB memangkas mean ~**70–90 bps/posisi**
   (192,8 → 115,6 pada acak): itu dampak harga 2·s/L dua kaki pada likuiditas yang kita tahu. Satu
   kaki lainnya diam: **454 dari 556 posisi tidak punya angka likuiditas sama sekali**, jadi haircut
+> **⚠ KOREKSI 29 Sep 08:56Z - "dampak" di halaman ini bukan dampak (F-D46).**
+> `tools/impact_audit.py` mengaudit 702 slot: `haircut()` membagi **size dalam BNB** dengan
+> **liq dalam USD** (±600x terlalu kecil; median `dampak_bps` tercatat 0,00), dan desil terbawah
+> `liq` adalah **$1 dan $0** - di sana x·y=k memberi 120.000 bps, yang benar cuma "sampah".
+> Tiga varian, satu jalur data: **tercatat +75,9** · **satuan-dibetulkan −715,7** ·
+> **hanya-liq-sah (floor $1.000) −87,8 bps**. Jadi setiap "+xxx bps/posisi" di bawah adalah
+> *net of ongkos 59 bps dan hampir nol dampak*. Kode tidak diubah malam ini karena E9/E12 sudah
+> terkunci pada definisi yang dicatat - perbaikan di P42, setelah kedua vonis jatuh.
   mereka nol - dan itu membuat angka setinggi apa pun di tabel ini masih **optimis**, bukan seram.
 
 ## 2. Batas yang tidak bisa dibeli oleh status "paper"

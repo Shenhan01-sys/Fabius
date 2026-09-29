@@ -1,0 +1,39 @@
+{
+ "asumsi_bnb_usd": 650.0,
+ "dibuat_utc": "2026-09-29T08:56:48Z",
+ "hasil": {
+  "hanya_liq_sah": {
+   "P>=500": 4.3,
+   "mean_winso": -87.8,
+   "median": -61.8,
+   "n": 139,
+   "positif": 10.8
+  },
+  "satuan_dibetulkan": {
+   "P>=500": 4.1,
+   "mean_winso": -715.7,
+   "median": -92.1,
+   "n": 219,
+   "positif": 8.2
+  },
+  "sensor": {
+   "bnb_usd": 650.0,
+   "di_bawah_floor": 80,
+   "liq_diketahui": 219,
+   "liq_floor_usd": 1000.0,
+   "liq_nol_atau_absen": 483,
+   "slot": 702
+  },
+  "tercatat": {
+   "P>=500": 31.1,
+   "mean_winso": 75.9,
+   "median": -58.9,
+   "n": 702,
+   "positif": 39.5
+  }
+ },
+ "liq_floor_usd": 1000.0,
+ "perintah": "python -X utf8 tools/impact_audit.py --bnb-usd 650.0 --liq-floor 1000.0",
+ "sha": "0xefa1e0638d85e06deb053ef01db0e39f5c982dcd4aba47fbcef081eb3c04e4c0",
+ "slot": 702
+}

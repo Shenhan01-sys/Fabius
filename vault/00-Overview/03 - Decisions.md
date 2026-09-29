@@ -1270,3 +1270,57 @@ percaya remnya.
 **Terkait:** [[06-Results/21 - Rem di Horison Cepat]] §4 · [[00-Overview/03 - Decisions]] F-D31 /
 F-D44 · [[07-Testing/01 - Test Commands]] baris 50 · [[Concepts/One-Way Gate]]
 
+## F-D46 — "dampak" di buku paper salah satuan ±600x: mean +75,9 bps jadi −87,8 bps kalau dibetulkan · 29 Sep 2026 08:56Z
+
+**Yang memancing.** F-D44 menulis "+285,5 bps di horison 5 menit" dan kami menagih batasnya:
+angka itu hanya memakai ongkos 59 bps RT, tanpa dampak ukuran terhadap kedalaman. Untuk
+memastikan tidak ada yang keliru, kami audit angka dampak yang *sudah* terpasang di
+`tools/paper_book.py` - dan menemukan dua kesalahan yang berlawanan arah sekaligus.
+
+**Yang terukur** (`tools/impact_audit.py`, 702 slot dinilai, `decisions/impact-audit-20260929T085648Z.json`):
+
+```
+   liq_usd diketahui: 219 | median $132.022 | p10 $1 | min $0 | max $3.688.624
+   dampak_bps tercatat: median 0,00 | p90 0,20 | max 15.124,00
+
+   varian                       n   mean winso     median    P>=500   positif
+   tercatat                   702        +75,9      -58,9     31,1%     39,5%
+   satuan_dibetulkan          219       -715,7      -92,1      4,1%      8,2%
+   hanya_liq_sah              139        -87,8      -61,8      4,3%     10,8%
+```
+
+1. **Satuan.** `haircut()` menghitung `2 * size_quote / liq` dengan `size_quote` dalam **BNB** dan
+   `liq` dalam **USD**. Jadi 0,01 BNB diperlakukan seolah $0,01: dampaknya kurang ajar **±600x** di
+   mayoritas pool (median tercatat 0,00 bps; yang benar di pool $200k untuk 0,01 BNB @ $650 = 0,65 bps).
+2. **Bahan baku di ekor bawah.** `liq` dilaporkan **$1 dan $0** pada desil terbawah. Membenarkan
+   satuan saja memberi dampak 120.000-130.000 bps di pool itu - bukan kebenaran, sampah yang lebih
+   besar. Karena itu yang dilaporkan alat adalah **tiga varian**, bukan satu "angka yang benar":
+   `tercatat`, `satuan_dibetulkan`, dan `hanya_liq_sah` (floor $1.000, tempat x·y=k boleh dipakai).
+
+**Angka yang berubah.** Mean buku kami **+75,9 → −87,8 bps** ketika satuan dibetulkan DAN pool di
+bawah floor dibuang. Artinya klaim lama "random+veto +188,3 bps/posisi" (Fakta §F, halaman 14) adalah
+**net of ongkos-59-bps dan hampir nol dampak**, bukan net of dampak yang sebenarnya.
+
+**Keputusan - dan ini bagian yang tidak boleh dilewat.**
+(a) **Kode TIDAK diubah malam ini.** E9 terkunci pada definisi "`net_bps` seperti yang dicatat
+`paper_book`" dan slotnya sudah tercatat 25/25 pada 07:48Z. Mengganti alat di tengah uji terkunci -
+sekalipun untuk memperbaikinya - adalah cara paling mudah memenangkan eksperimen. Perbaikan
+dianggarkan sebagai **P42**, dikerjakan **setelah** vonis E9 (17:13:25Z) dan E12 (20:04:56Z), dengan
+`skema_dampak` dicatat per slot supaya masa depan bisa dibedakan dari masa lalu.
+(b) Setiap angka dampak yang kami kutip **wajib menyebut varian mana**. Kata "dampak" tanpa varian
+tidak masuk vault lagi.
+(c) Aturan baru: **satu model ongkos punya satu modul** (`tools/costs.py`) - `haircut` hidup di
+`paper_book.py` dan `entry_lab.py` menyalinnya sebagai `2.0 * ukuran_bnb / liq` (baris 148), jadi
+kesalahannya dua tempat. P42 memindahkannya ke `costs.py` dan memaksa keduanya memakai sumber yang
+sama - ini persis alasan P10 dulu membuat `costs.py`, dan kami mengulangnya.
+(d) E13/E14 tetap sah dengan batasnya sendiri (59 bps, tanpa dampak): justru karena itu F-D44 tidak
+boleh dibaca sebagai "sudah net of semuanya".
+
+**Korban keenam alat kami sendiri dalam lima hari:** F-D30 (harga masuk beku) → F-D32 (control
+mempromosikan diri) → F-D37 (MW salah urut) → F-D39 (satu undian) → F-D40 (kontrol keluar salah) →
+**F-D46 (satuan dampak)**. Polanya tetap sama: angka masuk vault sebelum penggarisnya diaudit.
+
+**Terkait:** [[06-Results/14 - Buku Paper]] · [[06-Results/18 - Kandidat Pertama, Diuji Hidup]] ·
+[[08-Backlog/01 - Backlog]] P42 · [[07-Testing/01 - Test Commands]] baris 51 ·
+[[02-Fondasi/FD3 - Likuiditas dan Dampak Harga]] · [[Concepts/Unmeasured Is Not Clean]]
+
