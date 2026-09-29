@@ -1920,3 +1920,43 @@ harapan kami yang sebenarnya". Yang terukur: dengan ongkos fee 59 bps + dampak 1
 likuiditas, **hanya 70 % dari posisi paper kami yang bisa diisi sama sekali**, dan yang 30 % bukan
 rugi - itu tidak bisa terjadi. Untuk keputusan nyata (streak -> real), `promote-after` masih kosong dan
 sekarang ada satu alasan lagi selain sinyal: ukurannya tidak punya tempat masuk.
+
+## F-D63 - "Belum bisa diuji" yang ternyata bug lookup: n=0 persis, padahal 140 kejadian menyala - dan fiksinya memperkeras vonis · 29 Sep 2026 20:26:13Z
+
+**Yang terjadi.** Vonis watch (halaman 17) jatuh pada pembacaan pertama: `uji_primer` dan `uji_kedua`
+berstatus `SAMPEL TIDAK CUKUP` dengan **n = 0 persis**. Aku nyaris menuliskannya sebagai "belum bisa
+diuji" - kalimat yang sopan, tidak menutup apa pun, dan tidak menyakiti siapa pun.
+
+**Yang menyebabkannya.** `day2_replicate.py` memakai `pred = bool(e.get(fitur))` dengan `fitur` =
+**seluruh baris spesifikasi**: `"cluster_ge2 (>=2 maker berbeda beli dalam jendela)"`. Kunci aspek yang
+sebenarnya bernama `"cluster_ge2"`. Lookup itu mengembalikan `None` untuk SEMUA kejadian, jadi nol itu
+bukan kekurangan data - itu kepastian struktural dari satu baris kode.
+
+**Yang membuktikan bukan karangan.** Data dan jendela yang sama persis, ditanya dengan benar:
+`cluster_ge2` menyala pada **140** kejadian pasca-kunci, `money_spread` pada **112**, `cluster_ge3` 76,
+`repeat_maker` 87, `buy_usd_ge_1k` 61. Setelah `aspek_dari()` dipasang (nama aspek diekstrak dari
+spesifikasi; kalau tidak dikenali -> alat **menolak memvonis**, bukan menjawab nol), vonisnya jadi
+**GAGAL pada tiga-tiganya** dengan n=156/123/142.
+
+**Ini bagian yang kunyatakan sebagai kebaikan alat, bukan kebaikanku: perbaikan membuat hasilnya
+LEBIH BURUK, bukan lebih baik.** "Belum bisa diuji" adalah hasil yang nyaman; "jalur masuk kerumunan
+maker ditutup" adalah hasil yang menyakitkan dan benar. Kalau bug membuat angka kita naik, curigai
+dirimu; kalau bug membuat angka kita turun, perbaiki dan tandai yang lama sebagai tidak sah. F-D50
+(0,2 menit vs 808 d), F-D54 (58 lengan menilai masa lalu), F-D57 (17 entri daftar dibuang parser)
+dan F-D63 punya bentuk yang sama: **bukan salah hitung, tapi salah bertanya - dan selalu lebih murah
+mendeteksinya sekarang daripada membayarnya di depan juri.**
+
+**Aturan yang naik.** `n` yang tepat **0**, tepat **100 %**, atau angka bulat lain yang terlalu rapi
+adalah **alarm instrumen**. Sebelum ia disebut "kekurangan sampel", hitung berapa yang seharusnya
+menyala dengan data yang sama. `aspek_dari()` sekarang mengangkat `SystemExit` kalau sebuah uji
+menunjuk aspek yang tidak dikenal alat - jadi kegagalan lookup berikutnya tidak bisa lagi menyamar
+sebagai jawaban kosong.
+
+**Yang tidak berubah.** Spesifikasi §1 halaman 17 tidak disentuh; `spec_sha256=0xc4105c1732ebfca7…`
+sama pada pembacaan 20:18:39Z dan 20:26:13Z. Yang berubah adalah cara alat membaca pertanyaan -
+bukan pertanyaannya. Artefak pertama (`day2w-20260929T201843Z.json`) **tidak** kuhapus: ia bukti
+bahwa kita salah, dan itu yang bikin pembaca berikutnya percaya pada yang kedua.
+
+**Batas yang ikut ditulis.** Mean pada artefak itu tidak di-winsor (+4.043,7 bps untuk median −21,3):
+satu token lotre memindahkannya ribuan bps. Ia jangan dikutip; `evidence_stack._pair` perlu winsor
+atau trimmed mean - itu **P63**.

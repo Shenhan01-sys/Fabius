@@ -122,6 +122,31 @@ def last_flow_stamp(sumber="flow"):
     return t
 
 
+def aspek_dari(teks_uji, known):
+    """Ambil NAMA ASPEK dari baris spesifikasi, misalnya
+
+        'cluster_ge2 (>=2 maker berbeda dalam jendela)'   -> 'cluster_ge2'
+
+    Kenapa fungsi ini ada (F-D63): `pred` dulu memakai `e.get(kv['uji_primer'])` - yaitu
+    SELURUH string spesifikasi termasuk kurung keterangannya - dan itu mengembalikan None untuk
+    SEMUA kejadian. Uji primer dan uji kedua vonisnya 'SAMPEL TIDAK CUKUP' dengan n=0 persis,
+    padahal datanya punya 140 kejadian cluster_ge2. Yang kosong bukan pasarnya, tapi lookup-nya.
+    """
+    mentah = str(teks_uji or "").strip()
+    if not mentah:
+        raise SystemExit("baris spesifikasi uji kosong - MEMBATALAKAN vonis, bukan memakai "
+                         "kosong sebagai 'tidak ada kejadian'")
+    nama = mentah.split()[0].strip("(),;")
+    if nama in known:
+        return nama
+    for k in sorted(known):
+        if str(teks_uji or "").strip().lower().startswith(k.lower()):
+            return k
+    raise SystemExit("uji '%s' tidak menunjuk aspek yang alat ini kenal (known: %s) - "
+                     "MEMBATALAKAN vonis, bukan memakainya sebagai nol"
+                     % (teks_uji, ", ".join(sorted(known))))
+
+
 def verdict(r):
     if r.get("status"):
         return "TIDAK DIUJI (%s)" % r["status"]
@@ -217,9 +242,15 @@ def main():
         if fitur.startswith("stack"):
             pred = lambda e, f=ASPEK_LULUS: sum(1 for x in f if e.get(x)) >= 2  # noqa: E731
         else:
-            pred = lambda e, f=fitur: bool(e.get(f))  # noqa: E731
+            # F-D63: dulu baris ini `bool(e.get(fitur))` - dengan string spesifikasi penuh, yang
+            # tidak pernah menjadi kunci aspek. Sekarang namanya diambil dari spesifikasi lebih
+            # dulu, dan kalau tidak dikenal alat ini MENOLAK memvonis (bukan menjawab "0").
+            nama = aspek_dari(fitur, set(ASPEK_LULUS))
+            pred = lambda e, f=nama: bool(e.get(f))  # noqa: E731
         r = ES._pair(ev, pred, fitur)
         r["kunci"] = key
+        if not fitur.startswith("stack"):
+            r["aspek_dipakai"] = aspek_dari(fitur, set(ASPEK_LULUS))
         r["vonis"] = verdict(r)
         rows.append(r)
         if r.get("status"):

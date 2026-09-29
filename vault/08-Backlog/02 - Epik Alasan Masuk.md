@@ -329,3 +329,33 @@ eksekusi, bukan sinyal), dan itu hak builder, bukan hak saya.
 
 Lihat: [[06-Results/28 - Venue Kami Bukan Pasar]] §7-§8 · F-D59/F-D60.
 
+## 3j. 29 Sep 20:26Z - dua jalur masuk terakhirnya mati dalam 11 menit, dan satu di antaranya karena bugku
+
+Urutan peristiwa malam ini, dicatat bareng karena bentuknya yang menyesatkan:
+
+1. **20:11:20Z - E12 LAYAK.** Keluar di menit ke-5 mengalahkan tahan ke menit ke-30 pada posisi yang
+   sama (n=685 pasca-kunci, CI bawah +135,9, p=0,00001). Tapi mean lengan cepat cuma **+8,1 bps** dan
+   mediannya **+15,3**: yang dimenangkan adalah **menghindari longsor**, bukan menghasilkan.
+2. **20:15:38Z - E9 GAGAL.** Satu-satunya fitur yang pernah lolos control acak di backtest
+   (`vol-rendah`, E7) mati prospectif: median **−58,7**, CI [−437,6; +117,9], dan Mann-Whitney
+   A>B **p=0,4413**. Filter volatilitas rendah memotong ekor kiri DAN ekor kanan (P≥500: 10,3 % vs
+   37,9 % kontrol) - ia mengurangi risiko, bukan menambah harapan (FD5).
+3. **20:18:39Z → 20:26:13Z - watch GAGAL, setelah pembacaan pertamanya tidak sah.** `cluster_ge2` dan
+   `money_spread` melaporkan **n=0** karena alat membaca SELURUH baris spesifikasi sebagai kunci aspek.
+   Setelah `aspek_dari()` dipasang: n=156/123/142, median −21,3 / 0,0 / 0,0, p=0,936/0,706/0,775 -
+   **ketiganya GAGAL**, dan jalur kerumunan maker ditutup (F-D63).
+
+**Kenapa urutannya penting untuk cara kita bekerja.** Dua dari tiga vonis ini datang dari alat yang
+sama yang sudah kuhukum sendiri hari ini (F-D54: 58 lengan menilai masa lalu; F-D57: parser membuang
+17 entri; F-D63: lookup salah nama). Pola eiusannya seragam: **alat menjawab dengan angka yang terlihat
+masuk akal, dan hanya kecurigaan pada angka yang terlalu rapi (n=0 persis, median tepat 0,0) yang
+membongkarnya.**
+
+**Yang masih hidup setelah malam ini** (semua tentang **menghindari rugi**, bukan **sebab untung**):
+rem `jual_*` (E13/E14, vonis prospectif E22 20:08:15Z sedang dibaca), keluar cepat (E12), dan dua
+ukuran yang membuat klaim apa pun jujur: umur kabar 61 d (F-D54) dan cakupan buku yang hidup (F-D56).
+**Alasan masuk: nol, sekarang dengan tiga pengukuran prospectif yang membantahnya, bukan dengan satu
+dugaan.** P55/E24 (masuk terpilih vs masuk **acak**, matang 21:19:04Z) adalah uji terakhir yang
+tersedia sebelum tenggat; kalau ia juga GAGAL, kalimat submission yang benar sudah tertulis di
+halaman 28 dan tidak perlu diubah lagi.
+

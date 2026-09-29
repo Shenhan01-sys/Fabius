@@ -159,10 +159,74 @@ peringatan ini yang kutambah, seperti §5c.
 
 ## 5. Hasil
 
-_kosong sampai umur kunci cukup — alatnya menolak mencetak angka sebelum itu, dan kekosongan ini
-adalah bagian dari spesifikasinya, bukan kelalaian mencatat._
+**Dibaca 29 Sep 2026 20:15:38Z** oleh `python -X utf8 tools/vol_ab.py` (umur kunci **15,04 jam** dari
+kebutuhan 12; `spec_sha256=0x9d70c5809e5df370…` — teks §2 tidak kusentuh). Artefak:
+`decisions/vol-ab-20260929T201538Z.json`.
 
-**Terkait:** [[06-Results/13 - Apakah Tidak Trading Itu Gratis]] ·
-[[06-Results/17 - Pra-Registrasi Watch]] · [[08-Backlog/02 - Epik Alasan Masuk]] §3d ·
-[[TradingKnowledge/FD5 - Expectancy Bukan Win Rate]] · [[Concepts/One-Way Gate]] ·
-[[00-Overview/03 - Decisions]] F-D37/F-D38
+## Vonis: **GAGAL**
+
+| syarat terkunci | status | angka |
+|---|---|---|
+| (1) `n_A >= 20` | ✅ lolos | n_A = 29 (n_B = 29), **prefill = 0/0** - semua slot memang dibuka sesudah kunci |
+| (2) `median_A > 0` DAN CI bawah > 0 | ❌ gagal dua-duanya | median `vol-rendah` **−58,7 bps**; CI bootstrap [+**−437,6**; +117,9] |
+| (3) Mann-Whitney satu arah A > B, p < 0,05 | ❌ gagal | **p = 0,4413** |
+
+```text
+lengan           n   median     mean winso        CI 95%          P>=500   positif  token
+vol-rendah (A)   29    -58,7       -168,4   [-437,6; +117,9]       10,3%    24,1%    22
+vol-tinggi  (B)  29   -527,5        -80,4   [-624,9; +477,9]       37,9%    44,8%    23
+```
+
+## 5b. Bentuk kegagalannya lebih informatif daripada kalau lulus
+
+Dua lengan **berbalik arah antara median dan mean** - dan itu bukan kebetulan, itu isi mekanismenya:
+
+- `vol-rendah` **menghindari bencana**: median −58,7 melawan −527,5 milik kontrol. Filter volatilitas
+  rendah memang membuang posisi yang longsor.
+- `vol-rendah` **juga membuang kemenangan**: P(≥ +500 bps) **10,3 %** melawan **37,9 %** pada kontrol -
+  hampir 4× lebih jarang. Mean-nya justru lebih buruk (−168,4 vs −80,4).
+
+Jadi yang dilakukan filter itu adalah **memotong ekor kanan dan ekor kiri sekaligus**, dan menyisakan
+middle yang tetap di bawah nol. Sesuai yang sudah ditulis di `FD5 - Expectancy Bukan Win Rate`: median
+yang membaik tanpa harapan yang membaik bukan perbaikan strategi, itu pemindahan risiko. Dan sesuai
+`F-D51` yang kutulis ke §4c **sebelum** jam vonis: pada budget lain peringkat lengan bisa berubah -
+uji ini memang dijalankan pada 24 posisi/hari (angka di atas adalah kontrak itu).
+
+**Yang TIDAK kulakukan atas hasil ini** (dan ini bagian yang mengikat):
+- **tidak** membalik arah menjadi "`vol-tinggi` alas masuk kami". B adalah control yang dikunci sebagai
+  control; median-nya −527,5 dan `syarat_2` akan gagal untuk B juga. Ekor kanannya (37,9 % P≥500) adalah
+  **observasi**, bukan hasil - kalau mau dijual, itu butuh kunci baru, bukan reinterpretasi (F-D39/F-D40
+  adalah dua kali kami melakukan persis ini dan berakhir di halaman koreksi).
+- **tidak** menulis "tidak ada efek volatilitas". Yang terukur: efeknya ada, arahnya **mengurangi
+  ekor**, dan itu tidak cukup untuk melewati nol maupun kontrol.
+- **tidak** menggeser `n_min`, winsor, atau ambang p untuk menyelamatkanvonis. Tiga syarat itu
+  ditulis sebelum datanya ada (`05:13:25Z`), dan dua di antaranya gagal.
+
+## 5c. Satu batas yang baru diketahui SEPULUH MENIT setelah vonis ini (F-D62)
+
+Spesifikasi E9 mengikat harga masuk ke: *"seperti yang dicatat paper_book (tx.peristiwa + haircut
+dampak s/L)"*. Pada 20:15:38Z itu berarti angka-angka di atas memakai **`haircut` v1** - yang
+membagi BNB dengan USD, sehingga dampak dibaca ~600× terlalu kecil (F-D46) dan pool likuiditas $1
+tidak pernah ditolak.
+
+Konsekuensinya harus disebut tanpa diperindah: **vonis E9 sudah benar arahnya (GAGAL), tapi
+populasinya terlalu murah hati.** Pada model isi yang dibetulkan (`--isi v2`, 14 dari 20 posisibudget
+kontrak yang bisa diisi), sebagian dari 58 slot ini akan **TIDAK SAH** sebelum sempat dinilai - dan
+yang dinilai akan berada beberapa bps lebih buruk. Aku **tidak** menjalankan ulang E9 dengan v2:
+mengganti penggaris sesudah vonis jatuh bukan mengoreksi eksperimen, itu mengganti eksperimennya
+(F-D53/F-D54). Yang dilakukan: vonis ini tercatat **sebagaimana dikunci**, dan setiap pemakaian
+lanjutnya wajib menyebut bahwa ongkosnya v1.
+
+## 5d. Setelah E9 mati, apa yang masih berdiri
+
+- **Keluar**: E12 **LAYAK** (20:11:20Z, n=685, CI bawah +135,9) - keluar menit ke-5 mengalahkan tahan
+  30 menit pada posisi yang sama; lihat [[06-Results/20 - Keluar Cepat, Terkunci]] §5-§6.
+- **Rem**: E13/E14 lolos grid dan placebo retrospektif; vonis prospectif-nya **E22** berumur cukup sejak
+  **20:08:15Z** dan sedang dibaca.
+- **Masuk**: masih **nol**. E7 (satu-satunya fitur yang lolos control acak) mati prospectif malam ini;
+  E1/E2/E3 mati sebelumnya; F-D54 menambah bahwa bahkan dengan keputusan 61 d hasilnya −519 bps.
+- **Titik masuk sebagai objek**: E24 (masuk terpilih vs masuk **acak**, `tools/entry_ab.py`) matang
+  **21:19:04Z**.
+
+Lihat juga: §4c (peringatan budget yang ditulis sebelum vonis) · [[06-Results/19 - Umur Posisi]] ·
+[[06-Results/26 - Masuk Segar, Terukur Benar]] · [[08-Backlog/02 - Epik Alasan Masuk]] §3d · F-D37/F-D38.

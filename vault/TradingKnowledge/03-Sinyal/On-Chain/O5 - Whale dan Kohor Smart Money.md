@@ -113,3 +113,33 @@ setelah sejarahnya ada) · `T1` definisi whale/kohor · `T0` klaim vendor "smart
 
 **Terkait:** [[S4 - Order Block dan Breaker]] · [[V5 - Mikrostruktur Spread dan Adverse Selection]] ·
 [[FD5 - Expectancy Bukan Win Rate]] · [[GAP3 - Yang Punya Data Tapi Belum Diuji]] · [[PL3 - Menganalisis]]
+
+## 29 Sep 20:26Z - "banyak dompet beli bersamaan" akhirnya diuji prospectif, dan tiga kali gagal
+
+Halaman ini lama memperlakukan kerumunan maker (≥2 dompet berbeda membeli dalam satu jendela) sebagai
+sinyal yang "tinggal dieksekusi". malam ini pernyataan itu tidak bisa dipertahankan:
+
+| pembacaan | sumber harga | hasil |
+|---|---|---|
+| in-sample 28 Sep (`evidence_stack`) | ticker `px` (harga transaksi terakhir yang kami tarik) | `cluster_ge2` **+393,4**, `money_spread` **+552,7** - lulus BH |
+| decomposisi 28 Sep (`entry_decomposition`) | harga **peristiwa** (`tx.p`) | **+0,1 CI [−14; +198] p=0,53** → nol; `--px txevent` malah **−491,4** |
+| replikasi 28 Sep 21:24Z (halaman 11, terkunci) | ticker | `uji_primer`/`uji_kedua` **SAMPEL TIDAK CUKUP**, `stack≥2` GAGAL di CI |
+| replikasi 28 Sep 21:45Z (halaman 12, terkunci) | harga peristiwa | `uji_primer` median **−1.518,5**, arahnya **terbalik** |
+| **replikasi 29 Sep 20:26Z (halaman 17, terkunci)** | harga peristiwa, n=**156** | median **−21,3 bps**, CI [−543,9; +2,8], p=**0,936** → **GAGAL**; `money_spread` n=123 median 0,0 p=0,706 → **GAGAL** |
+
+**Yang berubah bukan "sinyalnya melemah", tapi statusnya:** kerumunan maker **tidak punya satu pun
+pengukuran prospectif yang berhasil**, dan satu-satunya angka positif yang pernah kita punya (in-sample,
+sumber harga ticker) sudah dijelaskan sebagai artefak sumber harga (V5/F-D30) - bukan sebagai efek dompet.
+
+**Yang tidak boleh dilakukan dari sini** (aturan halaman 11/12, diulang di F-D63): **tidak** membalik
+jadi "jual saat kerumunan beli" - dua replikasi dengan arah terbalik sudah muncul, dan membalik tanda
+setelah melihat hasil adalah gerakan yang sama yang membunuh +393,4 pagi tadi. Hipotesis fade butuh
+kunci sendiri, jendela sendiri, dan n sendiri.
+
+**Yang tetap hidup dari halaman ini:** fakta bahwa `maker`/`smart_degen` dari feed ⑦ berguna sebagai
+**rem** (E13/E14: `jual_*` memisahkan +285,5 dari −230,3 di menit ke-5; 16/16 grid ambang), bukan
+sebagai alasan masuk. Membedakan dua peran itu adalah seluruh isi catatan ini.
+
+Lihat: [[06-Results/17 - Pra-Registrasi Watch]] §4-§5 · [[06-Results/12 - Harga Masuk yang Benar]] ·
+[[06-Results/10 - Evidence Stack]] · F-D63 · halaman 21.
+

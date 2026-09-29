@@ -1,0 +1,42 @@
+{
+ "dibuat_utc": "2026-09-29T20:11:20Z",
+ "prefill_dibuang": 701,
+ "sensor": {
+  "keluar_bolong": 31,
+  "n_kunci": 14444,
+  "n_usah": 716,
+  "tanpa_wp": 11056
+ },
+ "spec_sha256": "0x7f4e12fd9202e7a482166deb567247a81262eca6f7697b3c0064807c084f6957",
+ "t_kunci_iso": "2026-09-29T08:04:56Z",
+ "umur_jam": 12.11,
+ "vonis": {
+  "P_ada_harga_keluar": 95.7,
+  "ci_bootstrap": [
+   135.9,
+   301.2
+  ],
+  "kalah": 256,
+  "layak": true,
+  "mean_winso_delta": 215.8,
+  "median_delta_bps": 15.3,
+  "menang": 363,
+  "n": 685,
+  "net_cepat_dari_tx_mean": 192.9,
+  "net_cepat_mean": 8.1,
+  "net_lambat_mean": -195.0,
+  "p_tanda": 1e-05,
+  "syarat": {
+   "1_n": true,
+   "2_mediator_ci": true,
+   "3_tanda_uji": true,
+   "4_lapor_umur": true
+  },
+  "token_unik": 336,
+  "umur_keluar_menit": {
+   "30": -0.03,
+   "5": 0.08
+  },
+  "vonis": "LAYAK - keluar 5 m mengalahkan tahan 30 m pada posisi yang sama"
+ }
+}

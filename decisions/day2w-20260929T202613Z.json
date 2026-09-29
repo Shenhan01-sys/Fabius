@@ -1,0 +1,61 @@
+{
+ "batas": [
+  "satu jendela rezim mungkin masih sama dengan jendela saat spesifikasi ditulis",
+  "belum ada fill nyata; outcome = probabilitas 30 menit, bukan PnL",
+  "maker = yang ditampilkan feed vendor: kerumunan = batas bawah"
+ ],
+ "dibuat_utc": "2026-09-29T20:26:09Z",
+ "halaman_spesifikasi": "17",
+ "horizon_menit": 30,
+ "kejadian": 769,
+ "lolos_bh_dalam_run": [],
+ "rekaman_baru_jam": 17.14,
+ "rows": [
+  {
+   "aspek_dipakai": "cluster_ge2",
+   "ci_hi": 2.8,
+   "ci_lo": -543.9,
+   "fitur": "cluster_ge2 (>=2 maker berbeda beli dalam jendela)",
+   "kunci": "uji_primer",
+   "mean_selisih_bps": 4043.7,
+   "median_selisih_bps": -21.3,
+   "n": 156,
+   "p": 0.936,
+   "proporsi_positif": 44.2,
+   "token": 86,
+   "vonis": "GAGAL"
+  },
+  {
+   "aspek_dipakai": "money_spread",
+   "ci_hi": 81.5,
+   "ci_lo": -480.9,
+   "fitur": "money_spread (beli terbesar <= 60% dari USD beli di jendela)",
+   "kunci": "uji_kedua",
+   "mean_selisih_bps": 4404.7,
+   "median_selisih_bps": 0.0,
+   "n": 123,
+   "p": 0.7057,
+   "proporsi_positif": 48.0,
+   "token": 78,
+   "vonis": "GAGAL"
+  },
+  {
+   "ci_hi": 75.7,
+   "ci_lo": -300.9,
+   "fitur": "stack_ge2 (>=2 dari lima aspek lulus 28 Sep menyala bersamaan)",
+   "kunci": "uji_ketiga",
+   "mean_selisih_bps": 4713.5,
+   "median_selisih_bps": 0.0,
+   "n": 142,
+   "p": 0.7749,
+   "proporsi_positif": 47.2,
+   "token": 84,
+   "vonis": "GAGAL"
+  }
+ ],
+ "spec_sha256": "0xc4105c1732ebfca73ea8cb4412db9f988ca26dc1f399f447c8b343ac69a962d3",
+ "t_kunci": 1790650746,
+ "token": 375,
+ "vonis": "TIDAK ADA REPLIKASI - klaim pada halaman yang diuji DICABUT (aturan halaman 17 baris terakhir)",
+ "window_menit": 15
+}
