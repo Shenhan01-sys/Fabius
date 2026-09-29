@@ -60,7 +60,7 @@ Supaya tidak ada yang boleh bilang "kamu menguji hal yang sama":
 | | E7 (backtest, halaman ini §1) | E9 (uji hidup) |
 |---|---|---|
 | kandidat | semua kejadian beli di feed ⑦ yang punya `wp` | kejadian yang sudah lewat gerbang veto `jual_*` (paper_book) |
-| pemilihan | top-5 per siklus 30 menit | separuh volatilitas terendah per hari (budget 6 slot) |
+| pemilihan | top-5 per siklus 30 menit | separuh volatilitas terendah per hari (budget 24 slot - naik dari 6 pada 29 Sep ±06:00Z SEBELUM satu slot pun dibuka, karena ember harian ini memuat seluruh jendela 05:13Z->17:13Z dan dengan 6/ember n lengan A tidak akan pernah sampai syarat F-D16; ini perubahan biaya, bukan perubahan aturan vonis) |
 | harga masuk | ticker `wp` terakhir sebelum `t` | harga transaksi `tx.p` (kanonis F-D30) |
 | hasil | `wp` median pada t+[15;45] m | `net_bps` yang sudah dinilai paper_book (ongkos + haircut dampak s/L) |
 | kontrol | acak sesama kandidat siklus itu | **lengan `vol-tinggi` pada jam, feed, dan gerbang yang sama** |

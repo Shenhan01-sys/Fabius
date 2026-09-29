@@ -280,7 +280,10 @@ def main():
     c_mean = (control or {}).get("mean_winso_bps")
     # `random` adalah CONTROL, bukan kebijakan: dia tidak bisa mempromosikan dirinya sendiri, dan
     # membandingkannya dengan dirinya sendiri hanya menghasilkan True karena pembulatan.
-    di_atas_acak = (a.rank != "random") and (c_mean is not None) and (round(mean_w, 1) > c_mean)
+    # `bool(xs)` wajib: tanpa itu, kebijakan dengan NOL posisi dicetak "di atas control" begitu
+    # acaknya kebetulan negatif. "Tidak ada yang dibuka" bukan kemenangan - itu belum diuji.
+    di_atas_acak = (a.rank != "random") and bool(xs) and (c_mean is not None) and (
+        round(mean_w, 1) > c_mean)
     layak = (n_cukup and mean_w > 0 and lo > 0 and puncak >= a.promote_after and di_atas_acak)
     for x in slots:
         x["kebijakan_layak_real"] = "YA" if layak else "BELUM"

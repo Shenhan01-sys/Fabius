@@ -66,9 +66,18 @@ jobs:
           # diuji sekaligus (Bonferroni 0,025 x 10 = 0,25). Yang membuatnya berarti adalah kiriman
           # yang belum terjadi: kedua lengan dibuka pada jam yang sama, feed yang sama, gerbang
           # yang sama, dan hanya beda di peringkat volatilitas.
-          python -u tools/paper_book.py --rank vol-rendah --per-day 6 \
+          #
+          # `--per-day 24`, BUKAN 6 (koreksi 29 Sep ±06:00Z, sebelum ada satu slot pun dibuka):
+          # budget buku ini dipotong PER HARI, dan karena lengan vol hanya boleh memakai kejadian
+          # setelah `t_kunci` 05:13:25Z sementara vonisnya matang 17:13:25Z, seluruh jendela
+          # eksperimen muat di SATU ember harian. Dengan 6/ember, n lengan A tidak akan pernah
+          # mencapai syarat F-D16 (n>=20) dan alatnya akan melaporkan "BELUM BISA DIUJI" - bukan
+          # karena pasarnya diam, karena anggarannya kita potong sendiri. Ini perubahan biaya,
+          # BUKAN perubahan aturan vonis; aturan vonis ada di blok spesifikasi halaman 18 dan
+          # blok itu tidak disentuh.
+          python -u tools/paper_book.py --rank vol-rendah --per-day 24 \
             --size-quote "${{ github.event.inputs.size_quote || '0.01' }}" --emit
-          python -u tools/paper_book.py --rank vol-tinggi --per-day 6 \
+          python -u tools/paper_book.py --rank vol-tinggi --per-day 24 \
             --size-quote "${{ github.event.inputs.size_quote || '0.01' }}" --emit
 
       - name: Commit + dorong (dengan retry; kalau push gagal, JANGAN diam)
