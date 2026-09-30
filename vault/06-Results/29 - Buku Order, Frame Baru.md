@@ -77,21 +77,84 @@ prospectif**.
 Kalau **GAGAL** untuk kedua kalinya, buku order ditutup sebagai jalur prediksi pada cadence kami - dan
 tetap **tidak** dibalik jadi "contra-imbalance": itu hipotesis baru dengan kunci dan n sendiri.
 
-## 4. Isi bagian ini
+## 4. Hasil
 
-**KOSONG dengan sengaja, dan dengan alasan yang tercatat.** Kunci dipasang 22:29:37Z, syarat umur 12 jam baru jatuh **30 Sep 2026 10:29:37Z**.
+**Dibaca 30 Sep 2026 10:43:24Z** oleh `python -X utf8 tools/book_prereg.py --kunci-nama E25`
+(kunci `22:29:37Z`, umur **12,23/12 jam**, `spec_sha256=0x8353a2984b403393…` - §2 tidak kusentuh).
+Artefak: `decisions/book-prereg-20260930T104324Z.json`.
 
-**Hitungan waktu, dikoreksi sebelum sempat salah beredar.** Kunci dipasang **22:29:37Z** + syarat
-12 jam = **30 Sep 10:29:37Z = 17:29 WIB**, sementara tenggat proyek **30 Sep 23:59 WIB = 16:59Z**.
-Jadi E25 **sempat matang**, dengan longgar ~6,5 jam - bukan "kemungkinan besar tidak akan sempat",
-yang tadi kutulis dengan mengira 12 jam dihitung dari jam lokal. Kalkulasi yang salah soal *waktu*
-sama berbahayanya dengan kalkulasi yang salah soal *angka*: keduanya membuat keputusan lingkup
-diambil karena alasan yang tidak ada.
+## Vonis primer (`bi5`): **GAGAL** - dan ini kegagalan yang paling menarik sejauh ini
 
-Alatnya (`tools/book_prereg.py --kunci-nama E25`) menolak memvonis sebelum jamnya dan menolak jalan
-kalau sha spec tidak cocok dengan teks di halaman ini. Timer durable dipasang untuk 17:37 WIB
-30 Sep. Kalau sampai gagal jalan, bagian ini ditinggal kosong dan alasannya ditulis di halaman ini
-juga - bukan diisi angka dari jendela yang belum matang.
+```text
+snapshot   semua 7.116 di 42 simbol | PASCA-KUNCI 2.547 di 41 simbol | sensor {bdx 301, pra_kunci 4.569}
+pasangan   n=1.249 jendela TIDAK-BERIRISAN (aturan non-overlap memotong 2.547 -> 1.249, ~1 dari 2)
+komposisi  41 simbol | teratas BTC/ETH/SOL/4STOCK/AI = 52 each | share 4 jangkar likuid 12 %
+
+bi5     n=1249 | ret atas +5,33 (net -45,12) | bawah -0,54 | selisih +11,63 bps | p=0,00118
+        syarat: (1) n>=40 LOLOS | (2) median>0 & CI bawah>0 GAGAL | (3) MW p<0,05 LOLOS |
+                (4) mean net-of-cost>0 GAGAL
+sekunder: bi1 +7,68 p=0,0083 LOLOS-BH | bi20 +4,09 p=0,0317 LOLOS-BH | mi20 +2,69 p=0,122 gagal |
+          util20 -2,55 p=0,874 gagal            -> BH alpha 0,10: 2 lulus (bi1, bi20)
+kelompok: jangkar n= 156 selisih +0,67 p=0,511   |   kabar n=1.093 selisih +13,03 p=0,0014
+```
+
+## 4b. Yang berbeda dari semua vonis sebelumnya: prediksi hidupnya nyata, dan tidak bisa dipakai
+
+Untuk pertama kalinya di proyek ini, sebuah fitur pasar **lolos uji prospectif dengan jendela
+non-overlap dan menembus BH pada sekundernya**: kuantil-atas imbalance 5 level memberi
+**+11,63 bps** lebih tinggi dari kuantil-bawah, pada **1.249 jendela independen**, p=0,00118 - dan
+di kelompok yang benar-benar diincar teori ini (simbol kabar ⑦) **+13,03 bps, p=0,0014**.
+
+Tapi `bi5` tetap GAGAL, dan bukan karena statistiknya: **setelah ongkos, sisanya −45,12 bps.**
+Syarat (4) - "mean net-of-cost > 0" - adalah satu-satunya yang membedakan "melihat sesuatu" dari
+"bisa menjualnya", dan malam ini dia bekerja persis seperti yang kami dirancang untuk lakukan.
+
+**Kalimat yang boleh dipakai:** *imbalance orderbook memprediksi lima menit berikutnya di venue kami
+sebesar ~12 bps, dan ongkos kami ~57 bps - jadi teorinya benar dan tidak bisa ditradekan.*
+**Kalimat yang tidak boleh:** apa pun yang mengatakannya "edge". E24 sudah menjatuhkan masuk kita vs
+masuk acak; E12 tetap satu-satunya perilaku yang lulus prospectif.
+
+## 4c. Dua pembacaan yang harus dilaporkan berdua, bukan dipilih
+
+Pembacaan pertama (10:38:46Z, `decisions/book-prereg-20260930T103846Z.json`) dilakukan dengan
+implementasi `non_overlap` yang **salah** - aku menyetel `bebas` ke waktu *baris keluar* (sering
+hanya ~245 d sesudah t) alih-alih `t + horison`, jadi aturan itu nyaris tidak memotong jendela yang
+bertumpang tindih dan alatku melanggar teks yang dikuncinya sendiri:
+
+```text
+                 non-overlap salah (10:38Z)   non-overlap benar (10:43Z)
+pasangan         n=2.482                      n=1.249
+bi5 selisih      +7,39 bps p=0,00013          +11,63 bps p=0,00118
+sekunder         BH lulus 3 (bi1, bi20, mi20) BH lulus 2 (bi1, bi20)
+VONIS PRIMER     GAGAL                         GAGAL
+```
+
+Yang penting: **vonisnya tidak berubah oleh bug-ku** - keduanya GAGAL, dan arah effect-nya sama;
+yang berubah hanya besaran dan seberapa banyak jendela yang boleh dihitung. Itu ujian yang
+sebenarnya untuk setiap "perbaikan alat": apakah ia membalikkan kesimpulan, atau hanya memperbaiki
+angka? Di sini: tidak membalikkan. Yang membunuhnya tetap syarat (4), pada kedua pembacaan.
+
+Kenanya ketahuan bukan karena aku membaca hasilnya lebih dulu, tapi karena **n yang keluar tidak
+cocok dengan pengurangan yang dijanjikan aritmetika** (cadence 245 d vs horison 300 d harusnya
+memotong ~setengah; yang terpotong cuma 2,5 %). Aturan yang naik, keempat kalinya hari ini:
+**kalau alatmu menghapus sesuatu, cek bahwa jumlah yang dihapus seukuran dengan yang ia klaim.**
+Self-test sekarang menuntut invariant itu langsung: `39 -> 20 pasangan, jarak antar jendela
+terkecil 490 d (>= 300 d)`.
+
+## 4d. Replikasi: T1 ditutup sebagai jalur TRADE, dibuka sebagai pengukuran
+
+Vonis GAGAL kedua untuk T1 (E16 pada 26 simbol dengan jendela beririsan; E25 pada 41 simbol dengan
+jendela jujur). Yang ditutup: **jalur masuk berbasis buku order untuk trading**. Yang justru
+**hidup** dan belum pernah kita punya: efek prediktif yang lolos BH dan bertahan di jendela
+non-overlap - bahan untuk keputusan berikutnya (ongkos lebih rendah? ukuran lebih kecil? venue lain?
+proksi ke jangkar yang likuid?), bukan untuk klaim submission malam ini.
+
+**Dan satu peringatan yang tidak boleh hilang:** tanda `selisih` untuk kelompok simbol kabar adalah
+**−0,95 di jendela E16** (pagi-sore, 25 simbol, beririsan) dan **+13,03 di jendela E25** (malam-pagi,
+41 simbol, non-overlap). Itu bukan "teorinya berganti arah" - itu **populasi yang berganti wajah**,
+penyakit yang sama yang baru kubunuh di F-D68 lewat P67. Angka kelompok dari halaman ini tidak boleh
+dipakai untuk membatalkan angka kelompok dari halaman 22 maupun sebaliknya, dan yang boleh dijual
+hanya yang **net-of-cost**, yang di kedua jendela sama-sama kalah.
 
 Lihat juga: [[06-Results/22 - Buku Order, Terkunci Lebih Dulu]] §6 ·
 [[06-Results/27 - Masuk Terpilih vs Masuk Acak]] §6 · [[03-Sinyal/Volume/V4 - Order Book dan Liquidity Heatmap]] · `00-Overview/03 - Decisions.md` F-D53, F-D66, F-D68.

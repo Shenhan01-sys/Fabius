@@ -2176,3 +2176,43 @@ narasi kami". Ia tidak lebih benar; ia hanya lebih dulu. Dan bahwa venue pemband
 tidak memanggil bump - itu tetap kesimpulan tiga alat (E20/E26/E27) yang arahnya sama; yang berubah
 hanya titik angkanya, dan titik itulah yang tidak boleh kami jual.
 
+## F-D69 - E25: prediksi orderbook yang pertama lolos BH dan jendela non-overlap - dan tetap GAGAL karena ongkos; implementasi non-overlap-ku sendiri ketahuan melanggar teks kuncinya · 30 Sep 2026 10:43:24Z
+
+**Yang jatuh.** Vonis primer `bi5` **GAGAL**, tapi isinya belum pernah kita lihat: pada **1.249
+jendela non-overlapping** di **41 simbol**, kuantil-atas imbalance 5 level memberi **+11,63 bps** di
+atas kuantil-bawah, **p=0,00118**, sekunder `bi1`/`bi20` **lolos BH α 0,10**, dan di kelompok simbol
+kabar (yang diincar teori ini) **+13,03 bps p=0,0014**. Yang menjatuhkannya satu syarat saja:
+**mean net-of-cost = −45,12 bps**. Jadi T1 ditutup sebagai jalur trading untuk kedua kalinya, dan
+untuk pertama kalinya bukan karena teorinya kosong - melainkan karena ongkos kami ~4x lebih besar
+dari efeknya.
+
+**Yang lebih membuatku tidak nyaman: implementasi non-overlap-ku sendiri salah.** Pembacaan pertama
+(10:38:46Z) memotong hanya 2,5 % snapshot (2.547 -> 2.482), padahal cadence 245 d vs horison 300 d
+menuntut pemotongan ~setengah. Penyebabnya satu baris: `bebas = rows[j]["detik"]` (waktu **baris
+keluar**, yang dengan tolerance 150 d sering jatuh ~245 d sesudah t) alih-alih `bebas = r["detik"] +
+horizon` seperti yang **ditulis di teks kunciku sendiri**. Jadi alatnya melanggar spec yang ia sha.
+
+Kuetahuukan ini **bukan** dengan membaca hasilnya, tapi dengan menuntut aritmetika cocok: *kalau alat
+mengklaim membuang jendela yang beririsan, jumlah yang dibuang harus seukuran dengan yang dijanjikan
+perhitungannya.* Sekarang invariant itu jadi assert di self-test (`39 -> 20 pasangan; jarak
+terkecil 490 d >= 300 d`). Perbaikan ini **menaati** spec, bukan menggantinya - sha spec tidak
+berubah, dan itu penting: kalau tidak, aku sedang memakai "bug fix" sebagai pintu belakang untuk
+mengubah ujian.
+
+**Dua pembacaan dilaporkan berdua, tidak dipilih.** Salah: n=2.482, selisih +7,39, p=0,00013, BH 3.
+Benar: n=1.249, selisih +11,63, p=0,00118, BH 2. **Vonisnya sama: GAGAL, oleh syarat (4), di kedua
+pembacaan.** Itu ujian yang sebenarnya untuk sebuah perbaikan alat - apakah ia membalikkan kesimpulan
+atau cuma memperbaiki angka - dan di sini jawabannya tidak membalikkan. Aku menuliskan yang salah
+lebih dulu supaya tidak ada yang bisa menuduhku memilih yang setelahnya.
+
+**Yang kucabut sebagai pembacaan, dan kenapa.** Tanda `selisih` kelompok simbol kabar adalah **−0,95
+di jendela E16** dan **+13,03 di jendela E25**. Bukan teori yang berganti arah: populasinya berganti
+wajah (frame 25 -> 41 simbol, siang -> malam, beririsan -> tidak). Ini penyakit yang sama yang kubunuh
+di F-D68 untuk E27, dan obatnya sama: **P67** (kunci daftar simbol ke artefak kunci). Sampai itu
+selesai, tidak ada angka kelompok dari halaman 22 maupun 29 yang boleh dipakai untuk membatalkan yang
+lain - yang boleh dijual hanya yang net-of-cost, dan di dua-duanya dia kalah.
+
+**Status proyek 10:43Z:** enam uji prospectif selesai - E9, watch, E22, E24, E16, E25 - **semua GAGAL**;
+satu-satunya yang lulus tetap **E12** (aturan keluar). Yang baru saja hidup: efek prediktif yang lolos
+BH. Itu bahan keputusan berikutnya (ongkos, ukuran, venue, proksi ke jangkar likuid), bukan bahan
+klaim: submit malam ini tetap tidak boleh menulis "Fabius tahu kapan masuk".

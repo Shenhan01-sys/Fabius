@@ -222,7 +222,7 @@ def muat(t_kunci=None):
 def pasangan(per, horizon=HORIZON_DTK, tolerance=150, non_overlap=False):
     """non_overlap (P66/E25): jendela return tidak boleh bertumpang tindih dalam satu simbol.
 
-    Terukur 29 Sep: cadence ⑨ median 244 d sementara horison 300 d, jadi 99,7 % pasangan E16
+    Terukur 29 Sep: cadence ⑨ median 244-245 d sementara horison 300 d, jadi 99,7 % pasangan E16
     beririsan dan n efektif ~1,23x lebih kecil dari n yang tercetak. Aturan ini ditulis SEBELUM
     kunci E25 dipasang, bukan ditambal setelah hasilnya dilihat.
     """
@@ -240,7 +240,13 @@ def pasangan(per, horizon=HORIZON_DTK, tolerance=150, non_overlap=False):
             if abs(rows[j]["detik"] - tgt) > tolerance or j <= i:
                 i += 1
                 continue
-            bebas = rows[j]["detik"]
+            # Teks kunci E25 bilang: ">= horison dari snapshot terpilih TERAKHIR". Versi pertama
+            # alat ini memakai rows[j]["detik"] (waktu baris KELUAR - dengan tolerance 150 d sering
+            # jatuh ~245 d sesudah t), jadi aturan non-overlap hampir tidak memotong apa pun dan
+            # alatnya melanggar teks yang dikuncinya sendiri. Perbaikan ini MENAATI spec; sha spec
+            # tidak berubah. (Ketahuan karena n yang keluar tidak cocok dengan pengurangan yang
+            # dijanjikan aritmetika - bukan karena ada yang membaca hasilnya lebih dulu.)
+            bebas = r["detik"] + horizon
             sp = r.get("spread_bps")
             i += 1
             out.append({"sym": sym, "detik": r["detik"],
@@ -441,6 +447,18 @@ def self_test():
         # hipotesis sekunder yang sama arahnya tidak boleh otomatis LAYAK tanpa n cukup
         kecil = uji(ps[:5], "bi5")
         assert kecil.get("status", "").startswith("BELUM BISA DIUJI"), kecil
+        # --- non_overlap (P66/E25): dua jendela terpilih TIDAK BOLEH beririsan ---
+        srq = [{"detik": 1_000_000 + k * 245, "mid": 100.0 + k * 0.01, "spread_bps": 8.0,
+                "bi5": (0.2 if k % 2 else -0.2), "bi1": 0.1, "bi20": 0.1, "mi20": 0.001,
+                "util20": 0.5} for k in range(40)]
+        ov = pasangan({"UJIUSDT": srq}, non_overlap=False)
+        no = pasangan({"UJIUSDT": srq}, non_overlap=True)
+        assert len(no) < len(ov), (len(no), len(ov))
+        ts = sorted(p["detik"] for p in no)
+        jarak = [b - a for a, b in zip(ts, ts[1:])]
+        assert jarak and min(jarak) >= HORIZON_DTK, jarak[:6]
+        print("   non_overlap: %d -> %d pasangan; jarak antar jendela terpilih terkecil %d d "
+              "(>= %d d)" % (len(ov), len(no), min(jarak), HORIZON_DTK))
     finally:
         BUKU = asli
         os.remove(tmp)
@@ -448,7 +466,7 @@ def self_test():
         assert os.path.exists(os.path.join(ROOT, "universe", "book-depth.jsonl")), \
             "berkas buku order yang ASLI hilang - ini yang terjadi di fast_lane (F-D42)"
     print("self-test E16 OK: edge buatan terdeteksi, baris gagal (bdx) tidak menyamar jadi nol, "
-          "n kecil = BELUM BISA DIUJI")
+          "n kecil = BELUM BISA DIUJI, non_overlap terbukti memotong jendela beririsan")
 
 
 if __name__ == "__main__":

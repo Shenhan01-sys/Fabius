@@ -23,6 +23,15 @@ terlihat bagus sebelum ketahuan.
 > (E25 lewat P54, kini boleh jalan karena vonis sudah tercatat).
 
 
+> **T1 DITUTUP UNTUK KEDUA KALINYA - 30 Sep 10:43:24Z (E25, `decisions/book-prereg-20260930T104324Z.json`),
+> kali ini pada frame yang diperluas (41 simbol) DAN jendela yang jujur (non-overlap, n 2.547 -> 1.249).**
+> `bi5` memberi **selisih +11,63 bps, p=0,00118** dan sekundernya `bi1`/`bi20` **lolos BH α 0,10** -
+> prediksi yang paling kuat yang pernah kami ukur - tapi **net-of-cost −45,12 bps**, jadi syarat (4)
+> menjatuhkannya. Yang ditutup adalah **jalur trading-nya**, bukan temuannya: efeknya nyata, ongkosnya
+> lebih nyata. **TIDAK** dibalik jadi "contra-imbalance" (E16 memberi −0,95 di simbol kabar, E25 memberi
+> +13,03 - dua jendela, dua populasi; membalik tanda butuh kunci sendiri). Lihat
+> [[06-Results/29 - Buku Order, Frame Baru]] §4b-§4d dan **F-D69**.
+
 ## 1. Teori builder, dibedah jadi dua yang bisa diuji
 
 > "Baca order book-nya, buy/sell, lalu total variasi harga yang ada. Buy dikurangi sell: positif →
