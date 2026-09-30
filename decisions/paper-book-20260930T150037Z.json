@@ -1,0 +1,111 @@
+{
+ "bata": [
+  "paper, bukan PnL: tidak ada order, tidak ada antrean, tidak ada likuiditas sungguhan di kaki keluar",
+  "dampak s/L memakai likuiditas snapshot; 0 posisi tidak punya angka likuiditas -> haircut 0 (dilaporkan, tidak dianggap kecil)",
+  "ranking `lock` masih KANDIDAT (lolos 2 uji tapi kuintil 24-51 kejadian) - belum lewat hari kedua",
+  "satu jendela ~50 jam, satu rezim"
+ ],
+ "budget_paper_per_hari": 20,
+ "daily_cap_kontrak": 5,
+ "dibuat_utc": "2026-09-30T15:00:37Z",
+ "horizon_menit": 30,
+ "jumlah_posisi_aktif": 100,
+ "kebijakan_aktif": "lock",
+ "ongkos_bps_rt": 59.0,
+ "perbandingan": [
+  {
+   "hari": 5,
+   "kebijakan": "first",
+   "mean_winso_bps": -199.8,
+   "mean_winso_sebelum_dampak": -199.7,
+   "median_bps": -60.1,
+   "n": 12,
+   "p_ge_500": 0.0,
+   "p_positif": 0.0,
+   "tanpa_liq": 0,
+   "total_bps": -2398.0
+  },
+  {
+   "hari": 5,
+   "kebijakan": "random",
+   "mean_winso_bps": -90.7,
+   "mean_winso_sebelum_dampak": -90.2,
+   "median_bps": -69.1,
+   "n": 12,
+   "p_ge_500": 8.3,
+   "p_positif": 8.3,
+   "tanpa_liq": 0,
+   "total_bps": -1088.0
+  },
+  {
+   "hari": 5,
+   "kebijakan": "lock",
+   "mean_winso_bps": -61.4,
+   "mean_winso_sebelum_dampak": -61.0,
+   "median_bps": -66.6,
+   "n": 52,
+   "p_ge_500": 9.6,
+   "p_positif": 23.1,
+   "tanpa_liq": 0,
+   "total_bps": -3195.0
+  },
+  {
+   "hari": 5,
+   "kebijakan": "tanpa-gerbang",
+   "mean_winso_bps": -248.4,
+   "mean_winso_sebelum_dampak": -248.2,
+   "median_bps": -60.9,
+   "n": 13,
+   "p_ge_500": 0.0,
+   "p_positif": 0.0,
+   "tanpa_liq": 0,
+   "total_bps": -3229.0
+  },
+  {
+   "hari": 2,
+   "kebijakan": "vol-rendah",
+   "mean_winso_bps": -108.8,
+   "mean_winso_sebelum_dampak": -108.3,
+   "median_bps": -59.0,
+   "n": 10,
+   "p_ge_500": 0.0,
+   "p_positif": 20.0,
+   "tanpa_liq": 0,
+   "total_bps": -1088.0
+  },
+  {
+   "hari": 1,
+   "kebijakan": "vol-tinggi",
+   "mean_winso_bps": 495.8,
+   "mean_winso_sebelum_dampak": 496.3,
+   "median_bps": 495.8,
+   "n": 1,
+   "p_ge_500": 0.0,
+   "p_positif": 100.0,
+   "tanpa_liq": 0,
+   "total_bps": 496.0
+  }
+ ],
+ "promote_after": 2,
+ "rows_sha256": "0xa2e791d938dd449d582116da124faff1d0b84e778fc8dbe17ff301b814060d72",
+ "sha_perbandingan": "0xb7a44ce24f131d5f4cff5ae322bf502f104018f5eccb195763db0edb22d57d0a",
+ "size_quote_paper": 0.01,
+ "slot_streak_cukup": 2,
+ "slot_total": 100,
+ "streak_terpanjang": 2,
+ "sumber_harga": "peristiwa (tx.t,tx.p)",
+ "vonis_kebijakan": {
+  "ci_hi_mean_winso": 122.8,
+  "ci_lo_mean_winso": -239.2,
+  "control_random_winso": -90.7,
+  "di_atas_acak": true,
+  "gerbang": "F-D16 (n>=20 DAN harapan>0 DAN CI bawah>0) + wajib di atas control random; streak dicatat, bukan jadi vonis",
+  "kebijakan": "lock",
+  "layak_real": false,
+  "mean_raw_bps_JANGAN_dipakai": -21.5,
+  "mean_winso_bps": -61.4,
+  "n": 52,
+  "peluang_menang": 23.1,
+  "streak_terpanjang": 2
+ }
+}
