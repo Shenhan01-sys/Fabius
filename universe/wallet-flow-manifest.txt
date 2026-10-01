@@ -1,15 +1,15 @@
 # wallet-flow manifest - dihasilkan universe/record_wallet_flow.py
-generated_utc: 2026-10-01T19:23:14Z
+generated_utc: 2026-10-01T19:27:32Z
 schema: 2
-baris: 236153
-baris_transaksi: 127326
+baris: 236248
+baris_transaksi: 127349
 maker_unik: 737
 token_unik: 7654
 usia_aliran_jam: 0.00
-sha256_berkas: 0xde43d249585e66754ecc7d8aeb6ec41495666b05b1781e5b2d2846ddc3068e44
-hash_baris_terakhir: 0x5f54b888a06427317c6f3670032b9fa29fd782870e65e748708313b41705a13e
-mata_rantai_dipakai_run_ini: 0xbfe281b94cf15c8a01c07e61bb26b0fff9723ab65f47cb20628fd58d52b956e7
-rentang_event_utc: 2026-09-26T08:01:42Z -> 2026-10-01T19:23:13Z (131.36 jam)
+sha256_berkas: 0xbb5833f442ef9f0ef806f764a88e7f4d529a0328f47eb91a01c04dba1c0c9273
+hash_baris_terakhir: 0xaf9f6e18c77117d42535b1ca496456811dc34b7adf4eb7973e656e53888e7b9e
+mata_rantai_dipakai_run_ini: 0x5f54b888a06427317c6f3670032b9fa29fd782870e65e748708313b41705a13e
+rentang_event_utc: 2026-09-26T08:01:42Z -> 2026-10-01T19:27:31Z (131.43 jam)
 
 Batas yang wajib dibaca bersama berkas ini: keanggotaan panel `sm`/`kol` ADALAH pilihan
 GMGN (lihat field `g`/tags), jadi panel awal tidak netral. Yang kita ukur sendiri hanyalah
