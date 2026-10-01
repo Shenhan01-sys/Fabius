@@ -1,3 +1,3 @@
-# watch-prices-manifest.txt - ditulis 2026-10-01T03:44:03Z UTC | 143236 baris | schema 1
+# watch-prices-manifest.txt - ditulis 2026-10-01T03:48:14Z UTC | 143492 baris | schema 1
 # harga pantau per token (DexScreener, batch-30, tanpa kunci) - penutup sensor
-wp  baris=143236 token_unik=3443 rentang=68.4 jam | sha_last=0x87ee051cc343
+wp  baris=143492 token_unik=3456 rentang=68.4 jam | sha_last=0x0e0a236966f3
