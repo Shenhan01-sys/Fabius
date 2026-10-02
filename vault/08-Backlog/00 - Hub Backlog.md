@@ -11,6 +11,8 @@ artinya dua epik dan sembilan item hari ini (P41-P49) hanya bisa ditemukan kalau
 nama filenya. Itu lubang navigasi, bukan lubang data; sekarang ditutup, dan gerbang bentuk
 (`hub_shape.py`) ikut memeriksa keempat unsur hub ini supaya tidak kembali bolong.
 
+**Sejak 2 Okt 2026:** indeks kerja AKTIF = [[01 - Backlog]] bagian *Arah operator* (P68-P106, satu baris status per item: ✅ / 🟡 / ⏳ / ⬜ / 🟠 / 🚫). Epik tetap tempat rincian dan alasan; status tidak lagi ditulis di kolom catatan epik.
+
 ## Bagian
 
 - [[01 - Backlog]] - indeks P1..P49 + status. **Berubah hari ini:** P41 (jembatan substrat - cakupan
@@ -26,12 +28,12 @@ nama filenya. Itu lubang navigasi, bukan lubang data; sekarang ditutup, dan gerb
 - [[04 - Riset Teori (Sitasi)]] - S1-S9 dengan URL + tanggal akses; tiga kutipan dibaca langsung dari
   halaman penerbit (Lei & Li 2009; Osler 2002; Ke & Lin 2017), plus daftar **tidak terverifikasi**
   dan satu sitasi yang **ditarik** ("Gu & Kelly 2014")
-- [[05 - Epik Enam Bot]] - **USULAN** konsep operator pemilih bot (2 Okt): enam bot = satu metode + satu parameter
+- [[05 - Epik Enam Bot]] - **USULAN** konsep operator pemilih bot (2 Okt; **M1 + M2 sudah jalan** - status per item di [[01 - Backlog]] *Arah operator*): enam bot = satu metode + satu parameter
   (TREND, RS, CARRY, LISTING-FADE, CORE-RWA, BOUNCE), yang ditolak, aturan lapisan operator, jalur venue/paper (Binance
   Agentic Wallet, testnet), konflik dengan klaim vault, dan P68-P76. Semua angka eksploratif, bukan klaim.
   **Berisi KOREKSI K1-K3 (2 Okt malam):** B2 1,29 = undian fase (0,85 tanpa pilihan hari), gabungan 2025-26 = 0,071, bolong data;
   §14 = mesin `engine/` (M1, belum di-commit)
-- [[06 - Epik Gerbang Sinyal]] - **USULAN rancangan** kirim sinyal lewat x402 V2 + MCP (+ email), tiga tingkat produk, dan jawaban
+- [[06 - Epik Gerbang Sinyal]] - **USULAN rancangan** (C-A `LockRegistry` + C-B `SignalAnchor` **ter-deploy 2 Okt**, F-D80) kirim sinyal lewat x402 V2 + MCP (+ email), tiga tingkat produk, dan jawaban
   "kontrak selain anchor tiap sinyal": `LockRegistry`, komit-ungkap v2, `OperatorGuard`, rekam jejak/siklus hidup, pass, escrow/bond,
   reputasi ERC-8004; benturan dengan "kami tidak menjual sinyal" dan F-D16/17/18; P77-P80
 - [[07 - Epik Kolaborasi Bot Terbuka]] - **USULAN rancangan + kode awal** program penerbit bot luar (F-D71, F-D72): formulir skema tertutup (hanya `template`), **peninjau = bot
@@ -43,6 +45,16 @@ nama filenya. Itu lubang navigasi, bukan lubang data; sekarang ditutup, dan gerb
 
 <!-- di atas: append-only oleh scripts/sync_vault.py; gloss tulisan tangan utuh -->
 ## Yang menunggu di folder ini
+
+**Sekarang (2-3 Okt):**
+
+| apa | kapan (UTC) | bukti yang dicari | item |
+|---|---|---|---|
+| tick bar 2026-10-02 B1 + B3 tanpa tangan manusia | 3 Okt 08:40-12:00Z | commit runner `paper-ledger`; `engine.cli ledger verify` SAH | P93 |
+| komit + ungkap pertama di SignalAnchor | ±5 menit sesudah tick itu | `commitCount()` 0 -> 2; log worker `terkirim: 2 komit` | P94 |
+| jeda terbit REST sesudah 00:00Z | 3 Okt 00:00-00:10Z | detik pertama bar + funding 00:00Z terlihat di REST | P98 |
+
+**Riwayat (29 Sep, sudah divonis):**
 
 | kunci | alat | vonis (UTC) | dibaca sebagai |
 |---|---|---|---|

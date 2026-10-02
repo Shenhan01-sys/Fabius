@@ -18,7 +18,7 @@ git clone https://github.com/Shenhan01-sys/Fabius && cd Fabius
 git submodule update --init --recursive          # vendor/: OZ + forge-std
 
 # 1. kontrak & angka uji
-forge test                                       # 39 lulus: 21 DecisionAnchor + 18 ExecutionVault
+forge test                                       # 39 lulus: 21 DecisionAnchor + 18 ExecutionVault  (2 Okt: 63 = + 24 SignalAnchor/LockRegistry)
 FOUNDRY_PROFILE=fork forge test --fork-url bscTestnet      # 63 lulus, termasuk 9 fork settlement x402
 FOUNDRY_PROFILE=fork forge test --match-contract ExecutionVaultTest   # 18 lulus, di kedua profil
 
@@ -36,6 +36,26 @@ python -X utf8 -u tools/ledger.py                        # nilai posisi jatuh te
 FOUNDRY_PROFILE=fork forge build && python -X utf8 -u tools/backtest.py --mom-only --flip
 python -X utf8 -u tools/whale_sweep.py --days 90         # butuh DUNE_API_KEY
 ```
+
+**Operator (sejak 2 Okt 2026; paper penuh):**
+
+```bash
+# ledger paper maju - tanpa kunci; jaringan hanya untuk --feed
+python -X utf8 -m engine.cli ledger verify          # hitung ulang tiap tick/settle dari ledger/bars
+python -X utf8 -m engine.cli ledger report
+python -X utf8 tools/paper_tick.py --dry-run         # rencana tick tanpa menulis
+gh run list --workflow paper-ledger.yml --limit 5    # rantai GitHub = penulis TUNGGAL ledger (F-D78)
+
+# M3 di chain 97 - baca tanpa kunci
+cast call 0x9B78200beFbbBe836585d31bd5b6dB32587064f3 "commitCount()(uint256)" --rpc-url https://bsc-testnet.publicnode.com
+python -X utf8 tools/signal_commit.py --committer 0xCA9c7322210E9a7F7d0953c862d4Ef60cC0D64A4    # rencana komit/ungkap
+
+# Railway (butuh login CLI builder; JANGAN `railway environment config --json` / `railway variable list --json|--kv`: mencetak kunci)
+railway logs --service fabius-engine --lines 40
+python -X utf8 tools/railway_up.py [--service fabius-probe]                                      # deploy dari HEAD
+```
+
+Perekam wallet-flow (`wallet-flow.yml`) **dihentikan 2 Okt** (F-D81); blok 3-4 di atas tetap benar sebagai riwayat riset agen BSC.
 
 **Detail:**
 - `bscTestnet` = alias di `foundry.toml` → **publicnode**, bukan drpc. Alasan: drpc sehat untuk

@@ -10,6 +10,11 @@ tags: [entry]
 > awal** ([[08-Backlog/05 - Epik Enam Bot]], [[08-Backlog/06 - Epik Gerbang Sinyal]], [[08-Backlog/07 - Epik Kolaborasi Bot Terbuka]]).
 > Jangan memakai halaman ini untuk menyangkal arah baru, dan jangan menyebut arah baru sebagai fitur yang sudah ada.
 
+> **STATUS 2 Okt malam (dicetak ulang):** arah baru bukan lagi sekadar usulan. Ledger paper maju B1-TREND + B3-CARRY hidup (M2, F-D75..F-D78); kontrak
+> `LockRegistry` + `SignalAnchor` ter-deploy di chain 97 (M3, F-D79/F-D80); worker Railway mengomit tiap tick (F-D80; committer dirotasi, F-D82); perekam
+> wallet-flow dihentikan (F-D81); data REST = data Vision untuk engine (F-D83). Semua tetap **paper**: tanpa uang nyata, tanpa klaim edge.
+> Status per item: [[08-Backlog/01 - Backlog]] bagian *Arah operator*.
+
 **Baca dulu ini, tiga baris:**
 
 1. Fabius adalah agen riset BNB Chain yang **menerbitkan keputusan yang bisa dibuktikan salah**.

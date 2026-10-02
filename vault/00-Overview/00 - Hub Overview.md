@@ -18,7 +18,7 @@ dan cara menjalankan. **Bukan** tempat angka hasil pengukuran — itu di `06-Res
 - [[04 - Run It]] — semua perintah, sekali copy
 - [[08-Backlog/00 - Hub Backlog]] - indeks kerja + epik alasan masuk + epik teori baru + halaman sitasi
 - [[05 - Corrections]] — klaim kami yang salah dan apa yang membuktikannya
-- [[06 - Roadmap]] — hitung mundur ke tenggat 30 Sep WIB
+- [[06 - Roadmap]] — hitung mundur ke tenggat 30 Sep WIB (lewat; urutan kerja sekarang: [[08-Backlog/01 - Backlog]] *Arah operator*)
 - [[07 - Ecosystem Positioning]] — jawaban terukur atas "ini jangan-jangan cuma project trading?"
 
 <!-- di atas: append-only oleh scripts/sync_vault.py; gloss tulisan tangan utuh -->

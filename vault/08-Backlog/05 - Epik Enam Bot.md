@@ -313,9 +313,11 @@ ia dibaca mesin dan memuat klaim yang perlu ditinjau terpisah, P76). Pertanyaan 
 
 ## 12. Backlog usulan (belum masuk tabel [[01 - Backlog]])
 
+> Sejak 2 Okt malam semua item ini MASUK [[01 - Backlog]] bagian *Arah operator* dengan status per item; kolom catatan di bawah tidak lagi menjadi tempat status.
+
 | ID | kerja | catatan |
 |---|---|---|
-| P68 | registry enam bot: satu metode + satu parameter, tes unit, hash | **M1 ada di `engine/`** (2 Okt malam, belum di-commit; §14) |
+| P68 | registry enam bot: satu metode + satu parameter, tes unit, hash | **M1 ada di `engine/`** (2 Okt malam, belum di-commit; §14) → **di-commit dan dipush 2 Okt** (F-D73/F-D74) |
 | P69 | penggaris per venue di `tools/costs.py` (fee + ½-spread + dampak + funding); 59 berlabel `demo-AMM` | F-D24 |
 | P70 | porting skrip sesi ke `tools/` + satu berkas kunci per bot | menjadikan angka §3 klaim yang sah; sebagian dikerjakan oleh `engine/` (K1-K3 lahir dari sini) |
 | P71 | guard umur bar di `direction.py`/bot | temuan: stop MARSCOIN 27 Sep sudah tersentuh 8 jam sebelum anchor. Guard sudah ada di `engine/freshness.py`; **`tools/direction.py` belum diperbaiki** |
@@ -324,8 +326,8 @@ ia dibaca mesin dan memuat klaim yang perlu ditinjau terpisah, P76). Pertanyaan 
 | P74 | lapisan pemilih + evaluasi (EW/acak/trailing, skor Brier, jeda minimum) | |
 | P75 | telaah hukum/ToS sebelum uang nyata (§10) | |
 | P76 | suntingan minimal 12 pada klaim yang berbenturan | menunggu builder |
-| P77 | M2 mesin: pengunduh dengan guard umur bar + paper ledger append-only + replay B4 dari event | |
-| P78 | M3 kontrak: `LockRegistry`, anchor sinyal v2 (commit-reveal + akar Merkle), `OperatorGuard` | [[06 - Epik Gerbang Sinyal]] §3 |
+| P77 | M2 mesin: pengunduh dengan guard umur bar + paper ledger append-only + replay B4 dari event | **dibangun 2 Okt (F-D75..F-D78)**; replay B4 belum |
+| P78 | M3 kontrak: `LockRegistry`, anchor sinyal v2 (commit-reveal + akar Merkle), `OperatorGuard` | [[06 - Epik Gerbang Sinyal]] §3; **C-A/C-B ter-deploy chain 97 2 Okt (F-D80); `OperatorGuard` belum** |
 | P79 | M4 gerbang: x402 V2 + MCP + webhook/email | [[06 - Epik Gerbang Sinyal]] §4-§5; **setelah** P75 |
 | P80 | telaah hukum menjual sinyal (OJK, UU PDP) | bagian dari P75; lebih berat dari trading sendiri |
 | P81-P89 | program penerbit bot: `BotRegistry`/`RevenueSplitter`, ~~peninjau agen~~ → peninjau-bot (F-D72: tanpa agen), penghitung percobaan, jalur `method_pr`, ledger shadow, kunci ambang, orkestrator buku, pemeriksa F-D16 | [[07 - Epik Kolaborasi Bot Terbuka]] §11 |

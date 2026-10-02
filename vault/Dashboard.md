@@ -10,6 +10,11 @@ tags: [dashboard]
 > awal** ([[08-Backlog/05 - Epik Enam Bot]], [[08-Backlog/06 - Epik Gerbang Sinyal]], [[08-Backlog/07 - Epik Kolaborasi Bot Terbuka]]).
 > Jangan memakai halaman ini untuk menyangkal arah baru, dan jangan menyebut arah baru sebagai fitur yang sudah ada.
 
+> **STATUS 2 Okt malam (dicetak ulang):** arah baru bukan lagi sekadar usulan. Ledger paper maju B1-TREND + B3-CARRY hidup (M2, F-D75..F-D78); kontrak
+> `LockRegistry` + `SignalAnchor` ter-deploy di chain 97 (M3, F-D79/F-D80); worker Railway mengomit tiap tick (F-D80; committer dirotasi, F-D82); perekam
+> wallet-flow dihentikan (F-D81); data REST = data Vision untuk engine (F-D83). Semua tetap **paper**: tanpa uang nyata, tanpa klaim edge.
+> Status per item: [[08-Backlog/01 - Backlog]] bagian *Arah operator*.
+
 Pertanyaan proyek dalam bentuk tabel. Semua barisnya diambil dari perintah yang ada di repo;
 kolom "diperbarui" adalah tanggal run, bukan tanggal edit halaman.
 
@@ -22,7 +27,11 @@ kolom "diperbarui" adalah tanggal run, bukan tanggal edit halaman.
 | Angka paling jujur yang kami punya | −72,4 bps rata-rata dari 2 posisi jatuh tempo (n=2) | [[06-Results/07 - Matured Outcomes]] | 2026-09-27 |
 | Yang paling lemah sekarang | **sinyal**: nol jalur arah yang lolos uji setelah ongkos (rugi 12/12); alat skor ⑦ belum bisa dipercaya; gateway belum di-host | [[08-Backlog/01 - Backlog]] P10–P15 | 2026-09-28 |
 | Ilmunya di mana? | lapisan pengetahuan trading per metode, dengan status data & tingkat bukti tiap catatan | [[TradingKnowledge/00 - Hub Trading Knowledge]] · [[TradingKnowledge/Fakta Terukur]] | 2026-09-28 |
-| Berapa sisa waktu | tenggat 30 Sep 23:59 **WIB** | [[00-Overview/06 - Roadmap]] | 2026-09-27 |
+| Berapa sisa waktu | tenggat 30 Sep 23:59 **WIB** (sudah lewat; arah operator tidak punya tenggat hackathon) | [[00-Overview/06 - Roadmap]] | 2026-09-27 |
+| Arah sekarang? | operator pemilih bot, **paper penuh**: B1-TREND + B3-CARRY di ledger maju, sinyal dikomit ke chain | [[08-Backlog/01 - Backlog]] *Arah operator* · F-D70..F-D83 | 2026-10-02 |
+| Kontrak baru? | `LockRegistry` `0xcF6fBF95fc04DEd8d670512CEc0723a2246Fbb0C` · `SignalAnchor` `0x9B78200beFbbBe836585d31bd5b6dB32587064f3` (chain 97) | [[02-Contracts/C6 - LockRegistry]] · [[02-Contracts/C7 - SignalAnchor]] | 2026-10-02 |
+| Jalan 24/7 di mana? | rantai GitHub `paper-ledger` (penulis ledger) + Railway `fabius-engine` (Singapura, komit sinyal) | [[00-Overview/04 - Run It]] | 2026-10-02 |
+| Yang belum terbukti | tick tanpa tangan manusia + komit pertama on-chain: 3 Okt | [[08-Backlog/01 - Backlog]] P93/P94 | 2026-10-02 |
 
 ```dataview
 TABLE WITHOUT ID file.folder AS folder, file.name AS halaman

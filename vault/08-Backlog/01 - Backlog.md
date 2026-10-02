@@ -6,6 +6,57 @@ tags: [backlog, hub]
 
 **Sumber:** keluaran perintah di `07-Testing/`, bukan perasaan. Tenggat: **30 Sep 23:59 WIB**.
 
+> **Sejak 2 Okt 2026 (BN-PIVOT, F-D70) tenggat 30 Sep sudah lewat.** Backlog AKTIF = bagian **Arah operator** tepat di bawah ini (P68 dst., status per item,
+> dicetak ulang 2 Okt malam). Tabel lama (P1-P67, riset agen BSC) tetap utuh di bawahnya sebagai riwayat; statusnya tidak diperbarui lagi kecuali disebut di sini.
+
+## Arah operator (sejak 2 Okt 2026) - indeks status
+
+Legenda: ✅ selesai (dengan bukti) · 🟡 sebagian · ⏳ menunggu waktu / bukti otomatis · ⬜ belum · 🟠 menunggu kata builder · 🚫 terhalang dari luar.
+Rincian tiap item ada di rumahnya (kolom terakhir); angka di sini dicetak oleh perintah yang disebut di rumah itu.
+
+| # | pekerjaan | status (2 Okt malam WIB) | rumah / bukti |
+|---|---|---|---|
+| P68 | mesin M1: registry enam bot di `engine/` (stdlib) + tes | ✅ di-commit dan dipush; `python -X utf8 -m unittest discover -s engine/tests -t .` = **272 lulus** (2 Okt) | F-D70..F-D72 · [[05 - Epik Enam Bot]] §14 · [[04-Tools/TL8 - engine]] |
+| P69 | penggaris per venue di `tools/costs.py` (fee + ½-spread + dampak + funding) | ⬜ | [[05 - Epik Enam Bot]] §12 |
+| P70 | porting skrip sesi ke `tools/` + satu berkas kunci per bot | 🟡 sebagian lewat `engine/` (koreksi K1-K3 lahir dari sini) | §12 |
+| P71 | guard umur bar di `tools/direction.py` | ⬜ guard ada di `engine/freshness.py`; `direction.py` belum | §12 (temuan stop MARSCOIN 27 Sep) |
+| P72 | pemeriksaan ter-anchor yang benar (`tools/execute_live.py:117` tak pernah menyala) | ⬜ | §12 |
+| P73 | pipeline event B4 (kalender listing/unlock) | 🚫 API unlock berbayar (HTTP 402) | §12 |
+| P74 | lapisan pemilih + evaluasi (EW/acak/trailing, Brier) | ⬜ | §12 |
+| P75 | telaah hukum/ToS sebelum uang nyata | ⬜ | [[05 - Epik Enam Bot]] §10 |
+| P76 | suntingan minimal klaim yang berbenturan + `docs/agent-card.json` | 🟠 | §12 |
+| P77 | M2: pengunduh dengan guard umur bar + ledger paper maju | ✅ B1-TREND + B3-CARRY hidup: genesis + tick bar 2026-10-01 masing-masing, dibuat runner; 🟡 replay B4 belum | F-D75..F-D77 · [[04-Tools/TL9 - ledger paper maju]] |
+| P78 | M3 kontrak: `LockRegistry` (C-A) + `SignalAnchor` v2 (C-B); `OperatorGuard` (C-C) | ✅ C-A/C-B **ter-deploy chain 97 2 Okt 13:04Z**, B1/B3 dikunci committer; ⬜ C-C | F-D79/F-D80 · [[02-Contracts/C6 - LockRegistry]] · [[02-Contracts/C7 - SignalAnchor]] |
+| P79 | M4 gerbang: x402 V2 + MCP + webhook/email | ⬜ sesudah P75/P80 | [[06 - Epik Gerbang Sinyal]] §5 |
+| P80 | telaah hukum menjual sinyal (OJK, UU PDP) | ⬜ | bagian dari P75 |
+| P81 | `BotRegistry` + `RevenueSplitter` | ⬜ | [[07 - Epik Kolaborasi Bot Terbuka]] §11 |
+| P82 | peninjau-bot: FE/antrean, nonce, pemeriksa URL rujukan | 🟡 kode `engine/review.py` selesai; sisanya belum | §11 |
+| P83 | penghitung percobaan global + BH lintas kandidat | ⬜ | §11 |
+| P84 | jalur `method_pr` | ⬜ ditutup sampai ada keperluan | §11 |
+| P85 | ledger shadow maju per bot + skor bergulir + statistik berpasangan | 🟡 ledger maju hidup (P77); kepala ledger kini dikomit per tick lewat SignalAnchor (P94); skor bergulir + statistik berpasangan belum | §11 |
+| P86 | kunci `GateParams`/`KpiParams`/`SlotParams` v1 | ✅ sementara (F-D73), ter-anchor 2026-10-02T08:17:48Z (F-D74) | §11 · [[04-Tools/TL10 - kunci dan anchor kunci]] |
+| P87 | orkestrator buku hidup | ⬜ | §11 |
+| P88 | pemeriksa F-D16 pada data maju | ⬜ (data maju baru 1 tick per bot) | §11 |
+| P89 | G5/G8 + `NULL_KIND`/`PHASE_VARIANTS` eksplisit | ⬜ | §11 |
+| P90 | riset optimasi ambang R1-R11 | 🟠 anggaran A1/A2 belum diputuskan | [[08 - Riset Optimasi Ambang]] |
+| P91 | anchor sha kunci v1 + commit `engine/` | ✅ anchoredAt 2026-10-02T08:17:48Z | F-D74 |
+| P92 | funding direkonstruksi dari indeks premium | ✅ estimasi hanya untuk laporan PROVISIONAL + target B3; `settle` final tetap funding aktual | F-D76 |
+| P93 | jadwal ledger yang menyambung dirinya sendiri + watchdog (cron GitHub di repo ini tidak pernah menembak) | ✅ dipasang; ⏳ bukti: tick bar 2026-10-02 tanpa tangan manusia, 3 Okt ±08:40-12:00Z | F-D78 · [[04-Tools/TL9 - ledger paper maju]] |
+| P94 | worker Railway tahap 1: komit + ungkap tiap tick ke SignalAnchor | ✅ hidup di Singapura, mode KIRIM sejak 15:50Z; ⏳ bukti: `commitCount()` 0 -> 2 sesudah tick 3 Okt | F-D80 · [[04-Tools/TL11 - komit sinyal M3]] |
+| P95 | rotasi kunci committer sesudah terpapar di transkrip sesi | ✅ 15:49Z; committer aktif `0xCA9c7322210E9a7F7d0953c862d4Ef60cC0D64A4` | F-D82 |
+| P96 | hentikan perekam wallet-flow sebelum batas 100 MB GitHub | ✅ 15:06Z, kedua workflow `disabled_manually` | F-D81 · [[03-Data/D2 - Wallet Flow]] |
+| P97 | uji kesamaan REST Binance vs Vision | ✅ harga 0 beda; funding 114.228/114.228 identik; volume beda 52 (perp) / 88 (spot) bar | F-D83 · [[04-Tools/TL13 - rest_vs_vision]] · [[03-Data/D7 - Ledger Bars]] |
+| P98 | ukur jeda terbit REST sesudah 00:00Z (bar + funding) dan finalitas menit pertama | ⬜ berikutnya | F-D83 #5 |
+| P99 | tahap 2: Railway menjadi penulis ledger (rantai GitHub dimatikan) | 🟠 sesudah P93/P94/P98 terbukti | F-D80 #3 |
+| P100 | tahap 3: tick dari REST segera sesudah penutupan | ⬜ prasyarat data ✅ (P97); jeda ⬜ (P98) | F-D83 |
+| P101 | perawatan Railway: restart ALWAYS, alert (ALARM/TERLEWAT/saldo), sambung GitHub + watch paths | ⬜ restart + watch paths lewat dashboard builder (CLI menjawab "No changes to apply") | F-D80 #6, #8 |
+| P102 | tarik saldo ±0,0497 tBNB dari committer lama | ⬜ opsional (testnet, kecil) | F-D82 #4 |
+| P103 | cadangan `.committer.env` di luar laptop | 🟠 builder | F-D80 |
+| P104 | pecah berkas perekam per hari (hanya bila wallet-flow dinyalakan lagi) | ⬜ bila diperlukan | F-D81 #6 |
+| P105 | temuan audit 1-2 Okt yang belum punya item: (a) `confidence` model bisa menaikkan `risk_pct` (`tools/direction.py` ±239-253); (b) "net-of-cost" E16/E25 = return − ½ spread masuk, bukan 59 bps (`tools/book_prereg.py` ±254); (c) BH `tools/flow_test.py` hampa (`sign_p` = 1,0 pada kondisi itu); (d) 60/62 snapshot (P6) = urutan kunci JSON `gdelt.cols_seen` (int vs str); (e) README + `docs/agent-card.json` basi | ⬜ diverifikasi sesi 1-2 Okt; cek ulang sebelum diperbaiki; koreksi ditampilkan, hash lama tidak ditulis ulang | memori sesi audit 1-2 Okt; P6 |
+| P106 | alat verifikasi publik komit ↔ ledger (baca event `Committed`/`Revealed`, cocokkan dengan ledger + bar, tanpa kunci) | ⬜ | [[02-Contracts/C7 - SignalAnchor]] |
+
+
 | # | pekerjaan | status | yang menahan / bukti selesai |
 |---|---|---|---|
 | P1 | **Eksekusi nyata pertama di 97** (deploy `DemoAsset`+`DemoPair`+`ExecutionVault`, buka & tutup 1 posisi) | ✅ **selesai 27 Sep** — 2 round-trip nyata, realized −59 bps per putaran | Guard menolak kemarin karena memakai **plafon 1 gwei**, sementara testnet live **0,10 gwei**: jalur penuh = 0,0018 tBNB vs saldo agen 0,007884 → **cukup** (ukur ulang: `python -X utf8 _research/read_balances.py`). Pilih salah satu sadar: top-up 0,03 dari tower (0,214667 tersedia) supaya tidak bergantung harga gas, ATAU turunkan plafon guard + catat risikonya. Lalu `python -X utf8 -u tools/exec_deploy.py`. Selesai = ada tx `status=1` + `openPositionOf` terbaca |

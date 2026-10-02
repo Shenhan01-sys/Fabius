@@ -132,7 +132,7 @@ bytes32 dataHash)`; bobot ×1e-9, harga ×1e-8 (0 = tak ada); akar nol = "bot di
 | tahap | isi | prasyarat |
 |---|---|---|
 | M2 (P77) | pengunduh dengan guard umur bar, paper ledger append-only, replay B4 dari event | - ; **DIBANGUN 2 Okt (F-D75):** `engine/ledger.py`, `tools/feed_bars.py`, `tools/paper_tick.py`, workflow `paper-ledger.yml` (dipush 2 Okt; lari manual pertama sukses, run 36987654079; funding REST 451 dari runner; **P92/F-D76: funding direkonstruksi dari indeks premium untuk laporan PROVISIONAL, settle final tetap menunggu aktual**; **B3 aktif sejak bar 2026-10-01, F-D77**); **replay B4 belum**; jam maju B1 dimulai di bar 2026-10-01 |
-| M3 (P78) | C-A, C-B (lalu C-C) di testnet 97; satu kunci per bot | keputusan §8 #2 (varian hash) |
+| M3 (P78) | C-A, C-B (lalu C-C) di testnet 97; satu kunci per bot | keputusan §8 #2 (varian hash); **C-A/C-B TER-DEPLOY 2 Okt 13:04Z (F-D80): LockRegistry `0xcF6f…Fbb0C`, SignalAnchor `0x9B78…64f3`; B1/B3 dikunci committer; worker Railway mengomit tiap tick (P94); committer dirotasi 15:49Z (F-D82); C-C belum** |
 | M4 (P79) | gerbang: x402 V2 + MCP + webhook (+ email); lalu FE | tingkat 1 hanya setelah P75/P80 dan gerbang F-D16 |
 
 FE paling akhir (pola F-D20: bukti dulu, permukaan sesudahnya). Tingkat 0 bisa jalan lebih awal karena tidak menjual apa pun.

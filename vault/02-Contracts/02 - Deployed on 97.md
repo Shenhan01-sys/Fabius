@@ -182,3 +182,16 @@ kalau dicampur, satu `getAnchor` salah alamat membuat RPC kita terlihat mati.
 Yang terbukti: keberadaan, keutuhan, penanda tangan, urutan waktu, dan bahwa rem on-chain bekerja.
 Yang **tetap tidak** terbukti: bahwa keputusan itu benar, untung, atau dihasilkan model yang
 disebutkan (`06-Results/03 - Not Yet Proven.md`). Deploy ini tidak mengubah satu pun kalimat di sana.
+
+## 2 Okt — M3: `LockRegistry` + `SignalAnchor` (dibaca ulang dari chain)
+
+| | |
+|---|---|
+| `LockRegistry` | **`0xcF6fBF95fc04DEd8d670512CEc0723a2246Fbb0C`** (blok 134442907) - [[02-Contracts/C6 - LockRegistry]] |
+| `SignalAnchor` | **`0x9B78200beFbbBe836585d31bd5b6dB32587064f3`** (blok 134442917; `maxLag` 43200 s, `revealWindow` 604800 s) - [[02-Contracts/C7 - SignalAnchor]] |
+| deployer | tower `0xAEc63F6cEbBfacdC3516992b6ec396147c9c8361` (deployer Lencana) atas kata builder (F-D80) |
+| committer aktif | `0xCA9c7322210E9a7F7d0953c862d4Ef60cC0D64A4`; yang pertama (`0xE12e…812a`) pensiun karena kuncinya terpapar (F-D82) |
+| bukti | `tools/m3_setup.py` membaca ulang kode (LockRegistry byte-sama dengan artefak) + tiga immutable; `cast call` terpisah: kode 4.400 / 1.313 B, `lockCount()` 4, `commitCount()` 0 |
+
+Satu kalimat di atas perlu dibaca dengan tanggalnya: "Burner Fabius **tidak** memakai wallet Lencana" tetap benar untuk DecisionAnchor/ExecutionVault; M3 sengaja
+di-deploy DARI tower atas permintaan builder, dan alamatnya tercatat di `deployments/97.json` (`m3`).

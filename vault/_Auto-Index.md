@@ -2,7 +2,7 @@
 tags: [generated]
 ---
 
-_Auto-Index — 6 halaman · 2026-09-30T10:45Z · dari `vault/scripts/sync_vault.py`_
+_Auto-Index — 6 halaman · 2026-10-02T16:22Z · dari `vault/scripts/sync_vault.py`_
 
 ### 00-Overview (8)
 - [[00-Overview/00 - Hub Overview]]
@@ -21,32 +21,41 @@ _Auto-Index — 6 halaman · 2026-09-30T10:45Z · dari `vault/scripts/sync_vault
 - [[01-Agent/A4 - Trust Gating and Real-Money Rules]]
 - [[01-Agent/01 - Asset Classes and Seats]]
 
-### 02-Contracts (6)
+### 02-Contracts (8)
 - [[02-Contracts/00 - Hub Contracts]]
 - [[02-Contracts/C3 - ExecutionVault]]
 - [[02-Contracts/C4 - DemoPair and DemoAsset]]
 - [[02-Contracts/C5 - Vendored x402 Sources]]
+- [[02-Contracts/C6 - LockRegistry]]
+- [[02-Contracts/C7 - SignalAnchor]]
 - [[02-Contracts/01 - DecisionAnchor]]
 - [[02-Contracts/02 - Deployed on 97]]
 
-### 03-Data (7)
+### 03-Data (8)
 - [[03-Data/00 - Hub Data]]
 - [[03-Data/D2 - Wallet Flow]]
 - [[03-Data/D3 - Price Depth]]
 - [[03-Data/D4 - Dune]]
 - [[03-Data/D5 - Record Schemas]]
 - [[03-Data/D6 - Funding and OI History]]
+- [[03-Data/D7 - Ledger Bars]]
 - [[03-Data/01 - Dataset]]
 
-### 04-Tools (8)
+### 04-Tools (14)
 - [[04-Tools/00 - Hub Tools]]
 - [[04-Tools/TL1 - judge]]
+- [[04-Tools/TL10 - kunci dan anchor kunci]]
+- [[04-Tools/TL11 - komit sinyal M3]]
+- [[04-Tools/TL12 - m3_setup]]
+- [[04-Tools/TL13 - rest_vs_vision]]
 - [[04-Tools/TL2 - direction]]
 - [[04-Tools/TL3 - security_gate]]
 - [[04-Tools/TL4 - anchor and verify]]
 - [[04-Tools/TL5 - ledger]]
 - [[04-Tools/TL6 - x402 gate and client]]
 - [[04-Tools/TL7 - measurement harness]]
+- [[04-Tools/TL8 - engine]]
+- [[04-Tools/TL9 - ledger paper maju]]
 
 ### 05-Ecosystem (4)
 - [[05-Ecosystem/00 - Hub BNB Ecosystem]]
@@ -96,19 +105,24 @@ _Auto-Index — 6 halaman · 2026-09-30T10:45Z · dari `vault/scripts/sync_vault
 - [[07-Testing/T7 - Pre-Push Gate]]
 - [[07-Testing/01 - Test Commands]]
 
-### 08-Backlog (5)
+### 08-Backlog (9)
 - [[08-Backlog/00 - Hub Backlog]]
 - [[08-Backlog/01 - Backlog]]
 - [[08-Backlog/02 - Epik Alasan Masuk]]
 - [[08-Backlog/03 - Epik Teori Baru]]
 - [[08-Backlog/04 - Riset Teori (Sitasi)]]
+- [[08-Backlog/05 - Epik Enam Bot]]
+- [[08-Backlog/06 - Epik Gerbang Sinyal]]
+- [[08-Backlog/07 - Epik Kolaborasi Bot Terbuka]]
+- [[08-Backlog/08 - Riset Optimasi Ambang]]
 
-### 09-Inbox (5)
+### 09-Inbox (6)
 - [[09-Inbox/00 - Hub Inbox]]
 - [[09-Inbox/Session-2026-09-26-27]]
 - [[09-Inbox/Session-2026-09-27-siang]]
 - [[09-Inbox/Session-2026-09-28]]
 - [[09-Inbox/Session-2026-09-29]]
+- [[09-Inbox/Session-2026-10-02]]
 
 ### 10-Submissions (4)
 - [[10-Submissions/00 - Hub Submissions]]

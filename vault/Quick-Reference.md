@@ -15,13 +15,17 @@ dihapus saat audit, bukan disimpan sopan-sopanan.
 | ExecutionVault (chain 97) | `0x2743cD33C8790437594E119289838F35c0d1d290` | ter-deploy 27 Sep; cap 5 unit/hari, 1 unit/posisi |
 | DemoPair (97) | `0x6f93d787bBE99A6842CCa511ccB3b8D6d976696E` | x·y=k, fee 30 bps, spot 2,0000 |
 | DemoAsset (97) | `0x4180A42A119F0B5480637900679C0AaFB1F2a8d7` | ERC20 demo 6 desimal |
-| **manifest alamat** | `deployments/97.json` (ter-track) | 8 alamat + cek bytecode dari chain — inilah yang membuat `--verify` jalan di clone |
+| **manifest alamat** | `deployments/97.json` (ter-track) | 8 alamat (10 sejak 2 Okt: + LockRegistry, SignalAnchor) + cek bytecode dari chain — inilah yang membuat `--verify` jalan di clone |
 | agen (penanda-tangan anchor) | `0x4bb30E3b3bc22082c1935fE3bE7c07448e69c862` | env → `deployments/97.json` → derivasi kunci; **dibantah ke kontrak** lewat `getAgent()`/`countByAgent()` = 17, aktif=True |
 | ERC-8004 `IdentityRegistry` (chain 97) | `0x8004A818BFB912233c491871b3d84c89A494BD9e` | [[05-Ecosystem/01 - ERC-8004 Identity]] |
 | tokenId agen | **2494** | `python -X utf8 -u tools/x8004_register.py --verify` |
 | x402 proxy kanonis | `0x402085c248EeA27D92E8b30b2C58ed07f9E20001` (ada kode di 56 & 97) | [[05-Ecosystem/02 - x402 Payment]] |
 | Permit2 | `0x000000000022D473030F116dDEE9F6B43aC78BA3` | sama |
 | X402DemoToken (koin demo kami) | `0xB11D90214089684081F57A03d3300E20725297f8` | `python -X utf8 -u tools/x402_deploy.py` |
+| LockRegistry (chain 97, M3) | `0xcF6fBF95fc04DEd8d670512CEc0723a2246Fbb0C` | [[02-Contracts/C6 - LockRegistry]] · ter-deploy 2 Okt 13:04Z |
+| SignalAnchor (chain 97, M3) | `0x9B78200beFbbBe836585d31bd5b6dB32587064f3` | [[02-Contracts/C7 - SignalAnchor]] · maxLag 43200 s, revealWindow 604800 s |
+| committer SignalAnchor (aktif) | `0xCA9c7322210E9a7F7d0953c862d4Ef60cC0D64A4` | `deployments/97.json` `m3.committer`; `0xE12e…812a` pensiun (F-D82) |
+| kunci ambang peninjau v1 | sha `0xf145b70abd251b9fcf421bfb811bcf3788dade347c37b3bea331a09fedfe5f32`, anchoredAt 2026-10-02T08:17:48Z | `python -X utf8 tools/anchor_lock.py --verify` · F-D74 |
 
 ## Perintah yang paling sering dipakai
 
@@ -35,6 +39,8 @@ python -X utf8 tools/verify_vendor.py                          # vendor == manif
 python -X utf8 tools/direction.py --top 5 --emit               # siklus keputusan
 python -X utf8 universe/write_universe_manifest.py             # integritas dataset (sha256 per baris)
 python -X utf8 vault/scripts/prepush_check.py                  # WAJIB sebelum push: cek atribusi
+python -X utf8 -m engine.cli ledger verify                     # ledger paper maju: hitung ulang dari ledger/bars (2 Okt)
+python -X utf8 -m unittest discover -s engine/tests -t .        # 272 lulus (2 Okt malam)
 ```
 
 Yang **tidak** masuk blok itu dengan sengaja: `panel_stats.py`, `check_garbled.py` — apa pun

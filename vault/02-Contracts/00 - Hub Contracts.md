@@ -17,6 +17,8 @@ membacanya sendiri. Angka gas di sini berasal dari receipt, bukan dari perkiraan
 - [[01 - DecisionAnchor]] — roster agen, verdict, hash; 21 test
 - [[02 - Deployed on 97]] — alamat, biaya nyata, verifikasi chain, trail 17 anchor
 - [[C4 - DemoPair and DemoAsset]] — venue x·y=k dan kenapa kami bikin sendiri
+- [[C6 - LockRegistry]] — pra-registrasi spesifikasi per pengunci, ditulis sekali; ter-deploy 2 Okt (M3)
+- [[C7 - SignalAnchor]] — komit-ungkap sinyal per bot per bar; ter-deploy 2 Okt, menunggu komit pertama
 
 <!-- di atas: append-only oleh scripts/sync_vault.py; gloss tulisan tangan utuh -->
 ```dataview

@@ -4,6 +4,8 @@ tags: [data, "D2"]
 
 # D2 - Wallet Flow (bidang ⑦)
 
+> **DIHENTIKAN 2 Okt 2026 15:06Z (F-D81).** `wallet-flow.yml` + `wallet-flow-watchdog.yml` `disabled_manually` sebelum berkas datanya lewat batas 100 MB GitHub (watch-prices 65,8 MB / wallet-flow 60,9 / book-depth 28,8 saat berhenti). Data lama tetap terbaca; klaim yang butuh data sesudah 15:05Z = tak terukur.
+
 **Bagian dari:** [[03-Data/00 - Hub Data]]
 **Sumber:** `universe/record_wallet_flow.py`, `.github/workflows/wallet-flow.yml`,
 `_research/panel_stats.py`
