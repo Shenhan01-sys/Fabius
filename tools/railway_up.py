@@ -19,7 +19,7 @@ import tempfile
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(HERE)
-PATHS = ["railway", "engine", "tools/evm.py", "tools/signal_commit.py", "tools/operator_loop.py", "tools/paper_tick.py"]
+PATHS = ["railway", "engine", "tools/evm.py", "tools/signal_commit.py", "tools/operator_loop.py", "tools/paper_tick.py", "tools/rest_vs_vision.py"]
 
 
 def main() -> int:
