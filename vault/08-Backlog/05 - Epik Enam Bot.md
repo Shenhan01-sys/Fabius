@@ -355,10 +355,12 @@ untuk replay dan sinyal hidup: bot = fungsi murni `targets(spec, data) -> [Targe
 | `replay.py`, `report.py` | PnL harian dengan konvensi layar: sinyal di penutupan bar i, posisi untuk return bar i+1, biaya per sisi × turnover, funding nyata |
 | `cli.py` | `specs`, `replay`, `emit`, `gaps`; tidak menyentuh jaringan, kunci, atau chain |
 | `golden.py` | mencetak ulang semua angka K1-K3, sensitivitas fase B2/B5, dan invarian point-in-time |
-| `tests/` | `python -X utf8 -m unittest discover -s engine/tests -t .` (49 tes lulus saat bagian ini ditulis; **pembaruan di bawah**: 169; **174 dicetak ulang 2 Okt, F-D73**), termasuk tes yang membuktikan bot yang mengintip bar besok tertangkap |
+| `tests/` | `python -X utf8 -m unittest discover -s engine/tests -t .` (49 tes lulus saat bagian ini ditulis; **pembaruan di bawah**: 169; **174 dicetak ulang 2 Okt, F-D73**; **221 sesudah M2 dan alat anchor, F-D74/F-D75**), termasuk tes yang membuktikan bot yang mengintip bar besok tertangkap |
 | `chain.py` | (pembaruan malam) keccak256 murni, `abi.encode` statis, pohon Merkle gaya OpenZeppelin, checksum EIP-55; diuji silang dengan `cast keccak`, `cast abi-encode`, `eth_utils` |
 | `submission.py` | (pembaruan malam) skema formulir penerbit tertutup, validasi gagal-tertutup, `to_botspec`, pesan EIP-712 dan pemulihan penanda tangan (butuh `eth-account`) |
 | `gates.py`, `slots.py` | (pembaruan malam) gerbang seleksi G1-G11 dan buku sepuluh slot dengan rolling; lihat [[07 - Epik Kolaborasi Bot Terbuka]] |
+| `ledger.py` | (M2, F-D75) ledger paper maju: catatan `genesis`/`tick`/`gap`/`settle` berantai-hash, tick EX-ANTE ≤ 12 jam, settle EX-POST lewat `replay()` yang sama dengan gerbang; `python -X utf8 -m engine.cli ledger verify|report` menghitung ulang dari `ledger/bars` |
+| `tools/feed_bars.py`, `tools/paper_tick.py` | (M2, F-D75) pengunduh bar harian + funding (satu-satunya bagian M2 yang menyentuh jaringan) dan runner harian; workflow `.github/workflows/paper-ledger.yml` (**belum dijalankan di GitHub**); `tools/anchor_lock.py` (F-D74) |
 | `kpi.py`, `review.py`, `locks.py`, `economics.py`, `book.py` | (pembaruan 2 Okt, F-D72/F-D73) KPI K1-K5, peninjau-bot, kunci ambang (**v1 TERKUNCI sementara**; ter-anchor 2026-10-02T08:17:48Z, F-D74; `tools/anchor_lock.py`), bagi hasil 60/40, buku genesis (bot identitas = B1-TREND); riset optimasi ambang: [[08 - Riset Optimasi Ambang]] |
 
 Yang diperiksa dan hasilnya (semua dicetak ulang oleh perintahnya hari ini):

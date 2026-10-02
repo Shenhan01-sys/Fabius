@@ -11,22 +11,26 @@
     python -X utf8 -m engine.cli review --file sub.json --data <dir> [--json] [--signature 0x..]  # peninjau-bot penuh, laporan ber-sha
     python -X utf8 -m engine.cli lock   [--write --note "disetujui Hans <tanggal>" [--supersede]]  # kunci ambang (perlu kata builder)
     python -X utf8 -m engine.cli book                                                             # buku genesis: bot identitas Fabius (F-D73)
+    python -X utf8 -m engine.cli ledger verify|report [--ledger ledger/paper] [--bars ledger/bars] [--bot B1-TREND]   # ledger paper maju (M2)
 
 `--data` = folder CSV keluaran `fetch.py` (vault/09-Inbox/Session-2026-10-02-skrip/). Tidak ada perintah di sini yang
-menyentuh jaringan, kunci, atau chain. STATUS: USULAN (belum ada bot terkunci; angka replay = dalam-sampel).
+menyentuh jaringan, kunci, atau chain (pengunduh bar ada di tools/feed_bars.py). STATUS: USULAN (angka replay = dalam-sampel;
+ledger paper = maju tetapi paper).
 """
 from __future__ import annotations
 
 import argparse
 import csv
 import datetime as dt
+import glob
 import json
+import os
 import secrets
 import sys
 import time
 from typing import List
 
-from . import book as bookmod, chain, locks, review as reviewmod, submission
+from . import book as bookmod, chain, ledger as ledgermod, locks, review as reviewmod, submission
 from .data import load_csv_dir
 from .freshness import StaleBars, assert_fresh
 from .gates import GateParams, format_results, run_gates, verdict
@@ -40,6 +44,7 @@ from .spec import PERP_UNIVERSE, SPECS
 
 DATA_SYMBOLS = list(PERP_UNIVERSE) + ["PAXGUSDT", "XAUUSDT"]
 UTC = dt.timezone.utc
+REPO_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 
 def _iso(t_ms: int) -> str:
@@ -297,6 +302,43 @@ def cmd_intake(a) -> int:
     return 0 if verdict(res)[0] == "LOLOS_SHADOW" else 1
 
 
+def cmd_ledger(a) -> int:
+    """`ledger verify`: periksa rantai hash DAN hitung ulang setiap tick/settle dari deret bar (nol jaringan, nol kunci). `ledger report`: ringkasan."""
+    files = sorted(glob.glob(os.path.join(a.ledger, "*.jsonl")))
+    if a.bot:
+        files = [f for f in files if os.path.basename(f) == f"{a.bot}.jsonl"]
+    if not files:
+        print(f"tidak ada ledger di {a.ledger}" + (f" untuk {a.bot}" if a.bot else ""))
+        return 2
+    md = load_csv_dir(a.bars, DATA_SYMBOLS) if a.action == "verify" else None
+    rc = 0
+    for path in files:
+        name = os.path.basename(path)
+        try:
+            recs = ledgermod.load(path)
+        except ledgermod.LedgerError as e:
+            print(f"{name}: RUSAK: {e}")
+            rc = 1
+            continue
+        if a.action == "report":
+            print(ledgermod.render_report(recs))
+            print()
+            continue
+        problems = ledgermod.verify_chain(recs)
+        spec = SPECS.get(recs[0].get("bot_id")) if recs else None
+        if spec is None:
+            problems.append("bot_id genesis tidak dikenal oleh kode")
+        elif not any(x.startswith(("catatan pertama", "ledger kosong")) for x in problems):
+            problems += ledgermod.verify_against_data(spec, recs, md)
+        st = ledgermod.stats(recs) if recs else {"n_tick": 0, "n_settle": 0, "n_gap": 0, "head": "-"}
+        print(f"{name}: {'SAH' if not problems else 'GAGAL'}  tick {st['n_tick']} settle {st['n_settle']} gap {st['n_gap']}  "
+              f"ujung {str(st['head'])[:14]}…  (rantai + hitung-ulang dari {a.bars})")
+        for pr in problems[:30]:
+            print("  -", pr)
+        rc = rc or (1 if problems else 0)
+    return rc
+
+
 def main(argv=None) -> int:
     p = argparse.ArgumentParser(prog="engine.cli", description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     sub = p.add_subparsers(dest="cmd", required=True)
@@ -346,6 +388,11 @@ def main(argv=None) -> int:
     rv.add_argument("--placebo-n", type=int, default=200)
     rv.add_argument("--boot-n", type=int, default=1000)
     rv.add_argument("--incumbents", choices=("book", "six"), default="book", help="petahana G10: buku slot sekarang (bawaan) atau enam bot Fabius")
+    lg = sub.add_parser("ledger")
+    lg.add_argument("action", choices=("verify", "report"))
+    lg.add_argument("--ledger", default=os.path.join(REPO_ROOT, "ledger", "paper"), help="folder berkas <bot>.jsonl (bawaan: ledger/paper)")
+    lg.add_argument("--bars", default=os.path.join(REPO_ROOT, "ledger", "bars"), help="folder CSV bar yang dipakai tick (bawaan: ledger/bars)")
+    lg.add_argument("--bot")
     lk = sub.add_parser("lock")
     lk.add_argument("--write", action="store_true", help="tulis kunci dari parameter kode sekarang (perlu kata builder)")
     lk.add_argument("--note", help="catatan wajib saat --write: siapa menyetujui, kapan")
@@ -353,7 +400,8 @@ def main(argv=None) -> int:
     lk.add_argument("--json", action="store_true")
     a = p.parse_args(argv)
     return {"specs": cmd_specs, "replay": cmd_replay, "emit": cmd_emit, "verify": cmd_verify, "gaps": cmd_gaps,
-            "gate": cmd_gate, "schema": cmd_schema, "intake": cmd_intake, "review": cmd_review, "lock": cmd_lock, "book": cmd_book}[a.cmd](a)
+            "gate": cmd_gate, "schema": cmd_schema, "intake": cmd_intake, "review": cmd_review, "lock": cmd_lock, "book": cmd_book,
+            "ledger": cmd_ledger}[a.cmd](a)
 
 
 if __name__ == "__main__":

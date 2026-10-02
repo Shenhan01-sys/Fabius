@@ -17,6 +17,10 @@ from .spec import PERP_UNIVERSE, SPECS, BotSpec
 
 IDENTITY_BOT_ID = "B1-TREND"
 CRYPTO_INSTRUMENTS = frozenset(PERP_UNIVERSE)             # perp kripto mayor; emas/RWA (PAXG, XAU) BUKAN termasuk
+# Bot Fabius yang BOLEH punya ledger paper maju (M2): identitas (penunjukan) + yang LOLOS_SHADOW pada kunci v1 (B3-CARRY; epik 07 §7, dicetak ulang
+# 2 Okt 2026). B2/B5/B6 TOLAK dan B4 tak terukur: tidak diberi jam maju gratis (mereka lewat gerbang -> shadow -> slot seperti penerbit luar).
+# Daftar ini sengaja statis dan terlihat; kunci baru (v2) yang mengubah vonis = keputusan builder + baris baru di sini.
+SHADOW_ELIGIBLE = (IDENTITY_BOT_ID, "B3-CARRY")
 
 
 def trades_crypto_only(spec: BotSpec) -> bool:

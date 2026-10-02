@@ -37,3 +37,8 @@ universe/*-manifest.txt     merge=ours
 # CATATAN: TIDAK ada wildcard `*.json merge=union` di sini. Union pada JSON menghasilkan berkas
 # yang tidak bisa di-parse, dan artefak keputusan justru harus bertabrakan kalau dua pihak
 # menulisnya - konflik yang kelihatan lebih baik daripada data korup yang hijau.
+
+# Ledger paper maju (M2, F-D75): berkas yang ditulis mesin dan diperiksa lintas OS. Akhiran baris dikunci LF supaya checkout Windows (autocrlf)
+# tidak menulis ulang ±5 MB bar dan tidak membuat baris berantai campur. TIDAK ada merge=union di sini: dua penulis yang menambah ke rantai hash yang
+# sama HARUS bertabrakan secara terlihat (union menyisipkan catatan dan memutus `prev`); penulis resmi = job paper-ledger (satu, concurrency tunggal).
+ledger/** text eol=lf

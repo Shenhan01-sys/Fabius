@@ -2383,3 +2383,27 @@ Builder menjawab empat pertanyaan penutup F-D73, kata-katanya: *"Untuk sekarang 
    hasilnya di [[09-Inbox/Session-2026-10-02]] §11.
 
 **Terkait:** [[08-Backlog/08 - Riset Optimasi Ambang]] · [[08-Backlog/07 - Epik Kolaborasi Bot Terbuka]] · [[08-Backlog/05 - Epik Enam Bot]] · [[Concepts/Anchored Before Outcome]] · F-D22 · F-D70 · F-D72 · F-D73
+
+## F-D75 — M2: ledger paper maju per bot, pengunduh bar, dan jam maju · 2 Okt 2026
+
+Dikerjakan atas "gassss" builder (F-D74 #4). Ini **infrastruktur**, belum bukti: jam maju baru berjalan hitungan hari. Yang diputuskan dan kenapa (semuanya bisa dibalik; dikabari karena mengikat bentuk catatan yang append-only):
+
+1. **Dua jenis catatan dengan sifat waktu berbeda.** `tick` = EX-ANTE: niat posisi pada penutupan bar, dari data sampai bar itu saja, **≤ 12 jam** sesudah penutupan (guard umur bar `engine/freshness.py`); terlambat = **`gap`** yang tidak pernah diisi belakangan.
+   `settle` = EX-POST: net paper satu bar, dihitung ulang oleh **`replay()` yang sama dengan gerbang** dari tick sebelumnya + harga dan funding nyata; boleh terlambat. Satu jalur kode: tes membuktikan hasil ledger = replay penuh (selisih ≤ 1e-13).
+2. **Settle menunggu data, tidak diisi nol.** Bar tanpa funding lengkap (bot perp membayar funding) ditunda ("menunggu penutupan"); hari bolong membuat bar sesudahnya **tak terukur** (turnover tak diketahui), bukan nol.
+3. **Rantai hash** per bot (`ledger/paper/<bot>.jsonl`; `prev`, `h` = sha256 JSON kanonik). `python -X utf8 -m engine.cli ledger verify` memeriksa rantai **dan menghitung ulang setiap tick dan settle dari `ledger/bars/*.csv`**; bar yang diubah sesudah kejadian terdeteksi lewat `data_hash`.
+   Genesis menautkan `spec_sha` dan sha kunci ambang beserta anchor-nya; spesifikasi berubah = ledger baru ("pivot = kunci baru").
+4. **Siapa yang boleh punya jam maju:** hanya bot identitas (B1-TREND) dan yang LOLOS_SHADOW pada kunci v1 (B3-CARRY): `engine/book.py` `SHADOW_ELIGIBLE`. B2/B5/B6 (TOLAK) dan B4 (tak terukur) tidak diberi jam maju gratis.
+5. **Bar ikut di-commit** (`ledger/bars/`, ±5 MB seed dari data 2020-2026-08-31 + perpanjangan harian) supaya siapa pun menghitung ulang tanpa mengunduh apa pun. Sumber: `data.binance.vision` (publik). `.gitattributes`: `ledger/** text eol=lf`, **tanpa** `merge=union` (dua penulis harus bertabrakan terlihat).
+6. **Penulis resmi = job `.github/workflows/paper-ledger.yml`** (tujuh putaran sehari di sekitar jam terbit berkas: 08:47Z dan 09:07-11:37Z tiap 30 menit; idempoten; commit oleh runner GitHub = cap waktu pihak ketiga; tanpa kunci, tanpa transaksi chain). **Dibuat, belum dijalankan di GitHub** (belum di-push; egress runner untuk funding belum diukur).
+
+**Terukur hari ini** (perintah di [[09-Inbox/Session-2026-10-02]] §11): dari jaringan builder `data.binance.vision` dan `data-api.binance.vision` → 200, tetapi `fapi.binance.com` gagal TLS (`SEC_E_WRONG_PRINCIPAL`; sama dengan catatan egress-probe), jadi funding terbaru tidak bisa diambil lewat REST dari sini - diisi dari **zip bulanan** (September terbit; Oktober baru awal November).
+Akibatnya **`settle` hari-hari Oktober tertunda sampai REST terjangkau (mungkin dari runner) atau zip Oktober terbit**; `tick` tidak terpengaruh. Berkas harian Vision **terbit terlambat dan tidak serempak**: dari `LastModified` bucket S3 (`data.binance.vision`), berkas 2026-09-30 terbit 1 Okt 09:37-09:39Z dan BTCUSDT 2026-10-01 terbit 2 Okt 08:44:04Z; pada 08:54Z XRPUSDT 2026-10-01 belum ada, jadi tick ditolak ("aset hilang") dan diulang. Bar hari X baru tersedia ±8,7-9,7 jam sesudah penutupan, sehingga jadwal cron dipasang di sekitar jam itu (bukan pagi buta) dan jendela antara terbit dan batas 12 jam hanya ±2-3 jam: beberapa `gap` memang mungkin.
+
+**Konsekuensi yang harus dibaca bersama angka maju:** tick keluar ±9-10 jam sesudah penutupan. Niat tetap ex-ante terhadap hasil bar berikutnya dan isinya hanya fungsi bar sampai penutupan (dihitung ulang dari bar), tetapi **harga masuk 00:00Z tidak bisa didapat pengikut pada saat itu**, sedangkan `settle` mengandaikan masuk di harga penutupan (konvensi replay). Angka maju paper karenanya memuat derau/optimisme dari jeda ini; laporan mencetak `jeda tick`. Sumber waktu-nyata (kline REST dari runner bila terjangkau) menyusul dan belum diukur.
+
+**Belum dilakukan / tidak diketahui:** job belum pernah berjalan di GitHub; B3 belum diinisialisasi (butuh seed spot + `--spot` dan funding tepat waktu); kepala ledger belum di-anchor di chain (menunggu M3 atau kata builder); tidak ada notifikasi bila tick gagal; cron GitHub bisa terlambat.
+
+**Menunggu builder:** (1) **push commit M2** - ini mengaktifkan cron harian di GitHub (kabari dulu karena menyalakan otomasi publik); (2) aktifkan B3 (perlu seed spot, ±2 MB); (3) apakah kepala ledger di-anchor berkala (satu transaksi per anchor; atau menunggu `SignalAnchor` v2).
+
+**Terkait:** [[08-Backlog/06 - Epik Gerbang Sinyal]] §6 · [[08-Backlog/05 - Epik Enam Bot]] §14 · [[08-Backlog/07 - Epik Kolaborasi Bot Terbuka]] (P85) · [[08-Backlog/08 - Riset Optimasi Ambang]] (R8) · [[Concepts/Anchored Before Outcome]] · F-D16 · F-D32 · F-D73 · F-D74

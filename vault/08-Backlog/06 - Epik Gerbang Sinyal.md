@@ -131,7 +131,7 @@ bytes32 dataHash)`; bobot ×1e-9, harga ×1e-8 (0 = tak ada); akar nol = "bot di
 
 | tahap | isi | prasyarat |
 |---|---|---|
-| M2 (P77) | pengunduh dengan guard umur bar, paper ledger append-only, replay B4 dari event | - |
+| M2 (P77) | pengunduh dengan guard umur bar, paper ledger append-only, replay B4 dari event | - ; **DIBANGUN 2 Okt (F-D75):** `engine/ledger.py`, `tools/feed_bars.py`, `tools/paper_tick.py`, workflow `paper-ledger.yml` (belum dijalankan di GitHub); **replay B4 belum**; jam maju B1 dimulai di bar 2026-10-01 |
 | M3 (P78) | C-A, C-B (lalu C-C) di testnet 97; satu kunci per bot | keputusan §8 #2 (varian hash) |
 | M4 (P79) | gerbang: x402 V2 + MCP + webhook (+ email); lalu FE | tingkat 1 hanya setelah P75/P80 dan gerbang F-D16 |
 

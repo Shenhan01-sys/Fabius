@@ -226,7 +226,7 @@ hasil dogfood menolak 4 dari 5 bot yang bisa dinilai - bisa berarti terlalu keta
 | P82 | ~~peninjau agen~~ **DIGANTI (F-D72): peninjau-bot** - kode selesai (`review.py`); sisa: FE/antrean, penyimpanan nonce, pemeriksa URL rujukan | bawaan tanpa model |
 | P83 | penghitung percobaan global + BH lintas kandidat + seed rahasia dari hash blok + tahan 12 bulan terakhir | menutup sisa temuan #1 |
 | P84 | jalur `method_pr` (templat PR, pemeriksaan statis, tes wajib) | ditutup sampai ada keperluan |
-| P85 | ledger shadow maju per bot (anchor) + skor bergulir + statistik berpasangan yang memberi makan `slots.decide` | bergantung M2 (P77) |
+| P85 | ledger shadow maju per bot (anchor) + skor bergulir + statistik berpasangan yang memberi makan `slots.decide` | bergantung M2 (P77): **ledger paper maju dibangun (F-D75)**; skor bergulir, statistik berpasangan, dan anchor kepala ledger belum |
 | P86 | **kunci** `GateParams`/`KpiParams`/`SlotParams` (`engine.cli lock --write`) + banner | sebelum kandidat luar pertama; ~~**perlu kata builder**~~ **selesai sementara (F-D73): v1 terkunci; ter-anchor dan di-commit (F-D74, P91)** |
 | P87 | orkestrator buku hidup: membangun `incumbents`, memanggil `killer_triggered`, mengelola epoch | menutup sisa temuan #2 dan #5 |
 | P88 | pemeriksa F-D16 pada data maju (n ≥ 20, harapan net > 0, CI bawah > 0, BH) sebagai syarat hak tinggi | belum dikode |
