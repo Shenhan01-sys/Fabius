@@ -120,27 +120,43 @@ def bag_of(spec: BotSpec, md: MarketData) -> dict:
     return md.spot if spec.method == "B5-CORE-RWA" else md.perp
 
 
+def _has_bar(s, t: int) -> bool:
+    if s is None or not len(s):
+        return False
+    i = s.index_at_or_before(t)
+    return i >= 0 and s.t[i] == t
+
+
 def present_assets(spec: BotSpec, md: MarketData, t: int) -> Set[str]:
-    """Aset relevan yang punya bar TEPAT pada bar `t` (spot untuk B5, perp lainnya)."""
+    """Aset relevan yang punya bar TEPAT pada bar `t` (spot untuk B5, perp lainnya; B3 butuh perp DAN spot, karena satu unit = long spot + short perp)."""
     bag, out = bag_of(spec, md), set()
     for a in relevant_assets(spec):
-        s = bag.get(a)
-        if s is None or not len(s):
+        if not _has_bar(bag.get(a), t):
             continue
-        i = s.index_at_or_before(t)
-        if i >= 0 and s.t[i] == t:
-            out.add(a)
+        if spec.method == "B3-CARRY" and not _has_bar(md.spot.get(a), t):
+            continue
+        out.add(a)
     return out
+
+
+TARGET_INPUTS = {"B3-CARRY": ("perp", "spot", "funding"), "B5-CORE-RWA": ("spot",), "B4-LISTING-FADE": ("perp", "events")}
+DEFAULT_TARGET_INPUTS = ("perp",)          # B1-TREND, B2-RS, B6-BOUNCE: target hanya dari penutupan perp
+
+
+def target_view(spec: BotSpec, md: MarketData) -> MarketData:
+    """Hanya jenis data yang dipakai target bot ini (lihat `engine/bots/`); sisanya dikosongkan."""
+    use = TARGET_INPUTS.get(spec.method, DEFAULT_TARGET_INPUTS)
+    return MarketData(perp=md.perp if "perp" in use else {}, spot=md.spot if "spot" in use else {},
+                      funding=md.funding if "funding" in use else {}, events=md.events if "events" in use else [])
 
 
 def compute_tick(spec: BotSpec, md: MarketData, t_asof: int) -> dict:
     """Isi tick pada bar `t_asof` dari data sampai bar itu SAJA. Fungsi murni: dipakai pembuat tick DAN pemeriksa ulang.
 
-    Funding dibuang dari data tick untuk bot yang TARGET-nya tidak memakai funding (semua kecuali B3-CARRY): funding hari lalu bisa datang belakangan
-    (zip bulanan), dan data yang datang belakangan tidak boleh mengubah `data_hash` sebuah tick yang sudah dikomit. Funding tetap dipakai oleh `settle`."""
-    pit = md.upto(t_asof)
-    if spec.method != "B3-CARRY":
-        pit = MarketData(perp=pit.perp, spot=pit.spot, funding={}, events=pit.events)
+    Data tick dipersempit ke JENIS data yang dipakai TARGET bot itu (`TARGET_INPUTS`): data lain bisa datang belakangan (funding dari zip bulanan, deret spot
+    yang ditambahkan saat B3 diaktifkan) dan tidak boleh mengubah `data_hash` sebuah tick yang sudah dikomit. Funding tetap dipakai oleh `settle`.
+    Cacat ini tertangkap dua kali sebelum dipakai: funding yang datang belakangan (tes LateDataTests) dan seed spot B3 (gladi 2 Okt)."""
+    pit = target_view(spec, md.upto(t_asof))
     cur = next((x for x in REGISTRY[spec.method](spec, pit) if x.t == t_asof), None)
     if cur is None:
         raise StaleBars(f"{spec.bot_id}: tidak ada target pada bar {date_of(t_asof)} - data basi atau terpotong")
@@ -166,6 +182,12 @@ def make_tick(spec: BotSpec, md: MarketData, now_ms: int, genesis: dict) -> dict
     dropped = present_assets(spec, md, t_asof - DAY_MS) - present_assets(spec, md, t_asof)
     if dropped:
         raise StaleBars(f"{spec.bot_id}: aset hilang dari bar {date_of(t_asof)} yang ada sehari sebelumnya: {sorted(dropped)} (feed bolong? universe berubah = bot baru)")
+    if spec.method == "B3-CARRY":
+        # Target B3 memakai funding sampai hari asof. Funding yang belum ada membuat aset itu "datar karena tak terukur", bukan karena keputusan:
+        # tolak tick (coba lagi; lewat batas = gap) alih-alih diam-diam mengecilkan posisi.
+        no_f = sorted(a for a in present_assets(spec, md, t_asof) if t_asof not in md.funding.get(a, {}))
+        if no_f:
+            raise StaleBars(f"{spec.bot_id}: funding hari {date_of(t_asof)} belum ada untuk {no_f} (estimasi belum terbit?)")
     body = compute_tick(spec, md, t_asof)
     return {"type": "tick", "bot_id": spec.bot_id, "spec_sha": spec.sha(), "asof": t_asof, "asof_date": date_of(t_asof),
             "close_utc": utc_iso(t_asof + DAY_MS), "emitted_utc": utc_iso(now_ms), "lag_s": lag_s, **body}

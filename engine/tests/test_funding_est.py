@@ -253,6 +253,37 @@ class B3ViewTests(unittest.TestCase):
         self.assertGreater(ledger.stats(chain)["n_settle"], 0)
         self.assertEqual(ledger.verify_against_data(sp, chain, md_t, md_a2), [])
 
+    def b3_setup(self, n=150):
+        sp = dataclasses.replace(SPECS["B3-CARRY"], bot_id="LEDG-B3", template="B3-CARRY", universe=(BTC, ETH))
+        perp = {BTC: mk_series(regime_closes(n, 4), T0), ETH: mk_series(regime_closes(n, 5), T0)}
+        spot = {BTC: mk_series(regime_closes(n, 4, vol=0.0201), T0), ETH: mk_series(regime_closes(n, 5, vol=0.0201), T0)}
+        fund = {a: {T0 + i * DAY_MS: 0.0003 for i in range(n)} for a in perp}
+        chain = [ledger.seal(ledger.make_genesis(sp, LOCK, None, bar(110), now_after(110, 0.5)), ledger.ZERO)]
+        return sp, perp, spot, fund, chain
+
+    def test_b3_tick_is_refused_while_the_asof_funding_is_missing_instead_of_going_silently_flat(self):
+        sp, perp, spot, fund, chain = self.b3_setup()
+        del fund[ETH][T0 + 110 * DAY_MS]                                         # estimasi ETH hari 110 belum terbit
+        md = MarketData(perp=perp, spot=spot, funding=fund)
+        new, notes = ledger.step(sp, md.upto(bar(110)), now_after(110), chain, md.upto(bar(110)))
+        self.assertEqual([r for r in new if r["type"] == "tick"], [])
+        self.assertTrue(any("funding hari" in x for x in notes), notes)
+        fund[ETH][T0 + 110 * DAY_MS] = 0.0003                                    # estimasi tiba, masih < 12 jam: tick dibuat
+        new, _ = ledger.step(sp, MarketData(perp=perp, spot=spot, funding=fund).upto(bar(110)), now_after(110, 3), chain)
+        self.assertEqual([r["type"] for r in new][:1], ["tick"])
+
+    def test_b3_asset_without_a_spot_bar_counts_as_dropped(self):
+        sp, perp, spot, fund, chain = self.b3_setup()
+        md = MarketData(perp=perp, spot=spot, funding=fund)
+        new, _ = ledger.step(sp, md.upto(bar(110)), now_after(110), chain, md.upto(bar(110)))
+        chain.extend(new)
+        pit = md.upto(bar(111))
+        pit.spot[ETH] = pit.spot[ETH].upto(bar(110))                             # spot ETH berhenti; perp ETH tetap ada
+        self.assertNotIn(ETH, ledger.present_assets(sp, pit, bar(111)))
+        new, notes = ledger.step(sp, pit, now_after(111), chain, pit)
+        self.assertEqual([r for r in new if r["type"] == "tick"], [])
+        self.assertTrue(any("aset hilang" in x for x in notes), notes)
+
 
 if __name__ == "__main__":
     unittest.main()

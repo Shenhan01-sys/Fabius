@@ -120,6 +120,19 @@ class LateDataTests(unittest.TestCase):
         self.assertTrue(probs and all("settle" in p for p in probs), probs)
 
 
+class LateSpotTests(unittest.TestCase):
+    def test_spot_series_added_later_do_not_change_old_b1_ticks(self):
+        """Seed spot ditambahkan saat B3 diaktifkan (2 Okt): B1 hanya memakai perp, jadi data_hash tick B1 lama harus tetap cocok (gladi B3 menangkap cacat ini)."""
+        sp = spec10()
+        md = full_md()
+        chain = run(sp, md, range(100, 108))                                      # tanpa deret spot
+        md_spot = full_md()
+        md_spot.spot = {a: mk_series(regime_closes(N_DAYS, 9 + i), T0) for i, a in enumerate((BTC, ETH, BNB))}
+        self.assertEqual(ledger.verify_against_data(sp, chain, md_spot), [])
+        self.assertEqual(ledger.target_view(sp, md_spot).spot, {})
+        self.assertEqual(ledger.target_view(sp, md_spot).funding, {})
+
+
 class GapAndGuardTests(unittest.TestCase):
     def test_missed_day_becomes_a_gap_and_is_never_backfilled(self):
         sp, md = spec10(), full_md()

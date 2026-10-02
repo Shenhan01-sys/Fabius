@@ -158,7 +158,8 @@ def main() -> int:
     if a.feed:
         import feed_bars
         today = feed_bars.day_start(now_ms)
-        reps = feed_bars.update_all(a.bars, list(PERP_UNIVERSE), today, spot=a.spot, funding=True, dry_run=a.dry_run)
+        need_spot = a.spot or any(SPECS[b].method in ("B3-CARRY", "B5-CORE-RWA") for b in bots if b in SPECS)    # B3 = long spot + short perp
+        reps = feed_bars.update_all(a.bars, list(PERP_UNIVERSE), today, spot=need_spot, funding=True, dry_run=a.dry_run)
         stuck = [r for r in reps if r["stop"]]
         print(f"feed: +{sum(r['added'] for r in reps)} baris; {len(stuck)} deret berhenti sebelum hari ini")
         for r in stuck[:6]:
