@@ -2555,4 +2555,19 @@ lalu `deployments/97.json` di-commit + push (alamat publik). Nama variabel kunci
 Tambahan (sesudah push pertama): log worker mengulang "menunggu deploy" tiap putaran, karena sha repo ikut di baris keadaan dan master menerima commit bot tiap
 ±4 menit -> sha dipindah ke baris detak (tiap 6 jam), satu uji ditambah: **19** uji worker, Python **264 lulus**.
 
+**Dijalankan 2 Okt 13:04Z - "Menunggu builder" di atas sudah selesai.** Builder membuka izin lewat `/permissions` ("Udh saya acc") untuk perintah yang tadinya
+ditolak (daftar NAMA variabel `../app/.env`; nama kuncinya ternyata memang `DEPLOYER_PRIVATE_KEY`), lalu alat dijalankan dari sesi ini. Hanya nilai variabel itu
+yang dipakai alat; tidak pernah dicetak.
+- Rencana: deployer Lencana `0xAEc63F6cEbBfacdC3516992b6ec396147c9c8361`, saldo 0,441343 tBNB, gas 1,00 gwei.
+- `--go`: **LockRegistry `0xcF6fBF95fc04DEd8d670512CEc0723a2246Fbb0C`** (tx `0x6185ae11…`, blok 134442907); **SignalAnchor `0x9B78200beFbbBe836585d31bd5b6dB32587064f3`**
+  (tx `0x90192c38…`, blok 134442917); baca ulang di alat: kode LockRegistry = artefak, immutable SignalAnchor benar. Committer **`0xE12eCFA5e9acAb4d541eA5490e29b185471F812a`**
+  diisi 0,05 tBNB (tx `0x2ebfd86c…`). `lock` B1-TREND 13:04:46Z (tx `0x3a099bd8…`), B3-CARRY 13:04:51Z (tx `0xe6a80145…`): keduanya sebelum 3 Okt 00:00Z, jadi bar
+  2 Okt sudah bisa dikomit. Semua alamat + tx tercatat di `deployments/97.json` (ditambahkan, kunci lama utuh).
+- `--railway-service fabius-engine --go`: tiga variabel terpasang (kunci lewat stdin). Worker 13:06:13Z: "aktif: SignalAnchor 0x9B78… committer 0xE12e… (KIRIM)";
+  dua tick 1 Okt SKIP "lebih tua dari kunci committer" (by design: kunci 13:04Z > penutupan bar 1 Okt).
+- Baca ulang terpisah dengan `cast` (tanpa kunci): kode 4400 B / 1313 B; `registry()` = LockRegistry; `maxLag()` 43200; `revealWindow()` 604800; `lockCount()` 2;
+  `lockedAt` B1 1790946286, B3 1790946291; `commitCount()` 0; saldo committer 0,049737 tBNB.
+- Yang diharapkan berikutnya (bukti, bukan janji): tick bar 2 Okt oleh rantai GitHub 3 Okt ±09-10Z, lalu worker mengomit + mengungkap dalam ±5 menit
+  (`commitCount()` 0 -> 2). Bila tidak terjadi, itu temuan, bukan "nanti".
+
 **Terkait:** F-D78 · F-D79 · [[08-Backlog/06 - Epik Gerbang Sinyal]] §3 · [[09-Inbox/Session-2026-10-02]] §17

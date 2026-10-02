@@ -8,12 +8,46 @@
   "DemoPayToken": "0xB11D90214089684081F57A03d3300E20725297f8",
   "ERC8004IdentityRegistry": "0x8004A818BFB912233c491871b3d84c89A494BD9e",
   "ExecutionVault": "0x2743cD33C8790437594E119289838F35c0d1d290",
+  "LockRegistry": "0xcF6fBF95fc04DEd8d670512CEc0723a2246Fbb0C",
   "Permit2": "0x000000000022D473030F116dDEE9F6B43aC78BA3",
+  "SignalAnchor": "0x9B78200beFbbBe836585d31bd5b6dB32587064f3",
   "x402ExactPermit2Proxy": "0x402085c248EeA27D92E8b30b2C58ed07f9E20001"
  },
  "execution_state": {
   "daily_cap_quote_atomic": 5000000,
   "max_position_quote_atomic": 1000000
+ },
+ "m3": {
+  "committer": "0xE12eCFA5e9acAb4d541eA5490e29b185471F812a",
+  "deploy_block": {
+   "LockRegistry": 134442907,
+   "SignalAnchor": 134442917
+  },
+  "deploy_tx": {
+   "LockRegistry": "0x6185ae1108622b54d4972c5f91f20c13ea7af553b960aade0b059aadb0aeb8f6",
+   "SignalAnchor": "0x90192c3811ac810ee812ae6166ed4719c2b26d21b20b9621f6569113e86959c9"
+  },
+  "deployer": "0xAEc63F6cEbBfacdC3516992b6ec396147c9c8361",
+  "locks": {
+   "B1-TREND": {
+    "lockedAt": 1790946286,
+    "lockedAt_utc": "2026-10-02T13:04:46Z",
+    "specSha": "0x23cb026bd8c665eb5e94a2764ae122e8eaed1777a6e7f76d84da21b4b3b43daf",
+    "tx": "0x3a099bd883e3cc5b4da55c241d65dcbbbb659ddac31de1056bd2a6038323e9c3",
+    "uri": "https://github.com/Shenhan01-sys/Fabius/blob/0eec810c3c61f932d216fb6ea40409bbcba050b4/engine/spec.py#B1-TREND"
+   },
+   "B3-CARRY": {
+    "lockedAt": 1790946291,
+    "lockedAt_utc": "2026-10-02T13:04:51Z",
+    "specSha": "0xc528abf51585f401399ddb3279bced5adc4fd7f6dbde0aed0653e715352ef100",
+    "tx": "0xe6a8014542824e0e458b71c08d91db3e2fb48256ed2d2c31f79ac50345730b0b",
+    "uri": "https://github.com/Shenhan01-sys/Fabius/blob/0eec810c3c61f932d216fb6ea40409bbcba050b4/engine/spec.py#B3-CARRY"
+   }
+  },
+  "maxLag_s": 43200,
+  "revealWindow_s": 604800,
+  "why": "M3 (F-D79/F-D80): pra-registrasi spesifikasi (LockRegistry) + komit-ungkap sinyal per bot per bar (SignalAnchor)",
+  "written_utc": "2026-10-02T13:04:34Z"
  },
  "verification": {
   "DecisionAnchor": "bytecode 4748 B",
@@ -22,7 +56,9 @@
   "DemoPayToken": "bytecode 4002 B",
   "ERC8004IdentityRegistry": "bytecode 130 B",
   "ExecutionVault": "bytecode 5459 B",
+  "LockRegistry": "bytecode 1313 B",
   "Permit2": "bytecode 9152 B",
+  "SignalAnchor": "bytecode 4400 B",
   "x402ExactPermit2Proxy": "bytecode 2913 B"
  },
  "why": "dibutuhkan agar `tools/anchor.py --verify` dan `tools/execute_live.py --status` bisa dijalankan dari clone bersih; alamat ini juga terbaca publik di explorer",
