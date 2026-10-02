@@ -33,7 +33,7 @@ python -X utf8 -m engine.cli ledger report     # ringkasan: tick/gap/settle, sin
   tidak diganti saat funding aktual terbit, sehingga selisih estimasi-vs-aktual terkumpul sendiri. Terukur luar-sampel (Jun-Agu 2026, 16 perp, 4.368 peristiwa): MAE 0,056 bps per peristiwa (maks 0,93), 0,107 bps per hari-simbol
   (maks 1,30), bias +0,025 bps/hari; BNBUSDT memakai I = 0. **Estimasi ≠ funding.**
 - `python -X utf8 -m engine.cli ledger report` mencetak satu baris **PROVISIONAL** (net paper untuk bar yang belum bisa final, pakai estimasi) yang berlabel "BUKAN catatan rantai"; ia menjadi final saat zip bulanan terbit.
-- Target bot yang memakai funding (B3-CARRY, belum diaktifkan) memakai pandangan `targets`: estimasi beku untuk hari sejak berkas estimasi ada. Lihat `engine/data.py` (`funding_view`).
+- Target bot yang memakai funding (B3-CARRY, aktif sejak 2 Okt) memakai pandangan `targets`: estimasi beku untuk hari sejak berkas estimasi ada. Lihat `engine/data.py` (`funding_view`).
 
 ## Siapa menulis
 
@@ -43,7 +43,7 @@ Job `.github/workflows/paper-ledger.yml` (jadwal harian, commit oleh runner GitH
 
 ## Batas yang jujur
 
-- Bot yang boleh punya ledger: identitas (B1-TREND) dan yang LOLOS_SHADOW pada kunci v1 (B3-CARRY) - `engine/book.py` (`SHADOW_ELIGIBLE`). Bot lain lewat gerbang → shadow → slot.
+- Bot yang boleh punya ledger: identitas (B1-TREND) dan yang LOLOS_SHADOW pada kunci v1 (B3-CARRY) - `engine/book.py` (`SHADOW_ELIGIBLE`). Bot lain lewat gerbang → shadow → slot. **Keduanya aktif sejak bar 2026-10-01** (F-D75, F-D77).
 - Funding recent dari REST Binance **terblokir dari kedua jaringan yang diukur** (2 Okt: laptop builder TLS terpotong; runner GitHub HTTP 451, run 36987654079); satu-satunya jalur sekarang zip bulanan yang terbit awal bulan berikutnya, jadi `settle`
   bisa tertunda berminggu-minggu sementara `tick` jalan terus. Settle yang tertunda tampil sebagai "menunggu penutupan", bukan nol; estimasi (di atas) hanya mengisi laporan PROVISIONAL.
 - **Jeda tick:** berkas harian Binance Vision terbit ±8,7-9,7 jam sesudah 00:00Z (terukur 2 Okt dari `LastModified` bucket S3; tidak serempak antar simbol), jadi tick keluar ±9-10 jam

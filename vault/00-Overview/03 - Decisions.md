@@ -2440,7 +2440,26 @@ disetahunkan > 10 %; funding dasar 10,95 %/tahun, jadi marjin ±0,26 bps/hari) g
 **Batas yang jujur.** Estimasi ≠ funding. Asumsi interval 8 jam (Binance bisa mengubah interval simbol; tidak ditangani - galat akan terlihat saat aktual terbit). I per simbol dipelajari dari Mar-Mei 2026 dan bisa berubah. Satu sumber (premium Vision). Uji luar-sampel hanya tiga bulan.
 Estimasi bias sedikit ke atas. Tidak ada ledger yang memakai estimasi untuk catatan final.
 
-**Menunggu builder:** (1) aktifkan B3? Perlu seed spot (±2 MB), `--spot` di job, dan menerima bahwa target B3 memakai estimasi beku untuk hari-hari terbaru; jam maju B3 mulai dari bar saat genesis dibuat.
+**Menunggu builder:** (1) aktifkan B3? Perlu seed spot (±2 MB), `--spot` di job, dan menerima bahwa target B3 memakai estimasi beku untuk hari-hari terbaru; jam maju B3 mulai dari bar saat genesis dibuat. **→ DIJAWAB "Gasssss": B3 aktif, F-D77.**
 (2) ~~Ukur fidelitas target B3~~ **sudah diukur** (di atas): 3,5 % hari berbeda, selisih PnL kecil; kesimpulan saya: B3 layak diaktifkan dengan estimasi beku, tetapi keputusan di tangan builder.
 
 **Terkait:** [[09-Inbox/Session-2026-10-02]] §13 · [[08-Backlog/06 - Epik Gerbang Sinyal]] §6 · [[08-Backlog/05 - Epik Enam Bot]] §14 · F-D75 · F-D74 · F-D16
+
+## F-D77 — B3-CARRY masuk jam maju (bar pertama 2026-10-01); data tick dipersempit ke input target · 2 Okt 2026
+
+Builder: *"Gasssss"* atas usul "aktifkan B3 dengan estimasi beku untuk target" (F-D76).
+
+1. **Dikerjakan.** Seed spot 16 simbol di `ledger/bars/spot_*_1d.csv` (2,07 MB, 2020 → 2026-08-31, tanpa bolong); genesis `ledger/paper/B3-CARRY.jsonl` (bar pertama 2026-10-01, kunci v1 ter-anchor); `tools/paper_tick.py` memperpanjang spot otomatis bila ada bot yang memakainya.
+   **Tick pertama B3 dibuat oleh job GitHub** (run 36992981123, commit runner `235e124`, `emitted_utc` 2026-10-02T10:00:21Z, jeda 10,0 jam): target **DOTUSDT 0,0625 dan ETCUSDT 0,0625** (2 dari 16 aset dengan funding 7 hari disetahunkan > 10 %), 2 sinyal; spot diperpanjang +496 baris oleh runner;
+   `ledger verify` SAH di runner (Linux) dan laptop (Windows) dengan kepala rantai sama `0x1ce531d861e9…`. B1 tetap SAH (kepala `0x1c8f6e7769b1…`).
+2. **Pengaman baru khusus B3:** aset tanpa bar spot pada hari asof dihitung hilang dari feed (tick ditolak, bukan alam semesta mengecil diam-diam); funding hari asof yang belum ada (estimasi belum terbit) membuat tick ditolak, bukan aset "datar karena tak terukur".
+3. **Cacat yang tertangkap gladi SEBELUM push.** Menambah seed spot membuat `data_hash` tick B1 yang sudah ada tidak cocok saat dihitung ulang, karena sidik jari data B1 ikut menghitung deret spot yang tidak dipakai targetnya. Diperbaiki dengan `ledger.target_view`:
+   data tick = jenis data yang dipakai target (B1/B2/B6 perp; B3 perp + spot + funding; B5 spot); tes regresi `LateSpotTests`. Ini kelas cacat yang sama dengan funding yang datang belakangan (F-D75): **data yang datang belakangan tidak boleh mengubah hash catatan lama.**
+4. **Cek langsung pertama estimasi vs aktual** (`09-Inbox/Session-2026-10-02-skrip/run17_est_vs_rest.py --day 2026-10-01`): estimasi 2026-10-01 dikomit runner pada 09:33Z SEBELUM funding aktual dibaca; funding aktual dibaca lewat REST dari laptop pada 10:01Z.
+   48 peristiwa: MAE **0,043 bps**, median 0,027, maks 0,17, bias ±0,0001 bps. Sejalan dengan uji luar sampel F-D76. Satu hari = sampel kecil.
+5. **Egress berubah dalam satu jam:** REST `fapi` dari laptop builder gagal TLS ±08:5xZ tetapi 200 pada ±09:58Z; dari runner tetap 451. Tidak diandalkan (matriks egress punya tanggal kedaluwarsa, F-D25).
+
+**Batas.** B3 hampir dorman (2 dari 16 aset di atas ambang); settle final B3 menunggu funding aktual (zip bulanan), laporan PROVISIONAL mengisi sementara; target B3 untuk hari terbaru bergantung pada estimasi (uji 2025-26: 3,5 % hari berbeda).
+Paper penuh; bukan klaim edge; F-D16 tetap pagar.
+
+**Terkait:** F-D75 · F-D76 · [[08-Backlog/06 - Epik Gerbang Sinyal]] §6 · [[09-Inbox/Session-2026-10-02]] §14 · F-D25
