@@ -253,7 +253,11 @@ def main() -> int:
     now_ms = int(time.time() * 1000)
     print(f"mulai {dt.datetime.now(dt.timezone.utc):%Y-%m-%dT%H:%M:%SZ} | region {os.environ.get('RAILWAY_REPLICA_REGION', '?')} | simbol {a.symbols}")
     rest = Rest()
-    tot = run(bars, [s.strip() for s in a.symbols.split(",") if s.strip()], since_ms, rest, now_ms)
+    try:
+        tot = run(bars, [s.strip() for s in a.symbols.split(",") if s.strip()], since_ms, rest, now_ms)
+    except Exception as e:  # noqa: BLE001 - job sekali jalan: gagal dicatat jelas, bukan dimulai ulang 10x oleh Railway
+        print(f"GAGAL sesudah {rest.calls} panggilan: {type(e).__name__}: {str(e)[:200]}")
+        return 0 if a.exit_zero else 1
     print(f"  {rest.calls} panggilan REST, {time.time() - t_start:.0f} s")
     all_ok = all(tot[k][0] == tot[k][1] and tot[k][2] == 0 for k in ("perp", "spot")) and tot["fund"][0] == tot["fund"][1] and tot["fund"][3] == 0
     print("VONIS: " + ("SAMA PERSIS" if all_ok else "ADA BEDA - lihat baris bertanda !"))
