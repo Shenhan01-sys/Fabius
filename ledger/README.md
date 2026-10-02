@@ -37,7 +37,7 @@ python -X utf8 -m engine.cli ledger report     # ringkasan: tick/gap/settle, sin
 
 ## Siapa menulis
 
-Job `.github/workflows/paper-ledger.yml` (jadwal harian, commit oleh runner GitHub dengan jam server GitHub = cap waktu pihak ketiga) menjalankan
+Job `.github/workflows/paper-ledger.yml` - **rantai yang menyambung dirinya sendiri** (F-D78; cron GitHub terbukti bolong), dijaga `paper-ledger-watchdog.yml`; commit oleh runner GitHub dengan jam server GitHub = cap waktu pihak ketiga - menjalankan
 `tools/feed_bars.py` (perpanjang bar yang SUDAH tertutup) lalu `tools/paper_tick.py`. Lokal hanya `--init` (sekali per bot) dan uji; dua penulis ke rantai yang sama
 **harus** bertabrakan secara terlihat, jadi berkas ini sengaja tanpa `merge=union`.
 

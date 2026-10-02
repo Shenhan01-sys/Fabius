@@ -1,0 +1,40 @@
+name: paper-ledger-watchdog
+
+# PENYELAMAT rantai `paper-ledger` (F-D78). Pola dan alasannya sama dengan wallet-flow-watchdog: penyelamat tinggal di berkas TERPISAH dengan grup concurrency
+# sendiri, supaya ia tidak pernah membatalkan atau mengantrekan rantai yang sedang hidup. Cron di repo ini sering bolong (terukur 2 Okt), jadi watchdog ini
+# hanya jaring pengaman: rantai menyambung dirinya sendiri; watchdog menyalakan rantai baru HANYA bila tidak ada run `paper-ledger` yang jalan atau antre.
+# Tanpa kunci, tanpa rahasia; hanya `actions: write` untuk men-dispatch.
+
+on:
+  schedule:
+    - cron: "*/20 * * * *"
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+  actions: write
+
+concurrency:
+  group: paper-ledger-watchdog
+  cancel-in-progress: false
+
+jobs:
+  jaga:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Nyalakan rantai bila tidak ada yang jalan atau antre
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          N=$(gh api "repos/$GITHUB_REPOSITORY/actions/workflows/paper-ledger.yml/runs?per_page=20" \
+              --jq '[.workflow_runs[] | select(.status=="in_progress" or .status=="queued" or .status=="waiting" or .status=="pending" or .status=="requested")] | length')
+          echo "run paper-ledger yang hidup/antre: [$N]"
+          case "$N" in
+            ''|*[!0-9]*) echo "hitungan bukan angka -> nyalakan (fail-open: rantai ganda keluar sendiri lewat penjaga tumpang-tindih)"; N=0 ;;
+          esac
+          if [ "$N" != "0" ]; then echo "rantai hidup -> tidak melakukan apa pun"; exit 0; fi
+          printf '{"ref":"%s","inputs":{"chain_started":""}}' "$GITHUB_REF_NAME" \
+            | gh api -X POST "repos/$GITHUB_REPOSITORY/actions/workflows/paper-ledger.yml/dispatches" --input - --silent \
+            && echo "WATCHDOG: rantai paper-ledger di-dispatch" \
+            || { echo "::error::watchdog gagal men-dispatch rantai paper-ledger"; exit 1; }

@@ -1,49 +1,50 @@
 name: paper-ledger
 
-# M2 (F-D74/F-D75) - ledger paper MAJU per bot dijalankan MESIN, bukan diingat-ingat.
+# M2 (F-D74/F-D75/F-D78) - ledger paper MAJU per bot dijalankan MESIN, bukan diingat-ingat.
 #
 # Kenapa job sendiri: bukti bahwa sinyal sudah ada SEBELUM hasilnya hanya bernilai bila cap waktunya berasal dari pihak yang bukan kami. Commit job ini
 # dibuat oleh runner GitHub dengan jam server GitHub, jadi "tick hari X ada sebelum bar X+1 menutup" bisa diperiksa orang lewat riwayat git, bukan dipercaya
-# dari jam laptop (jam laptop = lemah, dan ia tidur). Ini sama dengan alasan universe-hourly dan paper-book.
+# dari jam laptop (jam laptop = lemah, dan ia tidur).
 #
-# Apa yang dilakukan (semuanya stdlib, tanpa pip):
-#   1. tools/feed_bars.py   - memperpanjang ledger/bars/*.csv dengan bar harian yang SUDAH tertutup (Binance Vision, berkas statis) + funding
-#                             (REST dulu, cadangan: zip bulanan). Yang belum terbit TIDAK diisi dan TIDAK ditebak.
-#   2. tools/paper_tick.py  - per bot yang punya genesis: `gap` untuk hari terlewat, `tick` (niat posisi) untuk bar tertutup terakhir bila <= 12 jam
-#                             sejak penutupan, `settle` untuk bar yang kini bisa ditutup (menunggu funding bila belum ada; tidak diisi nol).
-#   3. engine.cli ledger verify - rantai hash + HITUNG ULANG setiap tick/settle dari bar. Gagal = job merah (jangan commit ledger yang tak bisa diperiksa).
+# ===== KENAPA RANTAI, BUKAN CRON (F-D78, terukur 2 Okt) =====
+# Versi pertama berkas ini memakai tujuh `schedule:` (08:47Z, 09:07-11:37Z). Dari push 09:03Z sampai 11:27Z cron itu TIDAK PERNAH menembak; satu-satunya run
+# adalah empat `workflow_dispatch` manual. Cron lain di repo ini sama: universe-hourly (per jam) menembak 23:07, 02:12, 09:39Z (3 kali dalam ±10 jam);
+# wallet-flow-watchdog (*/30) 23:16, 02:20, 08:42Z. Jendela tick kita cuma ±3 jam per hari (berkas Vision terbit ±08:40-09:40Z, batas 12:00Z), jadi cron
+# yang bolong = `gap` permanen. Polanya diambil dari wallet-flow yang sudah terbukti: SATU job loop ±5 jam lalu men-dispatch dirinya sendiri; tanpa
+# `schedule:` di berkas ini (pelajaran wallet-flow 28 Sep: penyelamat di berkas yang sama membunuh rantainya), penyelamatnya berkas terpisah
+# `paper-ledger-watchdog.yml` dengan grup concurrency sendiri.
 #
-# Jadwal: tujuh putaran sehari, 08:47Z dan 09:07-11:37Z tiap 30 menit - dipasang di sekitar JAM TERBIT berkas, bukan pagi buta. Terukur 2 Okt dari daftar bucket S3
-# `data.binance.vision` (LastModified): berkas harian 2026-09-30 terbit 1 Okt 09:37-09:39Z; BTCUSDT 2026-10-01 terbit 2 Okt 08:44:04Z dan XRPUSDT belum ada pada 08:54Z.
-# Jadi bar hari X baru ada ±8,7-9,7 jam sesudah penutupan, TIDAK serempak antar simbol; putaran sebelum 08:47Z sia-sia dan tidak dijadwalkan. Tiap putaran idempoten
-# (tick yang sudah ada tidak ditambah lagi). Batas tick = 12 jam sesudah penutupan (12:00Z): lewat itu hari dicatat `gap`, TIDAK diisi belakangan. Cron GitHub bisa
-# terlambat beberapa menit (kadang lebih); jendela yang sempit (±2-3 jam antara terbit dan batas) berarti beberapa `gap` memang mungkin - terlihat, bukan diam.
+# Apa yang dilakukan tiap putaran (tiap 5 menit, hanya pada jendela 08:40-11:58Z dan hanya sampai tick hari itu beres; stdlib saja, tanpa pip):
+#   1. tools/paper_tick.py --feed  - perpanjang ledger/bars (bar tertutup dari Binance Vision, funding: REST lalu zip bulanan, estimasi funding P92),
+#                                   lalu per bot: `gap` hari terlewat, `tick` bar tertutup terakhir (<= 12 jam), `settle` yang kini bisa ditutup.
+#   2. engine.cli ledger verify    - rantai hash + HITUNG ULANG setiap tick/settle. Gagal = job merah dan rantai BERHENTI (jangan commit ledger yang tak bisa diperiksa).
+#   3. commit + push bila ada perubahan (hanya job ini yang menulis ledger/; dua penulis ke rantai hash yang sama harus bertabrakan secara terlihat).
 #
-# Batas yang jujur: (a) funding REST TERBLOKIR dari runner (terukur 2 Okt, run 36987654079: HTTP 451); `settle` final menunggu zip bulanan (terbit awal bulan berikutnya) - `tick` jalan terus.
-#     Sebagai gantinya feed membangun ESTIMASI funding dari berkas harian premiumIndexKlines (P92/F-D76; `ledger/bars/fund_est_*.csv`), hanya untuk laporan PROVISIONAL, bukan settle final.
-# (b) Tidak ada kunci, tidak ada transaksi chain, tidak ada rahasia di sini: anchor kepala ledger (bila diinginkan) dibuat dari mesin lokal, bukan dari Actions.
-# (c) Paper penuh: tidak ada uang nyata. Angka maju bukan klaim edge (F-D16).
-# (d) Karena bar baru ada ±9 jam sesudah penutupan, tick keluar ±9-10 jam sesudah 00:00Z: niat tetap ex-ante terhadap hasil bar berikutnya, tetapi harga masuk 00:00Z tidak
-#     bisa didapat pengikut pada saat itu, sedangkan `settle` mengandaikan masuk di harga penutupan (konvensi replay). Sumber waktu-nyata (mis. kline REST dari runner bila
-#     terjangkau) menyusul; sampai itu ada, jeda tampil di laporan (`jeda tick`).
+# Batas yang jujur: (a) funding REST tertutup dari runner (HTTP 451); `settle` final menunggu zip bulanan, laporan PROVISIONAL memakai estimasi (F-D76).
+# (b) Tidak ada kunci, tidak ada transaksi chain, tidak ada rahasia di sini. (c) Paper penuh; angka maju bukan klaim edge (F-D16).
+# (d) Tick keluar ±9-10 jam sesudah 00:00Z karena berkas baru terbit selama itu; `settle` mengandaikan masuk di harga penutupan.
+# (e) Rantai ini hidup terus selama workflow aktif; menghentikannya = `gh workflow disable paper-ledger.yml` (dan watchdog-nya).
 
 on:
-  schedule:
-    - cron: "47 8 * * *"
-    - cron: "7,37 9-11 * * *"
-  workflow_dispatch: {}
+  workflow_dispatch:
+    inputs:
+      chain_started:
+        description: "UTC ISO dari rantai aktif (kosongkan untuk memulai rantai baru)"
+        required: false
+        default: ""
 
 permissions:
   contents: write
+  actions: write
 
 concurrency:
-  group: paper-ledger
+  group: paper-ledger-chain
   cancel-in-progress: false
 
 jobs:
-  tick:
+  rantai:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 330
     steps:
       - uses: actions/checkout@v4
 
@@ -51,33 +52,86 @@ jobs:
         with:
           python-version: "3.12"
 
-      - name: Bar -> tick / gap / settle -> laporan
+      - name: Berhenti kalau sudah ada rantai yang jalan (anti-tumpang-tindih)
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          RUN_ID: ${{ github.run_id }}
+        run: |
+          sleep 5
+          # `.id`, bukan `.run_id` (pelajaran wallet-flow 26 Sep: penjaga yang menghitung dirinya sendiri).
+          N=$(gh api "repos/$GITHUB_REPOSITORY/actions/runs?status=in_progress&per_page=50" \
+              --jq "[.workflow_runs[] | select(.name==\"paper-ledger\" and (.id|tostring)!=\"$RUN_ID\")] | length")
+          echo "rantai paper-ledger lain yang in_progress: [$N]"
+          if [ -n "$N" ] && [ -z "${N//[0-9]/}" ] && [ "$N" != "0" ]; then
+            echo "sudah ada rantai aktif -> keluar tanpa menulis (bukan kegagalan)"
+            echo "RANTAI_ADA=1" >> "$GITHUB_ENV"
+          else
+            echo "RANTAI_ADA=0" >> "$GITHUB_ENV"
+          fi
+
+      - name: Loop ±5 jam - pada jendela 08:40-11:58Z jalankan tick/settle tiap 5 menit sampai beres
+        if: env.RANTAI_ADA == '0'
         run: |
           set +e
-          python -u -X utf8 tools/paper_tick.py --feed
-          rc=$?
-          echo "paper_tick rc=$rc (0 beres; 4 tick belum bisa dibuat, coba putaran berikutnya; selain itu gagal)"
-          if [ "$rc" -ne 0 ] && [ "$rc" -ne 4 ]; then exit "$rc"; fi
-
-      - name: Verifikasi ulang seluruh ledger dari bar (nol kunci, nol gas)
-        run: python -u -X utf8 -m engine.cli ledger verify
-
-      - name: Commit + dorong (dengan retry; kalau push gagal, JANGAN diam)
-        run: |
           git config user.name "paper-ledger"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add ledger/paper ledger/bars
-          if git diff --cached --quiet; then
-            echo "ledger tidak berubah pada putaran ini"
-            exit 0
-          fi
-          git commit -q -m "ledger paper $(date -u +%Y-%m-%dT%H:%M:%SZ) [skip ci]"
-          for t in 1 2 3 4 5; do
-            if git pull --rebase -q origin "$GITHUB_REF_NAME" && git push -q; then
-              echo "push OK (percobaan $t)"; exit 0
+          git config pull.rebase true
+          END=$(( $(date +%s) + 300*60 ))
+          DONE=""
+          K=0
+          while [ "$(date +%s)" -lt "$END" ]; do
+            TODAY=$(date -u +%F)
+            HM=$((10#$(date -u +%H%M)))
+            if [ "$HM" -ge 840 ] && [ "$HM" -le 1158 ] && [ "$DONE" != "$TODAY" ]; then
+              K=$((K+1))
+              echo "=== putaran $K $(date -u +%H:%M:%SZ) ==="
+              if ! git pull --rebase -q origin "$GITHUB_REF_NAME"; then
+                git rebase --abort 2>/dev/null || true
+                echo "::error::pull gagal - rantai berhenti supaya manusia melihat"; exit 1
+              fi
+              python -u -X utf8 tools/paper_tick.py --feed
+              RC=$?
+              echo "paper_tick rc=$RC (0 beres; 4 tick belum bisa dibuat, coba lagi 5 menit lagi)"
+              if [ "$RC" != "0" ] && [ "$RC" != "4" ]; then
+                echo "::error::paper_tick rc=$RC - rantai berhenti"; exit 1
+              fi
+              if ! python -u -X utf8 -m engine.cli ledger verify; then
+                echo "::error::ledger verify GAGAL - tidak commit; rantai berhenti"; exit 1
+              fi
+              git add ledger/paper ledger/bars
+              if ! git diff --cached --quiet; then
+                git commit -q -m "ledger paper $(date -u +%Y-%m-%dT%H:%M:%SZ) [skip ci]"
+                PUSHED=0
+                for t in 1 2 3 4 5; do
+                  if git pull --rebase -q origin "$GITHUB_REF_NAME" && git push -q; then
+                    echo "push OK (percobaan $t)"; PUSHED=1; break
+                  fi
+                  git rebase --abort 2>/dev/null || true
+                  echo "push ditolak (percobaan $t)"; sleep 12
+                done
+                if [ "$PUSHED" = "0" ]; then echo "::error::5x push gagal - ledger tidak sampai ke branch"; exit 1; fi
+              fi
+              if [ "$RC" = "0" ]; then DONE="$TODAY"; echo "tick $TODAY beres; diam sampai jendela besok"; fi
             fi
-            echo "push ditolak (percobaan $t) - rantai data lain mungkin bergerak duluan"
-            sleep 12
+            sleep 300
           done
-          echo "::error::5x push gagal - ledger tercatat di runner tapi tidak sampai ke branch"
-          exit 1
+          echo "putaran kerja di mata rantai ini: $K"
+
+      - name: Sambung rantai
+        if: env.RANTAI_ADA == '0'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          CHAIN_IN: ${{ github.event.inputs.chain_started }}
+        run: |
+          START="$CHAIN_IN"
+          if [ -z "$START" ]; then START=$(date -u +%Y-%m-%dT%H:%M:%SZ); fi
+          echo "rantai dimulai $START"
+          # `dispatches` (jamak) + body objek bersarang (pelajaran wallet-flow: `/dispatch` tunggal = 404 senyap).
+          printf '{"ref":"%s","inputs":{"chain_started":"%s"}}' "$GITHUB_REF_NAME" "$START" \
+            | gh api -X POST "repos/$GITHUB_REPOSITORY/actions/workflows/paper-ledger.yml/dispatches" --input - \
+            && echo "rantai disambung" \
+            || { echo "::error::GAGAL menyambung rantai - watchdog akan menyalakan lagi"; exit 1; }
+
+      - name: Laporan ledger
+        if: always()
+        run: python -u -X utf8 -m engine.cli ledger report || true

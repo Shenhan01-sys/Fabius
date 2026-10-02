@@ -2463,3 +2463,22 @@ Builder: *"Gasssss"* atas usul "aktifkan B3 dengan estimasi beku untuk target" (
 Paper penuh; bukan klaim edge; F-D16 tetap pagar.
 
 **Terkait:** F-D75 · F-D76 · [[08-Backlog/06 - Epik Gerbang Sinyal]] §6 · [[09-Inbox/Session-2026-10-02]] §14 · F-D25
+
+## F-D78 — Jadwal ledger paper: rantai yang menyambung dirinya sendiri + watchdog, bukan cron · 2 Okt 2026
+
+Builder: *"Gas lanjut"*. Sebelum lanjut ke M3, satu kerusakan yang akan membuat jam maju bolong besok:
+
+**Terukur** (`gh run list --workflow paper-ledger.yml --event schedule`; `gh run list --event schedule`): sejak push 09:03Z sampai 11:27Z, **tujuh cron `paper-ledger` tidak pernah menembak**
+(semua run = `workflow_dispatch` manual saya). Cron lain di repo yang sama juga bolong: universe-hourly (per jam) menembak 23:07, 02:12, 09:39Z; wallet-flow-watchdog (`*/30`)
+23:16, 02:20, 08:42Z - tiga kali dalam ±10 jam masing-masing. Jendela tick kita hanya ±3 jam per hari (berkas Vision terbit ±08:40-09:40Z, batas 12:00Z), jadi cron yang
+bolong = `gap` permanen.
+
+**Diganti** dengan pola wallet-flow yang sudah terbukti di repo ini: `paper-ledger.yml` = SATU job ±5 jam yang, hanya pada jendela 08:40-11:58Z dan hanya sampai tick hari itu beres,
+menjalankan feed → tick/gap/settle → `ledger verify` → commit/push tiap 5 menit, lalu men-dispatch dirinya sendiri; **tanpa `schedule:` di berkas itu** (pelajaran wallet-flow 28 Sep:
+penyelamat di berkas yang sama membunuh rantainya). Penyelamat terpisah `paper-ledger-watchdog.yml` (cron `*/20`, grup concurrency sendiri) menyalakan rantai **hanya** bila tidak ada
+run `paper-ledger` yang hidup atau antre. Pagar: penjaga anti-tumpang-tindih (`.id`, bukan `.run_id`); `verify` gagal, `paper_tick` gagal, atau push gagal 5x = rantai berhenti
+merah supaya manusia melihat; menghentikan = `gh workflow disable paper-ledger.yml` (dan watchdog-nya). `bash -n` lulus untuk semua langkah (wallet-flow sebagai pembanding juga lulus).
+
+**Belum terbukti:** rantai baru dinyalakan 2 Okt siang; bukti pertama = tick bar 2026-10-02 pada jendela 3 Okt tanpa sentuhan manusia. Kalau gagal, harinya tercatat `gap` (terlihat).
+
+**Terkait:** F-D75 · F-D77 · `.github/workflows/wallet-flow.yml` (pola asal) · [[09-Inbox/Session-2026-10-02]] §15
