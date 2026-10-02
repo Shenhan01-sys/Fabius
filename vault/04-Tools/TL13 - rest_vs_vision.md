@@ -17,4 +17,6 @@ tags: [perkakas, "TL13"]
 
 **Detail:** fapi ditolak dari runner GitHub (HTTP 451) dan dari laptop builder (TLS hostname mismatch); dari Singapura 200 (F-D80 #7).
 
+**Alat kembar (P98):** `tools/rest_latency.py` (tes `engine/tests/test_rest_latency.py`, 5) mengukur kapan bar yang baru tertutup dan funding 00:00Z pertama kali terlihat di REST, dan apakah nilainya berubah sesudah itu (poll tiap 15 detik dari 23:59:30Z sampai 00:10Z, baca ulang +30 dan +60 menit). Dijalankan di `fabius-probe` dengan `FABIUS_JOB=rest_latency FABIUS_ARGS=--exit-zero`; terpasang 2 Okt 16:27Z, menunggu 7,5 jam. Resolusi jeda = interval polling.
+
 **Terkait:** [[03-Data/D7 - Ledger Bars]] · [[00-Overview/03 - Decisions]] F-D83
