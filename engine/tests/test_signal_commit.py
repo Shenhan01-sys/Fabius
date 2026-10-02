@@ -254,6 +254,27 @@ class CalldataTests(unittest.TestCase):
         self.assertEqual((cid, list(tup), salt, list(proof)), (a.cid, e.signal.abi_fields(), e.salt, list(e.proof)))
 
 
+@unittest.skipUnless(HAVE_ETH, "eth-account tidak terpasang")
+class OperatorLoopTests(unittest.TestCase):
+    def test_waiting_state_logged_once_although_repo_head_moves(self):
+        """Commit bot ke master tiap ±4 menit tidak boleh membuat log Railway mengulang baris 'menunggu deploy' tiap putaran."""
+        import operator_loop as ol
+        heads = iter(["a" * 40, "b" * 40, "c" * 40])
+        got = []
+        orig = (ol.sync, ol.sc.load_addresses, ol.log)
+        ol.sync = lambda workdir=None: next(heads)
+        ol.sc.load_addresses = lambda path=None: {"anchor": None, "registry": None, "committer": None}
+        ol.log = got.append
+        try:
+            w = ol.Worker(workdir=tempfile.gettempdir())
+            for _ in range(3):
+                w.once()
+        finally:
+            ol.sync, ol.sc.load_addresses, ol.log = orig
+        self.assertEqual(sum(1 for m in got if m.startswith("menunggu deploy")), 1, got)
+        self.assertEqual(sum(1 for m in got if m.startswith("detak:")), 1, got)
+
+
 def _free_port() -> int:
     with socket.socket() as s:
         s.bind(("127.0.0.1", 0))

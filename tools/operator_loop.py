@@ -99,10 +99,16 @@ class Worker:
         self.last_summary = 0.0
 
     def note_state(self, s: str) -> None:
-        """Catat keadaan menunggu hanya saat berubah (log Railway tidak dibanjiri baris yang sama tiap 5 menit)."""
+        """Catat keadaan hanya saat berubah (log Railway tidak dibanjiri baris yang sama tiap 5 menit). Sha repo TIDAK masuk sini:
+        commit bot ke master tiap ±4 menit akan membuat setiap putaran tampak 'berubah'. Sha repo ada di detak."""
         if s != self.last_state:
             log(s)
             self.last_state = s
+
+    def heartbeat(self, head: str, extra: str) -> None:
+        if time.time() - self.last_summary >= SUMMARY_EVERY_S:
+            log(f"detak: repo {head[:10]} | {extra}")
+            self.last_summary = time.time()
 
     def once(self) -> None:
         import evm as evmmod
@@ -110,12 +116,14 @@ class Worker:
         head = sync(self.workdir)
         addrs = sc.load_addresses(os.path.join(self.workdir, "deployments", f"{sc.CHAIN_ID}.json"))
         if not addrs["anchor"] or not addrs["registry"]:
-            self.note_state(f"menunggu deploy: SignalAnchor/LockRegistry belum ada di deployments/97.json (repo {head[:10]})")
+            self.note_state("menunggu deploy: SignalAnchor/LockRegistry belum ada di deployments/97.json (dan tidak di variabel)")
+            self.heartbeat(head, "menunggu deploy")
             return
         pk = sc.committer_key()
         committer = evmmod.address_of(pk) if pk else addrs["committer"]
         if not committer:
             self.note_state("menunggu committer: tidak ada COMMITTER_PRIVATE_KEY dan tidak ada m3.committer di deployments/97.json")
+            self.heartbeat(head, "menunggu committer")
             return
         self.note_state(f"aktif: SignalAnchor {addrs['anchor']} committer {committer} ({'KIRIM' if pk else 'RENCANA - tanpa kunci'})")
         ev = evmmod.Evm(sc.rpc_urls(), sc.CHAIN_ID)
@@ -133,10 +141,8 @@ class Worker:
             log(f"terkirim: {st['commit']} komit, {st['reveal']} ungkap, {st['gagal']} gagal")
             self.last_lines = None                      # paksa catat keadaan baru putaran berikutnya
         if time.time() - self.last_summary >= SUMMARY_EVERY_S:
-            bal = ev.balance(committer)
             kinds = {k: sum(1 for a in acts if a.kind == k) for k in ("commit", "reveal", "ok", "skip", "alarm")}
-            log(f"detak: repo {head[:10]} | saldo committer {bal / 1e18:.6f} tBNB | aksi {kinds}")
-            self.last_summary = time.time()
+            self.heartbeat(head, f"saldo committer {ev.balance(committer) / 1e18:.6f} tBNB | aksi {kinds}")
 
 
 def main() -> int:

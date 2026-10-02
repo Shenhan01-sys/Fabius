@@ -2552,4 +2552,7 @@ python -X utf8 tools/m3_setup.py --railway-service fabius-engine --go      # kun
 ```
 lalu `deployments/97.json` di-commit + push (alamat publik). Nama variabel kunci di berkas itu bukan `DEPLOYER_PRIVATE_KEY`? tambahkan `--deployer-var NAMA`.
 
+Tambahan (sesudah push pertama): log worker mengulang "menunggu deploy" tiap putaran, karena sha repo ikut di baris keadaan dan master menerima commit bot tiap
+±4 menit -> sha dipindah ke baris detak (tiap 6 jam), satu uji ditambah: **19** uji worker, Python **264 lulus**.
+
 **Terkait:** F-D78 · F-D79 · [[08-Backlog/06 - Epik Gerbang Sinyal]] §3 · [[09-Inbox/Session-2026-10-02]] §17
