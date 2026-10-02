@@ -3,6 +3,7 @@
 """Bisakah funding Binance direkonstruksi dari `premiumIndexKlines` 1m (berkas statis Vision, terbit ±09:10Z hari berikutnya) tanpa REST?
 
     python -X utf8 run15_funding_reconstruct.py --months 2026-06,2026-07,2026-08 [--symbols BTCUSDT,ETHUSDT] [--variants]
+    python -X utf8 run15_funding_reconstruct.py --engine-i --months 2025-05,2025-06,2025-07,2025-08     # uji LUAR WAKTU 2025 dengan I per simbol dari engine
     python -X utf8 run15_funding_reconstruct.py --oos          # pilih I per simbol (diskret) pada Mar-Mei 2026, uji DI LUAR SAMPEL pada Jun-Agu 2026 (angka di engine/funding_est.py)
 
 Rumus Binance (dokumen "Introduction to Binance Futures Funding Rates"):  F = P + clamp(I - P, -0,05 %, +0,05 %),
@@ -28,6 +29,7 @@ from pathlib import Path
 REPO = Path(__file__).resolve().parents[3]
 HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(REPO))
+from engine import funding_est as fe                  # noqa: E402
 from engine.series import DAY_MS                      # noqa: E402
 from engine.spec import PERP_UNIVERSE                 # noqa: E402
 
@@ -93,7 +95,7 @@ def clamp(x, lo, hi):
     return max(lo, min(hi, x))
 
 
-def estimate(prem, S, T0, variant, h_hours):
+def estimate(prem, S, T0, variant, h_hours, interest=0.0001):
     """Funding terestimasi untuk interval [S, T0) (ms, awal menit). None bila ada menit yang hilang."""
     n = (T0 - S) // MIN_MS
     off = MIN_MS if variant.endswith("shift1") else 0
@@ -111,14 +113,14 @@ def estimate(prem, S, T0, variant, h_hours):
         P = sum((n - i) * x for i, x in enumerate(vals)) / wsum
     else:
         P = sum(vals) / n
-    I = 0.0001 * h_hours / 8.0
+    I = interest * h_hours / 8.0
     return P + clamp(I - P, -0.0005, 0.0005)
 
 
 VARIANTS = ["lin_close", "lin_open", "mean_close", "rev_close", "lin_close_shift1"]
 
 
-def evaluate(sym, months, variants):
+def evaluate(sym, months, variants, engine_i=False):
     prem = {}
     for ym in months:
         p = month_file(sym, ym)
@@ -139,7 +141,7 @@ def evaluate(sym, months, variants):
         h = (T0 - S) / 3_600_000
         got_any = False
         for v in variants:
-            e = estimate(prem, S, T0, v, h)
+            e = estimate(prem, S, T0, v, h, fe.interest_for(sym) if engine_i else 0.0001)
             if e is None:
                 continue
             res[v].append((T0, h, f, e))
@@ -248,6 +250,7 @@ def main():
     ap.add_argument("--months", default="2026-06,2026-07,2026-08")
     ap.add_argument("--symbols", default=",".join(PERP_UNIVERSE))
     ap.add_argument("--variants", action="store_true", help="bandingkan semua varian rumus (bawaan: hanya lin_close)")
+    ap.add_argument("--engine-i", action="store_true", help="pakai I per simbol dari engine/funding_est.py (BNBUSDT = 0) alih-alih 0,0001 untuk semua")
     ap.add_argument("--oos", action="store_true", help="pilih I per simbol pada Mar-Mei 2026 dan uji di luar sampel pada Jun-Agu 2026")
     a = ap.parse_args()
     if a.oos:
@@ -258,7 +261,7 @@ def main():
     variants = VARIANTS if a.variants else ["lin_close"]
     t0 = time.time()
     with ThreadPoolExecutor(max_workers=6) as ex:
-        results = list(ex.map(lambda s: (s, evaluate(s, months, variants)), syms))
+        results = list(ex.map(lambda s: (s, evaluate(s, months, variants, a.engine_i)), syms))
     print(f"bulan {months}; satuan galat: 1e-6 = 0,01 bps per peristiwa; biaya masuk replay = 7 bps/sisi = 7e-4\n")
     agg = {v: [] for v in variants}
     for s, r in results:
@@ -279,7 +282,8 @@ def main():
         st = stats(agg[v])
         if st:
             print(f"{v:17} n={st['n']:5d} MAE={st['mae'] * 1e6:8.3f} med={st['med'] * 1e6:8.3f} p95={st['p95'] * 1e6:8.3f} max={st['max'] * 1e6:9.3f} (1e-6) | "
-                  f"persis={st['exact'] * 100:5.1f}% <1e-6={st['within'] * 100:5.1f}% corr={st['corr']:.5f} | harian MAE={st['day_mae'] * 1e6:8.3f} max={st['day_max'] * 1e6:9.3f}")
+                  f"persis={st['exact'] * 100:5.1f}% <1e-6={st['within'] * 100:5.1f}% corr={st['corr']:.5f}")
+    print("(galat harian hanya per simbol di atas dan di mode --oos; di baris gabungan ia akan menjumlahkan antar simbol dan menyesatkan, jadi tidak dicetak)")
     print(f"\nwaktu {time.time() - t0:.0f} detik. Dalam-sampel pada peristiwa yang sudah diketahui; BUKAN jaminan untuk hari depan.")
 
 

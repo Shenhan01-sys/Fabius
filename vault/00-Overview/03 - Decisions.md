@@ -2422,11 +2422,13 @@ Builder menjawab "Gas" atas usul P92 (F-D75): bisakah funding dibangun ulang dar
 - **Satu simbol punya I berbeda.** BNBUSDT: funding aktual **tepat 0** pada 276 dari 549 peristiwa (Mar-Agu); dengan I = 0,0001 MAE-nya 72,8 (median 98,6); dengan **I = 0** rumus mengembalikan 0 selama |P| ≤ 0,05 %, dan MAE-nya turun ke level simbol lain.
 - **Luar sampel** (`--oos`: I per simbol dipilih diskret pada Mar-Mei, diuji Jun-Agu 2026; 16 perp, **n = 4.368 peristiwa**): MAE **5,63** (0,056 bps), median 3,26, p95 19,87, p99 31,49, maks 92,90 (0,93 bps). Per hari-simbol (n = 1.488): MAE **10,72** (0,107 bps), median 6,91, p95 34,55, p99 54,66,
   maks 129,84 (1,30 bps); bias rata-rata **+2,49** per hari (0,025 bps/hari; estimasi sedikit di atas aktual, jadi PnL paper sedikit terlalu rendah). I terpilih: 0,0001 untuk 15 simbol dan 0 untuk BNBUSDT.
+- **Luar waktu (2025):** Mei-Agu 2025 (`--engine-i`, n = 5.904 peristiwa; tanpa menyetel apa pun pada data 2025): MAE **4,78** (0,048 bps), median 1,34, p95 20,37, maks 76,39 (0,76 bps), 42,5 % persis sampai pembulatan 8 desimal; **BNBUSDT dengan I = 0: MAE 1,23, median 0** (tanpa koreksi: MAE 78,9) - jadi aturan I = 0 berlaku juga di 2025, bukan kebetulan Mar-Mei 2026.
+- **Fidelitas target B3** (`run16_b3_est_fidelity.py`; estimasi menggantikan aktual untuk SEMUA hari uji = kasus yang lebih keras daripada operasi maju, yang mencampur aktual dan estimasi): 2025-02-01..2026-08-31 (577 hari): bobot target berbeda pada **20 dari 577 hari (3,5 %)**; aset-hari dipegang 270 (aktual) vs 267 (estimasi), 23 aset-hari berganti status (8,5 % dari yang dipegang; ETC 6, NEAR 5, AVAX 3, ...); net PnL B3 dengan funding aktual pada settle: **−34,63 bps vs −41,30 bps** (selisih −6,67 bps selama 577 hari). Jun-Agu 2026 saja: 3 dari 92 hari, selisih −0,58 bps. Catatan: B3 hampir dorman di jendela ini (270 aset-hari dari ±9.200 mungkin), jadi uji ini lemah untuk rezim saat B3 aktif penuh.
 - Funding yang terkunci di I (|P − I| ≤ 0,05 %) direkonstruksi persis; galat muncul saat funding bergerak bersama P, dan paling besar pada DOT (MAE 9,70 luar sampel), BCH (9,04), ATOM (8,59), ADA (7,49); penyebabnya belum diselidiki.
 - **Jam terbit** (`Last-Modified` berkas Vision): premium harian BTCUSDT 2026-10-01 → 2 Okt 09:10:00Z; 2026-09-30 → 1 Okt 09:16:53Z; zip bulanan 2026-09 → 2 Okt 09:07:58Z. Jadi berkas premium terbit di jendela waktu yang sama dengan kline harian (±08:40-09:40Z), tidak lebih lambat secara konsisten.
 
 **Skala.** Galat 0,1 bps per hari-simbol dibanding: funding dasar ±3 bps/hari (0,01 % × 3), biaya masuk replay 7 bps/sisi, simpangan PnL harian B1 ratusan bps. Untuk **mengukur PnL** B1 galat itu praktis nol (≪ 0,1 % dari derau harian). Untuk **keputusan ambang** B3 (rata-rata funding 7 hari
-disetahunkan > 10 %; funding dasar 10,95 %/tahun, jadi marjin ±0,26 bps/hari) galat estimasi sebanding dengan marjin hanya saat funding bergerak; saat funding terkunci di dasar estimasinya persis. **Fidelitas target B3 terhadap funding aktual belum diukur** (daftar kerja).
+disetahunkan > 10 %; funding dasar 10,95 %/tahun, jadi marjin ±0,26 bps/hari) galat estimasi sebanding dengan marjin hanya saat funding bergerak; saat funding terkunci di dasar estimasinya persis. **Fidelitas target B3 diukur di bawah** (`run16_b3_est_fidelity.py`).
 
 **Keputusan desain** (semuanya bisa dibalik):
 1. **`settle` final tetap hanya dari funding AKTUAL.** Estimasi tidak pernah ditulis sebagai settle; catatan rantai tetap "final atau menunggu" (tak terukur ≠ bersih).
@@ -2439,6 +2441,6 @@ disetahunkan > 10 %; funding dasar 10,95 %/tahun, jadi marjin ±0,26 bps/hari) g
 Estimasi bias sedikit ke atas. Tidak ada ledger yang memakai estimasi untuk catatan final.
 
 **Menunggu builder:** (1) aktifkan B3? Perlu seed spot (±2 MB), `--spot` di job, dan menerima bahwa target B3 memakai estimasi beku untuk hari-hari terbaru; jam maju B3 mulai dari bar saat genesis dibuat.
-(2) Ukur fidelitas target B3 (estimasi vs aktual) pada Jun-Agu sebelum memutuskan - saya sarankan ini dulu.
+(2) ~~Ukur fidelitas target B3~~ **sudah diukur** (di atas): 3,5 % hari berbeda, selisih PnL kecil; kesimpulan saya: B3 layak diaktifkan dengan estimasi beku, tetapi keputusan di tangan builder.
 
 **Terkait:** [[09-Inbox/Session-2026-10-02]] §13 · [[08-Backlog/06 - Epik Gerbang Sinyal]] §6 · [[08-Backlog/05 - Epik Enam Bot]] §14 · F-D75 · F-D74 · F-D16
