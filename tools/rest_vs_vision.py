@@ -174,6 +174,9 @@ def d(ms: int) -> str:
 
 def run(bars: str, symbols: Sequence[str], since_ms: int, rest: Rest, now_ms: int) -> dict:
     tot = {"perp": [0, 0, 0, 0], "spot": [0, 0, 0, 0], "fund": [0, 0, 0, 0, 0]}
+    by_field = {"perp": dict.fromkeys(FIELDS, 0), "spot": dict.fromkeys(FIELDS, 0)}
+    price_diffs: List[str] = []                      # beda di o/h/l/c dicetak SEMUA (engine memakai harga; volume tidak dipakai engine)
+    only_rest: Dict[str, int] = {"perp": 0, "spot": 0}
     lag = []
     for sym in symbols:
         for kind, fname, base, path, limit in (("perp", f"fut_{sym}_1d.csv", FAPI, "/fapi/v1/klines", 1500),
@@ -190,6 +193,11 @@ def run(bars: str, symbols: Sequence[str], since_ms: int, rest: Rest, now_ms: in
             t[1] += c["equal"]
             t[2] += len(c["only_csv"])
             t[3] += len({x[0] for x in c["diff"]})
+            only_rest[kind] += len(c["only_rest"])
+            for t_, f_, x, y in c["diff"]:
+                by_field[kind][f_] += 1
+                if f_ != "v":
+                    price_diffs.append(f"{kind} {sym} {d(t_)} {f_}: csv {x!r} rest {y!r}")
             ok = c["equal"] == c["n"] and not c["only_csv"] and not c["only_rest"]
             line = f"{kind:4s} {sym:9s} {d(t0)}..{d(max(a))}: {c['equal']}/{c['n']} sama persis"
             if c["only_csv"] or c["only_rest"]:
@@ -222,11 +230,16 @@ def run(bars: str, symbols: Sequence[str], since_ms: int, rest: Rest, now_ms: in
     print("\nRINGKASAN")
     for kind in ("perp", "spot"):
         n, eq, oc, bad = tot[kind]
-        print(f"  {kind}: {eq}/{n} bar sama persis (5 kolom); bar beda {bad}; bar hanya di CSV {oc}")
+        print(f"  {kind}: {eq}/{n} bar sama persis (5 kolom); bar beda {bad}; bar hanya di CSV {oc}; bar hanya di REST {only_rest[kind]}")
+        print(f"        sel beda per kolom: " + ", ".join(f"{f}={by_field[kind][f]}" for f in FIELDS))
+    print(f"  beda di kolom HARGA (o/h/l/c): {len(price_diffs)}" + ("" if not price_diffs else " ->"))
+    for ln in price_diffs:
+        print("    " + ln)
     n, eq, oc, bd, mx = tot["fund"]
     print(f"  funding: {eq}/{n} peristiwa sama persis; hari dengan jumlah beda {bd}; peristiwa hanya di CSV {oc}; selisih waktu maks {mx} ms")
     if lag:
         print(f"  bar perp tertutup terakhir: CSV {lag[0][1]} | REST {lag[0][2]} (saat ini {dt.datetime.fromtimestamp(now_ms / 1000, dt.timezone.utc):%Y-%m-%dT%H:%M:%SZ})")
+    tot["price_diffs"] = len(price_diffs)
     return tot
 
 
@@ -260,7 +273,9 @@ def main() -> int:
         return 0 if a.exit_zero else 1
     print(f"  {rest.calls} panggilan REST, {time.time() - t_start:.0f} s")
     all_ok = all(tot[k][0] == tot[k][1] and tot[k][2] == 0 for k in ("perp", "spot")) and tot["fund"][0] == tot["fund"][1] and tot["fund"][3] == 0
+    engine_ok = tot["price_diffs"] == 0 and all(tot[k][2] == 0 for k in ("perp", "spot")) and tot["fund"][0] == tot["fund"][1] and tot["fund"][3] == 0
     print("VONIS: " + ("SAMA PERSIS" if all_ok else "ADA BEDA - lihat baris bertanda !"))
+    print("VONIS UNTUK ENGINE (harga + funding; volume tidak dipakai engine): " + ("SAMA PERSIS" if engine_ok else "ADA BEDA"))
     return 0 if (all_ok or a.exit_zero) else 1
 
 

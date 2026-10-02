@@ -53,5 +53,54 @@ class FundingTests(unittest.TestCase):
         self.assertEqual((c["matched"], c["only_csv"], c["only_rest"]), (0, [T0], []))
 
 
+class RunTests(unittest.TestCase):
+    """Laporan lengkap dengan REST tiruan: beda volume dihitung terpisah dari beda HARGA (yang dicetak semua), vonis engine hanya peduli harga + funding."""
+
+    def setUp(self):
+        import tempfile
+        self.dir = tempfile.mkdtemp()
+        rows = [(T0 + i * D, 1.0 + i, 2.0 + i, 0.5 + i, 1.5 + i, 10.0 + i) for i in range(3)]
+        for kind in ("fut", "spot"):
+            with open(os.path.join(self.dir, f"{kind}_BTCUSDT_1d.csv"), "w", encoding="utf-8") as f:
+                f.write("t,o,h,l,c,v\n" + "".join(",".join(repr(x) for x in r) + "\n" for r in rows))
+        with open(os.path.join(self.dir, "fund_BTCUSDT.csv"), "w", encoding="utf-8") as f:
+            f.write("t,rate\n" + "".join(f"{T0 + k * 8 * 3600_000},{1e-4}\n" for k in range(9)))
+        self.rows = {r[0]: r[1:] for r in rows}
+
+    def tearDown(self):
+        import shutil
+        shutil.rmtree(self.dir, ignore_errors=True)
+
+    def fake(self, perp_change=None, spot_change=None):
+        test = self
+
+        class FakeRest:
+            calls = 0
+
+            def klines(self, base, path, sym, t0, now_ms, limit):
+                out = dict(test.rows)
+                ch = perp_change if "fapi" in base else spot_change
+                if ch:
+                    t, i, val = ch
+                    r = list(out[t])
+                    r[i] = val
+                    out[t] = tuple(r)
+                return out
+
+            def funding(self, sym, t0, now_ms):
+                return [(T0 + k * 8 * 3600_000, 1e-4) for k in range(9)]
+        return FakeRest()
+
+    def test_volume_only_difference_keeps_engine_verdict(self):
+        tot = rv.run(self.dir, ["BTCUSDT"], 0, self.fake(perp_change=(T0 + D, 4, 99.0)), T0 + 10 * D)
+        self.assertEqual(tot["perp"][3], 1)
+        self.assertEqual(tot["price_diffs"], 0)
+
+    def test_price_difference_is_counted(self):
+        tot = rv.run(self.dir, ["BTCUSDT"], 0, self.fake(spot_change=(T0, 3, 1.5000001)), T0 + 10 * D)
+        self.assertEqual(tot["price_diffs"], 1)
+        self.assertEqual(tot["fund"][0], tot["fund"][1])
+
+
 if __name__ == "__main__":
     unittest.main()
