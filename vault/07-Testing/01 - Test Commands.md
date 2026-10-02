@@ -18,6 +18,7 @@ berupa junction lokal.
 | 2 | `set FOUNDRY_PROFILE=fork&& forge test --fork-url bscTestnet` | **63 lulus** (21 + 18 + 15 DemoToken + 9 fork x402), 0 gagal | settlement x402 terhadap proxy kanonis **yang benar-benar ter-deploy** di 97 |
 | 3 | `set FOUNDRY_PROFILE=fork&& forge test --fork-url bscTestnet --match-contract ExecutionVaultTest` | 18 lulus | angka di baris 2 tidak menyembunyikan apa pun |
 | 4 | `python -X utf8 tools/anchor.py --verify` | 28 Sep: **13/13 cocok**, 0 BEDA, 0 belum di-anchor; `anchorCount()` = 19 (peringatan cakupan, P6b) | trail terbaca ulang dari chain tanpa kunci/gas |
+| 4b | `python -X utf8 tools/anchor_lock.py --verify` | 2 Okt: **cocok word-per-word**; `anchoredAt` 2026-10-02T08:17:48Z; `anchorCount()` = 20 (19 + baris kunci); `tools/anchor.py --verify` tetap 13/13 cocok, 0 BEDA | kunci ambang peninjau-bot (bukan keputusan dagang; `ABSTAIN` hanya pemetaan) terbaca ulang dari chain tanpa kunci/gas ([[00-Overview/03 - Decisions]] F-D74) |
 | 5 | `python -X utf8 tools/ledger.py` | 28 Sep: **3 posisi jatuh tempo**, net total **−708,1 bps** pada ongkos 59 bps | penilaian dari rekaman, bukan dihitung ulang |
 | 6 | `python -X utf8 tools/verify_vendor.py` | 4/4 identik dengan manifest @ commit pin | vendor tidak disunat, **dari dalam clone** |
 | 7 | `python -X utf8 vault/scripts/check_links.py` | `Broken: 0` | graf vault terhubung, tidak ada halaman invisible |

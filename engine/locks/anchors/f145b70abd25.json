@@ -1,0 +1,19 @@
+{
+  "agent": "0x4bb30E3b3bc22082c1935fE3bE7c07448e69c862",
+  "anchoredAt": 1790929068,
+  "anchoredAt_utc": "2026-10-02T08:17:48Z",
+  "asset": "FABIUS-LOCK/review-v1",
+  "block": 134404691,
+  "catatan": "jam yang berlaku = anchoredAt (waktu blok), bukan `dikunci` di berkas kunci (jam laptop)",
+  "chainId": 97,
+  "contract": "0xDD162AFB5F5f92d5092f845A93660e3B38259330",
+  "decisionHash": "0xf145b70abd251b9fcf421bfb811bcf3788dade347c37b3bea331a09fedfe5f32",
+  "gatesHash": "0x90d1cef6ee8d6e135f10240810e2805bd8d0d5809c2b0ee930342f8548ac3952",
+  "id": "0xdcca74f81f4e3002f4315711009f8519d07f9f2a091cffb3dd9e1003c331f51e",
+  "lock_file": "engine/locks/review.lock.json",
+  "lock_sha": "0xf145b70abd251b9fcf421bfb811bcf3788dade347c37b3bea331a09fedfe5f32",
+  "snapshotHash": "0x9288d0673417874cae93ebd9b425bd53cd9839980756f9f0442b67fae7bae3b4",
+  "tx": "0xf09d61e601e218017aa225ebaf3ae86429031cbf46042cc80de9c0e8af7ae45f",
+  "v": 1,
+  "verdict": "ABSTAIN"
+}

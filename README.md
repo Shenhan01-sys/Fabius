@@ -10,6 +10,11 @@ Itu pekerjaan sistem ini. Ia bukan bot yang menjanjikan keuntungan; ia firma ris
 menyaring, menilai, dan **menahan diri** — lalu mencatat setiap keputusan, termasuk penolakannya,
 di sebuah ledger yang tidak bisa diubah setelahnya.
 
+> **Arah baru (rencana, 2 Okt 2026) - belum dibangun kecuali yang tertulis di bawah:** Fabius menjadi operator yang hanya
+> memilih di antara bot berspesifikasi terkunci, kelak menjual sinyal yang bisa diperiksa, dan membuka slot bot untuk penerbit
+> luar. Belum ada bot terkunci, sinyal maju, kontrak baru, atau penjualan. Keputusan: `vault/00-Overview/03 - Decisions.md`
+> F-D70 dan F-D71; rincian: `vault/08-Backlog/05 - Epik Enam Bot.md`, `06 - Epik Gerbang Sinyal.md`, `07 - Epik Kolaborasi Bot Terbuka.md`.
+
 ```
 UNIVERSE BSC        ->  REFUSAL GATE      ->  DESK (typed questions)  ->  PM + GATES  ->  ANCHOR
 GeckoTerminal          honeypot, likuiditas,   satu state, N pertanyaan    R:R, rezim,          bytes32

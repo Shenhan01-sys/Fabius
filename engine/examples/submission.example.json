@@ -1,0 +1,55 @@
+{
+  "v": 1,
+  "kind": "template",
+  "spec": {
+    "bot_id": "TREND-ETH-30",
+    "metode": "Long ETH dan BNB bila penutupan di atas penutupan 30 hari lalu, selain itu flat (momentum deret waktu).",
+    "template": "B1-TREND",
+    "param_nama": "N",
+    "param": 30,
+    "universe": ["ETHUSDT", "BNBUSDT"],
+    "horizon": "1d"
+  },
+  "identity": {
+    "issuer_wallet": "0x1111111111111111111111111111111111111111",
+    "payout_wallet": "0x1111111111111111111111111111111111111111",
+    "handle": "contoh-penerbit",
+    "contact": "contoh@example.invalid",
+    "entity_type": "individu",
+    "conflicts": "tidak ada"
+  },
+  "theory": {
+    "mekanisme_jenis": "perilaku",
+    "mekanisme": "Reaksi kurang dan herding membuat tren harga aset berlikuiditas dalam bertahan melampaui horizon informasi publik; pelaku yang menambah posisi setelah kenaikan membiayai momentum, dan tren berhenti ketika arus itu habis. Ini mekanisme perilaku, bukan premi yang dijamin.",
+    "pihak_seberang": "Pihak yang menjual terlalu cepat (disposition effect) dan penyedia likuiditas yang menghindari risiko tren; edge tersisa karena modal arbitrase terbatas dan tren berbalik tajam sehingga tidak bisa diambil habis.",
+    "kapasitas_usd": 5000000,
+    "referensi": [
+      {
+        "judul": "Time series momentum (Moskowitz, Ooi, Pedersen 2012)",
+        "url": "https://doi.org/10.1016/j.jfineco.2011.11.003",
+        "klaim": "Momentum deret waktu positif pada puluhan kelas aset, bertahan lintas horizon 1-12 bulan."
+      }
+    ],
+    "rezim": "Bekerja di pasar yang trending dan di atas rerata panjang; gagal di pasar datar yang bolak-balik (whipsaw) dan saat krisis likuiditas.",
+    "mode_gagal": "Whipsaw di pasar datar; funding perp sisi long adalah beban tetap; pembalikan V mendadak memakan sebelum keluar.",
+    "peluruhan": "Belum diperiksa: penerbit wajib melampirkan hasil 24 bulan terakhir; contoh ini sengaja tidak mengklaim apa pun.",
+    "pembunuh": {"metric": "net_pnl_bps", "comparator": "<", "threshold": 0, "window_sinyal": 60}
+  },
+  "evidence": {
+    "sumber_data": ["data.binance.vision klines harian 1d"],
+    "insample_mulai": "2020-01-01",
+    "insample_akhir": "2023-12-31",
+    "oos_mulai": "2024-01-01",
+    "oos_akhir": "2026-08-31",
+    "percobaan": 6,
+    "klaim": {"sharpe_net": 0.9, "mdd_pct": -45, "n_sinyal": 120, "tahunan_pct": 35}
+  },
+  "declarations": {
+    "tanpa_lookahead": true,
+    "tanpa_info_orang_dalam": true,
+    "tanpa_wash_trading": true,
+    "menerima_protokol": true,
+    "izin_publikasi": true,
+    "lisensi": "terbuka"
+  }
+}

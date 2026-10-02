@@ -2216,3 +2216,170 @@ lain - yang boleh dijual hanya yang net-of-cost, dan di dua-duanya dia kalah.
 satu-satunya yang lulus tetap **E12** (aturan keluar). Yang baru saja hidup: efek prediktif yang lolos
 BH. Itu bahan keputusan berikutnya (ongkos, ukuran, venue, proksi ke jangkar likuid), bukan bahan
 klaim: submit malam ini tetap tidak boleh menulis "Fabius tahu kapan masuk".
+
+
+## F-D70 — Fabius menjadi operator pemilih bot dan menjual sinyal berbukti; paper penuh sampai builder yakin · 2 Okt 2026
+
+Builder (2 Okt, diringkas): Fabius menjadi **agen operator**. Ia menganalisis dan hanya boleh **memilih** bot - satu bot = satu metode + satu
+parameter - dengan enam bot sebagai awal ([[08-Backlog/05 - Epik Enam Bot]], usulan). Mesinnya dibangun dulu; sesudah itu FE sebagai **gerbang
+penjualan sinyal**: agen membayar per sinyal lewat x402 dan menerimanya lewat MCP; pengguna berlangganan lewat x402 V2 dengan sesi dan menerimanya
+lewat surel ([[08-Backlog/06 - Epik Gerbang Sinyal]]). Cakupan sinyal: **niat posisi** (masuk, keluar, sesuaikan ukuran) - bukan jenis order. Uang nyata
+kemungkinan besar lewat Binance Agentic Wallet, tetapi **paper penuh** sampai builder sendiri yakin mengeluarkan uangnya.
+
+**Yang bergeser.** Kalimat *"Fabius menjual bukti yang bisa diperiksa, bukan sinyal"* ([[00-Overview/02 - Business Process]]) dan *"Kami tidak
+menjual sinyal"* ([[10-Submissions/02 - Project Detail]]) tidak lagi menggambarkan ARAH; penggantinya: **menjual sinyal yang berbukti** - sinyal yang
+sudah dikomit di chain sebelum hasilnya, dihasilkan aturan yang dikunci sebelum datanya, dan yang semuanya dibuka pada waktunya. Premis F-D03 (nol CEX
+di jalur kritis) dan cakupan F-D09 (universe token BSC) tidak berlaku untuk bot operator (aset mayor, RWA, venue perp); keduanya tetap benar untuk jalur
+memecoin yang sudah ada. F-D13/F-D33 (lapisan arah kalah; mencari alasan masuk) bergeser: alasan masuk sekarang datang dari bot yang dipilih dan sudah
+lolos gerbang, bukan dari agen yang meracik sendiri.
+
+**Yang tetap mengikat - tidak ada yang dilonggarkan.** F-D11 (model hanya mempersempit; kini juga untuk peninjau pengajuan bot), F-D16 (uang nyata =
+harapan bersih > 0 setelah ongkos nyata, n ≥ 20, tanpa fold terbaik, BH 0,10, di luar sampel), F-D17 (tanpa fee-on-profit dari dompet pengguna), F-D18
+(tanpa kurva imbal hasil untuk yang datang awal; potongan harga sisi biaya boleh), F-D32 (paper = slot; control tidak mempromosikan dirinya), anchor
+sebelum hasil, kunci pra-registrasi ber-sha, plafon hanya turun, tanpa custody.
+
+**Jawaban builder atas enam pertanyaan, 2 Okt malam:** (1) mesin tinggal di paket `engine/` (bukan `tools/`); (2) B2 memakai 7 sub-buku, tanpa memilih hari
+rebalance; (3) sinyal = niat posisi; (4) komit sinyal memakai **keccak256 atas `abi.encode(struct, salt)` dan akar Merkle gaya OpenZeppelin** - sinyal
+mentah tidak masuk chain, hash spesifikasi tetap sha256 JSON; sudah diterapkan di `engine/chain.py` dan `engine/sinyal.py` dan diuji silang dengan
+`cast keccak`, `cast abi-encode`, `eth_utils`; (5) pivot dicatat sekarang (entri ini) beserta banner BN-PIVOT; (6) venue uang nyata kelak: Binance
+Agentic Wallet - hanya long-only on-chain, jadi bot yang butuh short atau perp (B2, kaki perp B3, B4) perlu venue lain - sekarang paper penuh.
+
+**Urutan penjualan (usulan, menunggu kata builder):** tingkat 0 - umpan bukti (komit + pembukaan tertunda + rekam jejak paper, tanpa klaim keuntungan) -
+boleh lebih dulu; tingkat 1 - sinyal waktu-nyata berbayar - **hanya** untuk bot yang lolos F-D16 pada data maju ter-anchor **dan** setelah telaah hukum
+(P75/P80); tingkat 2 - mengeksekusi untuk orang lain - tidak dijual.
+
+**Status hari ini, ditulis apa adanya.** Arah diputuskan. **Belum ada** bot terkunci, sinyal maju, kontrak baru, FE, atau penjualan. Yang ada: paket
+`engine/` (bot murni, replay, sinyal komit-ungkap, guard bar basi, gerbang seleksi, buku slot; 169 tes lulus saat ditulis). Kalimat publik yang dilarang
+sampai ada data maju ada di [[10-Submissions/01 - Claims Cheat Sheet]] (blok BN-PIVOT).
+
+**Terkait:** [[08-Backlog/05 - Epik Enam Bot]] · [[08-Backlog/06 - Epik Gerbang Sinyal]] · [[08-Backlog/07 - Epik Kolaborasi Bot Terbuka]] ·
+[[Concepts/One-Way Gate]] · [[00-Overview/02 - Business Process]]
+
+## F-D71 — Program penerbit bot: sepuluh slot, seleksi ketat, rolling berbasis PnL net · 2 Okt 2026
+
+Builder (2 Okt, diringkas): Fabius dibuka untuk kolaborasi - orang lain boleh mengajukan bot, tetapi **teorinya harus terbukti kualitasnya lebih dulu**,
+**identitas penerbit (terutama dompet) jelas** supaya penerbit mendapat bagian bila botnya menghasilkan, dan **seleksinya ketat**: yang masuk harus
+benar-benar menguntungkan Fabius. Maksimal **10 bot**; minimal 1 milik Fabius sebagai identitas, 9 slot bebas. Bila penuh dan penantang terbukti lebih
+baik, **rolling**: bot terlemah dibuang.
+
+**Bentuknya** (kode `engine/submission.py`, `engine/gates.py`, `engine/slots.py`; rancangan lengkap [[08-Backlog/07 - Epik Kolaborasi Bot Terbuka]]):
+
+1. Formulir **skema tertutup**: identitas bertanda tangan EIP-712 (dompet EIP-55), teori terstruktur, bukti sebagai KLAIM, pembunuh terstruktur
+   (metrik, pembanding, ambang, jendela), pernyataan wajib. Seluruh isi formulir adalah input musuh.
+2. Gerbang **G1-G11 deterministik** pada data dan penggaris kami; yang menerima adalah gerbang, bukan opini model. Peninjau agen hanya boleh menolak atau
+   meminta info (satu arah, F-D11). Kode pihak luar tidak pernah dijalankan otomatis.
+3. Lolos gerbang = boleh **shadow** maju (≥ 60 hari, ter-anchor, PnL net > 0); baru sesudah itu slot. Slot ≠ uang nyata (F-D16 tetap).
+4. Slot: maksimum 10; ≥ 1 bot identitas Fabius (kebal rolling); ≤ 2 slot per penerbit luar (dompet payout yang sama = satu keluarga); rolling mengganti
+   penghuni terlemah yang boleh digusur bila penantang unggul margin; tak terukur ≠ lemah; paling banyak satu penggantian per epoch.
+5. **Satu koreksi atas kata builder:** metrik rolling = **PnL net setelah ongkos**, bukan win-rate. F-D16 sudah mematikan win-rate sebagai ukuran (panel
+   whale WR 69,8 % tetapi −10,4 bps). Win-rate hanya diagnostik.
+6. **Imbalan penerbit = bagi hasil dari penjualan sinyal bot itu** (x402 `payTo` ke kontrak pemisah milik bot), **bukan** fee dari profit dompet pengikut
+   (F-D17). Berhenti saat bot keluar slot; yang sudah terkumpul tetap bisa ditarik.
+7. **Fabius tunduk pada gerbang yang sama** (dogfood). Hasil 2 Okt (`python -X utf8 -m engine.cli gate --data <dir> --bot ALL`; ambang = bawaan kode, belum
+   dikunci): **B3 dan B5 LOLOS_SHADOW; B1 (G8, G10), B2 (G4), B6 (G3, G8, G10) TOLAK; B4 tidak terukur**. Lari pertama menggagalkan B5 lewat placebo yang tidak
+   bermakna untuk bot alokasi; gerbang diganti dan perubahan itu dipajang di epik 07 §7. Karena perubahan metode terjadi setelah melihat hasil, ambang dan
+   jenis-nol **dikunci sebelum kandidat luar pertama** (P86).
+
+**Yang belum diputuskan builder:** persentase bagi hasil, bot identitas (usulan B5-CORE-RWA), kunci ambang, jenis bot yang dibuka lebih dulu (usulan:
+hanya `template`), biaya pengajuan, peninjau agen dan anggarannya - epik 07 §10. **DIJAWAB di F-D72: tanpa agen (peninjau = bot ber-KPI); 60/40; template dulu; tanpa biaya pengajuan.**
+
+**Terkait:** [[08-Backlog/07 - Epik Kolaborasi Bot Terbuka]] · [[08-Backlog/05 - Epik Enam Bot]] · [[Concepts/One-Way Gate]] ·
+[[Concepts/Unmeasured Is Not Clean]] · F-D11 · F-D16 · F-D17 · F-D18 · F-D32
+
+
+## F-D72 — Putaran kedua: bagi hasil 60/40, bot identitas kripto, template dulu, tanpa biaya pengajuan, peninjau = bot ber-KPI (bukan agen), tingkat 0 duluan · 2 Okt 2026
+
+Builder menjawab pertanyaan penutup F-D71 (2 Okt malam). Dicatat apa adanya, beserta apa yang saya lakukan dan apa yang masih menunggu:
+
+1. **"Saya setuju 60/40."** Penerbit 60 %, Fabius 40 %. Basis yang saya pasang: **pendapatan penjualan sinyal bot itu**, bukan profit trading dan bukan profit pengikut.
+   Alasannya terukur (`python -X utf8 -m engine.cli gate`, KPI K5): bila penerbit mengambil 60 % dari bulan yang untung tanpa menanggung bulan yang rugi, B1 yang untung
+   +50,2 %/tahun membuat Fabius **−1,6 %/tahun** (B2 −8,3 %, B6 −2,6 %). *Menunggu konfirmasi bahwa basisnya pendapatan.* **→ DIJAWAB di F-D73: "Betul."** Kode: `engine/economics.py`.
+2. **Bot identitas: "kalau bisa yang trading crypto biar kelihatan beneran trading."** Bisa. Kandidat konkret **B1-TREND** (long/flat kripto, long-only sehingga bisa jalan di Binance
+   Agentic Wallet). Catatan jujur: B1 gagal dua gerbang secara tipis (G8, G10) dan 12 bulan terakhirnya −0,42. Identitas = penunjukan (kebal rolling), bukan kelulusan; catatannya
+   tampil dengan gerbang yang gagal; ia mati lewat pembunuhnya sendiri; F-D16 tetap berlaku sebelum uang nyata. *Menunggu konfirmasi.* **→ DIJAWAB di F-D73: B1-TREND.**
+3. **"Kunci ambang - maksudnya apa?"** (pertanyaan saya) dijelaskan di [[08-Backlog/07 - Epik Kolaborasi Bot Terbuka]] §10 #3: semua angka lolos/gagal ditulis ke satu berkas, dihitung sha-nya,
+   dan dipasang sebelum kandidat luar pertama; mengubah satu angka = kunci baru. Mekanismenya sudah dikode (`engine/locks.py`, `engine.cli lock`); **belum dikunci** - menunggu kata builder. **→ DIKUNCI sementara di F-D73 (v1).**
+4. **"Template dulu gapapa."** `submission.ENABLED_KINDS = ("template",)`; `method_pr` dan `feed` ada di skema tetapi ditolak.
+5. **"Tidak ada dulu"** untuk biaya pengajuan. Spam dibatasi tanpa uang: ≤ 2 pengajuan berjalan per keluarga dan masa tunggu 30 hari setelah penolakan (`slots.can_submit`).
+6. **"Meninjau bot yang dikirim lebih baik pakai bot, bukan agen; beri logika KPI minimal supaya Fabius juga untung saat memakai bot itu."** **Mengganti** butir peninjau-agen di F-D71 #2 dan P82.
+   Peninjau = `engine/review.py` (validasi → identitas → gerbang G1-G11 → KPI K1-K5 → laporan ber-sha), deterministik. Konsekuensi yang dikatakan terus terang: teks teori tidak dinilai
+   mesin (pengungkapan, bukan penilaian); yang menentukan bukti terukur; manusia hanya boleh memveto (F-D11). KPI minimal: K1 imbal hasil tahunan net ≥ hurdle bebas-risiko 4 % + margin 2 %;
+   K2 Calmar ≥ 0,5; K3 ≥ 12 sinyal/tahun dan ≥ 20 total; K4 klaim penerbit tidak melebihi terukur; K5 skenario profit-share terburuk bagi Fabius (informatif selama basis = pendapatan).
+7. **"Boleee"** untuk tingkat 0: umpan bukti gratis (komit + pembukaan tertunda + rekam jejak paper, tanpa klaim keuntungan) boleh dikirim lebih dulu; tingkat 1 tetap menunggu F-D16 pada data maju dan telaah hukum.
+
+**Tinjauan keamanan independen (agen terpisah, hanya-baca) atas kode baru: 12 temuan, diukur.** Tiga di antaranya mengubah isi, bukan hanya kode: (a) gerbang adalah oracle publik tanpa kontrol
+uji-berganda (pada 476 konfigurasi random-walk tanpa edge, G3 meloloskan 5,3 % dan dua lolos semua gerbang) → ambang G3 kini naik menurut jumlah percobaan dan **gerbang diposisikan sebagai penyaring
+awal, bukan bukti**; (b) uji admit/gusur slot tidak bermakna statistik → gusur kini butuh selisih berpasangan pada jendela yang sama dengan t ≥ 2, dan **slot dinyatakan paper berhak-rendah**;
+(c) G8 untuk bot alokasi terlalu lemah → kini dua uji, dan **B5-CORE-RWA yang lolos pada versi sore kini TOLAK**. Rincian dan status per temuan: epik 07 §9. Satu cacat adalah milik saya sendiri
+(varian plateau dihitung dari nilai bawaan template, bukan nilai kandidat) dan ditangkap tes.
+
+**Hasil dogfood setelah perubahan (N = 20 percobaan; ambang belum dikunci):** B3 **LOLOS_SHADOW**; B1 TOLAK (G8, G10); B2 TOLAK (G4); B5 TOLAK (G8); B6 TOLAK (G3, G8, G10, K2); B4 tak terukur.
+**Hanya satu bot yang bisa dinilai lolos, dan ia sedang dorman.** Itu bukan alasan melonggarkan gerbang; itu alasan paper penuh dan menunggu data maju (jawaban builder 6 di F-D70).
+
+**Terkait:** [[08-Backlog/07 - Epik Kolaborasi Bot Terbuka]] · [[08-Backlog/06 - Epik Gerbang Sinyal]] · [[Concepts/One-Way Gate]] · F-D11 · F-D16 · F-D17 · F-D70 · F-D71
+
+## F-D73 — Putaran ketiga: basis bagi hasil = pendapatan, bot identitas = B1-TREND, ambang v1 dikunci sementara, riset optimasi dijadwalkan · 2 Okt 2026
+
+Builder menjawab tiga pertanyaan penutup F-D72, kata-katanya: *"1. Betul 2. Yg pnting tradenya instrument crypto saya gas 3. Sementara ini oke, nanti kita coba riset lagi untuk mengoptimalkan itu (catat di vault)"*.
+Dicatat apa adanya, beserta apa yang saya kerjakan:
+
+1. **"Betul."** - bagi hasil 60/40 dihitung dari **pendapatan penjualan sinyal bot itu**; bukan profit trading dan bukan profit pengikut. Menutup F-D72 #1. Kode `engine/economics.py`; tercatat di kunci
+   (`ekonomi: penerbit 60% / Fabius 40% dari pendapatan penjualan sinyal`). KPI K5 tetap mencetak skenario profit-share terburuk, tetapi **hanya informatif** selama basisnya pendapatan.
+2. **"Yang penting tradenya instrumen kripto, saya gas."** - bot identitas = **B1-TREND**. Menutup F-D72 #2. Syaratnya dipaksa kode, bukan niat: `engine/book.py` (`trades_crypto_only`;
+   `genesis_book` menolak bot yang bukan instrumen-kripto-saja; emas/RWA dan B5 tidak termasuk). Yang tetap berlaku dan **tetap tampil**:
+   - identitas = **penunjukan** (kebal rolling), **bukan kelulusan gerbang**;
+   - B1 **gagal dua gerbang secara tipis**: G8 (placebo p = 0,090, batas atas 0,123 > 0,05) dan G10 (ΔSharpe EW +0,04 < 0,05); 12 bulan terakhir −0,42
+     (dicetak ulang hari ini: `python -X utf8 -m engine.cli gate --data <dir> --bot B1-TREND` dan `09-Inbox/Session-2026-10-02-skrip/run11_recent_windows.py`);
+   - ia mati lewat pembunuhnya sendiri ("12 bulan maju tanpa mengalahkan buy&hold pada MDD dan Sharpe"); F-D16 (n ≥ 20, net > 0 setelah ongkos nyata, buang fold terbaik, BH 0,10, OOS) tetap pagar sebelum uang nyata;
+   - **buku genesis hanya berisi B1** (`python -X utf8 -m engine.cli book`: 1 entri, `book_sha 0xfe37d759…6e05c`). B2/B3/B5/B6 **tidak diberi slot gratis**: mereka lewat gerbang → shadow → slot seperti penerbit luar.
+3. **"Sementara ini oke, nanti kita coba riset lagi untuk mengoptimalkan itu (catat di vault)."** - semua ambang (gerbang G1-G11, KPI K1-K5, slot, 60/40) disetujui **sebagai v1, untuk sementara**, dan **DIKUNCI**:
+   `python -X utf8 -m engine.cli lock` → `KUNCI: TERKUNCI`, sha `0xf145b70abd251b9fcf421bfb811bcf3788dade347c37b3bea331a09fedfe5f32`, berkas `engine/locks/review.lock.json`, `dikunci` 2026-10-02T07:40:00Z.
+   Mengubah satu angka sesudahnya = kunci baru yang terlihat (`lock --write --supersede` memindahkan yang lama ke `engine/locks/history/`). "Sementara" dibaca harfiah: **v1 bukan klaim bahwa ambang optimal**;
+   empat perubahan gerbang sesudah melihat hasil (epik 07 §0) adalah alasan mengunci sekarang, bukan alasan percaya angkanya. Riset optimasi: [[08-Backlog/08 - Riset Optimasi Ambang]] (status USULAN; aturan anti-snooping
+   ditulis **sebelum** riset dimulai).
+
+**Dengan terus terang, apa arti kunci ini sekarang:** (a) berkasnya belum di-commit dan **belum di-anchor**; `dikunci` adalah jam laptop (14:40 WIB = 07:40Z). Sampai di-anchor ia pengakuan saya, bukan bukti
+pra-registrasi (anchor-before-outcome). Meng-anchor sha-nya = transaksi; **tidak saya jalankan, menunggu kata builder**. (b) Vonis peninjau `mengikat` hanya bila identitas penerbit terverifikasi **dan** kunci TERKUNCI **dan** vonis
+LOLOS_SHADOW; belum ada penerbit luar, jadi tidak ada vonis yang mengikat siapa pun. (c) Kunci ini tidak mengubah satu pun vonis: contoh formulir (`engine/examples/submission.example.json`) terhadap buku genesis tetap
+**LOLOS_SHADOW** (ΔSharpe EW +0,28; korelasi maks +0,69 terhadap B1, lolos tipis dari 0,7; `mengikat: TIDAK`; `report_sha 0x4a178e16…196c`) - demonstrasi lagi bahwa klon-berpilihan B1 lewat; masuk daftar riset (R11).
+→ **DIPERBARUI di F-D74:** kunci v1 **ter-anchor** (tx `0xf09d61e6…`, `anchoredAt` 2026-10-02T08:17:48Z); jam yang berlaku = waktu blok itu, bukan 07:40Z.
+
+**Koreksi kecil yang dipajang:** kata "malam" pada F-D72 dan pada catatan berkas kunci adalah sebutan saya, **bukan jam**. Jam laptop saat kunci ditulis 14:40 WIB. Jam yang berlaku = `dikunci` di berkas, dan kelak commit/anchor.
+
+**Garis dasar pertama riset (dicetak hari ini, `09-Inbox/Session-2026-10-02-skrip/run13_null_calibration.py`, pasar random-walk tanpa edge; rinci di epik 08 §3):** pada 340 konfigurasi satu pasar, **4 lolos semua gerbang bila
+penambang tidak mendeklarasikan percobaan (N = 1) dan 0 bila jujur (N = 340)**; 60 pengajuan satu-kali pada pasar independen: 0 lolos. Itu menegaskan bahwa gerbang = penyaring awal dan shadow maju = satu-satunya bukti (epik 07 §9 #1).
+
+**Yang tidak berubah:** tidak ada uang nyata (paper penuh, F-D70); tidak ada kontrak baru; tidak ada penerbit luar; tidak ada commit/push (hanya atas kata builder, tanpa atribusi AI, kabari sebelum push);
+`method_pr`/`feed` tetap ditutup; F-D16/F-D17/F-D18 tetap berlaku.
+
+**Menunggu builder:** (1) **meng-anchor sha kunci** (satu transaksi; atau tunda); (2) commit `engine/` + vault (belum pernah di-commit); (3) **anggaran** untuk riset 08 - berapa positif-palsu yang masih bisa diterima dan daya minimum pada edge berapa
+(usulan saya di epik 08 §1, **dipertanyakan nanti, bukan sekarang**). **→ DIJAWAB di F-D74: (1) anchor sekarang - selesai; (2) commit - selesai; (3) "maksudnya apa?" - dijelaskan, belum diputuskan; M2 "gassss" - dimulai.** **Tidak lagi terblokir:** jam maju M2 (ledger paper per bot) karena kunci sudah ada; kontrak tingkat 0 (M3) tetap menunggu kata builder.
+
+**Terkait:** [[08-Backlog/08 - Riset Optimasi Ambang]] · [[08-Backlog/07 - Epik Kolaborasi Bot Terbuka]] · [[08-Backlog/06 - Epik Gerbang Sinyal]] · [[08-Backlog/05 - Epik Enam Bot]] · [[Concepts/One-Way Gate]] ·
+F-D11 · F-D16 · F-D17 · F-D70 · F-D71 · F-D72
+
+## F-D74 — Putaran keempat: kunci v1 ter-anchor, commit, "maksudnya apa" dijelaskan, M2 dimulai · 2 Okt 2026
+
+Builder menjawab empat pertanyaan penutup F-D73, kata-katanya: *"Untuk sekarang di push dulu aja semua commitnya, lalu : 1. Anchor sekarang gapapa sih 2. Commit 3. Mangsudnya apa 4. gassss"*. Dicatat apa adanya:
+
+1. **"Anchor sekarang gapapa sih" - dikerjakan.** Alat baru `tools/anchor_lock.py` (default = rencana tanpa kirim; `--send` mengirim satu transaksi; `--verify` tanpa kunci dan tanpa gas) mengirim satu `anchor()` ke `DecisionAnchor` di chain 97:
+   - tx `0xf09d61e601e218017aa225ebaf3ae86429031cbf46042cc80de9c0e8af7ae45f`, blok 134404691, gas 250.867; `anchorCount()` 19 → 20; id `0xdcca74f81f4e3002f4315711009f8519d07f9f2a091cffb3dd9e1003c331f51e`;
+   - **`anchoredAt` 1790929068 = 2026-10-02T08:17:48Z: itulah jam yang berlaku bagi kunci v1** (bukan `dikunci` 07:40:00Z, yang jam laptop; selisih ±38 menit);
+   - pemetaan (dikatakan terang-terangan karena kunci bukan keputusan dagang): asset `FABIUS-LOCK/review-v1`; verdict **Abstain** (kontrak hanya punya Enter/Abstain; Enter akan menggelembungkan hitungan keputusan masuk);
+     decisionHash = sha kunci `0xf145b70a…5f32`; gatesHash = sha atas `params.gerbang`; snapshotHash = sha atas seluruh berkas kunci (ikut mengikat `dikunci` dan `catatan`);
+   - dibaca ulang word-per-word dari chain: cocok; menjalankan ulang tidak mengirim lagi (idempoten); catatan di `engine/locks/anchors/f145b70abd25.json`; `python -X utf8 tools/anchor_lock.py --verify` → "cocok word-per-word";
+     `python -X utf8 tools/anchor.py --verify` tetap **13/13 cocok, 0 BEDA** (alat lama hanya mencakup `direction-*.jsonl`);
+   - efek samping: `anchorCount()` dan `countByAgent` kini 20, jadi "19" pada halaman bertanggal (mis. Test Commands 28 Sep) adalah riwayat, bukan keadaan sekarang; selisih cakupan P6b bertambah satu karena baris kunci bukan keputusan dagang
+     dan **tidak boleh dihitung sebagai prediksi**;
+   - yang **tidak** dibuktikan: bahwa angkanya benar atau teroptimasi - hanya bahwa angka-angka ini ada, utuh, dan lebih dulu daripada kandidat luar pertama, dikirim oleh agen yang terdaftar di kontrak. Anchor tidak menghapus catatan bahwa
+     gerbang diubah empat kali sesudah melihat hasil sebelum dikunci (epik 07 §0).
+2. **"Commit" - dikerjakan.** Satu commit berisi `engine/`, `tools/anchor_lock.py`, halaman vault epik 05-08, F-D70..F-D74, catatan anchor, dan skrip eksploratif sesi; tanpa atribusi AI (F-D22).
+   **Tidak ikut:** `References/` (dua JPG milik builder, tak terkait).
+3. **"Mangsudnya apa"** (tentang "anggaran positif-palsu dan daya") - dijelaskan dengan bahasa biasa di [[08-Backlog/08 - Riset Optimasi Ambang]] §1a; **belum ada keputusan anggaran** dan usulan A1/A2 tetap usulan.
+   Inti: dua jenis salah penyaring (bot jelek lolos vs bot bagus tertolak) saling tarik-menarik, dan batas yang kita relakan harus dipilih builder **sebelum** hasil riset dilihat.
+4. **"gassss"** (M2) - dimulai: ledger paper per bot + jam maju (epik 05 §14, P77). Dicatat ketika ada hasil terukur; tidak ada yang diklaim di sini.
+5. **"Di-push dulu aja semua commitnya."** Keadaan saat dicatat: tidak ada commit lokal di depan origin (`git rev-list --left-right --count HEAD...origin/master` → `0 452`: lokal tertinggal 452 commit bot yang sudah terunduh;
+   ujung origin sekarang `05dab7b2…` menurut `git ls-remote`). Satu `git fetch` gagal (`early EOF`); fetch diulang lewat HTTP/1.1. Push dikerjakan sesudah commit, lewat `vault/scripts/prepush_check.py`, tanpa force;
+   hasilnya di [[09-Inbox/Session-2026-10-02]] §11.
+
+**Terkait:** [[08-Backlog/08 - Riset Optimasi Ambang]] · [[08-Backlog/07 - Epik Kolaborasi Bot Terbuka]] · [[08-Backlog/05 - Epik Enam Bot]] · [[Concepts/Anchored Before Outcome]] · F-D22 · F-D70 · F-D72 · F-D73

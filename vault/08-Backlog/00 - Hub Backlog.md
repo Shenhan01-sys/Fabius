@@ -26,6 +26,20 @@ nama filenya. Itu lubang navigasi, bukan lubang data; sekarang ditutup, dan gerb
 - [[04 - Riset Teori (Sitasi)]] - S1-S9 dengan URL + tanggal akses; tiga kutipan dibaca langsung dari
   halaman penerbit (Lei & Li 2009; Osler 2002; Ke & Lin 2017), plus daftar **tidak terverifikasi**
   dan satu sitasi yang **ditarik** ("Gu & Kelly 2014")
+- [[05 - Epik Enam Bot]] - **USULAN** konsep operator pemilih bot (2 Okt): enam bot = satu metode + satu parameter
+  (TREND, RS, CARRY, LISTING-FADE, CORE-RWA, BOUNCE), yang ditolak, aturan lapisan operator, jalur venue/paper (Binance
+  Agentic Wallet, testnet), konflik dengan klaim vault, dan P68-P76. Semua angka eksploratif, bukan klaim.
+  **Berisi KOREKSI K1-K3 (2 Okt malam):** B2 1,29 = undian fase (0,85 tanpa pilihan hari), gabungan 2025-26 = 0,071, bolong data;
+  §14 = mesin `engine/` (M1, belum di-commit)
+- [[06 - Epik Gerbang Sinyal]] - **USULAN rancangan** kirim sinyal lewat x402 V2 + MCP (+ email), tiga tingkat produk, dan jawaban
+  "kontrak selain anchor tiap sinyal": `LockRegistry`, komit-ungkap v2, `OperatorGuard`, rekam jejak/siklus hidup, pass, escrow/bond,
+  reputasi ERC-8004; benturan dengan "kami tidak menjual sinyal" dan F-D16/17/18; P77-P80
+- [[07 - Epik Kolaborasi Bot Terbuka]] - **USULAN rancangan + kode awal** program penerbit bot luar (F-D71, F-D72): formulir skema tertutup (hanya `template`), **peninjau = bot
+  deterministik, bukan agen** (gerbang G1-G11 + KPI K1-K5), sepuluh slot (≥ 1 bot identitas Fabius), rolling berbasis PnL net, bagi hasil **60/40 dari pendapatan penjualan sinyal**;
+  tinjauan keamanan independen (12 temuan, status per temuan); **hasil dogfood terbaru:** hanya B3 lolos (B5 kini tolak), B1/B2/B6 tolak, B4 tak terukur; P81-P89
+- [[08 - Riset Optimasi Ambang]] - **USULAN agenda riset** untuk mengoptimalkan ambang kunci v1 (F-D73: *"sementara ini oke, nanti riset lagi"*; v1 **terkunci sementara**, **ter-anchor 2026-10-02T08:17:48Z**, F-D74): **aturan anti-snooping dipasang
+  sebelum riset** (enam bot Fabius bukan target), anggaran positif-palsu/daya yang usulannya menunggu builder, plafon daya aritmetika (edge Sharpe ≤ 0,5 tak terpisahkan dari noise oleh riwayat beberapa tahun),
+  garis dasar kalibrasi nol (`run13_null_calibration.py`: penambang diam lolos 4 dari 340, percobaan diakui 0 dari 340), pertanyaan R1-R11, urutan kerja, jalur ke kunci v2; P90-P91
 
 <!-- di atas: append-only oleh scripts/sync_vault.py; gloss tulisan tangan utuh -->
 ## Yang menunggu di folder ini

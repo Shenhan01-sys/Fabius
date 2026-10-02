@@ -1,0 +1,65 @@
+{
+  "catatan": "disetujui builder (Hans) 2 Okt 2026 malam: ambang v1 untuk sementara; riset optimasi menyusul (vault 08-Backlog/08 - Riset Optimasi Ambang). Jam di berkas = jam laptop sampai di-commit/di-anchor.",
+  "dikunci": "2026-10-02T07:40:00Z",
+  "params": {
+    "ekonomi": {
+      "fabius_bps": 4000,
+      "issuer_bps": 6000
+    },
+    "gerbang": {
+      "boot_block": 20,
+      "boot_n": 1000,
+      "boot_q": 0.05,
+      "cost_mult": 2.0,
+      "marginal_max_corr": 0.7,
+      "marginal_min_dsharpe": 0.05,
+      "max_gap_frac": 0.01,
+      "max_gap_frac_series": 0.05,
+      "min_bars": 1095,
+      "min_net_sharpe": 0.5,
+      "min_recent_sharpe": 0.0,
+      "n_trials": 1,
+      "phase_min_mean": 0.5,
+      "pit_days": 10,
+      "placebo_max_p": 0.05,
+      "placebo_n": 200,
+      "plateau_factors": [
+        0.5,
+        0.75,
+        1.25,
+        1.5
+      ],
+      "plateau_min_ok": 3,
+      "plateau_ratio": 0.5,
+      "recent_days": 730,
+      "recent_min_ratio": 0.25,
+      "seed": 20261002
+    },
+    "kpi": {
+      "claim_tolerance_mdd_pts": 10.0,
+      "claim_tolerance_sharpe": 0.5,
+      "fee_base": "pendapatan",
+      "hurdle_ann": 0.04,
+      "issuer_share_bps": 6000,
+      "margin_ann": 0.02,
+      "min_calmar": 0.5,
+      "min_signals_total": 20,
+      "min_signals_year": 12.0
+    },
+    "slot": {
+      "cooldown_days": 30,
+      "epoch_days": 30,
+      "grace_days": 60,
+      "margin_bps": 100.0,
+      "max_replace_per_epoch": 1,
+      "min_coverage": 0.8,
+      "min_gap_tstat": 2.0,
+      "queue_max_per_family": 2,
+      "score_window": 90,
+      "shadow_days": 60
+    },
+    "v": 1
+  },
+  "sha": "0xf145b70abd251b9fcf421bfb811bcf3788dade347c37b3bea331a09fedfe5f32",
+  "v": 1
+}
