@@ -1,0 +1,132 @@
+{
+ "book_sha": "0xfe37d7595644fd7e23fc5cd2c9aa659db1b66e316069c7414dd478e231f6e05c",
+ "bot_id": "B3-CARRY",
+ "data_hash": "0x892000b5078e219b5a32b01d8f270efec02fa978055f4fa8e05fce28a30135aa",
+ "fingerprint": "0x9618db8e7a94d01bc4d953b5a955af88456fc10541f33f49058aa185cc72aed8",
+ "gagal": [],
+ "gerbang": [
+  {
+   "gate": "G1",
+   "name": "PIT",
+   "rule": "semua titik-potong identik dan hasil berulang identik",
+   "status": "PASS",
+   "value": "11/11 hari identik; deterministik ya"
+  },
+  {
+   "gate": "G2",
+   "name": "DATA",
+   "rule": "hari-pnl >= 1095; bolong gabungan <= 1% dan per seri <= 5%",
+   "status": "PASS",
+   "value": "2465 hari-pnl; bolong 25/77882 = 0.03%; terburuk per seri 0.23% (perp:NEARUSDT)"
+  },
+  {
+   "gate": "G3",
+   "name": "NET",
+   "rule": "Sharpe net >= max(0.5, ambang terdeflasi untuk N=1 percobaan) dan persentil-5 bootstrap blok > 0",
+   "status": "PASS",
+   "value": "Sharpe +6.00; p5 +4.99; ambang 0.50 (N=1)"
+  },
+  {
+   "gate": "G4",
+   "name": "RECENT",
+   "rule": "Sharpe 24 bulan terakhir > 0.0 dan >= 0.25 x Sharpe penuh; 12 bulan terakhir negatif = PERINGATAN (tidak menggagalkan)",
+   "status": "PASS",
+   "value": "24b +2.09 (n=730; penuh +6.00); 12b -3.62; PERINGATAN: 12 bulan terakhir negatif"
+  },
+  {
+   "gate": "G5",
+   "name": "PLATEAU",
+   "rule": ">= 3 varian BERBEDA yang dievaluasi (param x0.5..x1.5), dengan Sharpe >= 0.5 x dasar dan > 0 pada >= 3 di antaranya",
+   "status": "PASS",
+   "value": "dasar 0.1:+6.00 | 0.05:+6.08 0.075:+6.06 0.125:+5.61 0.15:+5.45"
+  },
+  {
+   "gate": "G6",
+   "name": "PHASE",
+   "rule": "rerata semua fase >= 0.5 dan fase terburuk > 0",
+   "status": "TB",
+   "value": "tidak berlaku (bot tanpa jadwal berfase)"
+  },
+  {
+   "gate": "G7",
+   "name": "FOLD",
+   "rule": "Sharpe > 0 setelah tahun kalender terbaik dibuang",
+   "status": "PASS",
+   "value": "tanpa 2021: Sharpe +4.77"
+  },
+  {
+   "gate": "G8",
+   "name": "NULL",
+   "rule": "batas atas 95% (galat Monte Carlo) dari p <= 0.05 terhadap 200 pergeseran waktu melingkar (eksposur sama); titik taksir p saja bergantung seed",
+   "status": "PASS",
+   "value": "placebo p = 0.005, batas atas 95% 0.013 (0/200 acak >= +6.00)"
+  },
+  {
+   "gate": "G9",
+   "name": "COST",
+   "rule": "Sharpe > 0 pada semua biaya (kunci *bps*, *pct*) 2x",
+   "status": "PASS",
+   "value": "Sharpe +4.97 pada 2x"
+  },
+  {
+   "gate": "G10",
+   "name": "MARGINAL",
+   "rule": "dSharpe EW petahana >= +0.05 dan korelasi maks <= 0.7 (petahana = BUKU SLOT SEKARANG + antrean)",
+   "status": "PASS",
+   "value": "dSharpe EW +0.18; korelasi maks +0.04 (2465 hari bersama, 1 petahana)"
+  },
+  {
+   "gate": "G11",
+   "name": "CAPACITY",
+   "rule": "diukur sebelum uang nyata",
+   "status": "NA",
+   "value": "kapasitas dan likuiditas per venue belum terukur (butuh volume kuotasi dan kedalaman buku)"
+  },
+  {
+   "gate": "K1",
+   "name": "ANN_NET",
+   "rule": "imbal hasil tahunan net >= hurdle bebas-risiko + margin",
+   "status": "PASS",
+   "value": "tahunan net +9.3% vs ambang 6.0% (hurdle 4% + margin 2%)"
+  },
+  {
+   "gate": "K2",
+   "name": "CALMAR",
+   "rule": "tahunan net / |MDD| >= 0.5",
+   "status": "PASS",
+   "value": "Calmar 8.29 (tahunan +9.3% / MDD -1.1%)"
+  },
+  {
+   "gate": "K3",
+   "name": "AKTIVITAS",
+   "rule": ">= 12 sinyal/tahun dan >= 20 total",
+   "status": "PASS",
+   "value": "1038 sinyal (153.7/tahun)"
+  },
+  {
+   "gate": "K4",
+   "name": "KLAIM",
+   "rule": "klaim tidak melebihi terukur",
+   "status": "TB",
+   "value": "tidak ada klaim (bot Fabius sendiri)"
+  },
+  {
+   "gate": "K5",
+   "name": "BAGI-LABA",
+   "rule": "informatif; menjadi gerbang hanya bila fee_base='profit'",
+   "status": "TB",
+   "value": "tidak berlaku (basis = pendapatan penjualan). Skenario profit-share terburuk akan memberi Fabius +3.5%/th (bot sendiri +9.3%/th)"
+  }
+ ],
+ "kunci_v1": "0xf145b70abd251b9fcf421bfb811bcf3788dade347c37b3bea331a09fedfe5f32",
+ "petahana": [
+  "B1-TREND"
+ ],
+ "report_sha": "0xd605ce002017ab04987d55208b1d3d7df27aeb99f784c028a94ccd1f67d594d6",
+ "spec_sha": "0xc528abf51585f401399ddb3279bced5adc4fd7f6dbde0aed0653e715352ef100",
+ "tak_terukur": [
+  "G11"
+ ],
+ "v": 1,
+ "vonis": "LOLOS_SHADOW"
+}

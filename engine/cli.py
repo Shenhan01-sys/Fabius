@@ -11,6 +11,8 @@
     python -X utf8 -m engine.cli review --file sub.json --data <dir> [--json] [--signature 0x..]  # peninjau-bot penuh, laporan ber-sha
     python -X utf8 -m engine.cli lock   [--write --note "disetujui Hans <tanggal>" [--supersede]]  # kunci ambang (perlu kata builder)
     python -X utf8 -m engine.cli book                                                             # buku genesis: bot identitas Fabius (F-D73)
+    python -X utf8 -m engine.cli book epoch [--write] [--no-gates] [--now ISO]                    # buku HIDUP (P87, F-D85): satu catatan per epoch
+    python -X utf8 -m engine.cli book verify                                                      # rantai + hitung ulang keputusan tiap epoch
     python -X utf8 -m engine.cli ledger verify|report [--ledger ledger/paper] [--bars ledger/bars] [--bot B1-TREND]   # ledger paper maju (M2)
 
 `--data` = folder CSV keluaran `fetch.py` (vault/09-Inbox/Session-2026-10-02-skrip/). Tidak ada perintah di sini yang
@@ -204,7 +206,123 @@ def _incumbents(md, mode: str) -> dict:
     return _book_pnls(md) if mode == "book" else _incumbent_pnls(md)
 
 
+BOOK_FILE = os.path.join(REPO_ROOT, "ledger", "book", "buku.jsonl")
+
+
+def _verified_ledgers(ledger_dir: str, view) -> dict:
+    """Ledger maju yang SAH saja (rantai + hitung ulang dari bar); yang lain dicetak dan tidak dipakai."""
+    ok = {}
+    for path in sorted(glob.glob(os.path.join(ledger_dir, "*.jsonl"))):
+        try:
+            recs = ledgermod.load(path)
+        except ledgermod.LedgerError as e:
+            print(f"  {os.path.basename(path)}: RUSAK ({e}) - tidak dipakai")
+            continue
+        spec = SPECS.get(recs[0].get("bot_id")) if recs else None
+        probs = ledgermod.verify_chain(recs)
+        if spec is not None and not probs:
+            probs = ledgermod.verify_against_data(spec, recs, view("targets" if spec.method == "B3-CARRY" else "actual"), view("actual"))
+        if spec is None or probs:
+            print(f"  {os.path.basename(path)}: ledger TIDAK SAH - tidak dipakai ({(probs or ['bot tidak dikenal'])[0]})")
+            continue
+        ok[spec.bot_id] = recs
+    return ok
+
+
+def _book_epoch(a) -> int:
+    """Satu epoch buku hidup: skor maju penghuni (P85) -> penantang (bot SHADOW_ELIGIBLE di luar buku; gerbang dijalankan terhadap BUKU SEKARANG) ->
+    status pembunuh -> slots.decide_epoch -> catatan. Idempoten per epoch: epoch yang sudah tercatat tidak ditulis dua kali."""
+    import dataclasses
+    from . import book_live, forward
+    from .sinyal import data_fingerprint
+    from .slots import FABIUS, Challenger, SlotParams, epoch_id
+    from .spec import sha0x
+    p = SlotParams()
+    now_s = ledgermod.iso_ms(a.now) // 1000 if a.now else int(time.time())
+    records = ledgermod.load(a.file)
+    if records:
+        probs = book_live.verify_book(records, p)
+        if probs:
+            print("buku hidup TIDAK SAH - tidak menulis apa pun:\n  - " + "\n  - ".join(probs[:10]))
+            return 1
+        if records[-1].get("type") == "epoch" and records[-1]["epoch"] == epoch_id(now_s, p):
+            print(f"epoch {records[-1]['epoch']} sudah tercatat; tidak menulis dua kali.")
+            print(book_live.fmt_epoch(records[-1]))
+            return 0
+        book = book_live.current_book(records)
+    else:
+        book = bookmod.genesis_book(now_s)
+        gen = book_live.make_genesis(book, locks.status()["sha_kunci"], now_s, "buku hidup (P87, F-D85): genesis = bot identitas B1-TREND (F-D73)")
+        records = [book_live.append(a.file, gen, [])] if a.write else [ledgermod.seal(gen, ledgermod.ZERO)]
+        print(f"genesis buku hidup {'DITULIS' if a.write else '(rencana)'}: book_sha {gen['book_sha'][:18]}…")
+    views: dict = {}
+
+    def view(name):
+        if name not in views:
+            views[name] = load_csv_dir(a.bars, DATA_SYMBOLS, funding_view=name)
+        return views[name]
+
+    ok = _verified_ledgers(a.ledger, view)
+    end = forward.common_end(ok, ledgermod.last_closed_bar(now_s * 1000))
+    scores = {e.bot_id: (forward.stats_for(e.bot_id, ok[e.bot_id], end, p).score_bps if e.bot_id in ok else None) for e in book}
+    killers = {e.bot_id: ("TEKS" if e.bot_id in SPECS else "TIDAK") for e in book}       # pembunuh bot Fabius = teks (P107); penerbit luar belum ada
+    bsha = slots_book_sha(book)
+    in_book = {e.bot_id for e in book}
+    challengers = []
+    for bot in bookmod.SHADOW_ELIGIBLE:
+        if bot in in_book or bot not in ok:
+            continue
+        spec = SPECS[bot]
+        if a.no_gates:
+            v, rsha = "TIDAK_DIJALANKAN", "0x" + "00" * 32
+        else:
+            md = view("actual")
+            inc = {b: replay(sp, md) for b, sp in bookmod.fabius_specs(book).items()}
+            t0 = time.time()
+            res = run_gates(spec, md, inc, GateParams())
+            v, fails, nas = verdict(res)
+            rep = {"v": 1, "bot_id": bot, "spec_sha": spec.sha(), "fingerprint": spec.fingerprint(), "data_hash": data_fingerprint(spec, md), "vonis": v,
+                   "gagal": fails, "tak_terukur": nas, "kunci_v1": locks.status()["sha_kunci"], "book_sha": bsha, "petahana": sorted(inc),
+                   "gerbang": [dataclasses.asdict(r) for r in res]}
+            rsha = sha0x(rep)
+            rep["report_sha"] = rsha
+            print(f"  gerbang {bot} terhadap buku {bsha[:12]}…: {v} (gagal {fails or '-'}, tak terukur {nas or '-'}) dalam {time.time() - t0:.0f} s")
+            if a.write:
+                rp = os.path.join(os.path.dirname(a.file), "laporan", f"{rsha[2:14]}.json")
+                os.makedirs(os.path.dirname(rp), exist_ok=True)
+                with open(rp, "w", encoding="utf-8", newline="\n") as f:
+                    json.dump(rep, f, indent=1, sort_keys=True, ensure_ascii=False)
+                    f.write("\n")
+        challengers.append(Challenger(bot_id=bot, issuer=FABIUS, spec_sha=spec.sha(), fingerprint=spec.fingerprint(), gate_verdict=v, report_sha=rsha,
+                                      book_sha=bsha, payout="", **forward.challenger_fields(bot, ok, [e.bot_id for e in book], end, p)))
+    rec = book_live.build_epoch(book, now_s, end, scores, challengers, killers, p)
+    print(book_live.fmt_epoch(rec))
+    if not a.write:
+        print("RENCANA: tidak ada yang ditulis. --write untuk menambah catatan epoch (penulis tunggal buku).")
+        return 0
+    sealed = book_live.append(a.file, rec, records)
+    print(f"ditulis: {os.path.relpath(a.file, REPO_ROOT)} epoch {sealed['epoch']} ujung {sealed['h'][:14]}… | pin book_sha: python -X utf8 tools/pin_book.py --send")
+    return 0
+
+
 def cmd_book(a) -> int:
+    from . import book_live
+    if getattr(a, "action", "status") == "epoch":
+        return _book_epoch(a)
+    if getattr(a, "action", "status") == "verify":
+        recs = ledgermod.load(a.file)
+        probs = book_live.verify_book(recs)
+        print(f"{os.path.relpath(a.file, REPO_ROOT)}: {'SAH' if not probs else 'GAGAL'}  catatan {len(recs)}  ujung {ledgermod.head(recs)[:14]}…"
+              + (f"  book_sha {recs[-1]['book_sha'][:18]}…" if recs else ""))
+        for pr in probs[:20]:
+            print("  -", pr)
+        return 1 if probs else 0
+    if os.path.exists(getattr(a, "file", BOOK_FILE)):
+        recs = ledgermod.load(a.file)
+        print(f"buku HIDUP {os.path.relpath(a.file, REPO_ROOT)}: {len(recs)} catatan, {'SAH' if not book_live.verify_book(recs) else 'TIDAK SAH'}")
+        if recs and recs[-1].get("type") == "epoch":
+            print(book_live.fmt_epoch(recs[-1]))
+        print()
     book = bookmod.genesis_book(0)
     print(f"buku genesis (F-D73): {len(book)} entri; book_sha {slots_book_sha(book)}")
     for e in book:
@@ -452,7 +570,14 @@ def main(argv=None) -> int:
     it.add_argument("--placebo-n", type=int, default=200)
     it.add_argument("--boot-n", type=int, default=1000)
     it.add_argument("--incumbents", choices=("book", "six"), default="book", help="petahana G10: buku slot sekarang (bawaan) atau enam bot Fabius")
-    sub.add_parser("book")
+    bk = sub.add_parser("book")
+    bk.add_argument("action", nargs="?", default="status", choices=("status", "epoch", "verify"))
+    bk.add_argument("--file", default=BOOK_FILE, help="berkas buku hidup (bawaan: ledger/book/buku.jsonl)")
+    bk.add_argument("--ledger", default=os.path.join(REPO_ROOT, "ledger", "paper"))
+    bk.add_argument("--bars", default=os.path.join(REPO_ROOT, "ledger", "bars"))
+    bk.add_argument("--now", help="ISO UTC pengganti jam sekarang (uji)")
+    bk.add_argument("--write", action="store_true", help="tulis catatan epoch (penulis tunggal buku hidup)")
+    bk.add_argument("--no-gates", action="store_true", help="lewati gerbang penantang (vonis TIDAK_DIJALANKAN -> ditolak)")
     rv = sub.add_parser("review")
     rv.add_argument("--file", required=True)
     rv.add_argument("--data", required=True)

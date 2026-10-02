@@ -6,7 +6,23 @@ Catatan **append-only, berantai-hash, per bot** dari niat posisi yang dihitung p
 ```
 ledger/paper/<bot>.jsonl    satu catatan per baris: genesis, tick, gap, settle
 ledger/bars/*.csv           bar yang dipakai (fut_<SYM>_1d.csv = kline harian perp, fund_<SYM>.csv = funding); sumber: data.binance.vision
+ledger/book/buku.jsonl      buku slot HIDUP (P87, F-D85): genesis + satu catatan per epoch 30 hari, berantai hash
+ledger/book/laporan/*.json  laporan gerbang penantang ber-sha (report_sha yang dirujuk catatan epoch)
 ```
+
+## Buku slot hidup (P87, F-D85)
+
+Siapa yang memegang slot paper, dan kenapa, dicatat SEKALI per epoch (`SlotParams.epoch_days` = 30 hari): skor maju penghuni (dari `settle` final), bahan
+penantang (shadow, berpasangan, vonis gerbang terhadap buku SEKARANG + `report_sha`), status pembunuh, keputusan `slots.decide_epoch`, buku hasil, `book_sha`.
+
+```
+python -X utf8 -m engine.cli book epoch [--write]   # satu epoch; idempoten (epoch yang sudah tercatat tidak ditulis dua kali)
+python -X utf8 -m engine.cli book verify            # rantai + keputusan tiap epoch DIHITUNG ULANG dari masukannya (tanpa data, tanpa jaringan)
+python -X utf8 tools/pin_book.py --verify           # book_sha epoch terakhir di LockRegistry chain 97 (jam blok)
+```
+
+Batas: pembunuh bot Fabius berupa teks di spesifikasi (dinilai manusia sampai ada versi terstruktur yang dikunci, P107); penulisnya sementara manual
+(jadwal bulanan = P108).
 
 ## Empat jenis catatan
 
@@ -46,10 +62,14 @@ Job `.github/workflows/paper-ledger.yml` - **rantai yang menyambung dirinya send
 - Bot yang boleh punya ledger: identitas (B1-TREND) dan yang LOLOS_SHADOW pada kunci v1 (B3-CARRY) - `engine/book.py` (`SHADOW_ELIGIBLE`). Bot lain lewat gerbang → shadow → slot. **Keduanya aktif sejak bar 2026-10-01** (F-D75, F-D77).
 - Funding recent dari REST Binance **terblokir dari kedua jaringan yang diukur** (2 Okt: laptop builder TLS terpotong; runner GitHub HTTP 451, run 36987654079); satu-satunya jalur sekarang zip bulanan yang terbit awal bulan berikutnya, jadi `settle`
   bisa tertunda berminggu-minggu sementara `tick` jalan terus. Settle yang tertunda tampil sebagai "menunggu penutupan", bukan nol; estimasi (di atas) hanya mengisi laporan PROVISIONAL.
+  → **Sejak 2 Okt:** dari Railway Singapura `fapi` menjawab HTTP 200, dan data REST = data Vision untuk harga + funding (114.228/114.228 peristiwa; F-D80, F-D83).
+  Memakainya untuk tick/settle = tahap 2/3 (P99/P100), menunggu pengukuran jeda terbit REST (P98) dan kata builder.
 - **Jeda tick:** berkas harian Binance Vision terbit ±8,7-9,7 jam sesudah 00:00Z (terukur 2 Okt dari `LastModified` bucket S3; tidak serempak antar simbol), jadi tick keluar ±9-10 jam
   sesudah penutupan. Niat tetap ex-ante terhadap hasil bar berikutnya dan isinya hanya fungsi bar sampai penutupan, tetapi harga masuk 00:00Z tidak bisa didapat pengikut pada saat itu
   sementara `settle` mengandaikan masuk di harga penutupan (konvensi replay): angka maju paper memuat derau/optimisme dari jeda ini. Laporan mencetak `jeda tick`; sumber waktu-nyata menyusul.
 - Cap waktu `emitted_utc` adalah klaim jam mesin penulis; yang bisa diperiksa pihak luar = waktu commit di riwayat git (dan kelak anchor kepala ledger di chain, menunggu M3/keputusan builder).
+  → **Sejak 2 Okt:** tiap tick dikomit (akar Merkle sinyalnya) ke SignalAnchor chain 97 oleh worker Railway dalam ≤ 12 jam (F-D80); siapa pun memeriksa dengan
+  `python -X utf8 tools/verify_signals.py` (tanpa kunci).
 - Bar berasal dari satu sumber (Binance Vision); universe berubah (aset hilang dari feed) = tick **ditolak** sampai feed pulih, atau `gap` bila lewat batas.
 - Seed 2020 → 2026-08-31 memuat bolong bar perp yang sudah diketahui (SOL/XRP/LTC/TRX/NEAR, Feb-Apr 2022; `python -X utf8 -m engine.cli gaps --data ledger/bars`); tidak memengaruhi tick maju,
   tetapi ikut menentukan `data_hash` karena seluruh riwayat dihitung.
