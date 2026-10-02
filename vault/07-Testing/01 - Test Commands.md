@@ -15,6 +15,7 @@ berupa junction lokal.
 | # | perintah | hasil 27 Sep | membuktikan |
 |---|---|---|---|
 | 1 | `forge test` | **39 lulus** (21 DecisionAnchor + 18 ExecutionVault), 0 gagal | gerbang kontrak + jalur eksekusi, tanpa jaringan |
+| 1b | `forge test` (2 Okt) | **63 lulus** (21 DecisionAnchor + 18 ExecutionVault + 24 SignalAnchor/LockRegistry), 0 gagal | M3: kontrak komit-ungkap memverifikasi daun dan bukti PERSIS sama dengan engine (vektor `test/fixtures/signal_vectors.json` dari `tools/gen_signal_vectors.py`) ([[00-Overview/03 - Decisions]] F-D79) |
 | 2 | `set FOUNDRY_PROFILE=fork&& forge test --fork-url bscTestnet` | **63 lulus** (21 + 18 + 15 DemoToken + 9 fork x402), 0 gagal | settlement x402 terhadap proxy kanonis **yang benar-benar ter-deploy** di 97 |
 | 3 | `set FOUNDRY_PROFILE=fork&& forge test --fork-url bscTestnet --match-contract ExecutionVaultTest` | 18 lulus | angka di baris 2 tidak menyembunyikan apa pun |
 | 4 | `python -X utf8 tools/anchor.py --verify` | 28 Sep: **13/13 cocok**, 0 BEDA, 0 belum di-anchor; `anchorCount()` = 19 (peringatan cakupan, P6b) | trail terbaca ulang dari chain tanpa kunci/gas |

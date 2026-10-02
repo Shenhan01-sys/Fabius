@@ -2482,3 +2482,28 @@ merah supaya manusia melihat; menghentikan = `gh workflow disable paper-ledger.y
 **Belum terbukti:** rantai baru dinyalakan 2 Okt siang; bukti pertama = tick bar 2026-10-02 pada jendela 3 Okt tanpa sentuhan manusia. Kalau gagal, harinya tercatat `gap` (terlihat).
 
 **Terkait:** F-D75 · F-D77 · `.github/workflows/wallet-flow.yml` (pola asal) · [[09-Inbox/Session-2026-10-02]] §15
+
+## F-D79 — M3 dimulai: LockRegistry + SignalAnchor v2 ditulis dan diuji lokal; deploy dan penanda tangan komit harian menunggu builder · 2 Okt 2026
+
+Builder: *"Gas lanjut"*. Urutan M3 di [[08-Backlog/06 - Epik Gerbang Sinyal]] §3: C-A (`LockRegistry`) dan C-B (`SignalAnchor` v2) lebih dulu - dua kontrak kecil, satu-satunya yang dibutuhkan tingkat 0.
+
+1. **`contracts/LockRegistry.sol` (C-A).** Satu kunci per (pengunci, botId, specSha), ditulis sekali; `lockedAt` = waktu blok; nilai nol ditolak. Kunci milik ALAMAT yang mengunci: orang lain bisa mengunci botId yang sama,
+   tetapi itu id lain dengan jam lain - tidak ada yang bisa mendahului lalu mengklaim jam kunci kami.
+2. **`contracts/SignalAnchor.sol` (C-B).** Komit akar Merkle per bot per bar (skema daun = `engine/sinyal.py`). Aturan yang ditegakkan kontrak: (a) hanya untuk spesifikasi yang sudah dikunci PENGIRIM, dan kuncinya
+   tidak lebih baru dari bar; (b) tidak untuk bar yang belum tertutup; (c) hanya dalam **12 jam** sesudah penutupan (sama dengan guard ledger) - yang terlambat ditolak; (d) satu komit per bar, akar nol hanya untuk
+   "bot diam"; (e) pengungkapan diverifikasi terhadap akar (OpenZeppelin `MerkleProof`), daun yang sama tidak dihitung dua kali, dan `n` yang dikecilkan tidak bisa menyembunyikan daun; (f) sesudah **7 hari**,
+   komit yang tidak diungkap penuh boleh ditandai TIDAK-DIUNGKAP oleh siapa pun, permanen.
+3. **Kecocokan dengan engine dibuktikan, bukan diasumsikan.** `tools/gen_signal_vectors.py` membuat vektor dari `engine/sinyal.py` (`test/fixtures/signal_vectors.json`; deterministik); uji Foundry memeriksa daun dan bukti
+   kontrak = engine, termasuk bobot negatif (short) dan batch satu daun; `engine/tests/test_signal_vectors.py` gagal bila penyandian engine berubah tanpa fixture diperbarui.
+4. **Terukur:** `forge test` **63 lulus** (24 baru: `SignalAnchorTest`); Python **245 lulus**. Gas (`forge test --gas-report`, EVM lokal, median): `lock` 137.756; `commit` 189.848; `reveal` 67.807 per sinyal;
+   `markMissed` 26.690. Bytecode: LockRegistry 1.313 B, SignalAnchor 4.400 B; DecisionAnchor tetap 4.748 B (klaim lama tidak berubah). `foundry.toml`: izin BACA hanya ke `test/fixtures`.
+5. Skrip `script/DeploySignalAnchor.s.sol` ditulis; **tidak dijalankan** (mengirim transaksi).
+
+**Menunggu builder:**
+(1) **deploy ke chain 97**: dua transaksi deploy (kunci deployer), lalu `lock` untuk B1-TREND, B3-CARRY, dan kunci ambang v1 (kunci agen);
+(2) **siapa yang menandatangani komit harian.** Job GitHub sengaja tidak memegang kunci (kebijakan repo, `paper-book.yml`). Pilihan: (a) laptop builder mengirim komit tiap hari dalam jendela ±09:00-12:00Z
+(16:00-19:00 WIB) - butuh laptop menyala; (b) kunci khusus berizin sempit (hanya bisa komit untuk bot yang ia kunci sendiri, saldo kecil) sebagai rahasia Actions - mengubah kebijakan; (c) tetap cap waktu git saja
+sampai diputuskan. Saran saya: (b), dengan alasan dan risikonya ditulis sebelum dipasang;
+(3) parameter immutable maxLag 12 jam dan jendela ungkap 7 hari (mengubah = deploy baru).
+
+**Terkait:** [[08-Backlog/06 - Epik Gerbang Sinyal]] §3 · F-D75 · F-D77 · F-D78 · [[09-Inbox/Session-2026-10-02]] §16

@@ -1,0 +1,81 @@
+{
+  "_catatan": "dihasilkan tools/gen_signal_vectors.py dari engine/sinyal.py; jangan disunting tangan",
+  "satu": {
+    "asof": 1790899200,
+    "botId": "0x42332d4341525259000000000000000000000000000000000000000000000000",
+    "n": 1,
+    "root": "0x8bb390f9c49381e9b4c7aa62cef42e293806e9e9fea7638081453387a82716d8",
+    "signals": [
+      {
+        "aksi": 3,
+        "asset": "0x4554485553445400000000000000000000000000000000000000000000000000",
+        "bobotBaru": 0,
+        "bobotLama": 62500000,
+        "dataHash": "0x45d1b00296a94db0f49cad0020d3c0c3ba13d61cb83793193f2fb3e551630df1",
+        "hargaRef": 0,
+        "id": "0x0db5af098d85d4cf373e321ec2ad6f7838adce59b2ab48f53e40606cd8eaaf91",
+        "leaf": "0x8bb390f9c49381e9b4c7aa62cef42e293806e9e9fea7638081453387a82716d8",
+        "proof": [],
+        "salt": "0xe5cd3f8e0a07781fa31adf0047ac91419205aa3fcea57de969dfed885d7ea055",
+        "v": 1
+      }
+    ],
+    "specSha": "0xc528abf51585f401399ddb3279bced5adc4fd7f6dbde0aed0653e715352ef100"
+  },
+  "tiga": {
+    "asof": 1790899200,
+    "botId": "0x42332d4341525259000000000000000000000000000000000000000000000000",
+    "n": 3,
+    "root": "0x2bb1eedaad79a3633fc8f6b9b7da2f5b41bd49144d4aef3974e2adbe4b3f9338",
+    "signals": [
+      {
+        "aksi": 1,
+        "asset": "0x444f545553445400000000000000000000000000000000000000000000000000",
+        "bobotBaru": 62500000,
+        "bobotLama": 0,
+        "dataHash": "0x45d1b00296a94db0f49cad0020d3c0c3ba13d61cb83793193f2fb3e551630df1",
+        "hargaRef": 412340000,
+        "id": "0xab3da32807b7f89e3d311e6a78f2e705a007748e7de05d42ad66c7636ec8e889",
+        "leaf": "0x8cf2f558512ba63c29e650954fa57568cf63e60f8c4b6f9a1fe3542202a3f7c6",
+        "proof": [
+          "0x69563cdf736da2920f74fc098aeaba63546b3280d6d217d0a7f8eda6a209e5a7",
+          "0xff8623550dd9bf38d220678f21e818a2443a9ff41f15540ec4a6c8fc7fa76267"
+        ],
+        "salt": "0x3a0b1da4b43921ca93ef59e652776cf3f4e0dec41ea6d7f2e3f21f3a663553aa",
+        "v": 1
+      },
+      {
+        "aksi": 1,
+        "asset": "0x4554435553445400000000000000000000000000000000000000000000000000",
+        "bobotBaru": 62500000,
+        "bobotLama": 0,
+        "dataHash": "0x45d1b00296a94db0f49cad0020d3c0c3ba13d61cb83793193f2fb3e551630df1",
+        "hargaRef": 1785000000,
+        "id": "0x10b9fd899d94470cfd2222ddc86da495ca876bdd2a87cac23901e8513b3bf877",
+        "leaf": "0xff8623550dd9bf38d220678f21e818a2443a9ff41f15540ec4a6c8fc7fa76267",
+        "proof": [
+          "0x06581a2b646a3fa5aad6d65312f30abb21114a7af53fbc7f2c85ea44f984fa61"
+        ],
+        "salt": "0x7ca0cabfabe9883ff8e9a80786480240751c2d7a0aba4a8d5fc4db5a46d53d36",
+        "v": 1
+      },
+      {
+        "aksi": 2,
+        "asset": "0x4254435553445400000000000000000000000000000000000000000000000000",
+        "bobotBaru": -125000000,
+        "bobotLama": 0,
+        "dataHash": "0x45d1b00296a94db0f49cad0020d3c0c3ba13d61cb83793193f2fb3e551630df1",
+        "hargaRef": 8482960000000,
+        "id": "0xbd2ec8004351b014c167f2705f08f2dd23b9c8410dfd2403d30eb0967477d27a",
+        "leaf": "0x69563cdf736da2920f74fc098aeaba63546b3280d6d217d0a7f8eda6a209e5a7",
+        "proof": [
+          "0x8cf2f558512ba63c29e650954fa57568cf63e60f8c4b6f9a1fe3542202a3f7c6",
+          "0xff8623550dd9bf38d220678f21e818a2443a9ff41f15540ec4a6c8fc7fa76267"
+        ],
+        "salt": "0xb7fe11f9856aad4cb77e7ec4bdf785f6126c97091f07480abfa7e8312fdf6326",
+        "v": 1
+      }
+    ],
+    "specSha": "0xc528abf51585f401399ddb3279bced5adc4fd7f6dbde0aed0653e715352ef100"
+  }
+}

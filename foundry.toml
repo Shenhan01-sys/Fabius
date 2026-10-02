@@ -27,6 +27,8 @@ verbosity = 2
 # dan tetap menolak resolve lintas root) - satu proyek + `skip` justru tidak perlu mengajari
 # Foundry cara membaca direktori orang.
 skip = ["X402DemoToken", "X402SettleOnBsc"]
+# Uji SignalAnchor (M3) membaca vektor lintas bahasa yang dihasilkan engine (`tools/gen_signal_vectors.py`) - baca saja, hanya folder fixture.
+fs_permissions = [{ access = "read", path = "./test/fixtures" }]
 
 [profile.fork]
 src = "contracts"
