@@ -16,6 +16,7 @@ tags: [perkakas, "TL8"]
 - `python -X utf8 -m unittest discover -s engine/tests -t .` = 272 lulus (2 Okt malam) → 292 sesudah P88.
 - `engine/fd16.py` (P88): F-D16 pada data MAJU - `python -X utf8 -m engine.cli ledger fd16` menilai hanya ledger yang SAH (rantai + hitung ulang dari bar); parameter DIKUNCI (F-D84, `engine/locks/fd16.lock.json`; kode yang bergeser dicetak MENYIMPANG) - rincian di [[08-Backlog/07 - Epik Kolaborasi Bot Terbuka]] §11.
 - `engine/forward.py` (P85): skor maju 90 hari kalender + statistik berpasangan (hari yang sama) dari settle final - bahan `slots.decide`; `python -X utf8 -m engine.cli ledger skor` (hanya ledger SAH; hari tanpa settle = tak terukur, bukan nol).
+- `engine/book_live.py` (P87, F-D85): buku slot hidup - `python -X utf8 -m engine.cli book epoch [--write]` (gerbang penantang terhadap buku sekarang, keputusan `slots.decide_epoch`) dan `book verify` (keputusan dihitung ulang dari masukan yang tercatat).
 
 **Yang ia TOLAK lakukan:** mengintip bar besok (ada tes yang menangkapnya); mengubah `data_hash` tick lama ketika data jenis lain datang belakangan (`ledger.target_view`).
 

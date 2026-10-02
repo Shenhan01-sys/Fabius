@@ -20,6 +20,7 @@ hanya maju (aliran wallet) diperlakukan sebagai aset yang bisa hilang — karena
 - [[D6 - Funding and OI History]] — histori funding (OKX 97,7 hari · Bybit 66,3, per 8 jam) + OI
   Binance 20,8 hari per 1 jam, 5.963 baris tanpa kunci; ini yang membuat veto funding bisa diuji
 - [[D7 - Ledger Bars]] — bar harian Binance (perp + spot) + funding 16 aset untuk ledger paper; REST = Vision untuk harga dan funding (F-D83)
+- [[D8 - Buku Slot Hidup]] — siapa memegang slot paper per epoch 30 hari, keputusan dapat dihitung ulang; `book_sha` di-pin LockRegistry (F-D85)
 
 <!-- di atas: append-only oleh scripts/sync_vault.py; gloss tulisan tangan utuh -->
 ```dataview

@@ -22,7 +22,7 @@ jamnya = waktu blok.
 (`tools/m3_setup.py`). `lockCount()` = 4 (dibaca `cast`): B1-TREND + B3-CARRY oleh committer pertama (13:04Z, PENSIUN) dan oleh committer aktif
 `0xCA9c…64A4` (`lockedAt` 1790956160 / 1790956165 = 15:49:20Z / 15:49:25Z). Gas `lock` median 137.756 di EVM lokal (`forge test --gas-report`); angka chain belum dicatat.
 
-**3 Okt WIB (F-D84):** kunci kelima = parameter pemeriksa F-D16 maju (`FABIUS-FD16-MAJU-v1`, sha `0x5a47cc4b…`) lewat [[04-Tools/TL15 - lock_spec]]: `lockedAt` 2026-10-02T17:10:57Z, gas **123.050** di chain 97 (angka chain pertama untuk `lock`); `lockCount()` = 5.
+**3 Okt WIB (F-D84):** kunci kelima = parameter pemeriksa F-D16 maju (`FABIUS-FD16-MAJU-v1`, sha `0x5a47cc4b…`) lewat [[04-Tools/TL15 - lock_spec]]: `lockedAt` 2026-10-02T17:10:57Z, gas **123.050** di chain 97 (angka chain pertama untuk `lock`); `lockCount()` = 5. Kunci keenam = `book_sha` epoch 690 buku slot hidup (`FABIUS-BUKU-E690`, gas 122.954, `lockedAt` 2026-10-02T17:26:09Z, F-D85); `lockCount()` = 6.
 
 **Yang TIDAK dibuktikan:** bahwa spesifikasinya bagus atau dijalankan dengan jujur - hanya keberadaan dan urutan waktu.
 

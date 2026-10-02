@@ -46,6 +46,14 @@
   },
   "maxLag_s": 43200,
   "pins": {
+   "FABIUS-BUKU-E690": {
+    "file": "ledger/book/buku.jsonl",
+    "lockedAt": 1790961969,
+    "lockedAt_utc": "2026-10-02T17:26:09Z",
+    "sha": "0xfe37d7595644fd7e23fc5cd2c9aa659db1b66e316069c7414dd478e231f6e05c",
+    "tx": "0x2d6b96726f66e6e73c1c202bc15ea6dcb637690b6e30c90d85debbc694553d7f",
+    "uri": "https://github.com/Shenhan01-sys/Fabius/blob/28f7ff0b66ec5db8b9c59c9bf294ab8a8b834be6/ledger/book/buku.jsonl"
+   },
    "FABIUS-FD16-MAJU-v1": {
     "file": "engine/locks/fd16.lock.json",
     "lockedAt": 1790961057,

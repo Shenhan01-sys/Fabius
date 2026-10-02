@@ -27,6 +27,7 @@ dihapus saat audit, bukan disimpan sopan-sopanan.
 | committer SignalAnchor (aktif) | `0xCA9c7322210E9a7F7d0953c862d4Ef60cC0D64A4` | `deployments/97.json` `m3.committer`; `0xE12e…812a` pensiun (F-D82) |
 | kunci ambang peninjau v1 | sha `0xf145b70abd251b9fcf421bfb811bcf3788dade347c37b3bea331a09fedfe5f32`, anchoredAt 2026-10-02T08:17:48Z | `python -X utf8 tools/anchor_lock.py --verify` · F-D74 |
 | kunci parameter F-D16 maju | sha `0x5a47cc4b87758730b0a1898f5a626029806b287abbb730292422fe5136797a45`, di-pin LockRegistry `lockedAt` 2026-10-02T17:10:57Z (tx `0x6bf7d51201b9…`) | `python -X utf8 tools/lock_spec.py --file engine/locks/fd16.lock.json --name FABIUS-FD16-MAJU-v1 --verify` · F-D84 |
+| buku slot hidup epoch 690 | `book_sha 0xfe37d7595644fd7e23fc5cd2c9aa659db1b66e316069c7414dd478e231f6e05c`, di-pin `FABIUS-BUKU-E690` `lockedAt` 2026-10-02T17:26:09Z | `python -X utf8 tools/pin_book.py --verify` · F-D85 |
 
 ## Perintah yang paling sering dipakai
 
@@ -44,6 +45,7 @@ python -X utf8 -m engine.cli ledger verify                     # ledger paper ma
 python -X utf8 tools/verify_signals.py                          # komit sinyal di chain 97 vs ledger + bar, tanpa kunci (P106)
 python -X utf8 -m engine.cli ledger fd16                         # gerbang F-D16 pada ledger maju (P88)
 python -X utf8 -m engine.cli ledger skor                         # skor maju 90 hari + berpasangan (P85)
+python -X utf8 -m engine.cli book verify                         # buku slot hidup (P87)
 python -X utf8 -m unittest discover -s engine/tests -t .        # 272 lulus (2 Okt malam)
 ```
 

@@ -53,6 +53,7 @@ nama filenya. Itu lubang navigasi, bukan lubang data; sekarang ditutup, dan gerb
 | tick bar 2026-10-02 B1 + B3 tanpa tangan manusia | 3 Okt 08:40-12:00Z | commit runner `paper-ledger`; `engine.cli ledger verify` SAH | P93 |
 | komit + ungkap pertama di SignalAnchor | ±5 menit sesudah tick itu | `commitCount()` 0 -> 2; log worker `terkirim: 2 komit` | P94 |
 | vonis publik pertama atas komit itu | sesudah komit | `python -X utf8 tools/verify_signals.py` -> SAH untuk B1 + B3 bar 2026-10-02, ALARM 0 | P106 |
+| epoch buku 691 (keputusan slot berikutnya) | mulai 4 Okt 00:00Z | `python -X utf8 -m engine.cli book epoch --write` lalu `tools/pin_book.py --send` | P87/P108 |
 | jeda terbit REST sesudah 00:00Z | 3 Okt 00:00-00:10Z (+30/+60 menit) | detik pertama bar + funding 00:00Z terlihat di REST; VONIS finalitas | P98 - job `fabius-probe` terpasang 16:27Z |
 
 **Riwayat (29 Sep, sudah divonis):**

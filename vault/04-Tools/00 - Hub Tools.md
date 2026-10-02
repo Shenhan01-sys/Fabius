@@ -27,6 +27,7 @@ berbahaya dari alat yang gagal keras.
 - [[TL13 - rest_vs_vision]] — uji kesamaan REST Binance vs `ledger/bars` dari Singapura (job `fabius-probe`)
 - [[TL14 - verify_signals]] — pemeriksa PUBLIK: komit + ungkap di chain vs ledger + bar repo, tanpa kunci; vonis SAH/ALARM per bot per bar
 - [[TL15 - lock_spec]] — pin berkas kunci ke LockRegistry (jam = waktu blok); dipakai untuk kunci F-D16 maju (F-D84)
+- [[TL16 - pin_book]] — pin `book_sha` epoch buku slot hidup ke LockRegistry (F-D85)
 
 <!-- di atas: append-only oleh scripts/sync_vault.py; gloss tulisan tangan utuh -->
 ```dataview

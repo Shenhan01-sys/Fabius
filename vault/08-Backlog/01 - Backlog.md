@@ -12,7 +12,7 @@ tags: [backlog, hub]
 ## Arah operator (sejak 2 Okt 2026) - indeks status
 
 Legenda: ✅ selesai (dengan bukti) · 🟡 sebagian · ⏳ menunggu waktu / bukti otomatis · ⬜ belum · 🟠 menunggu kata builder · 🚫 terhalang dari luar.
-Rincian tiap item ada di rumahnya (kolom terakhir); angka di sini dicetak oleh perintah yang disebut di rumah itu. Tes Python sesudah P98: `python -X utf8 -m unittest discover -s engine/tests -t .` = **277 lulus**; sesudah P106 = **285 lulus**; sesudah P88 = **292 lulus**; sesudah F-D84 = **294 lulus**; sesudah P85 = **300 lulus**.
+Rincian tiap item ada di rumahnya (kolom terakhir); angka di sini dicetak oleh perintah yang disebut di rumah itu. Tes Python sesudah P98: `python -X utf8 -m unittest discover -s engine/tests -t .` = **277 lulus**; sesudah P106 = **285 lulus**; sesudah P88 = **292 lulus**; sesudah F-D84 = **294 lulus**; sesudah P85 = **300 lulus**; sesudah P87 = **306 lulus**.
 
 | # | pekerjaan | status (2 Okt malam WIB) | rumah / bukti |
 |---|---|---|---|
@@ -35,7 +35,7 @@ Rincian tiap item ada di rumahnya (kolom terakhir); angka di sini dicetak oleh p
 | P84 | jalur `method_pr` | ⬜ ditutup sampai ada keperluan | §11 |
 | P85 | ledger shadow maju per bot + skor bergulir + statistik berpasangan | ✅ ledger maju hidup (P77); kepala ledger dikomit per tick lewat SignalAnchor (P94); **skor bergulir + statistik berpasangan dari ledger dibangun** (`engine/forward.py`, `python -X utf8 -m engine.cli ledger skor`, 6 tes; masuk `slots.decide` lewat `challenger_fields`); ⏳ data: 0 settle = skor tak terukur; yang memanggilnya tiap epoch = P87 | §11 · [[04-Tools/TL8 - engine]] |
 | P86 | kunci `GateParams`/`KpiParams`/`SlotParams` v1 | ✅ sementara (F-D73), ter-anchor 2026-10-02T08:17:48Z (F-D74) | §11 · [[04-Tools/TL10 - kunci dan anchor kunci]] |
-| P87 | orkestrator buku hidup | ⬜ | §11 |
+| P87 | orkestrator buku hidup | ✅ `ledger/book/buku.jsonl` + `engine.cli book epoch|verify` (6 tes); epoch 690 tercatat (B3 LOLOS_SHADOW, REJECT: shadow 0 hari < 60) dan `book_sha` di-pin LockRegistry 2026-10-02T17:26:09Z; 🟡 pembunuh teks (P107), jadwal manual (P108) | F-D85 · [[03-Data/D8 - Buku Slot Hidup]] |
 | P88 | pemeriksa F-D16 pada data maju | ✅ pemeriksa dibangun (`engine/fd16.py`, `python -X utf8 -m engine.cli ledger fd16`, 7 tes); ✅ parameter **DIKUNCI** (F-D84, sha `0x5a47cc4b…`, di-pin LockRegistry 2026-10-02T17:10:57Z) sebelum settle maju pertama; ⏳ data 2 Okt: B1 0/20 sinyal, B3 2/20, 0 settle = BELUM CUKUP DATA | [[07 - Epik Kolaborasi Bot Terbuka]] §11 · [[04-Tools/TL8 - engine]] |
 | P89 | G5/G8 + `NULL_KIND`/`PHASE_VARIANTS` eksplisit | ⬜ | §11 |
 | P90 | riset optimasi ambang R1-R11 | 🟠 anggaran A1/A2 belum diputuskan | [[08 - Riset Optimasi Ambang]] |
@@ -54,6 +54,8 @@ Rincian tiap item ada di rumahnya (kolom terakhir); angka di sini dicetak oleh p
 | P103 | cadangan `.committer.env` di luar laptop | 🟠 builder | F-D80 |
 | P104 | pecah berkas perekam per hari (hanya bila wallet-flow dinyalakan lagi) | ⬜ bila diperlukan | F-D81 #6 |
 | P105 | temuan audit 1-2 Okt yang belum punya item: (a) `confidence` model bisa menaikkan `risk_pct` (`tools/direction.py` ±239-253); (b) "net-of-cost" E16/E25 = return − ½ spread masuk, bukan 59 bps (`tools/book_prereg.py` ±254); (c) BH `tools/flow_test.py` hampa (`sign_p` = 1,0 pada kondisi itu); (d) 60/62 snapshot (P6) = urutan kunci JSON `gdelt.cols_seen` (int vs str); (e) README + `docs/agent-card.json` basi | ⬜ diverifikasi sesi 1-2 Okt; cek ulang sebelum diperbaiki; koreksi ditampilkan, hash lama tidak ditulis ulang | memori sesi audit 1-2 Okt; P6 |
+| P107 | pembunuh B1/B3 dalam bentuk TERSTRUKTUR (metrik, jendela sinyal, ambang) yang dikunci terpisah dari spesifikasi | ⬜ menerjemahkan teks = keputusan; usulan dulu, kunci atas kata builder | F-D85 #5 |
+| P108 | jadwal epoch buku bulanan + pin `book_sha` otomatis (epoch 691 mulai 2026-10-04T00:00Z) | ⬜ sekarang manual | F-D85 #5 |
 | P106 | alat verifikasi publik komit ↔ ledger (baca komit + event `Revealed`, cocokkan dengan ledger + bar, tanpa kunci) | ✅ alat + 8 tes (anvil: SAH); run chain 97 2 Okt 16:50Z = 0 komit, 0 ALARM; ⏳ vonis SAH sungguhan pertama sesudah komit bar 2026-10-02 (P94) | [[04-Tools/TL14 - verify_signals]] · [[02-Contracts/C7 - SignalAnchor]] |
 
 

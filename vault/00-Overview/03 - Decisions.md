@@ -2657,3 +2657,23 @@ Builder: *"Gasss"* - dibaca sebagai setuju (dan lanjut P85). Bila maksudnya lain
    Dicatat di `deployments/97.json` `m3.pins`.
 
 **Terkait:** F-D16 · F-D74 · F-D79 · [[08-Backlog/07 - Epik Kolaborasi Bot Terbuka]] §11 (P88) · [[09-Inbox/Session-2026-10-02]] §24
+
+## F-D85 — Buku slot HIDUP: berkas append-only berantai hash, satu catatan per epoch, `book_sha` tiap epoch di-pin ke LockRegistry · 3 Okt 2026 (WIB)
+
+Saran yang dijawab (P87): (1) keadaan buku disimpan sebagai berkas append-only berantai hash seperti ledger; (2) `book_sha` tiap epoch dicatat di chain lewat
+LockRegistry. Builder: *"Gas, pakai opsi B"* - dibaca sebagai: kerjakan oleh asisten, dengan dua saran itu (tafsir ditulis supaya bisa dikoreksi).
+
+1. **Berkas:** `ledger/book/buku.jsonl` - `genesis` (buku awal = bot identitas B1-TREND, F-D73; sha kunci v1) lalu satu `epoch` per `SlotParams.epoch_days` (30
+   hari; epoch 690 = 2026-09-04..2026-10-04Z, epoch 691 mulai 2026-10-04T00:00Z). Tiap epoch menyimpan SEMUA masukan keputusan (skor maju penghuni dari P85,
+   penantang: shadow + berpasangan + vonis gerbang terhadap buku SEKARANG + `report_sha`, status pembunuh) lalu keputusan `slots.decide_epoch`, buku hasil, `book_sha`.
+   Laporan gerbang lengkap di `ledger/book/laporan/<report_sha>.json`.
+2. **Pemeriksa:** `engine.cli book verify` - rantai hash, epoch naik, kesinambungan buku, dan keputusan tiap epoch DIHITUNG ULANG dari masukannya sendiri
+   (tanpa data pasar, tanpa jaringan). Uji: keputusan yang dipalsukan lalu di-seal ulang tetap ketahuan.
+3. **Epoch pertama (690, 2026-10-02T17:22:43Z):** gerbang B3-CARRY terhadap buku {B1-TREND} = **LOLOS_SHADOW** (G11 tak terukur, satu-satunya yang boleh), 6 detik,
+   laporan `0xd605ce002017…`; keputusan **REJECT**: "shadow maju baru 0 hari < 60". Buku tetap B1 saja; `book_sha` `0xfe37d7595644fd7e…`. Pembunuh B1 = TEKS (dinilai manusia).
+4. **Di chain:** `tools/pin_book.py --send` -> `LockRegistry.lock("FABIUS-BUKU-E690", book_sha)` oleh committer: tx `0x2d6b96726f66…`, blok 134477804, gas 122.954,
+   `lockedAt` 2026-10-02T17:26:09Z; uri ke commit `28f7ff0` (di-push lebih dulu). `lockCount()` 5 -> 6. Dicatat di `deployments/97.json` `m3.pins`.
+5. **Yang dibuka:** P107 - pembunuh B1/B3 masih TEKS di spesifikasi (mengubahnya = spesifikasi baru), perlu bentuk terstruktur yang dikunci terpisah; P108 - jadwal
+   epoch bulanan + pin otomatis (sekarang manual; epoch 691 bisa dicatat mulai 4 Okt 00:00Z).
+
+**Terkait:** F-D71 · F-D73 · F-D84 · [[08-Backlog/07 - Epik Kolaborasi Bot Terbuka]] §11 (P87) · [[03-Data/D8 - Buku Slot Hidup]] · [[09-Inbox/Session-2026-10-02]] §26

@@ -2,7 +2,7 @@
 tags: [generated]
 ---
 
-_Auto-Index — 6 halaman · 2026-10-02T17:12Z · dari `vault/scripts/sync_vault.py`_
+_Auto-Index — 6 halaman · 2026-10-02T17:27Z · dari `vault/scripts/sync_vault.py`_
 
 ### 00-Overview (8)
 - [[00-Overview/00 - Hub Overview]]
@@ -31,7 +31,7 @@ _Auto-Index — 6 halaman · 2026-10-02T17:12Z · dari `vault/scripts/sync_vault
 - [[02-Contracts/01 - DecisionAnchor]]
 - [[02-Contracts/02 - Deployed on 97]]
 
-### 03-Data (8)
+### 03-Data (9)
 - [[03-Data/00 - Hub Data]]
 - [[03-Data/D2 - Wallet Flow]]
 - [[03-Data/D3 - Price Depth]]
@@ -39,9 +39,10 @@ _Auto-Index — 6 halaman · 2026-10-02T17:12Z · dari `vault/scripts/sync_vault
 - [[03-Data/D5 - Record Schemas]]
 - [[03-Data/D6 - Funding and OI History]]
 - [[03-Data/D7 - Ledger Bars]]
+- [[03-Data/D8 - Buku Slot Hidup]]
 - [[03-Data/01 - Dataset]]
 
-### 04-Tools (16)
+### 04-Tools (17)
 - [[04-Tools/00 - Hub Tools]]
 - [[04-Tools/TL1 - judge]]
 - [[04-Tools/TL10 - kunci dan anchor kunci]]
@@ -50,6 +51,7 @@ _Auto-Index — 6 halaman · 2026-10-02T17:12Z · dari `vault/scripts/sync_vault
 - [[04-Tools/TL13 - rest_vs_vision]]
 - [[04-Tools/TL14 - verify_signals]]
 - [[04-Tools/TL15 - lock_spec]]
+- [[04-Tools/TL16 - pin_book]]
 - [[04-Tools/TL2 - direction]]
 - [[04-Tools/TL3 - security_gate]]
 - [[04-Tools/TL4 - anchor and verify]]

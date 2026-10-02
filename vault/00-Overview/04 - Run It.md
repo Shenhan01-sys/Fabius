@@ -45,6 +45,8 @@ python -X utf8 -m engine.cli ledger verify          # hitung ulang tiap tick/set
 python -X utf8 -m engine.cli ledger report
 python -X utf8 -m engine.cli ledger fd16            # F-D16 pada data maju (P88): LOLOS / BELUM CUKUP DATA / TIDAK LOLOS
 python -X utf8 -m engine.cli ledger skor            # skor maju + berpasangan (P85) - bahan keputusan slot
+python -X utf8 -m engine.cli book verify            # buku slot hidup: rantai + keputusan dihitung ulang (P87); `book epoch --write` = penulis
+python -X utf8 tools/pin_book.py --verify           # book_sha epoch terakhir di LockRegistry
 python -X utf8 tools/lock_spec.py --file engine/locks/fd16.lock.json --name FABIUS-FD16-MAJU-v1 --verify   # kunci F-D16 maju di chain (F-D84)
 python -X utf8 tools/paper_tick.py --dry-run         # rencana tick tanpa menulis
 gh run list --workflow paper-ledger.yml --limit 5    # rantai GitHub = penulis TUNGGAL ledger (F-D78)
