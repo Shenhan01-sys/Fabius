@@ -2507,3 +2507,49 @@ sampai diputuskan. Saran saya: (b), dengan alasan dan risikonya ditulis sebelum 
 (3) parameter immutable maxLag 12 jam dan jendela ungkap 7 hari (mengubah = deploy baru).
 
 **Terkait:** [[08-Backlog/06 - Epik Gerbang Sinyal]] §3 · F-D75 · F-D77 · F-D78 · [[09-Inbox/Session-2026-10-02]] §16
+
+## F-D80 — Mesin 24/7 di Railway, tahap 1 = penanda tangan komit on-chain; deploy SC = satu alat yang dijalankan builder · 2 Okt 2026
+
+Builder: *"Apa mau di deploy ke railway agar enginenya jalan 24/7? Pakai railway cli saya aja dan bikin project baru nanti tinggal di sync ke repo. Lalu untuk
+deploy SC mah tinggal pakai deployer lencana, itu ada tesnet tBNB di wallet deployer lencana"*.
+
+1. **Yang diputuskan builder:** mesin jalan terus di Railway (proyek baru lewat CLI builder); deploy SC memakai deployer Lencana. Ini sekaligus menjawab F-D79 (2)
+   "siapa penanda tangan komit harian": server Railway dengan kunci committer khusus. Parameter maxLag 12 jam / jendela ungkap 7 hari tidak dikomentari -> bawaan dipakai.
+2. **Yang TIDAK dilakukan sesi ini:** membaca `../app/.env`. Pemeriksa otomatis sesi menolak percobaan asisten membaca nama variabel di berkas itu
+   ("Credential Exploration"); penolakan dihormati, tidak dicari jalan memutar. Karena itu deploy dikemas sebagai alat yang DIJALANKAN BUILDER, di mesinnya:
+   `tools/m3_setup.py` (bawaan rencana; `--go` menjalankan; idempoten). Alat itu membaca SATU variabel dari berkas yang builder tunjuk dan tidak mencetaknya.
+3. **Tahap 1 sengaja sempit.** Ledger tetap ditulis rantai GitHub (F-D78, penulis tunggal). Worker Railway (`tools/operator_loop.py` -> `tools/signal_commit.py`)
+   hanya MEMBACA ledger yang di-commit, menghitung ulang sinyal tiap tick dari bar yang di-commit (menolak bila target/data_hash/id sinyal beda), mengomit akar
+   Merkle dalam batas 12 jam, lalu mengungkap tiap sinyal. Akar on-chain yang beda dari ledger = ALARM, tidak pernah ditimpa; yang lewat batas = TERLEWAT, tidak
+   dipaksa. Dua penulis ledger = rantai hash bertabrakan, jadi memindahkan penulis ledger ke Railway adalah tahap 2 dengan kata builder sendiri.
+4. **Kunci committer = kunci BARU khusus**, bukan deployer Lencana (bila bocor, kontrak Lencana ikut terancam) dan bukan kunci agen Fabius (identitas DecisionAnchor).
+   Risiko ditulis sebelum dipasang: bila bocor, orang bisa mengisi slot bar lebih dulu (rekam jejak rusak) dan saldo kecilnya (0,05 tBNB) hilang; ia tidak bisa
+   menyentuh DecisionAnchor, ExecutionVault, atau kontrak Lencana. Salt per sinyal = HMAC dari kunci itu (domain terpisah): tanpa penyimpanan, tetapi mengganti kunci
+   = ungkap dulu semua komit yang masih terbuka. Fase paper: ungkap segera sesudah komit (`REVEAL_DELAY_S=0`) - ledger toh sudah publik.
+5. **Terukur hari ini:** Python **263 lulus** (18 baru di `engine/tests/test_signal_commit.py`, termasuk jalur penuh di anvil: deploy -> lock -> lompat ke 10 jam
+   sesudah penutupan -> 2 komit + 2 ungkap lewat kode worker -> putaran kedua tidak mengirim apa pun; selector = ABI hasil kompilasi). Gladi `m3_setup.py` di SALINAN
+   repo + anvil chain-id 97 (RPC dipaku, kunci uji publik): rencana -> `--go` (deploy, baca ulang kode/immutable cocok, committer baru, saldo 0,05, dua `lock`) ->
+   `--go` lagi (semua langkah dilewati); `deployments/97.json` hanya bertambah (kunci lama utuh). Dua `lock` di anvil: saldo committer 0,050000 -> 0,049569 tBNB pada 2 gwei.
+6. **Railway:** proyek `fabius-engine`, service `fabius-engine`, region Singapura (`asia-southeast1-eqsg3a`), 1 replika, mode RENCANA (belum ada kunci): log
+   12:35Z "menunggu deploy: SignalAnchor/LockRegistry belum ada di deployments/97.json". Sebelum itu tiga deploy GAGAL (satu `railway up` + dua redeploy otomatis
+   dari `service scale`), dan dua kesalahan konfigurasi, dicatat apa adanya: (a) `railway.json` DIABAIKAN
+   (builder tetap Railpack -> "Railpack could not determine how to build the app"; config-as-code juga deprecated, berlaku sampai 2026-12-01) -> berkas itu dihapus
+   dari repo, Dockerfile ditunjuk lewat variabel `RAILWAY_DOCKERFILE_PATH`; `railway environment edit` untuk builder/restart menjawab "No changes to apply", jadi
+   kebijakan restart masih bawaan ON_FAILURE (10 kali), bukan ALWAYS. (b) `service scale southeast-asia=1 us-west=0` meninggalkan region `sfo` = 1 -> DUA replika =
+   dua penanda tangan; diperbaiki `sfo=0` sebelum kunci apa pun dipasang. Deploy kode lewat `tools/railway_up.py` (`git archive HEAD`): berkas yang tidak di-commit
+   (kunci) tidak mungkin ikut terunggah.
+7. **Temuan region** (log worker 12:35Z): dari Railway Singapura `fapi.binance.com` **HTTP 200**, `api.binance.com` 200, Vision 200. Pembanding: runner GitHub (AS)
+   HTTP 451; laptop builder TLS "hostname mismatch" (penyaringan jaringan). Artinya tahap 3 - bar REST segera sesudah penutupan (tick dalam menit, bukan ~9 jam;
+   funding final tanpa menunggu zip bulanan) - MUNGKIN dari Railway. Belum diuji: kesamaan bar REST dengan bar Vision yang dipakai replay.
+8. **Belum disambung ke GitHub** ("sync ke repo"): master menerima commit bot tiap ±4 menit; tanpa watch paths setiap commit = redeploy worker. Pasang watch paths
+   dulu (dashboard service -> Settings), baru `railway service source connect --repo Shenhan01-sys/Fabius --branch master --service fabius-engine`.
+
+**Menunggu builder** - sekali, sebelum **3 Okt 00:00Z (07:00 WIB)** supaya bar 2 Okt sudah bisa dikomit (kontrak menolak kunci yang lebih baru dari bar):
+```
+python -X utf8 tools/m3_setup.py --deployer-env ../app/.env                # rencana: alamat + saldo deployer, langkah
+python -X utf8 tools/m3_setup.py --deployer-env ../app/.env --go           # deploy + committer + saldo + lock B1/B3
+python -X utf8 tools/m3_setup.py --railway-service fabius-engine --go      # kunci + alamat -> variabel Railway (worker redeploy)
+```
+lalu `deployments/97.json` di-commit + push (alamat publik). Nama variabel kunci di berkas itu bukan `DEPLOYER_PRIVATE_KEY`? tambahkan `--deployer-var NAMA`.
+
+**Terkait:** F-D78 · F-D79 · [[08-Backlog/06 - Epik Gerbang Sinyal]] §3 · [[09-Inbox/Session-2026-10-02]] §17
