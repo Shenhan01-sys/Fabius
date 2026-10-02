@@ -322,7 +322,12 @@ def _ledger_fd16(files, view) -> int:
             print(f"{name}: ledger TIDAK SAH - tidak dinilai ({(probs or ['bot tidak dikenal'])[0]})")
             continue
         ok[spec.bot_id] = recs
-    print(f"F-D16 MAJU (parameter USULAN 2 Okt, ditulis sebelum settle maju pertama): sinyal >= {p.n_sinyal_min}, hari >= {p.hari_min}, bulan >= {p.bulan_min}, "
+    st = fd16.status(p)
+    label = {"TERKUNCI": f"parameter TERKUNCI sha {str(st['sha_kunci'])[:18]}… (dikunci {st['dikunci']}, F-D84)",
+             "BELUM_DIKUNCI": "parameter USULAN (belum dikunci)",
+             "MENYIMPANG": f"PERINGATAN: parameter kode MENYIMPANG dari kunci {str(st['sha_kunci'])[:18]}… - vonis di bawah TIDAK mengikat",
+             "RUSAK": "PERINGATAN: berkas kunci F-D16 RUSAK - vonis di bawah TIDAK mengikat"}[st["state"]]
+    print(f"F-D16 MAJU ({label}): sinyal >= {p.n_sinyal_min}, hari >= {p.hari_min}, bulan >= {p.bulan_min}, "
           f"CI {int(p.ci_level * 100)} % bootstrap blok {p.blok_hari} hari x {p.boot_n}, buang bulan terbaik, BH alpha {p.alpha_bh} lintas {len(ok)} bot")
     res = fd16.check(ok, p)
     for r in res:

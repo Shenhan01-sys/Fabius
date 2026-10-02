@@ -71,5 +71,22 @@ class Fd16Tests(unittest.TestCase):
         self.assertEqual(fd16.bh_reject({"a": 0.2, "b": 0.3}, 0.10), {"a": False, "b": False})
 
 
+class LockTests(unittest.TestCase):
+    def test_repo_lock_matches_code(self):
+        """Kunci F-D84 di repo = parameter kode sekarang; mengubah satu angka di kode tanpa kunci v2 = MENYIMPANG (tes ini merah)."""
+        self.assertEqual(fd16.status()["state"], "TERKUNCI")
+
+    def test_drift_detected_and_overwrite_refused(self):
+        import os
+        import tempfile
+        p = os.path.join(tempfile.mkdtemp(), "fd16.lock.json")
+        self.assertEqual(fd16.status(path=p)["state"], "BELUM_DIKUNCI")
+        fd16.write_lock("uji", now_iso="2026-01-01T00:00:00Z", path=p)
+        self.assertEqual(fd16.status(path=p)["state"], "TERKUNCI")
+        self.assertEqual(fd16.status(fd16.Fd16Params(n_sinyal_min=19), path=p)["state"], "MENYIMPANG")
+        with self.assertRaises(FileExistsError):
+            fd16.write_lock("lagi", path=p)
+
+
 if __name__ == "__main__":
     unittest.main()

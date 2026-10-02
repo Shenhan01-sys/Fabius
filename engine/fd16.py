@@ -8,17 +8,26 @@ Dijalankan atas ledger paper maju per bot (`ledger/paper/<bot>.jsonl`), HANYA me
   S5 BH       p satu sisi (bootstrap terpusat) lolos Benjamini-Hochberg alpha 0,10 LINTAS semua bot yang punya p
 Vonis per bot: LOLOS (S1-S5 semua) · BELUM CUKUP DATA (S1 gagal, < 20 hari settle, atau < 2 bulan) · TIDAK LOLOS (data cukup, ada syarat yang gagal).
 
-Parameter di atas = USULAN 2 Okt 2026, ditulis SEBELUM settle maju pertama ada (anti-snooping): mengubahnya sesudah melihat data adalah keputusan baru yang
-dicatat, bukan penyetelan diam-diam. Batas: "ongkos nyata di ukuran itu" di sini = penggaris spesifikasi (fee per sisi); spread dan dampak belum dimodelkan
+Parameter di atas ditulis 2 Okt 2026 SEBELUM settle maju pertama ada (anti-snooping) dan DIKUNCI 3 Okt atas kata builder (F-D84, `engine/locks/fd16.lock.json`):
+mengubahnya sesudah melihat data adalah keputusan baru + kunci v2 yang dicatat, bukan penyetelan diam-diam; `status()` menandai MENYIMPANG bila kode bergeser. Batas: "ongkos nyata di ukuran itu" di sini = penggaris spesifikasi (fee per sisi); spread dan dampak belum dimodelkan
 (P69), dan paper bukan fill. Fungsi murni: tidak membaca berkas, jaringan, atau jam; pemanggil (`engine.cli ledger fd16`) memverifikasi ledger lebih dulu.
 """
 from __future__ import annotations
 
+import dataclasses
 import datetime as dt
+import json
 import math
+import os
 import random
 from dataclasses import dataclass, field
-from typing import Dict, List, Optional, Sequence, Tuple
+from typing import Any, Dict, List, Optional, Sequence, Tuple
+
+from .locks import LOCK_DIR
+from .spec import sha0x
+
+LOCK_FILE = os.path.join(LOCK_DIR, "fd16.lock.json")
+LOCK_V = 1
 
 
 @dataclass(frozen=True)
@@ -152,6 +161,44 @@ def check(ledgers: Dict[str, Sequence[dict]], p: Fd16Params = Fd16Params()) -> L
             if r.vonis == "LOLOS":
                 r.vonis = "TIDAK LOLOS"
     return res
+
+
+# ---------------------------------------------------------------- kunci parameter (pola engine/locks.py; dipasang 3 Okt atas kata builder, F-D84)
+
+def current_params(p: Fd16Params = Fd16Params()) -> Dict[str, Any]:
+    return {"v": LOCK_V, "fd16_maju": dataclasses.asdict(p)}
+
+
+def status(p: Fd16Params = Fd16Params(), path: str = LOCK_FILE) -> Dict[str, Any]:
+    """{'state': BELUM_DIKUNCI | TERKUNCI | MENYIMPANG | RUSAK, 'sha_kini', 'sha_kunci', 'dikunci'}. MENYIMPANG = angka di kode berubah sesudah kunci."""
+    now_sha = sha0x(current_params(p))
+    if not os.path.exists(path):
+        return {"state": "BELUM_DIKUNCI", "sha_kini": now_sha, "sha_kunci": None, "dikunci": None}
+    try:
+        with open(path, encoding="utf-8") as f:
+            lock = json.load(f)
+        stored = lock["sha"]
+        if sha0x(lock["params"]) != stored:
+            return {"state": "RUSAK", "sha_kini": now_sha, "sha_kunci": stored, "dikunci": lock.get("dikunci")}
+    except (OSError, ValueError, KeyError, TypeError):
+        return {"state": "RUSAK", "sha_kini": now_sha, "sha_kunci": None, "dikunci": None}
+    return {"state": "TERKUNCI" if stored == now_sha else "MENYIMPANG", "sha_kini": now_sha, "sha_kunci": stored, "dikunci": lock.get("dikunci")}
+
+
+def write_lock(note: str, now_iso: Optional[str] = None, p: Fd16Params = Fd16Params(), path: str = LOCK_FILE) -> Dict[str, Any]:
+    """Tulis kunci dari parameter kode SEKARANG. Menolak menimpa: mengubah angka = kunci v2 lewat keputusan baru (kunci lama dipindah, bukan dihapus)."""
+    if not note or not note.strip():
+        raise ValueError("catatan wajib (siapa yang menyetujui dan kapan)")
+    if os.path.exists(path):
+        raise FileExistsError("kunci F-D16 maju sudah ada: angka baru = keputusan baru + kunci v2, bukan timpa")
+    params = current_params(p)
+    lock = {"v": LOCK_V, "sha": sha0x(params), "params": params,
+            "dikunci": now_iso or dt.datetime.now(dt.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"), "catatan": note.strip()}
+    os.makedirs(os.path.dirname(path), exist_ok=True)
+    with open(path, "w", encoding="utf-8", newline="\n") as f:
+        json.dump(lock, f, indent=2, sort_keys=True, ensure_ascii=False)
+        f.write("\n")
+    return lock
 
 
 def fmt(r: Fd16Result, p: Fd16Params = Fd16Params()) -> str:

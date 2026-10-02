@@ -1,0 +1,18 @@
+{
+  "catatan": "Builder 3 Okt 2026: \"Gasss\" atas saran \"setujui dan kunci sekarang\" untuk parameter F-D16 maju (P88), yang ditulis 2 Okt SEBELUM settle maju pertama ada. Mengubah satu angka = keputusan baru + kunci v2, bukan timpa.",
+  "dikunci": "2026-10-02T17:07:59Z",
+  "params": {
+    "fd16_maju": {
+      "alpha_bh": 0.1,
+      "blok_hari": 5,
+      "boot_n": 10000,
+      "bulan_min": 2,
+      "ci_level": 0.95,
+      "hari_min": 20,
+      "n_sinyal_min": 20
+    },
+    "v": 1
+  },
+  "sha": "0x5a47cc4b87758730b0a1898f5a626029806b287abbb730292422fe5136797a45",
+  "v": 1
+}
