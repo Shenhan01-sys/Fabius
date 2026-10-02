@@ -12,7 +12,7 @@ tags: [backlog, hub]
 ## Arah operator (sejak 2 Okt 2026) - indeks status
 
 Legenda: ✅ selesai (dengan bukti) · 🟡 sebagian · ⏳ menunggu waktu / bukti otomatis · ⬜ belum · 🟠 menunggu kata builder · 🚫 terhalang dari luar.
-Rincian tiap item ada di rumahnya (kolom terakhir); angka di sini dicetak oleh perintah yang disebut di rumah itu. Tes Python sesudah P98: `python -X utf8 -m unittest discover -s engine/tests -t .` = **277 lulus**.
+Rincian tiap item ada di rumahnya (kolom terakhir); angka di sini dicetak oleh perintah yang disebut di rumah itu. Tes Python sesudah P98: `python -X utf8 -m unittest discover -s engine/tests -t .` = **277 lulus**; sesudah P106 = **285 lulus**.
 
 | # | pekerjaan | status (2 Okt malam WIB) | rumah / bukti |
 |---|---|---|---|
@@ -54,7 +54,7 @@ Rincian tiap item ada di rumahnya (kolom terakhir); angka di sini dicetak oleh p
 | P103 | cadangan `.committer.env` di luar laptop | 🟠 builder | F-D80 |
 | P104 | pecah berkas perekam per hari (hanya bila wallet-flow dinyalakan lagi) | ⬜ bila diperlukan | F-D81 #6 |
 | P105 | temuan audit 1-2 Okt yang belum punya item: (a) `confidence` model bisa menaikkan `risk_pct` (`tools/direction.py` ±239-253); (b) "net-of-cost" E16/E25 = return − ½ spread masuk, bukan 59 bps (`tools/book_prereg.py` ±254); (c) BH `tools/flow_test.py` hampa (`sign_p` = 1,0 pada kondisi itu); (d) 60/62 snapshot (P6) = urutan kunci JSON `gdelt.cols_seen` (int vs str); (e) README + `docs/agent-card.json` basi | ⬜ diverifikasi sesi 1-2 Okt; cek ulang sebelum diperbaiki; koreksi ditampilkan, hash lama tidak ditulis ulang | memori sesi audit 1-2 Okt; P6 |
-| P106 | alat verifikasi publik komit ↔ ledger (baca event `Committed`/`Revealed`, cocokkan dengan ledger + bar, tanpa kunci) | ⬜ | [[02-Contracts/C7 - SignalAnchor]] |
+| P106 | alat verifikasi publik komit ↔ ledger (baca komit + event `Revealed`, cocokkan dengan ledger + bar, tanpa kunci) | ✅ alat + 8 tes (anvil: SAH); run chain 97 2 Okt 16:50Z = 0 komit, 0 ALARM; ⏳ vonis SAH sungguhan pertama sesudah komit bar 2026-10-02 (P94) | [[04-Tools/TL14 - verify_signals]] · [[02-Contracts/C7 - SignalAnchor]] |
 
 
 | # | pekerjaan | status | yang menahan / bukti selesai |

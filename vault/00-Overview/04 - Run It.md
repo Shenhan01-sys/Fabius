@@ -49,6 +49,7 @@ gh run list --workflow paper-ledger.yml --limit 5    # rantai GitHub = penulis T
 # M3 di chain 97 - baca tanpa kunci
 cast call 0x9B78200beFbbBe836585d31bd5b6dB32587064f3 "commitCount()(uint256)" --rpc-url https://bsc-testnet.publicnode.com
 python -X utf8 tools/signal_commit.py --committer 0xCA9c7322210E9a7F7d0953c862d4Ef60cC0D64A4    # rencana komit/ungkap
+python -X utf8 tools/verify_signals.py                  # pemeriksa PUBLIK: komit + ungkap vs ledger + bar; vonis per bot per bar (P106)
 
 # Railway (butuh login CLI builder; JANGAN `railway environment config --json` / `railway variable list --json|--kv`: mencetak kunci)
 railway logs --service fabius-engine --lines 40

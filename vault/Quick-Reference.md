@@ -40,6 +40,7 @@ python -X utf8 tools/direction.py --top 5 --emit               # siklus keputusa
 python -X utf8 universe/write_universe_manifest.py             # integritas dataset (sha256 per baris)
 python -X utf8 vault/scripts/prepush_check.py                  # WAJIB sebelum push: cek atribusi
 python -X utf8 -m engine.cli ledger verify                     # ledger paper maju: hitung ulang dari ledger/bars (2 Okt)
+python -X utf8 tools/verify_signals.py                          # komit sinyal di chain 97 vs ledger + bar, tanpa kunci (P106)
 python -X utf8 -m unittest discover -s engine/tests -t .        # 272 lulus (2 Okt malam)
 ```
 

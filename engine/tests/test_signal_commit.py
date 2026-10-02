@@ -344,6 +344,19 @@ class AnvilEndToEndTests(unittest.TestCase):
         again = sc.plan(["B3-CARRY", "B1-TREND"], LEDGER, Views(BARS), cv, COMMITTER, sc.seed_from_key(DEV_PK1), self.ev.block_timestamp())
         self.assertEqual({a.kind for a in again if a.asof_date == "2026-10-01"}, {"ok"})          # idempoten: putaran kedua tidak mengirim apa pun
 
+    def test_public_verifier_reads_back_sah(self):
+        """P106: pemeriksa publik (tanpa kunci) membaca komit + event Revealed dari chain dan memvonis SAH terhadap ledger + bar repo."""
+        import verify_signals as vs
+        cv = sc.AnchorView(self.ev, self.anchor, self.registry)
+        acts = sc.plan(["B3-CARRY", "B1-TREND"], LEDGER, Views(BARS), cv, COMMITTER, sc.seed_from_key(DEV_PK1), self.ev.block_timestamp())
+        sc.execute(acts, self.ev, self.anchor, DEV_PK1, log=lambda m: None, settle_s=0)       # idempoten bila uji komit sudah jalan lebih dulu
+        commits = vs.all_commits(cv)
+        events = vs.revealed_events(self.ev, self.anchor, 0, int(self.ev.rpc("eth_blockNumber", []), 16))
+        rows, st = vs.verify(["B3-CARRY", "B1-TREND"], LEDGER, Views(BARS), cv, commits, events, COMMITTER, self.ev.block_timestamp())
+        got = {(r.bot, r.bar): r.vonis for r in rows}
+        self.assertEqual((got[("B3-CARRY", "2026-10-01")], got[("B1-TREND", "2026-10-01")]), ("SAH", "SAH"), [(r.bot, r.bar, r.vonis, r.detail) for r in rows])
+        self.assertEqual(st["ALARM"], 0)
+
     def test_contract_reverts_are_named_before_any_gas_is_spent(self):
         import evm
         bogus = sc.commit_id(COMMITTER, "B3-CARRY", SPECS["B3-CARRY"].sha(), 1)

@@ -24,6 +24,8 @@ tags: [kontrak, "C7"]
 `revealWindow()` 604800, kode 4.400 B, `commitCount()` 0. Komit pertama diharapkan untuk bar 2026-10-02 sesudah tick 3 Okt ([[08-Backlog/01 - Backlog]] P94).
 Gas di EVM lokal (`forge test --gas-report`, median): commit 189.848, reveal 67.807 per sinyal, markMissed 26.690 - angka chain menunggu transaksi nyata.
 
+**Diperiksa siapa pun:** `python -X utf8 tools/verify_signals.py` ([[04-Tools/TL14 - verify_signals]]) - tanpa kunci, membaca komit + event `Revealed`, memvonis tiap (bot, bar) terhadap ledger + bar repo.
+
 **Yang TIDAK dibuktikan:** bahwa sinyal bagus, menguntungkan, atau harga referensinya bisa didapat. PnL dihitung ulang di luar chain
 (`python -X utf8 -m engine.cli ledger verify`).
 
