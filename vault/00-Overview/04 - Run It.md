@@ -43,6 +43,7 @@ python -X utf8 -u tools/whale_sweep.py --days 90         # butuh DUNE_API_KEY
 # ledger paper maju - tanpa kunci; jaringan hanya untuk --feed
 python -X utf8 -m engine.cli ledger verify          # hitung ulang tiap tick/settle dari ledger/bars
 python -X utf8 -m engine.cli ledger report
+python -X utf8 -m engine.cli ledger fd16            # F-D16 pada data maju (P88): LOLOS / BELUM CUKUP DATA / TIDAK LOLOS
 python -X utf8 tools/paper_tick.py --dry-run         # rencana tick tanpa menulis
 gh run list --workflow paper-ledger.yml --limit 5    # rantai GitHub = penulis TUNGGAL ledger (F-D78)
 

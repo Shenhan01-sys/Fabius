@@ -12,7 +12,7 @@ tags: [backlog, hub]
 ## Arah operator (sejak 2 Okt 2026) - indeks status
 
 Legenda: ✅ selesai (dengan bukti) · 🟡 sebagian · ⏳ menunggu waktu / bukti otomatis · ⬜ belum · 🟠 menunggu kata builder · 🚫 terhalang dari luar.
-Rincian tiap item ada di rumahnya (kolom terakhir); angka di sini dicetak oleh perintah yang disebut di rumah itu. Tes Python sesudah P98: `python -X utf8 -m unittest discover -s engine/tests -t .` = **277 lulus**; sesudah P106 = **285 lulus**.
+Rincian tiap item ada di rumahnya (kolom terakhir); angka di sini dicetak oleh perintah yang disebut di rumah itu. Tes Python sesudah P98: `python -X utf8 -m unittest discover -s engine/tests -t .` = **277 lulus**; sesudah P106 = **285 lulus**; sesudah P88 = **292 lulus**.
 
 | # | pekerjaan | status (2 Okt malam WIB) | rumah / bukti |
 |---|---|---|---|
@@ -36,7 +36,7 @@ Rincian tiap item ada di rumahnya (kolom terakhir); angka di sini dicetak oleh p
 | P85 | ledger shadow maju per bot + skor bergulir + statistik berpasangan | 🟡 ledger maju hidup (P77); kepala ledger kini dikomit per tick lewat SignalAnchor (P94); skor bergulir + statistik berpasangan belum | §11 |
 | P86 | kunci `GateParams`/`KpiParams`/`SlotParams` v1 | ✅ sementara (F-D73), ter-anchor 2026-10-02T08:17:48Z (F-D74) | §11 · [[04-Tools/TL10 - kunci dan anchor kunci]] |
 | P87 | orkestrator buku hidup | ⬜ | §11 |
-| P88 | pemeriksa F-D16 pada data maju | ⬜ (data maju baru 1 tick per bot) | §11 |
+| P88 | pemeriksa F-D16 pada data maju | ✅ pemeriksa dibangun (`engine/fd16.py`, `python -X utf8 -m engine.cli ledger fd16`, 7 tes); 🟠 parameter = USULAN (ditulis sebelum settle maju pertama), menunggu kata builder untuk dikunci; ⏳ data 2 Okt: B1 0/20 sinyal, B3 2/20, 0 settle = BELUM CUKUP DATA | [[07 - Epik Kolaborasi Bot Terbuka]] §11 · [[04-Tools/TL8 - engine]] |
 | P89 | G5/G8 + `NULL_KIND`/`PHASE_VARIANTS` eksplisit | ⬜ | §11 |
 | P90 | riset optimasi ambang R1-R11 | 🟠 anggaran A1/A2 belum diputuskan | [[08 - Riset Optimasi Ambang]] |
 | P91 | anchor sha kunci v1 + commit `engine/` | ✅ anchoredAt 2026-10-02T08:17:48Z | F-D74 |

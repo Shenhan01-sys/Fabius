@@ -302,6 +302,35 @@ def cmd_intake(a) -> int:
     return 0 if verdict(res)[0] == "LOLOS_SHADOW" else 1
 
 
+def _ledger_fd16(files, view) -> int:
+    """`ledger fd16` (P88): F-D16 pada data maju - hanya ledger yang SAH (rantai + hitung ulang dari bar) yang dinilai; BH lintas bot yang dinilai bersama."""
+    from . import fd16
+    p = fd16.Fd16Params()
+    ok: dict = {}
+    for path in files:
+        name = os.path.basename(path)
+        try:
+            recs = ledgermod.load(path)
+        except ledgermod.LedgerError as e:
+            print(f"{name}: RUSAK ({e}) - tidak dinilai")
+            continue
+        spec = SPECS.get(recs[0].get("bot_id")) if recs else None
+        probs = ledgermod.verify_chain(recs)
+        if spec is not None and not probs:
+            probs = ledgermod.verify_against_data(spec, recs, view("targets" if spec.method == "B3-CARRY" else "actual"), view("actual"))
+        if spec is None or probs:
+            print(f"{name}: ledger TIDAK SAH - tidak dinilai ({(probs or ['bot tidak dikenal'])[0]})")
+            continue
+        ok[spec.bot_id] = recs
+    print(f"F-D16 MAJU (parameter USULAN 2 Okt, ditulis sebelum settle maju pertama): sinyal >= {p.n_sinyal_min}, hari >= {p.hari_min}, bulan >= {p.bulan_min}, "
+          f"CI {int(p.ci_level * 100)} % bootstrap blok {p.blok_hari} hari x {p.boot_n}, buang bulan terbaik, BH alpha {p.alpha_bh} lintas {len(ok)} bot")
+    res = fd16.check(ok, p)
+    for r in res:
+        print(fd16.fmt(r, p))
+    print("Paper maju; LOLOS di sini BUKAN izin uang nyata (masih butuh telaah hukum P75/P80) dan BUKAN klaim edge.")
+    return 0
+
+
 def cmd_ledger(a) -> int:
     """`ledger verify`: periksa rantai hash DAN hitung ulang setiap tick/settle dari deret bar (nol jaringan, nol kunci). `ledger report`: ringkasan."""
     files = sorted(glob.glob(os.path.join(a.ledger, "*.jsonl")))
@@ -318,6 +347,8 @@ def cmd_ledger(a) -> int:
         return views[name]
 
     rc = 0
+    if a.action == "fd16":
+        return _ledger_fd16(files, view)
     for path in files:
         name = os.path.basename(path)
         try:
@@ -396,7 +427,7 @@ def main(argv=None) -> int:
     rv.add_argument("--boot-n", type=int, default=1000)
     rv.add_argument("--incumbents", choices=("book", "six"), default="book", help="petahana G10: buku slot sekarang (bawaan) atau enam bot Fabius")
     lg = sub.add_parser("ledger")
-    lg.add_argument("action", choices=("verify", "report"))
+    lg.add_argument("action", choices=("verify", "report", "fd16"))
     lg.add_argument("--ledger", default=os.path.join(REPO_ROOT, "ledger", "paper"), help="folder berkas <bot>.jsonl (bawaan: ledger/paper)")
     lg.add_argument("--bars", default=os.path.join(REPO_ROOT, "ledger", "bars"), help="folder CSV bar yang dipakai tick (bawaan: ledger/bars)")
     lg.add_argument("--bot")

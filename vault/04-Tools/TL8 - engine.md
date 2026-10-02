@@ -13,7 +13,8 @@ tags: [perkakas, "TL8"]
 - Hanya stdlib; tidak menyentuh jaringan, kunci, atau chain - semua bagian jaringan ada di `tools/`.
 - `hashlib.sha3_256` BUKAN keccak; `engine/chain.py` mengimplementasikan keccak256 sendiri dan diuji terhadap kontrak lewat vektor lintas bahasa.
 - Guard umur bar (`engine/freshness.py`): data basi = `StaleBars`, bukan sinyal.
-- `python -X utf8 -m unittest discover -s engine/tests -t .` = 272 lulus (2 Okt malam).
+- `python -X utf8 -m unittest discover -s engine/tests -t .` = 272 lulus (2 Okt malam) → 292 sesudah P88.
+- `engine/fd16.py` (P88): F-D16 pada data MAJU - `python -X utf8 -m engine.cli ledger fd16` menilai hanya ledger yang SAH (rantai + hitung ulang dari bar); parameter usulan di [[08-Backlog/07 - Epik Kolaborasi Bot Terbuka]] §11.
 
 **Yang ia TOLAK lakukan:** mengintip bar besok (ada tes yang menangkapnya); mengubah `data_hash` tick lama ketika data jenis lain datang belakangan (`ledger.target_view`).
 

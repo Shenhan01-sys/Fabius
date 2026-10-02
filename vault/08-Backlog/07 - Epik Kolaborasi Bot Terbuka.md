@@ -231,10 +231,17 @@ hasil dogfood menolak 4 dari 5 bot yang bisa dinilai - bisa berarti terlalu keta
 | P85 | ledger shadow maju per bot (anchor) + skor bergulir + statistik berpasangan yang memberi makan `slots.decide` | bergantung M2 (P77): **ledger paper maju dibangun (F-D75)**; skor bergulir, statistik berpasangan, dan anchor kepala ledger belum → kepala ledger kini dikomit per tick lewat SignalAnchor oleh worker Railway (F-D80, P94); skor bergulir + statistik berpasangan tetap belum |
 | P86 | **kunci** `GateParams`/`KpiParams`/`SlotParams` (`engine.cli lock --write`) + banner | sebelum kandidat luar pertama; ~~**perlu kata builder**~~ **selesai sementara (F-D73): v1 terkunci; ter-anchor dan di-commit (F-D74, P91)** |
 | P87 | orkestrator buku hidup: membangun `incumbents`, memanggil `killer_triggered`, mengelola epoch | menutup sisa temuan #2 dan #5 |
-| P88 | pemeriksa F-D16 pada data maju (n ≥ 20, harapan net > 0, CI bawah > 0, BH) sebagai syarat hak tinggi | belum dikode |
+| P88 | pemeriksa F-D16 pada data maju (n ≥ 20, harapan net > 0, CI bawah > 0, BH) sebagai syarat hak tinggi | ~~belum dikode~~ **dibangun 2 Okt (`engine/fd16.py`); parameter usulan di bawah tabel; status di [[08-Backlog/01 - Backlog]]** |
 | P89 | G5 leave-one-out universe; G8 alokasi universe-matched + bootstrap; `NULL_KIND`/`PHASE_VARIANTS` eksplisit tiap template | temuan #9/#10 |
 | P90 | **riset optimasi ambang** R1-R11 (aturan anti-snooping, pra-registrasi, kunci v2 hanya lewat `lock --write --supersede`) | [[08-Backlog/08 - Riset Optimasi Ambang]] |
 | P91 | meng-anchor sha kunci v1 (satu transaksi) + meng-commit `engine/` dan vault | ~~**kata builder**; belum dikerjakan~~ **selesai (F-D74): anchor 2026-10-02T08:17:48Z, commit; push: lihat F-D74 #5** |
+
+**P88 - parameter USULAN pemeriksa F-D16 maju (2 Okt, ditulis sebelum settle maju pertama ada; dikunci hanya atas kata builder):** dinilai per bot atas
+`settle` final (funding aktual) dan sinyal maju dari tick. S1 sinyal maju >= 20; S2 rerata net harian > 0; S3 batas bawah CI 95 % rerata > 0 (bootstrap blok
+melingkar 5 hari, 10.000 tarikan, benih = ujung rantai ledger - siapa pun mendapat angka yang sama); S4 rerata tetap > 0 sesudah bulan kalender (UTC) dengan
+jumlah net terbesar dibuang (butuh >= 2 bulan dan >= 20 hari); S5 p satu sisi (bootstrap terpusat) lolos Benjamini-Hochberg alpha 0,10 lintas semua bot yang
+punya p. Vonis LOLOS / BELUM CUKUP DATA / TIDAK LOLOS. Batas: ongkos = penggaris spesifikasi (fee per sisi), spread + dampak belum (P69); LOLOS bukan izin
+uang nyata (P75/P80) dan bukan klaim edge.
 
 ## 12. Batas
 
