@@ -26,6 +26,7 @@ dihapus saat audit, bukan disimpan sopan-sopanan.
 | SignalAnchor (chain 97, M3) | `0x9B78200beFbbBe836585d31bd5b6dB32587064f3` | [[02-Contracts/C7 - SignalAnchor]] · maxLag 43200 s, revealWindow 604800 s |
 | committer SignalAnchor (aktif) | `0xCA9c7322210E9a7F7d0953c862d4Ef60cC0D64A4` | `deployments/97.json` `m3.committer`; `0xE12e…812a` pensiun (F-D82) |
 | kunci ambang peninjau v1 | sha `0xf145b70abd251b9fcf421bfb811bcf3788dade347c37b3bea331a09fedfe5f32`, anchoredAt 2026-10-02T08:17:48Z | `python -X utf8 tools/anchor_lock.py --verify` · F-D74 |
+| kunci parameter F-D16 maju | sha `0x5a47cc4b87758730b0a1898f5a626029806b287abbb730292422fe5136797a45`, di-pin LockRegistry `lockedAt` 2026-10-02T17:10:57Z (tx `0x6bf7d51201b9…`) | `python -X utf8 tools/lock_spec.py --file engine/locks/fd16.lock.json --name FABIUS-FD16-MAJU-v1 --verify` · F-D84 |
 
 ## Perintah yang paling sering dipakai
 

@@ -2639,3 +2639,21 @@ Builder: *"gas"* (validasi REST vs Vision, langkah pertama tahap 3).
    menit-menit pertama sudah final. Itu langkah berikutnya, sebelum desain tahap 2+3 diajukan ke builder.
 
 **Terkait:** F-D75 · F-D76 · F-D80 · F-D82 · [[09-Inbox/Session-2026-10-02]] §19
+
+## F-D84 — Parameter pemeriksa F-D16 maju (P88) DIKUNCI sebelum settle maju pertama, dan di-pin di LockRegistry · 3 Okt 2026 (WIB)
+
+Saran yang dijawab: *"Parameter F-D16 di atas sengaja saya tulis sebelum ada data ... Saran saya: setujui dan kunci sekarang, seperti kunci ambang v1."*
+Builder: *"Gasss"* - dibaca sebagai setuju (dan lanjut P85). Bila maksudnya lain, jalan kembalinya terlihat: kunci v2 lewat keputusan baru, kunci ini tetap tercatat.
+
+1. **Yang dikunci:** `engine/locks/fd16.lock.json` = `Fd16Params` di kode: sinyal maju >= 20; hari settle >= 20; bulan >= 2; CI 95 % bootstrap blok melingkar 5 hari
+   x 10.000 (benih = ujung rantai ledger); buang bulan kalender terbaik; BH alpha 0,10 lintas bot. sha `0x5a47cc4b87758730b0a1898f5a626029806b287abbb730292422fe5136797a45`, `dikunci` 2026-10-02T17:07:59Z (jam laptop).
+2. **Kenapa sekarang:** belum ada SATU pun settle maju (B1 0/20 sinyal, B3 2/20; settle pertama menunggu funding aktual Oktober). Hanya di titik ini parameter
+   tidak bisa dituduh menyesuaikan data.
+3. **Penegakan di kode:** `engine.cli ledger fd16` mencetak status kunci di kepala keluarannya; parameter yang bergeser dari kunci = "MENYIMPANG - vonis TIDAK
+   mengikat"; `test_repo_lock_matches_code` merah bila satu angka diubah tanpa kunci v2; `write_lock` menolak menimpa.
+4. **Di chain (jam yang berlaku):** `tools/lock_spec.py --send` -> `LockRegistry.lock(botId = "FABIUS-FD16-MAJU-v1", specSha = sha di atas)` oleh committer
+   `0xCA9c…64A4`: tx `0x6bf7d51201b956ec2869d4272b3066710c14af9d334b0e0984407d46c58b9cd0`, blok 134475778, gas **123.050** (angka gas `lock` pertama dari chain 97, bukan EVM lokal), `lockedAt` 1790961057 =
+   **2026-10-02T17:10:57Z**; uri menunjuk commit `7e6f6d3` (di-push lebih dulu supaya tautannya ada). `lockCount()` 4 -> 5; saldo committer 0,049631 tBNB.
+   Dicatat di `deployments/97.json` `m3.pins`.
+
+**Terkait:** F-D16 · F-D74 · F-D79 · [[08-Backlog/07 - Epik Kolaborasi Bot Terbuka]] §11 (P88) · [[09-Inbox/Session-2026-10-02]] §24

@@ -236,7 +236,7 @@ hasil dogfood menolak 4 dari 5 bot yang bisa dinilai - bisa berarti terlalu keta
 | P90 | **riset optimasi ambang** R1-R11 (aturan anti-snooping, pra-registrasi, kunci v2 hanya lewat `lock --write --supersede`) | [[08-Backlog/08 - Riset Optimasi Ambang]] |
 | P91 | meng-anchor sha kunci v1 (satu transaksi) + meng-commit `engine/` dan vault | ~~**kata builder**; belum dikerjakan~~ **selesai (F-D74): anchor 2026-10-02T08:17:48Z, commit; push: lihat F-D74 #5** |
 
-**P88 - parameter USULAN pemeriksa F-D16 maju (2 Okt, ditulis sebelum settle maju pertama ada; dikunci hanya atas kata builder):** dinilai per bot atas
+**P88 - parameter pemeriksa F-D16 maju (ditulis 2 Okt sebelum settle maju pertama ada; DIKUNCI 3 Okt WIB atas kata builder, F-D84, `engine/locks/fd16.lock.json`, di-pin LockRegistry):** dinilai per bot atas
 `settle` final (funding aktual) dan sinyal maju dari tick. S1 sinyal maju >= 20; S2 rerata net harian > 0; S3 batas bawah CI 95 % rerata > 0 (bootstrap blok
 melingkar 5 hari, 10.000 tarikan, benih = ujung rantai ledger - siapa pun mendapat angka yang sama); S4 rerata tetap > 0 sesudah bulan kalender (UTC) dengan
 jumlah net terbesar dibuang (butuh >= 2 bulan dan >= 20 hari); S5 p satu sisi (bootstrap terpusat) lolos Benjamini-Hochberg alpha 0,10 lintas semua bot yang

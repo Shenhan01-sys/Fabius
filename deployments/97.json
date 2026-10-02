@@ -45,6 +45,16 @@
    }
   },
   "maxLag_s": 43200,
+  "pins": {
+   "FABIUS-FD16-MAJU-v1": {
+    "file": "engine/locks/fd16.lock.json",
+    "lockedAt": 1790961057,
+    "lockedAt_utc": "2026-10-02T17:10:57Z",
+    "sha": "0x5a47cc4b87758730b0a1898f5a626029806b287abbb730292422fe5136797a45",
+    "tx": "0x6bf7d51201b956ec2869d4272b3066710c14af9d334b0e0984407d46c58b9cd0",
+    "uri": "https://github.com/Shenhan01-sys/Fabius/blob/7e6f6d377f7a5abb7f98e064e224389272dfe017/engine/locks/fd16.lock.json"
+   }
+  },
   "retired_committers": [
    {
     "address": "0xE12eCFA5e9acAb4d541eA5490e29b185471F812a",
