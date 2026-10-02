@@ -1,0 +1,4 @@
+# Worker Railway (tools/operator_loop.py). engine/ tetap stdlib; dua pustaka ini hanya untuk tanda tangan transaksi + ABI dinamis (reveal: bytes32[]).
+# Versi = yang dipakai alat lokal (tools/anchor_lock.py) saat diuji 2 Okt 2026.
+eth-account==0.13.7
+eth-abi==5.2.0

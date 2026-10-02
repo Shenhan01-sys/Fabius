@@ -6,6 +6,8 @@ lib/
 .env
 .deployer.env
 .agent.env
+# Kunci committer SignalAnchor (M3, F-D80): dibuat `tools/m3_setup.py`, tidak pernah dicetak; salinan lain hanya variabel Railway.
+.committer.env
 *.bak
 
 # Dataset mentah DI-COMMIT sejak 24 Sep (dulu dikecualikan). Alasannya: perekam bisa jalan di
