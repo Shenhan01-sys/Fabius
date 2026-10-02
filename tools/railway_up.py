@@ -43,7 +43,11 @@ def main() -> int:
         print(f"arsip HEAD {head}: {n} berkas dari {', '.join(PATHS)}")
         if a.dry_run:
             return 0
-        r = subprocess.run(["railway", "up", out, "--path-as-root", "--service", a.service, "--detach", "-m", f"worker {head}"], cwd=ROOT)
+        exe = shutil.which("railway")          # di Windows CLI npm = railway.cmd; CreateProcess tidak menemukan "railway" polos
+        if not exe:
+            print("CLI railway tidak ditemukan di PATH")
+            return 2
+        r = subprocess.run([exe, "up", out, "--path-as-root", "--service", a.service, "--detach", "-m", f"worker {head}"], cwd=ROOT)
         print("\nCek: railway deployment list --service", a.service, "--json   lalu   railway logs --service", a.service, "--lines 40")
         return r.returncode
     finally:

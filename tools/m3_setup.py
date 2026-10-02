@@ -24,6 +24,7 @@ import datetime as dt
 import json
 import os
 import secrets
+import shutil
 import subprocess
 import sys
 import time
@@ -211,12 +212,16 @@ def step_locks(ev, pk: str, committer: str, registry: str, go: bool, d: dict) ->
 def step_railway(service: str, pk: str, addrs: dict, go: bool) -> int:
     """Kunci + alamat -> variabel Railway. Nilai lewat stdin; keluaran CLI tidak dicetak mentah (nilai rahasia disensor bila muncul)."""
     kv = [("SIGNAL_ANCHOR_ADDRESS", addrs["SignalAnchor"]), ("LOCK_REGISTRY_ADDRESS", addrs["LockRegistry"]), (sc.KEY_VAR, pk)]
+    exe = shutil.which("railway")              # di Windows CLI npm = railway.cmd; CreateProcess tidak menemukan "railway" polos
+    if go and not exe:
+        print("BERHENTI: CLI railway tidak ditemukan di PATH")
+        return 2
     for i, (k, v) in enumerate(kv):
         last = i == len(kv) - 1
         print(f"railway: {k} -> service {service}" + ("" if k != sc.KEY_VAR else " (nilai rahasia, lewat stdin)") + ("" if go else "  [rencana]"))
         if not go:
             continue
-        cmd = ["railway", "variable", "set", k, "--stdin", "--service", service] + ([] if last else ["--skip-deploys"])
+        cmd = [exe, "variable", "set", k, "--stdin", "--service", service] + ([] if last else ["--skip-deploys"])
         r = subprocess.run(cmd, cwd=ROOT, input=v, text=True, capture_output=True)
         if r.returncode != 0:
             msg = (r.stderr or r.stdout or "").replace(pk, "***")[:300]
