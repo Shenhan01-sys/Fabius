@@ -2571,3 +2571,25 @@ yang dipakai alat; tidak pernah dicetak.
   (`commitCount()` 0 -> 2). Bila tidak terjadi, itu temuan, bukan "nanti".
 
 **Terkait:** F-D78 · F-D79 · [[08-Backlog/06 - Epik Gerbang Sinyal]] §3 · [[09-Inbox/Session-2026-10-02]] §17
+
+## F-D81 — Perekam wallet-flow DIHENTIKAN sebelum batas 100 MB GitHub · 2 Okt 2026
+
+Builder: *"Gas no1 opsi a"* - opsi (a) dari tiga yang diajukan: hentikan perekam (arah sekarang, bot perp Binance di `engine/`, tidak memakai data ini);
+(b) pecah berkas per hari + ubah ±38 alat pembaca; (c) pindah ke penyimpanan luar dengan hash di chain.
+
+1. **Kenapa sekarang** (terukur 2 Okt 14:54Z di `origin/master`, ukuran dari `git ls-tree -l`): `universe/watch-prices.jsonl` 65,5 MB (+16,5 MB dalam 24 jam; +9,4 MB
+   dalam 12 jam terakhir), `universe/wallet-flow.jsonl` 60,7 MB (+11,9 MB/24 jam), `universe/book-depth.jsonl` 28,7 MB (+9,0 MB/24 jam). GitHub menolak berkas di atas
+   100 MB: watch-prices akan lewat sekitar 4 Okt, wallet-flow sekitar 5 Okt. Sesudah itu push rantai ditolak, dan langkah pemulihannya (`reset --hard` ke origin)
+   membuang rekaman siklus itu: perekam tampak jalan, tetapi tidak ada yang tersimpan. Temuan ini sudah tercatat di audit 1-2 Okt (memori sesi), belum di vault - sekarang tercatat.
+2. **Yang dilakukan (15:06Z):** `gh workflow disable wallet-flow-watchdog.yml` lalu `gh workflow disable wallet-flow.yml` (watchdog dulu, supaya ia tidak menyalakan ulang
+   rantai yang basi), lalu `gh run cancel 37012282451` (rantai yang jalan sejak 13:19Z; tanpa ini ia terus commit tiap ±4 menit sampai ±17:55Z). Percobaan pertama
+   asisten ditolak pemeriksa otomatis ("Interfere With Workloads"); dijalankan sesudah builder membuka izinnya lewat `/permissions` ("Done udh saya acc").
+3. **Terbaca sesudahnya:** kedua workflow `disabled_manually`; run 37012282451 `cancelled` 15:06:46Z; commit perekam terakhir `475603b` 15:05:11Z. Ukuran akhir di origin:
+   watch-prices 65,8 MB, wallet-flow 60,9 MB, book-depth 28,8 MB, `decisions/fast-lane.jsonl` 6,8 MB. Kepala `wallet-flow.yml` dan `wallet-flow-watchdog.yml` diberi catatan.
+4. **Ikut berhenti:** `tools/fast_lane.py --run` (P40, keputusan jalur cepat) - satu rantai dengan perekam. **Tidak tersentuh:** `universe-hourly`, `paper-book`,
+   `paper-ledger` + watchdog-nya, worker Railway.
+5. **Data lama tetap** di repo dan tetap terbaca semua alat riset; hanya tidak bertambah. Klaim apa pun yang butuh data perekam ini sesudah 2 Okt 15:05Z = tak terukur.
+6. **Menyalakan lagi** = keputusan builder, dan batas yang sama datang lagi dalam ±2 hari kecuali berkas dipecah dulu (opsi b): `gh workflow enable wallet-flow.yml`,
+   `gh workflow enable wallet-flow-watchdog.yml`, `gh workflow run wallet-flow.yml`.
+
+**Terkait:** F-D80 · [[09-Inbox/Session-2026-10-02]] §18

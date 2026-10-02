@@ -1,5 +1,8 @@
 name: wallet-flow-watchdog
 
+# ===== DIHENTIKAN 2 Okt 2026 15:06Z (F-D81) bersama `wallet-flow.yml` - lihat kepala berkas itu. =====
+# Watchdog di-disable LEBIH DULU: kalau tidak, ia membaca aliran yang basi lalu menyalakan rantainya lagi.
+
 # PENYELAMAT YANG TIDAK BISA MEMBUNUH YANG DISELAMATKANNI.
 #
 # Kenapa berkas ini ada (terukur 28 Sep 08:2xZ, jam = header server GitHub):

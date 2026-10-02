@@ -1,5 +1,11 @@
 name: wallet-flow
 
+# ===== DIHENTIKAN 2 Okt 2026 15:06Z (F-D81, keputusan builder) =====
+# Workflow ini dan `wallet-flow-watchdog.yml` di-disable (`gh workflow disable`), rantai yang sedang jalan
+# dibatalkan, SEBELUM berkas datanya lewat batas 100 MB GitHub (watch-prices 65,8 MB, naik ±16,5 MB/hari).
+# Menyalakan lagi: `gh workflow enable` keduanya lalu `gh workflow run wallet-flow.yml` - tetapi pecah
+# berkasnya dulu, kalau tidak batas yang sama datang lagi dalam ±2 hari.
+
 # Perekam BIDANG ⑦ (aliran wallet) - dipasang 25 Sep, POLANYA diganti 26 Sep pagi.
 #
 # ===== KENAPA DIGANTI (terukur 26 Sep 09:06Z) =====
