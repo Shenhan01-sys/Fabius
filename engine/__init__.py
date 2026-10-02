@@ -13,6 +13,7 @@ Tidak ada modul di sini yang menyentuh jaringan, kunci, atau chain.
     slots, economics                                        buku sepuluh slot + rolling berpasangan; bagi hasil 60/40 bilangan bulat
     book                                                    buku genesis: bot identitas Fabius = B1-TREND (instrumen kripto saja; penunjukan, bukan kelulusan)
     ledger                                                  ledger paper maju (M2): tick ex-ante <= 12 jam, settle ex-post via replay yang sama, rantai hash, verifikasi dari bar
+    funding_est                                             rekonstruksi funding dari indeks premium 1m (P92): ESTIMASI untuk laporan PROVISIONAL dan target B3; settle final tetap dari aktual
     locks                                                   kunci ambang (sha atas semua angka lolos/gagal); v1 ditulis 2 Okt 2026, mengubah angka = kunci baru
 
 Perintah (dari akar repo; `<dir>` = folder CSV keluaran vault/09-Inbox/Session-2026-10-02-skrip/fetch.py):
@@ -32,4 +33,4 @@ Perintah (dari akar repo; `<dir>` = folder CSV keluaran vault/09-Inbox/Session-2
     python -X utf8 -m unittest discover -s engine/tests -t .
 """
 __all__ = ["spec", "series", "data", "target", "sinyal", "freshness", "quality", "replay", "report", "bots", "chain",
-           "submission", "gates", "kpi", "review", "slots", "economics", "book", "ledger", "locks"]
+           "submission", "gates", "kpi", "review", "slots", "economics", "book", "ledger", "funding_est", "locks"]

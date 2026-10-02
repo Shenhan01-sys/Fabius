@@ -247,10 +247,13 @@ def settleable_bars(records: Sequence[dict]) -> List[int]:
 
 # ---------------------------------------------------------------- satu putaran harian (murni; pemanggil yang menulis berkas)
 
-def step(spec: BotSpec, md: MarketData, now_ms: int, records: Sequence[dict]) -> Tuple[List[dict], List[str]]:
+def step(spec: BotSpec, md: MarketData, now_ms: int, records: Sequence[dict], md_settle: Optional[MarketData] = None) -> Tuple[List[dict], List[str]]:
     """Satu putaran harian pada jam `now_ms`: (1) `gap` untuk hari terlewat yang sudah lewat batas 12 jam; (2) `tick` untuk bar tertutup terakhir
     bila belum ada dan masih dalam batas; (3) `settle` untuk semua bar yang kini bisa ditutup. Mengembalikan (catatan baru yang sudah di-seal
-    berantai, catatan untuk manusia). Idempoten: putaran kedua pada jam yang sama tidak menambah apa pun. Tidak menulis berkas."""
+    berantai, catatan untuk manusia). Idempoten: putaran kedua pada jam yang sama tidak menambah apa pun. Tidak menulis berkas.
+
+    `md` dipakai tick; `md_settle` (bawaan: `md`) dipakai settle. Beda keduanya hanya untuk bot yang TARGET-nya memakai funding (B3-CARRY): tick memakai pandangan
+    "targets" (estimasi beku untuk hari terbaru), settle FINAL selalu memakai funding aktual (`engine.data.load_csv_dir(..., funding_view=...)`)."""
     if not records or records[0].get("type") != "genesis":
         raise LedgerError("ledger belum punya genesis")
     g = records[0]
@@ -278,8 +281,9 @@ def step(spec: BotSpec, md: MarketData, now_ms: int, records: Sequence[dict]) ->
             notes.append(f"tick {date_of(last_closed)}: {len(chain[-1]['targets'])} aset dipegang, {len(chain[-1]['signal_ids'])} sinyal")
         except StaleBars as e:
             notes.append(f"tick {date_of(last_closed)} DITOLAK: {e}")
+    md_s = md_settle if md_settle is not None else md
     for bar in settleable_bars(chain):
-        rec = compute_settle(spec, md, chain, bar)
+        rec = compute_settle(spec, md_s, chain, bar)
         if rec is not None:
             push(rec)
             notes.append(f"settle {rec['bar_date']}: net {rec['net'] * 1e4:+.1f} bps")
@@ -355,9 +359,10 @@ def verify_chain(records: Sequence[dict]) -> List[str]:
     return p
 
 
-def verify_against_data(spec: BotSpec, records: Sequence[dict], md: MarketData) -> List[str]:
+def verify_against_data(spec: BotSpec, records: Sequence[dict], md: MarketData, md_settle: Optional[MarketData] = None) -> List[str]:
     """Hitung ULANG setiap tick (target, data_hash, id sinyal) dari deret bar dan setiap settle dari replay. Beda = bar diubah atau ledger dipalsukan."""
     p: List[str] = []
+    md_s = md_settle if md_settle is not None else md
     if not records or records[0].get("spec_sha") != spec.sha():
         p.append("spec_sha genesis tidak sama dengan spesifikasi kode sekarang (bot berubah?)")
         return p
@@ -372,7 +377,7 @@ def verify_against_data(spec: BotSpec, records: Sequence[dict], md: MarketData) 
                 if r.get(k) != want[k]:
                     p.append(f"#{i} tick {r['asof_date']}: {k} BEDA dari hitung-ulang")
         elif r["type"] == "settle":
-            want = compute_settle(spec, md, records[:i], r["bar"])
+            want = compute_settle(spec, md_s, records[:i], r["bar"])
             if want is None:
                 p.append(f"#{i} settle {r['bar_date']}: tak bisa dihitung ulang (data bar/funding atau tick pendukung hilang)")
                 continue
@@ -388,7 +393,18 @@ def verify_against_data(spec: BotSpec, records: Sequence[dict], md: MarketData) 
 
 # ---------------------------------------------------------------- ringkasan (untuk laporan)
 
-def render_report(records: Sequence[dict]) -> str:
+def provisional_settles(spec: BotSpec, md_prov: MarketData, records: Sequence[dict]) -> List[dict]:
+    """Settle PROVISIONAL untuk bar yang belum punya settle final tetapi sudah bisa dihitung dengan pandangan "provisional" (funding aktual, atau estimasi
+    `engine/funding_est.py` bila aktual belum terbit). BUKAN catatan rantai dan tidak pernah ditulis ke ledger; hanya untuk laporan."""
+    out = []
+    for bar in settleable_bars(records):
+        rec = compute_settle(spec, md_prov, records, bar)
+        if rec is not None:
+            out.append(rec)
+    return out
+
+
+def render_report(records: Sequence[dict], provisional: Optional[Sequence[dict]] = None) -> str:
     """Laporan manusia untuk satu ledger. Semua angka dicetak ulang dari catatan; jendela pendek diberi peringatan, bukan klaim."""
     from .report import fmt, summary
     if not records:
@@ -409,6 +425,10 @@ def render_report(records: Sequence[dict]) -> str:
         lines.append("kinerja maju (net paper, hari kontigu yang ditutup): " + fmt(summary(pnl)))
     else:
         lines.append("kinerja maju: belum cukup hari ditutup (n < 2)")
+    if provisional:
+        net = sum(r["net"] for r in provisional)
+        lines.append(f"PROVISIONAL (funding direkonstruksi dari indeks premium, galat terukur ±0,1 bps/hari/aset; BUKAN catatan rantai, belum final): {len(provisional)} hari "
+                     f"({provisional[0]['bar_date']}..{provisional[-1]['bar_date']}), net {net * 1e4:+.1f} bps; menjadi final saat funding aktual terbit (zip bulanan)")
     warn = []
     if st["n_signals"] < 20:
         warn.append(f"sinyal maju {st['n_signals']} < 20 (F-D16)")

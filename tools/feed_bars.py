@@ -5,12 +5,16 @@ Sumber publik tanpa kunci:
   kline harian spot  .../data/spot/daily/klines/...     (opsional, --spot; dibutuhkan B3/B5)
   funding            REST publik https://fapi.binance.com/fapi/v1/fundingRate (dicoba lebih dulu; dari jaringan tertentu bisa 451/403)
                      lalu zip BULANAN .../futures/um/monthly/fundingRate/... untuk bulan yang sudah tutup (terbit beberapa hari sesudahnya)
+  estimasi funding   berkas harian .../futures/um/daily/premiumIndexKlines/<SYM>/1m/... (terbit ±09:10Z hari berikutnya) -> `ledger/bars/fund_est_<SYM>.csv` lewat
+                     `engine/funding_est.py` (P92/F-D76). ESTIMASI, bukan funding: galat terukur ±0,1 bps/hari/aset; dipakai untuk laporan PROVISIONAL dan target B3 saja.
 
 Aturan (semuanya ditegakkan di kode, bukan niat):
   * Hanya bar yang SUDAH tertutup (hari UTC < hari ini). Funding hanya baris dengan waktu < awal hari ini, sehingga setiap hari di berkas funding LENGKAP.
   * Append-only per CSV (format fetch.py di vault/09-Inbox/Session-2026-10-02-skrip/: `t,o,h,l,c,v` dan `t,rate`). Baris yang sudah ada tidak pernah ditimpa;
     bar baru harus tepat hari berikutnya; bolong TIDAK diloncati - berhenti di hari yang belum terbit dan dilaporkan.
   * Funding: baris baru harus > baris terakhir + 1 menit (menghindari menghitung ganda peristiwa yang sama dari REST dan zip bulanan).
+  * Estimasi: hanya HARI LENGKAP (3 peristiwa sekaligus atau tidak sama sekali), mulai sesudah peristiwa aktual terakhir; menit yang hilang = berhenti, tidak ditebak;
+    baris estimasi tidak pernah diubah dan tidak diganti saat funding aktual terbit (log galat estimasi-vs-aktual terkumpul sendiri).
   * Berkas seed harus sudah ada (alat ini hanya MEMPERPANJANG deret, tidak membuat riwayat dari nol). Kegagalan jaringan dilaporkan; tidak ada yang ditebak.
 
 Pakai:  python -X utf8 tools/feed_bars.py                       # perbarui ledger/bars untuk 16 perp (kline + funding)
@@ -44,6 +48,7 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(HERE)
 sys.path.insert(0, ROOT)
 
+from engine import funding_est as fest        # noqa: E402
 from engine.series import DAY_MS               # noqa: E402
 from engine.spec import PERP_UNIVERSE          # noqa: E402
 
@@ -255,15 +260,88 @@ def update_funding(bars_dir: str, sym: str, today_ms: int, fetch: Callable[[str]
     return rep
 
 
+def parse_premium_daily(blob: bytes) -> Dict[int, float]:
+    """{waktu buka menit (ms): close indeks premium} dari satu zip harian premiumIndexKlines 1m (ada baris header)."""
+    z = zipfile.ZipFile(io.BytesIO(blob))
+    out: Dict[int, float] = {}
+    with z.open(z.namelist()[0]) as f:
+        for r in csv.reader(io.TextIOWrapper(f)):
+            if not r or not r[0].strip().lstrip("-").isdigit():
+                continue
+            out[_ms(int(r[0]))] = float(r[4])
+    return out
+
+
+def update_funding_est(bars_dir: str, sym: str, today_ms: int, fetch: Callable[[str], Optional[bytes]] = http_get, dry_run: bool = False) -> dict:
+    """Perpanjang `fund_est_<SYM>.csv` (t,rate) dengan ESTIMASI funding hari-hari lengkap sesudah peristiwa aktual/estimasi terakhir (`engine/funding_est.py`).
+    Satu hari = tiga peristiwa sekaligus; butuh berkas premium hari itu dan hari sebelumnya. Berhenti di hari yang belum terbit; tidak pernah menebak menit."""
+    act = os.path.join(bars_dir, f"fund_{sym}.csv")
+    path = os.path.join(bars_dir, f"fund_est_{sym}.csv")
+    la, le = last_t(act), last_t(path)
+    rep = {"sym": sym, "kind": "fest", "added": 0, "last": date_of(le) if le else None, "stop": None}
+    if la is None:
+        rep["stop"] = "berkas funding aktual (seed) tidak ada"
+        return rep
+    base = max(la, le or 0)
+    nxt = (base // fest.H8_MS) * fest.H8_MS + fest.H8_MS
+    if nxt % DAY_MS:
+        rep["stop"] = "peristiwa terakhir jatuh di tengah hari (hari parsial); estimasi hanya untuk hari lengkap"
+        return rep
+    minutes: Dict[int, float] = {}
+    loaded: set = set()
+    rows: List[Tuple[int, float]] = []
+    d = nxt
+    while d < today_ms:
+        for need in (d - DAY_MS, d):
+            if need in loaded:
+                continue
+            try:
+                blob = fetch(f"{VISION}/futures/um/daily/premiumIndexKlines/{sym}/1m/{sym}-1m-{date_of(need)}.zip")
+            except FeedError as e:
+                rep["stop"] = f"{date_of(need)}: {e}"
+                break
+            if blob is None:
+                rep["stop"] = f"premium {date_of(need)}: belum terbit"
+                break
+            try:
+                minutes.update(parse_premium_daily(blob))
+            except Exception as e:  # noqa: BLE001
+                rep["stop"] = f"premium {date_of(need)}: zip tidak terbaca ({type(e).__name__})"
+                break
+            loaded.add(need)
+        if rep["stop"]:
+            break
+        ev = fest.estimate_day(sym, minutes, d)
+        if ev is None:
+            rep["stop"] = f"premium {date_of(d)}: menit hilang (< 480 menit sebelum satu peristiwa)"
+            break
+        rows.extend(ev)
+        d += DAY_MS
+    if rows and not dry_run:
+        new_file = not os.path.exists(path)
+        with open(path, "a", newline="", encoding="utf-8") as f:
+            w = csv.writer(f, lineterminator="\n")
+            if new_file:
+                w.writerow(["t", "rate"])
+            for t_ms, r in rows:
+                w.writerow([t_ms, r])
+    rep["added"] = len(rows)
+    rep["last"] = date_of(rows[-1][0]) if rows else rep["last"]
+    return rep
+
+
 def update_all(bars_dir: str, symbols: List[str], today_ms: int, spot: bool = False, funding: bool = True,
-               dry_run: bool = False, fetch: Callable[[str], Optional[bytes]] = http_get) -> List[dict]:
-    jobs = [("fut", s) for s in symbols] + ([("spot", s) for s in symbols] if spot else []) + ([("fund", s) for s in symbols] if funding else [])
+               dry_run: bool = False, fetch: Callable[[str], Optional[bytes]] = http_get, est: bool = True) -> List[dict]:
+    jobs = ([("fut", s) for s in symbols] + ([("spot", s) for s in symbols] if spot else []) + ([("fund", s) for s in symbols] if funding else [])
+            + ([("fest", s) for s in symbols] if funding and est else []))
 
     def run(job):
         kind, s = job
         try:
             if kind == "fund":
                 return update_funding(bars_dir, s, today_ms, fetch, dry_run)
+            if kind == "fest":
+                return update_funding_est(bars_dir, s, today_ms, fetch, dry_run)
             return update_klines(bars_dir, kind, s, today_ms, fetch, dry_run)
         except Exception as e:  # noqa: BLE001
             return {"sym": s, "kind": kind, "added": 0, "last": None, "stop": f"galat tak terduga: {type(e).__name__}: {e}"}
@@ -278,12 +356,13 @@ def main() -> int:
     ap.add_argument("--symbols", default=",".join(PERP_UNIVERSE))
     ap.add_argument("--spot", action="store_true", help="juga kline spot (B3/B5)")
     ap.add_argument("--no-funding", action="store_true")
+    ap.add_argument("--no-est", action="store_true", help="jangan memperbarui estimasi funding (fund_est_*.csv)")
     ap.add_argument("--dry-run", action="store_true")
     ap.add_argument("--today", help="YYYY-MM-DD (UTC) mengganti hari ini (uji)")
     a = ap.parse_args()
     today = int(dt.datetime.strptime(a.today, "%Y-%m-%d").replace(tzinfo=dt.timezone.utc).timestamp() * 1000) if a.today else day_start(int(time.time() * 1000))
     syms = [s.strip() for s in a.symbols.split(",") if s.strip()]
-    reps = update_all(a.bars, syms, today, spot=a.spot, funding=not a.no_funding, dry_run=a.dry_run)
+    reps = update_all(a.bars, syms, today, spot=a.spot, funding=not a.no_funding, dry_run=a.dry_run, est=not a.no_est)
     stuck = 0
     for r in reps:
         flag = "" if not r["stop"] else "  ! " + r["stop"]

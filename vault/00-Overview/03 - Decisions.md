@@ -2409,3 +2409,36 @@ Akibatnya **`settle` hari-hari Oktober tertunda sampai REST terjangkau (mungkin 
 **Menunggu builder:** ~~(1) push commit M2~~ **(1) selesai: "Gasss", dipush 2 Okt; cron harian aktif**; (2) aktifkan B3 (perlu seed spot, ±2 MB); (3) apakah kepala ledger di-anchor berkala (satu transaksi per anchor; atau menunggu `SignalAnchor` v2).
 
 **Terkait:** [[08-Backlog/06 - Epik Gerbang Sinyal]] §6 · [[08-Backlog/05 - Epik Enam Bot]] §14 · [[08-Backlog/07 - Epik Kolaborasi Bot Terbuka]] (P85) · [[08-Backlog/08 - Riset Optimasi Ambang]] (R8) · [[Concepts/Anchored Before Outcome]] · F-D16 · F-D32 · F-D73 · F-D74
+
+## F-D76 — P92: funding direkonstruksi dari indeks premium; estimasi hanya untuk laporan PROVISIONAL dan target B3, bukan untuk settle final · 2 Okt 2026
+
+Builder menjawab "Gas" atas usul P92 (F-D75): bisakah funding dibangun ulang dari berkas harian `premiumIndexKlines` Vision (terjangkau dari laptop DAN runner, sedangkan REST funding tertutup dari keduanya)?
+
+**Pertanyaan dan uji.** Rumus Binance: F = P + clamp(I − P, ±0,05 %), P = rata-rata tertimbang waktu indeks premium per menit pada interval (bobot menit ke-i = i), I = 0,01 % per interval 8 jam. Diuji pada peristiwa yang **sudah diketahui**
+(funding aktual dari zip bulanan di `ledger/bars/fund_*.csv`) dengan `09-Inbox/Session-2026-10-02-skrip/run15_funding_reconstruct.py`; satuan galat: 1e-6 = 0,01 bps per peristiwa.
+
+**Hasil terukur** (dicetak ulang hari ini):
+- **Bobot menentukan** (`--variants`, BTC dan ETH, Jul-Agu 2026, n = 372): bobot naik menurut waktu (rumus Binance) MAE 2,31; rata-rata biasa 8,85 (3,8×); bobot terbalik 17,0 (7,4×). Bobot linear benar, tetapi tidak persis: sisa galat ada.
+- **Satu simbol punya I berbeda.** BNBUSDT: funding aktual **tepat 0** pada 276 dari 549 peristiwa (Mar-Agu); dengan I = 0,0001 MAE-nya 72,8 (median 98,6); dengan **I = 0** rumus mengembalikan 0 selama |P| ≤ 0,05 %, dan MAE-nya turun ke level simbol lain.
+- **Luar sampel** (`--oos`: I per simbol dipilih diskret pada Mar-Mei, diuji Jun-Agu 2026; 16 perp, **n = 4.368 peristiwa**): MAE **5,63** (0,056 bps), median 3,26, p95 19,87, p99 31,49, maks 92,90 (0,93 bps). Per hari-simbol (n = 1.488): MAE **10,72** (0,107 bps), median 6,91, p95 34,55, p99 54,66,
+  maks 129,84 (1,30 bps); bias rata-rata **+2,49** per hari (0,025 bps/hari; estimasi sedikit di atas aktual, jadi PnL paper sedikit terlalu rendah). I terpilih: 0,0001 untuk 15 simbol dan 0 untuk BNBUSDT.
+- Funding yang terkunci di I (|P − I| ≤ 0,05 %) direkonstruksi persis; galat muncul saat funding bergerak bersama P, dan paling besar pada DOT (MAE 9,70 luar sampel), BCH (9,04), ATOM (8,59), ADA (7,49); penyebabnya belum diselidiki.
+- **Jam terbit** (`Last-Modified` berkas Vision): premium harian BTCUSDT 2026-10-01 → 2 Okt 09:10:00Z; 2026-09-30 → 1 Okt 09:16:53Z; zip bulanan 2026-09 → 2 Okt 09:07:58Z. Jadi berkas premium terbit di jendela waktu yang sama dengan kline harian (±08:40-09:40Z), tidak lebih lambat secara konsisten.
+
+**Skala.** Galat 0,1 bps per hari-simbol dibanding: funding dasar ±3 bps/hari (0,01 % × 3), biaya masuk replay 7 bps/sisi, simpangan PnL harian B1 ratusan bps. Untuk **mengukur PnL** B1 galat itu praktis nol (≪ 0,1 % dari derau harian). Untuk **keputusan ambang** B3 (rata-rata funding 7 hari
+disetahunkan > 10 %; funding dasar 10,95 %/tahun, jadi marjin ±0,26 bps/hari) galat estimasi sebanding dengan marjin hanya saat funding bergerak; saat funding terkunci di dasar estimasinya persis. **Fidelitas target B3 terhadap funding aktual belum diukur** (daftar kerja).
+
+**Keputusan desain** (semuanya bisa dibalik):
+1. **`settle` final tetap hanya dari funding AKTUAL.** Estimasi tidak pernah ditulis sebagai settle; catatan rantai tetap "final atau menunggu" (tak terukur ≠ bersih).
+2. **Estimasi disimpan beku** di `ledger/bars/fund_est_<SYM>.csv` (append-only, hanya hari LENGKAP = tiga peristiwa sekaligus, dimulai sesudah peristiwa aktual terakhir, tidak diganti saat funding aktual terbit). Efek samping yang berguna: log galat estimasi-vs-aktual terkumpul sendiri begitu zip bulanan terbit.
+3. **Laporan PROVISIONAL**: `engine.cli ledger report` mencetak satu baris berlabel ("funding direkonstruksi ... BUKAN catatan rantai, belum final") untuk bar yang belum bisa final; menjadi final saat funding aktual terbit.
+4. **Jalur B3 disiapkan, B3 belum diaktifkan.** Pandangan data `funding_view`: `actual` (settle final, verifikasi), `provisional` (laporan), `targets` (estimasi beku untuk hari sejak berkas estimasi ada, aktual sebelumnya): hitung-ulang tick B3 tetap sama walau funding aktual terbit belakangan dengan nilai yang beda (tes). B3 tetap menunggu kata builder.
+5. Rumus ada di `engine/funding_est.py` (murni, 480 menit penuh atau tidak sama sekali; dibulatkan 8 desimal seperti Binance); pembaruan jaringan di `tools/feed_bars.py` (berkas harian premium; berhenti di hari yang belum terbit; tidak pernah menebak menit).
+
+**Batas yang jujur.** Estimasi ≠ funding. Asumsi interval 8 jam (Binance bisa mengubah interval simbol; tidak ditangani - galat akan terlihat saat aktual terbit). I per simbol dipelajari dari Mar-Mei 2026 dan bisa berubah. Satu sumber (premium Vision). Uji luar-sampel hanya tiga bulan.
+Estimasi bias sedikit ke atas. Tidak ada ledger yang memakai estimasi untuk catatan final.
+
+**Menunggu builder:** (1) aktifkan B3? Perlu seed spot (±2 MB), `--spot` di job, dan menerima bahwa target B3 memakai estimasi beku untuk hari-hari terbaru; jam maju B3 mulai dari bar saat genesis dibuat.
+(2) Ukur fidelitas target B3 (estimasi vs aktual) pada Jun-Agu sebelum memutuskan - saya sarankan ini dulu.
+
+**Terkait:** [[09-Inbox/Session-2026-10-02]] §13 · [[08-Backlog/06 - Epik Gerbang Sinyal]] §6 · [[08-Backlog/05 - Epik Enam Bot]] §14 · F-D75 · F-D74 · F-D16

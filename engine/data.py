@@ -62,8 +62,37 @@ def _read_kline_csv(path: str) -> Optional[Series]:
     return Series.from_rows(rows) if rows else None
 
 
-def load_csv_dir(dirpath: str, symbols: List[str]) -> MarketData:
-    """Muat `fut_<SYM>_1d.csv` (perp), `spot_<SYM>_1d.csv` (spot) dan `fund_<SYM>.csv` (funding 8 j: t, rate)."""
+FUNDING_VIEWS = ("actual", "provisional", "targets")
+EST_EVENTS_PER_DAY = 3          # estimasi selalu 3 peristiwa/hari (interval 8 jam, `engine/funding_est.py`); hari yang kurang dari itu tidak dipakai
+
+
+def _read_funding(path: str, min_events: int = 1) -> Dict[int, float]:
+    """{awal-hari-UTC ms: jumlah funding hari itu} dari CSV `t,rate`; hanya hari dengan >= `min_events` peristiwa."""
+    per_day: Dict[int, float] = {}
+    cnt: Dict[int, int] = {}
+    if not os.path.exists(path):
+        return per_day
+    with open(path, newline="") as f:
+        rd = csv.reader(f)
+        next(rd, None)
+        for r in rd:
+            t = int(float(r[0]))
+            day = (t // DAY_MS) * DAY_MS
+            per_day[day] = per_day.get(day, 0.0) + float(r[1])
+            cnt[day] = cnt.get(day, 0) + 1
+    return {d: v for d, v in per_day.items() if cnt[d] >= min_events}
+
+
+def load_csv_dir(dirpath: str, symbols: List[str], funding_view: str = "actual") -> MarketData:
+    """Muat `fut_<SYM>_1d.csv` (perp), `spot_<SYM>_1d.csv` (spot) dan funding 8 j (t, rate).
+
+    `funding_view` memilih sumber funding (F-D76; `engine/funding_est.py`):
+      "actual"       hanya `fund_<SYM>.csv` (funding AKTUAL dari zip bulanan). Dipakai `settle` final dan verifikasi: bawaan.
+      "provisional"  aktual bila ada, selain itu estimasi `fund_est_<SYM>.csv`. Hanya untuk laporan PROVISIONAL; bukan catatan rantai.
+      "targets"      estimasi untuk hari >= hari pertama berkas estimasi, aktual untuk hari sebelumnya. Dipakai target bot yang memakai funding (B3-CARRY):
+                     estimasi dibekukan (append-only), jadi hitung-ulang sebuah tick tetap sama sesudah funding aktual terbit belakangan."""
+    if funding_view not in FUNDING_VIEWS:
+        raise ValueError(f"funding_view harus salah satu dari {FUNDING_VIEWS}")
     md = MarketData()
     for s in symbols:
         fut = _read_kline_csv(os.path.join(dirpath, f"fut_{s}_1d.csv"))
@@ -73,14 +102,16 @@ def load_csv_dir(dirpath: str, symbols: List[str]) -> MarketData:
         if spot is not None:
             md.spot[s] = spot
         fp = os.path.join(dirpath, f"fund_{s}.csv")
-        if os.path.exists(fp):
-            per_day: Dict[int, float] = {}
-            with open(fp, newline="") as f:
-                rd = csv.reader(f)
-                next(rd, None)
-                for r in rd:
-                    t = int(float(r[0]))
-                    day = (t // DAY_MS) * DAY_MS
-                    per_day[day] = per_day.get(day, 0.0) + float(r[1])
+        actual = _read_funding(fp)
+        est = _read_funding(os.path.join(dirpath, f"fund_est_{s}.csv"), EST_EVENTS_PER_DAY) if funding_view != "actual" else {}
+        if funding_view == "actual":
+            per_day = actual
+        elif funding_view == "provisional":
+            per_day = {**est, **actual}
+        else:
+            start = min(est) if est else None
+            per_day = {d: v for d, v in actual.items() if start is None or d < start}
+            per_day.update(est)
+        if os.path.exists(fp) or per_day:
             md.funding[s] = per_day
     return md

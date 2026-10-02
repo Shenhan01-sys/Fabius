@@ -26,6 +26,15 @@ python -X utf8 -m engine.cli ledger verify     # rantai hash + HITUNG ULANG seti
 python -X utf8 -m engine.cli ledger report     # ringkasan: tick/gap/settle, sinyal maju, kinerja net paper (dengan peringatan jendela pendek)
 ```
 
+## Funding: aktual, estimasi, dan laporan PROVISIONAL (P92, F-D76)
+
+- `fund_<SYM>.csv` = funding **aktual** (zip bulanan Vision; terbit awal bulan berikutnya). Hanya ini yang dipakai `settle` **final**.
+- `fund_est_<SYM>.csv` = **estimasi** per hari lengkap yang direkonstruksi dari `premiumIndexKlines` 1m harian Vision (`engine/funding_est.py`; berkas terbit ±08:40-09:40Z, terjangkau dari runner). Append-only, beku:
+  tidak diganti saat funding aktual terbit, sehingga selisih estimasi-vs-aktual terkumpul sendiri. Terukur luar-sampel (Jun-Agu 2026, 16 perp, 4.368 peristiwa): MAE 0,056 bps per peristiwa (maks 0,93), 0,107 bps per hari-simbol
+  (maks 1,30), bias +0,025 bps/hari; BNBUSDT memakai I = 0. **Estimasi ≠ funding.**
+- `python -X utf8 -m engine.cli ledger report` mencetak satu baris **PROVISIONAL** (net paper untuk bar yang belum bisa final, pakai estimasi) yang berlabel "BUKAN catatan rantai"; ia menjadi final saat zip bulanan terbit.
+- Target bot yang memakai funding (B3-CARRY, belum diaktifkan) memakai pandangan `targets`: estimasi beku untuk hari sejak berkas estimasi ada. Lihat `engine/data.py` (`funding_view`).
+
 ## Siapa menulis
 
 Job `.github/workflows/paper-ledger.yml` (jadwal harian, commit oleh runner GitHub dengan jam server GitHub = cap waktu pihak ketiga) menjalankan
@@ -36,7 +45,7 @@ Job `.github/workflows/paper-ledger.yml` (jadwal harian, commit oleh runner GitH
 
 - Bot yang boleh punya ledger: identitas (B1-TREND) dan yang LOLOS_SHADOW pada kunci v1 (B3-CARRY) - `engine/book.py` (`SHADOW_ELIGIBLE`). Bot lain lewat gerbang → shadow → slot.
 - Funding recent dari REST Binance **terblokir dari kedua jaringan yang diukur** (2 Okt: laptop builder TLS terpotong; runner GitHub HTTP 451, run 36987654079); satu-satunya jalur sekarang zip bulanan yang terbit awal bulan berikutnya, jadi `settle`
-  bisa tertunda berminggu-minggu sementara `tick` jalan terus. Settle yang tertunda tampil sebagai "menunggu penutupan", bukan nol.
+  bisa tertunda berminggu-minggu sementara `tick` jalan terus. Settle yang tertunda tampil sebagai "menunggu penutupan", bukan nol; estimasi (di atas) hanya mengisi laporan PROVISIONAL.
 - **Jeda tick:** berkas harian Binance Vision terbit ±8,7-9,7 jam sesudah 00:00Z (terukur 2 Okt dari `LastModified` bucket S3; tidak serempak antar simbol), jadi tick keluar ±9-10 jam
   sesudah penutupan. Niat tetap ex-ante terhadap hasil bar berikutnya dan isinya hanya fungsi bar sampai penutupan, tetapi harga masuk 00:00Z tidak bisa didapat pengikut pada saat itu
   sementara `settle` mengandaikan masuk di harga penutupan (konvensi replay): angka maju paper memuat derau/optimisme dari jeda ini. Laporan mencetak `jeda tick`; sumber waktu-nyata menyusul.

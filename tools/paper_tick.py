@@ -40,6 +40,20 @@ DATA_SYMBOLS = list(PERP_UNIVERSE) + ["PAXGUSDT", "XAUUSDT"]
 ANCHORS_DIR = os.path.join(locks.LOCK_DIR, "anchors")
 
 
+class Views:
+    """Pandangan data per `funding_view` (F-D76), dimuat sekali dan malas: actual (settle final, verifikasi), targets (target B3: estimasi beku),
+    provisional (laporan PROVISIONAL)."""
+
+    def __init__(self, bars_dir: str):
+        self.bars_dir = bars_dir
+        self._cache = {}
+
+    def get(self, view: str):
+        if view not in self._cache:
+            self._cache[view] = load_csv_dir(self.bars_dir, DATA_SYMBOLS, funding_view=view)
+        return self._cache[view]
+
+
 def anchor_info(lock: dict):
     """Catatan anchor kunci (ditulis `tools/anchor_lock.py --send`), atau None bila kunci belum ter-anchor."""
     p = os.path.join(ANCHORS_DIR, f"{lock['sha'][2:14]}.json")
@@ -85,7 +99,7 @@ def init_bot(bot: str, ledger_dir: str, now_ms: int, dry: bool) -> int:
     return 0
 
 
-def tick_bot(bot: str, ledger_dir: str, md, now_ms: int, dry: bool) -> int:
+def tick_bot(bot: str, ledger_dir: str, views: "Views", now_ms: int, dry: bool) -> int:
     path = os.path.join(ledger_dir, f"{bot}.jsonl")
     try:
         records = ledger.load(path)
@@ -105,7 +119,8 @@ def tick_bot(bot: str, ledger_dir: str, md, now_ms: int, dry: bool) -> int:
     if spec is None or records[0].get("spec_sha") != spec.sha():
         print(f"{bot}: spesifikasi di kode tidak sama dengan genesis (pivot = ledger baru). Tidak menulis apa pun.")
         return 3
-    new, notes = ledger.step(spec, md, now_ms, records)
+    md_tick = views.get("targets" if spec.method == "B3-CARRY" else "actual")      # B3: target memakai funding -> estimasi beku bila aktual belum terbit
+    new, notes = ledger.step(spec, md_tick, now_ms, records, views.get("actual"))         # settle FINAL selalu dari funding aktual
     for n in notes:
         print(f"{bot}: {n}")
     chain = list(records)
@@ -115,7 +130,7 @@ def tick_bot(bot: str, ledger_dir: str, md, now_ms: int, dry: bool) -> int:
         chain.append(rec)
     if not new:
         print(f"{bot}: tidak ada catatan baru")
-    print(ledger.render_report(chain))
+    print(ledger.render_report(chain, ledger.provisional_settles(spec, views.get("provisional"), chain)))
     last_closed = ledger.last_closed_bar(now_ms)
     done = {r["asof"] for r in chain if r["type"] in ("tick", "gap")}
     pending = last_closed >= chain[0]["first_asof"] and last_closed not in done
@@ -150,10 +165,10 @@ def main() -> int:
             print(f"  ! {r['kind']} {r['sym']}: {r['stop']}")
         for n in sorted({r["note"] for r in reps if r.get("note")})[:2]:
             print(f"  i {n}")
-    md = load_csv_dir(a.bars, DATA_SYMBOLS)
+    views = Views(a.bars)
     rc = 0
     for b in bots:
-        rc = max(rc, tick_bot(b, a.ledger, md, now_ms, a.dry_run))
+        rc = max(rc, tick_bot(b, a.ledger, views, now_ms, a.dry_run))
         print()
     return rc
 

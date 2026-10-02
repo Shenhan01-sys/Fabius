@@ -310,7 +310,13 @@ def cmd_ledger(a) -> int:
     if not files:
         print(f"tidak ada ledger di {a.ledger}" + (f" untuk {a.bot}" if a.bot else ""))
         return 2
-    md = load_csv_dir(a.bars, DATA_SYMBOLS) if a.action == "verify" else None
+    views = {}
+
+    def view(name):                                    # pandangan funding dimuat sekali dan malas (F-D76)
+        if name not in views:
+            views[name] = load_csv_dir(a.bars, DATA_SYMBOLS, funding_view=name)
+        return views[name]
+
     rc = 0
     for path in files:
         name = os.path.basename(path)
@@ -321,7 +327,8 @@ def cmd_ledger(a) -> int:
             rc = 1
             continue
         if a.action == "report":
-            print(ledgermod.render_report(recs))
+            sp = SPECS.get(recs[0].get("bot_id")) if recs else None
+            print(ledgermod.render_report(recs, ledgermod.provisional_settles(sp, view("provisional"), recs) if sp is not None and recs else None))
             print()
             continue
         problems = ledgermod.verify_chain(recs)
@@ -329,7 +336,7 @@ def cmd_ledger(a) -> int:
         if spec is None:
             problems.append("bot_id genesis tidak dikenal oleh kode")
         elif not any(x.startswith(("catatan pertama", "ledger kosong")) for x in problems):
-            problems += ledgermod.verify_against_data(spec, recs, md)
+            problems += ledgermod.verify_against_data(spec, recs, view("targets" if spec.method == "B3-CARRY" else "actual"), view("actual"))
         st = ledgermod.stats(recs) if recs else {"n_tick": 0, "n_settle": 0, "n_gap": 0, "head": "-"}
         print(f"{name}: {'SAH' if not problems else 'GAGAL'}  tick {st['n_tick']} settle {st['n_settle']} gap {st['n_gap']}  "
               f"ujung {str(st['head'])[:14]}…  (rantai + hitung-ulang dari {a.bars})")
