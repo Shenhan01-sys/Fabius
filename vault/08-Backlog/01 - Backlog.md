@@ -12,7 +12,7 @@ tags: [backlog, hub]
 ## Arah operator (sejak 2 Okt 2026) - indeks status
 
 Legenda: ✅ selesai (dengan bukti) · 🟡 sebagian · ⏳ menunggu waktu / bukti otomatis · ⬜ belum · 🟠 menunggu kata builder · 🚫 terhalang dari luar.
-Rincian tiap item ada di rumahnya (kolom terakhir); angka di sini dicetak oleh perintah yang disebut di rumah itu. Tes Python sesudah P98: `python -X utf8 -m unittest discover -s engine/tests -t .` = **277 lulus**; sesudah P106 = **285 lulus**; sesudah P88 = **292 lulus**; sesudah F-D84 = **294 lulus**.
+Rincian tiap item ada di rumahnya (kolom terakhir); angka di sini dicetak oleh perintah yang disebut di rumah itu. Tes Python sesudah P98: `python -X utf8 -m unittest discover -s engine/tests -t .` = **277 lulus**; sesudah P106 = **285 lulus**; sesudah P88 = **292 lulus**; sesudah F-D84 = **294 lulus**; sesudah P85 = **300 lulus**.
 
 | # | pekerjaan | status (2 Okt malam WIB) | rumah / bukti |
 |---|---|---|---|
@@ -33,7 +33,7 @@ Rincian tiap item ada di rumahnya (kolom terakhir); angka di sini dicetak oleh p
 | P82 | peninjau-bot: FE/antrean, nonce, pemeriksa URL rujukan | 🟡 kode `engine/review.py` selesai; sisanya belum | §11 |
 | P83 | penghitung percobaan global + BH lintas kandidat | ⬜ | §11 |
 | P84 | jalur `method_pr` | ⬜ ditutup sampai ada keperluan | §11 |
-| P85 | ledger shadow maju per bot + skor bergulir + statistik berpasangan | 🟡 ledger maju hidup (P77); kepala ledger kini dikomit per tick lewat SignalAnchor (P94); skor bergulir + statistik berpasangan belum | §11 |
+| P85 | ledger shadow maju per bot + skor bergulir + statistik berpasangan | ✅ ledger maju hidup (P77); kepala ledger dikomit per tick lewat SignalAnchor (P94); **skor bergulir + statistik berpasangan dari ledger dibangun** (`engine/forward.py`, `python -X utf8 -m engine.cli ledger skor`, 6 tes; masuk `slots.decide` lewat `challenger_fields`); ⏳ data: 0 settle = skor tak terukur; yang memanggilnya tiap epoch = P87 | §11 · [[04-Tools/TL8 - engine]] |
 | P86 | kunci `GateParams`/`KpiParams`/`SlotParams` v1 | ✅ sementara (F-D73), ter-anchor 2026-10-02T08:17:48Z (F-D74) | §11 · [[04-Tools/TL10 - kunci dan anchor kunci]] |
 | P87 | orkestrator buku hidup | ⬜ | §11 |
 | P88 | pemeriksa F-D16 pada data maju | ✅ pemeriksa dibangun (`engine/fd16.py`, `python -X utf8 -m engine.cli ledger fd16`, 7 tes); ✅ parameter **DIKUNCI** (F-D84, sha `0x5a47cc4b…`, di-pin LockRegistry 2026-10-02T17:10:57Z) sebelum settle maju pertama; ⏳ data 2 Okt: B1 0/20 sinyal, B3 2/20, 0 settle = BELUM CUKUP DATA | [[07 - Epik Kolaborasi Bot Terbuka]] §11 · [[04-Tools/TL8 - engine]] |

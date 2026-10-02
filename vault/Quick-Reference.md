@@ -43,6 +43,7 @@ python -X utf8 vault/scripts/prepush_check.py                  # WAJIB sebelum p
 python -X utf8 -m engine.cli ledger verify                     # ledger paper maju: hitung ulang dari ledger/bars (2 Okt)
 python -X utf8 tools/verify_signals.py                          # komit sinyal di chain 97 vs ledger + bar, tanpa kunci (P106)
 python -X utf8 -m engine.cli ledger fd16                         # gerbang F-D16 pada ledger maju (P88)
+python -X utf8 -m engine.cli ledger skor                         # skor maju 90 hari + berpasangan (P85)
 python -X utf8 -m unittest discover -s engine/tests -t .        # 272 lulus (2 Okt malam)
 ```
 

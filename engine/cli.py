@@ -336,6 +336,40 @@ def _ledger_fd16(files, view) -> int:
     return 0
 
 
+def _ledger_skor(files, view) -> int:
+    """`ledger skor` (P85): skor maju per bot + statistik berpasangan pada satu ujung jendela bersama - bahan `slots.decide`. Hanya ledger SAH."""
+    import time
+    from . import forward
+    from .slots import SlotParams
+    p = SlotParams()
+    ok: dict = {}
+    for path in files:
+        name = os.path.basename(path)
+        try:
+            recs = ledgermod.load(path)
+        except ledgermod.LedgerError as e:
+            print(f"{name}: RUSAK ({e}) - tidak dinilai")
+            continue
+        spec = SPECS.get(recs[0].get("bot_id")) if recs else None
+        probs = ledgermod.verify_chain(recs)
+        if spec is not None and not probs:
+            probs = ledgermod.verify_against_data(spec, recs, view("targets" if spec.method == "B3-CARRY" else "actual"), view("actual"))
+        if spec is None or probs:
+            print(f"{name}: ledger TIDAK SAH - tidak dinilai ({(probs or ['bot tidak dikenal'])[0]})")
+            continue
+        ok[spec.bot_id] = recs
+    end = forward.common_end(ok, ledgermod.last_closed_bar(int(time.time() * 1000)))
+    print(f"SKOR MAJU (SlotParams kunci v1: jendela {p.score_window} hari kalender, cakupan minimal {p.min_coverage:.0%}, shadow minimal {p.shadow_days} hari; "
+          f"ujung bersama {ledgermod.date_of(end)}; hanya settle final)")
+    for b in sorted(ok):
+        print(forward.fmt(forward.stats_for(b, ok[b], end, p), p))
+    pt = forward.paired_table(ok, end, p)
+    for (x, y), v in sorted(pt.items()):
+        print(f"  berpasangan {x} - {y}: " + ("tak terukur (cakupan hari yang sama kurang)" if v is None else f"{v[0]:+.1f} bps, t = {v[1]:.2f}"))
+    print("Skor = paper maju; menentukan slot (hak rendah), BUKAN bukti edge dan BUKAN F-D16 (lihat `ledger fd16`).")
+    return 0
+
+
 def cmd_ledger(a) -> int:
     """`ledger verify`: periksa rantai hash DAN hitung ulang setiap tick/settle dari deret bar (nol jaringan, nol kunci). `ledger report`: ringkasan."""
     files = sorted(glob.glob(os.path.join(a.ledger, "*.jsonl")))
@@ -354,6 +388,8 @@ def cmd_ledger(a) -> int:
     rc = 0
     if a.action == "fd16":
         return _ledger_fd16(files, view)
+    if a.action == "skor":
+        return _ledger_skor(files, view)
     for path in files:
         name = os.path.basename(path)
         try:
@@ -432,7 +468,7 @@ def main(argv=None) -> int:
     rv.add_argument("--boot-n", type=int, default=1000)
     rv.add_argument("--incumbents", choices=("book", "six"), default="book", help="petahana G10: buku slot sekarang (bawaan) atau enam bot Fabius")
     lg = sub.add_parser("ledger")
-    lg.add_argument("action", choices=("verify", "report", "fd16"))
+    lg.add_argument("action", choices=("verify", "report", "fd16", "skor"))
     lg.add_argument("--ledger", default=os.path.join(REPO_ROOT, "ledger", "paper"), help="folder berkas <bot>.jsonl (bawaan: ledger/paper)")
     lg.add_argument("--bars", default=os.path.join(REPO_ROOT, "ledger", "bars"), help="folder CSV bar yang dipakai tick (bawaan: ledger/bars)")
     lg.add_argument("--bot")
