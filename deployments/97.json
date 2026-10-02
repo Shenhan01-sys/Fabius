@@ -18,7 +18,7 @@
   "max_position_quote_atomic": 1000000
  },
  "m3": {
-  "committer": "0xE12eCFA5e9acAb4d541eA5490e29b185471F812a",
+  "committer": "0xCA9c7322210E9a7F7d0953c862d4Ef60cC0D64A4",
   "deploy_block": {
    "LockRegistry": 134442907,
    "SignalAnchor": 134442917
@@ -30,21 +30,40 @@
   "deployer": "0xAEc63F6cEbBfacdC3516992b6ec396147c9c8361",
   "locks": {
    "B1-TREND": {
-    "lockedAt": 1790946286,
-    "lockedAt_utc": "2026-10-02T13:04:46Z",
+    "lockedAt": 1790956160,
+    "lockedAt_utc": "2026-10-02T15:49:20Z",
     "specSha": "0x23cb026bd8c665eb5e94a2764ae122e8eaed1777a6e7f76d84da21b4b3b43daf",
-    "tx": "0x3a099bd883e3cc5b4da55c241d65dcbbbb659ddac31de1056bd2a6038323e9c3",
-    "uri": "https://github.com/Shenhan01-sys/Fabius/blob/0eec810c3c61f932d216fb6ea40409bbcba050b4/engine/spec.py#B1-TREND"
+    "tx": "0xae9e7132fe5c4691098b3d30fe95521378bc9480fa489029eb88b7ba6e965c35",
+    "uri": "https://github.com/Shenhan01-sys/Fabius/blob/f457ae2d840717789799ca2c076090c191cf72d7/engine/spec.py#B1-TREND"
    },
    "B3-CARRY": {
-    "lockedAt": 1790946291,
-    "lockedAt_utc": "2026-10-02T13:04:51Z",
+    "lockedAt": 1790956165,
+    "lockedAt_utc": "2026-10-02T15:49:25Z",
     "specSha": "0xc528abf51585f401399ddb3279bced5adc4fd7f6dbde0aed0653e715352ef100",
-    "tx": "0xe6a8014542824e0e458b71c08d91db3e2fb48256ed2d2c31f79ac50345730b0b",
-    "uri": "https://github.com/Shenhan01-sys/Fabius/blob/0eec810c3c61f932d216fb6ea40409bbcba050b4/engine/spec.py#B3-CARRY"
+    "tx": "0x03f42b78b3aa0e42cc635e7e5a1c723940754546ed5d8e580220fb9fe0355b1f",
+    "uri": "https://github.com/Shenhan01-sys/Fabius/blob/f457ae2d840717789799ca2c076090c191cf72d7/engine/spec.py#B3-CARRY"
    }
   },
   "maxLag_s": 43200,
+  "retired_committers": [
+   {
+    "address": "0xE12eCFA5e9acAb4d541eA5490e29b185471F812a",
+    "catatan": "kunci lama di LockRegistry tetap ada (tidak bisa dihapus); komit SAH hanya dari m3.committer",
+    "fund_tx": "0x2ebfd86c8e41a566a22eba531ae1e63b3ffaae2656449c99fd33731ef44799c7",
+    "locks": {
+     "B1-TREND": {
+      "lockedAt": 1790946286,
+      "tx": "0x3a099bd883e3cc5b4da55c241d65dcbbbb659ddac31de1056bd2a6038323e9c3"
+     },
+     "B3-CARRY": {
+      "lockedAt": 1790946291,
+      "tx": "0xe6a8014542824e0e458b71c08d91db3e2fb48256ed2d2c31f79ac50345730b0b"
+     }
+    },
+    "retired_utc": "2026-10-02T15:49:00Z",
+    "why": "kunci terpapar di transkrip sesi asisten (railway environment config --json mencetak nilai variabel); dirotasi sebelum komit pertama (commitCount 0)"
+   }
+  ],
   "revealWindow_s": 604800,
   "why": "M3 (F-D79/F-D80): pra-registrasi spesifikasi (LockRegistry) + komit-ungkap sinyal per bot per bar (SignalAnchor)",
   "written_utc": "2026-10-02T13:04:34Z"

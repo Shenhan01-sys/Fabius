@@ -2593,3 +2593,49 @@ Builder: *"Gas no1 opsi a"* - opsi (a) dari tiga yang diajukan: hentikan perekam
    `gh workflow enable wallet-flow-watchdog.yml`, `gh workflow run wallet-flow.yml`.
 
 **Terkait:** F-D80 · [[09-Inbox/Session-2026-10-02]] §18
+
+## F-D82 — Kunci committer pertama TERPAPAR di transkrip sesi asisten; dirotasi sebelum komit pertama · 2 Okt 2026
+
+1. **Yang terjadi (kesalahan asisten, dicatat apa adanya).** ±15:20Z, saat menyiapkan service probe, asisten menjalankan `railway environment config --json` untuk
+   melihat konfigurasi region. Perintah itu mencetak NILAI semua variabel service, termasuk `COMMITTER_PRIVATE_KEY` worker. Kunci committer `0xE12eCFA5e9acAb4d541eA5490e29b185471F812a`
+   dianggap bocor: transkrip sesi tersimpan di laptop builder dan terkirim ke model.
+2. **Dampak:** testnet, saldo ±0,05 tBNB; risiko utamanya pihak lain bisa mengisi slot komit B1/B3 lebih dulu atas nama alamat itu. Belum ada komit (`commitCount()` 0),
+   jadi rotasi murah dan tidak ada yang perlu diungkap dengan kunci lama.
+3. **Rotasi (15:49Z).** Percobaan pertama asisten ditolak pemeriksa otomatis ("Secret-Store Writes"); builder membuka izin lewat `/permissions` dan memilih asisten
+   yang menjalankan ("B"). Kunci lama dipindah KELUAR repo (folder sementara sesi). `tools/m3_setup.py --deployer-env ../app/.env --go`: committer BARU
+   **`0xCA9c7322210E9a7F7d0953c862d4Ef60cC0D64A4`**, diisi 0,05 tBNB dari deployer Lencana (tx `0x220d3826…`), `lock` B1-TREND 15:49:20Z (tx `0xae9e7132…`) dan B3-CARRY
+   15:49:25Z (tx `0x03f42b78…`) - masih sebelum 3 Okt 00:00Z, jadi bar 2 Okt tetap bisa dikomit. `--railway-service fabius-engine --go`: worker 15:50:28Z
+   "aktif ... committer 0xCA9c… (KIRIM)".
+4. **Baca ulang `cast`:** `lockedAt` committer baru B1 1790956160, B3 1790956165; kunci lama TETAP ada (1790946286 / 1790946291 - LockRegistry memang tidak bisa
+   menghapus); `lockCount()` 4; `commitCount()` 0; saldo baru 0,049754 tBNB, saldo lama 0,049737 tBNB (tertinggal di alamat lama; kecil, bisa ditarik kelak).
+5. **Aturan verifikasi:** `deployments/97.json` `m3.retired_committers` mencatat alamat lama dan alasannya. Komit SAH hanya dari `m3.committer`; pemeriksa menyaring
+   event `Committed` berdasarkan committer. Komit atas nama alamat lama, bila muncul, BUKAN dari Fabius.
+6. **Pelajaran:** `railway environment config --json` dan `railway variable list --json/--kv` mencetak nilai rahasia. Keduanya tidak dipakai lagi sesudah rahasia
+   terpasang; region/replika dibaca dari keluaran `railway service scale` atau `railway deployment list --json` (`.meta.serviceManifest.deploy`).
+
+**Terkait:** F-D80 · [[09-Inbox/Session-2026-10-02]] §19
+
+## F-D83 — Data REST Binance = data Vision untuk semua yang dipakai engine (harga + funding): syarat data tahap 3 terpenuhi · 2 Okt 2026
+
+Builder: *"gas"* (validasi REST vs Vision, langkah pertama tahap 3).
+
+1. **Alat:** `tools/rest_vs_vision.py` (hanya membaca, tanpa kunci): kline perp `fapi /fapi/v1/klines` 1d vs `fut_<SYM>_1d.csv`, kline spot `api /api/v3/klines` vs
+   `spot_<SYM>_1d.csv` (5 kolom, identik sebagai float), funding `fapi /fapi/v1/fundingRate` vs `fund_<SYM>.csv` (waktu ±60 detik, rate identik, jumlah per hari UTC).
+2. **Di mana:** service Railway terpisah `fabius-probe` (Singapura, tanpa variabel rahasia, `FABIUS_JOB=rest_vs_vision`, jalan sekali). Bukan shell ke worker:
+   `railway ssh` ke worker ditolak pemeriksa otomatis ("Production Reads" - env worker berisi kunci); penolakan dihormati.
+3. **Hasil** (2 Okt 16:00:08Z, 16 simbol, riwayat penuh sejak 2019-2020, 203 panggilan REST, 89 detik):
+   - perp: **37.978/38.030** bar identik di 5 kolom; 52 bar beda HANYA di volume (sel beda o=0, h=0, l=0, c=0, v=52); 0 bar hanya di CSV; 25 bar hanya di REST
+     (5 hari mulai 2022-02-26 untuk SOL/XRP/LTC/TRX/NEAR = lubang seed yang sudah dikenal dari koreksi K-3);
+   - spot: **39.739/39.827** identik; 88 beda HANYA di volume (o=0, h=0, l=0, c=0, v=88); 0 hanya di satu sisi;
+   - funding: **114.228/114.228** peristiwa identik, selisih waktu maks 0 ms, 0 hari dengan jumlah beda;
+   - bar perp tertutup terakhir pada 16:00Z: CSV 2026-10-01 = REST 2026-10-01;
+   - "VONIS UNTUK ENGINE (harga + funding; volume tidak dipakai engine): SAMA PERSIS". Engine hanya membaca penutupan dan funding: `data_fingerprint` memakai (t, c),
+     dan grep `engine/` tidak menemukan bot yang membaca o/h/l/v.
+4. **Beda volume berkumpul di hari tertentu, di banyak simbol sekaligus** (perp: 2023-11-10, 2024-03-27/28, 2025-01-14, plus 2023-11-14 di DOT; spot: 2019-10-01,
+   2019-12-04, 2020-10-27, 2021-01-11/21, 2021-12-24) - pola koreksi data di sisi bursa, bukan acak. Aturan untuk nanti: bot yang memakai VOLUME harian harus mengunci
+   satu sumber; tick tetap dihitung ulang dari bar yang di-commit.
+5. **Artinya:** tick dari REST segera sesudah penutupan (tahap 3) tidak mengubah satu bit pun dari tick/settle yang dihitung ulang dari Vision - untuk harga dan
+   funding. **Belum diukur:** kapan REST menyajikan bar yang baru tertutup dan funding 00:00Z (perlu uji 00:00-00:10Z dari Railway), dan apakah bar yang diambil di
+   menit-menit pertama sudah final. Itu langkah berikutnya, sebelum desain tahap 2+3 diajukan ke builder.
+
+**Terkait:** F-D75 · F-D76 · F-D80 · F-D82 · [[09-Inbox/Session-2026-10-02]] §19
