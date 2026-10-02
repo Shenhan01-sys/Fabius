@@ -35,7 +35,7 @@ Job `.github/workflows/paper-ledger.yml` (jadwal harian, commit oleh runner GitH
 ## Batas yang jujur
 
 - Bot yang boleh punya ledger: identitas (B1-TREND) dan yang LOLOS_SHADOW pada kunci v1 (B3-CARRY) - `engine/book.py` (`SHADOW_ELIGIBLE`). Bot lain lewat gerbang → shadow → slot.
-- Funding recent dari REST Binance bisa terblokir (laptop builder: TLS terpotong; runner: belum diukur); cadangannya zip bulanan yang terbit awal bulan berikutnya, jadi `settle`
+- Funding recent dari REST Binance **terblokir dari kedua jaringan yang diukur** (2 Okt: laptop builder TLS terpotong; runner GitHub HTTP 451, run 36987654079); satu-satunya jalur sekarang zip bulanan yang terbit awal bulan berikutnya, jadi `settle`
   bisa tertunda berminggu-minggu sementara `tick` jalan terus. Settle yang tertunda tampil sebagai "menunggu penutupan", bukan nol.
 - **Jeda tick:** berkas harian Binance Vision terbit ±8,7-9,7 jam sesudah 00:00Z (terukur 2 Okt dari `LastModified` bucket S3; tidak serempak antar simbol), jadi tick keluar ±9-10 jam
   sesudah penutupan. Niat tetap ex-ante terhadap hasil bar berikutnya dan isinya hanya fungsi bar sampai penutupan, tetapi harga masuk 00:00Z tidak bisa didapat pengikut pada saat itu

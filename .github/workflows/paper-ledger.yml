@@ -19,7 +19,7 @@ name: paper-ledger
 # (tick yang sudah ada tidak ditambah lagi). Batas tick = 12 jam sesudah penutupan (12:00Z): lewat itu hari dicatat `gap`, TIDAK diisi belakangan. Cron GitHub bisa
 # terlambat beberapa menit (kadang lebih); jendela yang sempit (±2-3 jam antara terbit dan batas) berarti beberapa `gap` memang mungkin - terlihat, bukan diam.
 #
-# Batas yang jujur: (a) funding REST mungkin 451/terblokir dari runner; bila ya, `settle` menunggu zip bulanan (terbit awal bulan berikutnya) - `tick` jalan terus.
+# Batas yang jujur: (a) funding REST TERBLOKIR dari runner (terukur 2 Okt, run 36987654079: HTTP 451); `settle` menunggu zip bulanan (terbit awal bulan berikutnya) - `tick` jalan terus.
 # (b) Tidak ada kunci, tidak ada transaksi chain, tidak ada rahasia di sini: anchor kepala ledger (bila diinginkan) dibuat dari mesin lokal, bukan dari Actions.
 # (c) Paper penuh: tidak ada uang nyata. Angka maju bukan klaim edge (F-D16).
 # (d) Karena bar baru ada ±9 jam sesudah penutupan, tick keluar ±9-10 jam sesudah 00:00Z: niat tetap ex-ante terhadap hasil bar berikutnya, tetapi harga masuk 00:00Z tidak
