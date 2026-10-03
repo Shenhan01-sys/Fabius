@@ -11,6 +11,8 @@ Lingkungan (variabel Railway):
   FABIUS_REPO (bawaan repo publik), FABIUS_BRANCH (master), FABIUS_BOTS (B1-TREND,B3-CARRY), POLL_S (300), RPC_URL, REVEAL_DELAY_S (0), WORKDIR
   PIN_BOOK (bawaan 1)     P108: epoch buku slot baru yang ditulis rantai GitHub (`ledger/book/buku.jsonl`) di-pin ke LockRegistry oleh committer
                           (F-D85: book_sha tiap epoch dicatat di chain). 0 = hanya dicatat "PERLU pin", tidak mengirim.
+  ALERT_TELEGRAM_TOKEN / ALERT_TELEGRAM_CHAT   P101: kanal alert (dipasang builder sendiri; tanpa keduanya alert hanya dicatat di log), lihat tools/alert.py.
+  ALERT_MIN_TBNB (0.01)   saldo committer di bawah ini = alert.
 
 Saat mulai, worker mencatat apakah API Binance (fapi/api), Binance Vision, dan GitHub bisa dijangkau dari region-nya: bahan keputusan tahap 3
 (bar dari REST segera sesudah penutupan, bukan zip Vision ~9 jam kemudian). Runner GitHub (AS) mendapat HTTP 451 dari fapi.
@@ -52,6 +54,9 @@ BOTS = [b.strip() for b in os.environ.get("FABIUS_BOTS", ",".join(sc.BOTS_DEFAUL
 POLL_S = int(os.environ.get("POLL_S", "300"))
 REVEAL_DELAY_S = int(os.environ.get("REVEAL_DELAY_S", "0"))
 PIN_BOOK = os.environ.get("PIN_BOOK", "1") != "0"
+ALERT_MIN_TBNB = float(os.environ.get("ALERT_MIN_TBNB", "0.01"))
+FAILS_BEFORE_ALERT = 3
+TICK_GRACE_S = 12 * 3600 + 900          # tick resmi harus ada paling lambat 12 jam (+15 menit) sesudah penutupan; lewat itu rantai GitHub dianggap macet
 SUMMARY_EVERY_S = 6 * 3600
 UA = {"User-Agent": "Mozilla/5.0 (compatible; fabius-worker/1.0)"}
 PROBES = (("binance fapi", "https://fapi.binance.com/fapi/v1/time"),
@@ -101,6 +106,9 @@ class Worker:
         self.last_state = None
         self.last_book = None
         self.last_summary = 0.0
+        self.fails = 0
+        import alert as alertmod
+        self.alert = alertmod.Alerter(log=lambda m: log(m))
 
     def note_state(self, s: str) -> None:
         """Catat keadaan hanya saat berubah (log Railway tidak dibanjiri baris yang sama tiap 5 menit). Sha repo TIDAK masuk sini:
@@ -152,6 +160,19 @@ class Worker:
         log(f"pin buku {name}: tx {r.get('transactionHash')} {'blok ' + str(ev.num(r.get('blockNumber'))) if ok else 'STATUS 0'} | uri {pb.book_uri(head)}")
         return "kirim" if ok else "gagal"
 
+    def alerts_for(self, acts, sent: dict = None, missing=()) -> None:
+        """P101: aksi yang butuh mata manusia -> alert (dedupe per kunci di `tools/alert.py`)."""
+        for a in acts:
+            if a.kind == "alarm":
+                self.alert.send(f"alarm:{a.bot}:{a.asof_date}", f"ALARM {a.bot} bar {a.asof_date}: {a.detail}")
+            elif a.kind == "skip" and "TERLEWAT" in a.detail:
+                self.alert.send(f"terlewat:{a.bot}:{a.asof_date}", f"TERLEWAT {a.bot} bar {a.asof_date}: {a.detail}", sekali=True)
+        if sent and sent.get("gagal"):
+            self.alert.send(f"kirim-gagal:{int(time.time()) // 3600}", f"{sent['gagal']} transaksi komit/ungkap GAGAL (lihat log fabius-engine)")
+        for bot, date in missing:
+            self.alert.send(f"tick-hilang:{bot}:{date}", f"tick resmi {bot} bar {date} TIDAK ADA 12 jam sesudah penutupan: rantai GitHub paper-ledger macet? "
+                            "(gh run list --workflow paper-ledger.yml)", sekali=True)
+
     def heartbeat(self, head: str, extra: str) -> None:
         if time.time() - self.last_summary >= SUMMARY_EVERY_S:
             log(f"detak: repo {head[:10]} | {extra}")
@@ -183,14 +204,41 @@ class Worker:
             for ln in lines or ["(tidak ada tick dalam jendela pindai)"]:
                 log("  " + ln)
             self.last_lines = lines
+        st = None
         if pk and any(a.batch is not None and a.kind in ("commit", "reveal") for a in acts):
             st = sc.execute(acts, ev, addrs["anchor"], pk, log=lambda m: log(m))
             log(f"terkirim: {st['commit']} komit, {st['reveal']} ungkap, {st['gagal']} gagal")
             self.last_lines = None                      # paksa catat keadaan baru putaran berikutnya
-        self.book_pin(ev, addrs["registry"], committer, pk, head)
+        self.alerts_for(acts, st, missing_ticks(os.path.join(self.workdir, "ledger", "paper"), BOTS, int(time.time())))
+        pin = self.book_pin(ev, addrs["registry"], committer, pk, head)
+        if pin in ("tolak", "gagal"):
+            self.alert.send(f"pin-buku:{pin}", f"pin book_sha {pin.upper()}: {self.last_book}")
         if time.time() - self.last_summary >= SUMMARY_EVERY_S:
             kinds = {k: sum(1 for a in acts if a.kind == k) for k in ("commit", "reveal", "ok", "skip", "alarm")}
-            self.heartbeat(head, f"saldo committer {ev.balance(committer) / 1e18:.6f} tBNB | aksi {kinds}")
+            bal = ev.balance(committer) / 1e18
+            self.heartbeat(head, f"saldo committer {bal:.6f} tBNB | aksi {kinds}")
+            if bal < ALERT_MIN_TBNB:
+                self.alert.send("saldo-rendah", f"saldo committer {committer} tinggal {bal:.6f} tBNB (< {ALERT_MIN_TBNB}); isi ulang dari deployer")
+
+
+def missing_ticks(ledger_dir: str, bots, now_s: int, grace_s: int = TICK_GRACE_S):
+    """Bot yang ledger resminya tidak punya tick/gap untuk bar tertutup terakhir padahal sudah lewat `grace_s` sesudah penutupan. Ledger yang tak terbaca
+    juga dilaporkan (gagal baca != tidak ada masalah)."""
+    from engine import ledger as led
+    from engine.series import DAY_MS
+    d = led.last_closed_bar(now_s * 1000)
+    if now_s * 1000 < d + DAY_MS + grace_s * 1000:
+        return []
+    out = []
+    for bot in bots:
+        try:
+            recs = led.load(os.path.join(ledger_dir, f"{bot}.jsonl"))
+        except led.LedgerError:
+            out.append((bot, led.date_of(d) + " (ledger tak terbaca)"))
+            continue
+        if recs and recs[0].get("first_asof", 0) <= d and not any(r.get("type") in ("tick", "gap") and r.get("asof") == d for r in recs):
+            out.append((bot, led.date_of(d)))
+    return out
 
 
 def guarded_round(w: "Worker") -> bool:
@@ -198,12 +246,16 @@ def guarded_round(w: "Worker") -> bool:
     dari putaran yang gagal sebelum `execute`; yang gagal DI TENGAH `execute` dilindungi `has_pending` + `AlreadyCommitted` di putaran berikutnya."""
     try:
         w.once()
+        w.fails = 0
         return True
     except Exception as e:  # noqa: BLE001
         log(f"putaran GAGAL: {type(e).__name__}: {str(e)[:240]}")
         tb = traceback.format_exc().strip().splitlines()
         log("  " + " | ".join(tb[-3:])[:400])
         w.last_lines = None
+        w.fails = getattr(w, "fails", 0) + 1
+        if w.fails >= FAILS_BEFORE_ALERT and hasattr(w, "alert"):
+            w.alert.send("putaran-gagal", f"worker: {w.fails} putaran GAGAL berturut-turut; terakhir {type(e).__name__}: {str(e)[:200]}")
         return False
 
 
@@ -218,6 +270,10 @@ def main() -> int:
     for name, url in PROBES:
         log(f"probe {name}: {probe(url)}")
     w = Worker()
+    if w.alert.enabled:                                 # uji kanal tiap start: memasang variabel alert memicu redeploy, jadi pesan ini = bukti kanal hidup
+        w.alert.send("mulai", f"worker mulai (region {os.environ.get('RAILWAY_REPLICA_REGION', '?')}, kunci {'ADA' if sc.committer_key() else 'TIDAK ADA'}); "
+                              "alert aktif: ALARM, TERLEWAT, kirim gagal, 3 putaran gagal, pin buku ditolak, saldo < "
+                              f"{ALERT_MIN_TBNB} tBNB, tick resmi hilang")
     while True:
         t0 = time.time()
         guarded_round(w)

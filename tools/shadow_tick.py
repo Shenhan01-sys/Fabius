@@ -379,8 +379,13 @@ def main() -> int:
     ap = argparse.ArgumentParser(description="Mode bayangan tahap 2+3: tick dari REST, dibandingkan dengan tick resmi.")
     ap.add_argument("--once", action="store_true")
     a = ap.parse_args()
+    import alert as alertmod
     import operator_loop as ol
     sh = Shadow(src=RestSource(), log=ol.log)
+    al = alertmod.Alerter(log=ol.log, prefix="Fabius bayangan")
+    fails = 0
+    if al.enabled:
+        al.send("mulai", "mode bayangan mulai; alert aktif: vonis BEDA/ALARM/DITOLAK, 3 putaran gagal")
     ol.log(f"bayangan mulai | bot {','.join(sh.bots)} | baca pertama +{FIRST_READ_S}s, dua bacaan identik >= {READ_GAP_S}s | "
            f"region {os.environ.get('RAILWAY_REPLICA_REGION', '?')} | keadaan {len(sh.state['hari'])} hari")
     last_beat = 0.0
@@ -391,12 +396,18 @@ def main() -> int:
             d = sh.due(now)
             if d is not None:
                 sh.run_day(d)
-            sh.compare_pending()
+            for line in sh.compare_pending():
+                if any(w in line for w in ("BEDA", "ALARM", "DITOLAK")):
+                    al.send("vonis:" + line[:80], line, sekali=True)
+            fails = 0
             if time.time() - last_beat >= 6 * 3600:
                 ol.log(f"detak bayangan: repo {head[:10]} | hari tercatat {len(sh.state['hari'])}")
                 last_beat = time.time()
         except Exception as e:  # noqa: BLE001 - putaran gagal dicatat, diulang (SK-W1)
             ol.log(f"putaran bayangan GAGAL: {type(e).__name__}: {str(e)[:240]}")
+            fails += 1
+            if fails >= 3:
+                al.send("bayangan-gagal", f"mode bayangan: {fails} putaran GAGAL berturut-turut; terakhir {type(e).__name__}: {str(e)[:200]}")
         if a.once:
             return 0
         now = sh.now_fn()
