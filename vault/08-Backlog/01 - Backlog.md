@@ -17,7 +17,7 @@ Rincian tiap item ada di rumahnya (kolom terakhir); angka di sini dicetak oleh p
 | # | pekerjaan | status (2 Okt malam WIB) | rumah / bukti |
 |---|---|---|---|
 | P68 | mesin M1: registry enam bot di `engine/` (stdlib) + tes | ✅ di-commit dan dipush; `python -X utf8 -m unittest discover -s engine/tests -t .` = **272 lulus** (2 Okt) | F-D70..F-D72 · [[05 - Epik Enam Bot]] §14 · [[04-Tools/TL8 - engine]] |
-| P69 | penggaris per venue di `tools/costs.py` (fee + ½-spread + dampak + funding) | ⬜ | [[05 - Epik Enam Bot]] §12 |
+| P69 | penggaris per venue di `tools/costs.py` (fee + ½-spread + dampak + funding) | ⬜ **bahan masuk 3 Okt malam**: tabel fee per jalur eksekusi (Tokocrypto spot, Agentic Wallet DEX, Aster perp, Binance Agent OS) di epik 05 §7; pengukuran per venue belum | [[05 - Epik Enam Bot]] §12 |
 | P70 | porting skrip sesi ke `tools/` + satu berkas kunci per bot | 🟡 sebagian lewat `engine/` (koreksi K1-K3 lahir dari sini) | §12 |
 | P71 | guard umur bar di `tools/direction.py` | ⬜ guard ada di `engine/freshness.py`; `direction.py` belum | §12 (temuan stop MARSCOIN 27 Sep) |
 | P72 | pemeriksaan ter-anchor yang benar (`tools/execute_live.py:117` tak pernah menyala) | ✅ **3 Okt**: `require_anchored` membaca kata 4 (decisionHash) + kata 7 (anchoredAt) jawaban dinamis `getAnchor`; tata letak dicocokkan dengan anchor sungguhan (`anchorIdAt(0)` -> agent `0x4bb30e3b…`, `anchoredAt` 1790238225); 3 tes `engine/tests/test_execute_anchored.py`; kontrak tetap tidak menegakkannya (BN-KONTRAK) | §12 |

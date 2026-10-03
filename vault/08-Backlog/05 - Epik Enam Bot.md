@@ -233,6 +233,10 @@ tidak bisa dijangkau (sertifikat yang disajikan `*.ioh.co.id`). Terjangkau: Aste
 (`/open/v1/orders`, HMAC; 16/16 aset B1 punya pasangan USDT aktif); futures belum ada (target akhir 2026). Pintu hanya API mitra Pintu Pro (permohonan
 kemitraan; contoh resmi spot). Akibatnya: B1-TREND (long/flat) bisa dijalankan di venue lokal berizin; B3-CARRY (short perp) belum punya venue lokal.
 
+**Agentic Wallet dicek ulang (3 Okt malam, sumber primer):** `skills/binance-web3/binance-agentic-wallet/SKILL.md` di `binance/binance-skills-hub` (commit terakhir 2026-09-09) memuat perintah `baw`: swap pasar, limit order beli/jual, kirim, DeFi, pasar prediksi, x402, serta `contract-call` dan `sign-message` umum. **Tidak ada perintah perp/futures/short/leverage.** Binance Wallet versi WEB kini punya perpetual "provided by Aster" (pengumuman Binance), tetapi itu antarmuka manusia, bukan perintah agen. Jadi lewat Agentic Wallet resmi: long/flat on-chain saja (B1, B6), sama seperti Tokocrypto spot; B3 (short perp) tetap butuh API Aster (agent wallet, `approveAgent`) atau Agent OS (konfirmasi "ya" per order). Akses: domain Binance terblokir dari jaringan builder (2 Okt), dan login `baw` dipasangkan lewat aplikasi Binance Wallet.
+
+**Leverage (3 Okt malam, sumber primer):** **Aster API**: `POST /fapi/v3/leverage`, leverage awal per simbol bilangan bulat 1-125 (dibatasi braket notional per simbol), tipe margin isolated/cross; agent wallet didaftarkan dengan izin terpisah `canSpotTrade` / `canPerpTrade` / `canWithdraw` + kedaluwarsa + daftar IP (wajib bila `canWithdraw`) - repo `asterdex/api-docs`, `V3(Recommended)/EN/aster-finance-futures-api-v3.md`, commit terakhir 2026-09-23. **Binance Agent OS** (diluncurkan 20 Agu 2026): sub-akun Agentic bisa Spot, Margin, Convert, USDⓈ-M + COIN-M Futures (jadi leverage ada), tanpa izin tarik ke luar; batas leverage yang bisa disetel pengguna TIDAK disebut di sumber yang dibaca. **Belum pasti:** catatan 2 Okt menulis order menunggu "ya" per transaksi, sedangkan berita (crypto.news) menggambarkan agen jalan otonom di dalam batas sub-akun dengan ToS yang menyarankan meninjau tiap order; diuji saat ada akses. Untuk Fabius: semua sinyal dan uji maju diukur TANPA leverage (bobot <= 1; B2 gross 2); memakai leverage = spesifikasi baru = kunci baru ([[Conventions]] "pivot = kunci baru").
+
 ## 7. Penggaris biaya (menggantikan "59 bps untuk semuanya")
 
 59 bps = fee DemoPair (2 × 30 bps) pada 1 unit - ruler **venue demo**, bukan venue nyata (`tools/costs.py:13,35`).
@@ -240,6 +244,23 @@ Ruler per venue = fee + ½-spread buku + dampak + funding. Terbaca/terukur (pene
 RWA 1,25 bp, maker 0 (sejak 2026-09-07, dokumen + berita); spread BTC 0,01, ETH 0,04, SOL 0,84, BNB 0,65, XAUUSDT 0,02 bp;
 putaran $10 ribu ≈ 8 bp di BTC, ≈ 3,7 bp di XAUUSDT. Label angka "10-15 bps" sebagai `assumed-builder` sampai terukur
 (jangan ulangi kisah 20 bps, F-D24).
+
+**Biaya per jalur eksekusi (3 Okt malam, atas pertanyaan builder "apakah mereka ada admin feenya? misal spread"; bahan P69).** Tidak satu pun jalur
+memungut "biaya admin/langganan" terpisah untuk agen yang ditemukan; biayanya = fee trading + spread/slippage + funding (perp) + gas (on-chain).
+Level: *primer* = dokumen resmi dibaca langsung; *sekunder* = ringkasan pencarian/ulasan (situs resmi tak terjangkau dari jaringan kita).
+
+| jalur | fee trading (VIP 0, per sisi) | biaya lain | level |
+|---|---|---|---|
+| Tokocrypto spot, pasangan USDT | maker 0,10 % / taker 0,10 % (diskon s.d. 25 % bila bayar TKO; VIP 9: 0,036 / 0,048 %) | spread buku; tanpa funding. Pasangan IDR: taker 0,20 % / maker 0,10 % + PPN + pungutan bursa (CFX/ICEx) | sekunder (halaman dukungan Tokocrypto membalas 403) |
+| Binance Agentic Wallet (swap DEX di BSC) | biaya layanan Web3 Wallet: 0 % untuk token utama/stablecoin (sering promosi), hingga ±0,5 % token lain; plus fee pool (PancakeSwap v2 0,25 %, v3 0,01-1 %) | gas BSC, slippage + dampak harga AMM, proteksi MEV (bawaan aktif) | skill resmi menunjuk FAQ biaya Binance (`market-order.md`), FAQ itu tak terjangkau; angka sekunder |
+| Aster perp (Pro, order book) | maker 0 % / taker 0,04 % (crypto umum); grup B taker 0,10 %; RWA taker 0,0125 % (sejak 2026-09-07) | funding (bayar/terima), spread, risiko likuidasi | primer (docs.asterdex.com, fees) |
+| Binance Agent OS (futures USDⓈ-M) | maker ±0,02 % / taker 0,04-0,05 % (sumber berbeda); spot 0,10 %; diskon BNB 10 % futures / 25 % spot | funding, spread; sub-akun biasa ikut tier akun induk (khusus sub-akun Agentic belum terkonfirmasi) | sekunder (binance.com tak terjangkau) |
+| Pintu Pro (mitra) | tidak publik | - | - |
+
+**Dibanding asumsi paper (7 bps per sisi, `engine/spec.py` penggaris B1/B3):** Aster perp (4 bps taker + spread BTC ±0,01 bp) dan Binance futures (±5 bps)
+masih di bawah 7; Tokocrypto spot 10 bps (+43 %); Agentic Wallet untuk koin non-utama bisa 25-50 bps + gas + slippage (3,5-7x asumsi). Akibatnya hasil
+paper B1 hanya bisa dipindah ke Tokocrypto/Agentic Wallet sesudah penggaris per venue (P69) mengukur ulang biayanya; untuk bot berputaran rendah
+(B1) selisihnya kecil per tahun, untuk bot berputaran tinggi (B2) bisa menghapus hasil.
 
 ## 8. Dari usulan ke bot yang boleh dipercaya
 
