@@ -28,12 +28,36 @@ DATA = os.path.join(UNIV, "bsc-universe.jsonl")
 OUT = os.path.join(UNIV, "manifest.txt")
 
 
+def canon_sha(obj) -> str:
+    import hashlib
+    return "0x" + hashlib.sha256(json.dumps(obj, sort_keys=True, separators=(",", ":")).encode()).hexdigest()
+
+
+def verify_row(d: dict) -> str:
+    """'cocok' | 'cocok-kunci-int' | 'beda'. 'cocok-kunci-int' = cacat PENULIS lama (P105d): `gdelt.cols_seen` di-hash dengan kunci int sebelum ditulis,
+    jadi hash tersimpan hanya bisa dihitung ulang bila kuncinya dikembalikan ke int. Isi datanya utuh; hash tersimpan tidak ditulis ulang."""
+    stored = d.get("sha256")
+    probe = {k: v for k, v in d.items() if k != "sha256"}
+    if not stored or canon_sha(probe) == stored:
+        return "cocok"
+    g = probe.get("gdelt")
+    if isinstance(g, dict) and isinstance(g.get("cols_seen"), dict):
+        try:
+            g2 = dict(g, cols_seen={int(k): v for k, v in g["cols_seen"].items()})
+        except ValueError:
+            return "beda"
+        if canon_sha(dict(probe, gdelt=g2)) == stored:
+            return "cocok-kunci-int"
+    return "beda"
+
+
 def main():
     if not os.path.exists(DATA):
         raise SystemExit(f"dataset belum ada: {DATA}")
 
     rows = []
     mismatched = 0
+    legacy_int = 0
     prev_epoch = None
     gaps = []
     last_epoch = None
@@ -43,13 +67,10 @@ def main():
             continue
         d = json.loads(line)
         stored = d.get("sha256")
-        # Verifikasi: hash yang tersimpan harus cocok dengan isi baris, tanpa kunci sha256-nya.
-        probe = {k: v for k, v in d.items() if k != "sha256"}
-        recomputed = json.dumps(probe, sort_keys=True, separators=(",", ":")).encode()
-        import hashlib
-        ok = "0x" + hashlib.sha256(recomputed).hexdigest()
-        if stored and ok != stored:
-            mismatched += 1
+        # Verifikasi: hash yang tersimpan harus cocok dengan isi baris, tanpa kunci sha256-nya (lihat verify_row untuk cacat kunci int lama).
+        v = verify_row(d)
+        mismatched += v == "beda"
+        legacy_int += v == "cocok-kunci-int"
         priced = sum(1 for r in d.get("rows", []) if r.get("pool") and r.get("price_usd"))
         # `gap_since_prev_h` mengubah "perekam diam" dari cerita yang harus diingat seseorang
         # menjadi kolom yang terlihat. Alasannya nyata: pemadaman 22 Sep (16,2 jam) dan
@@ -98,6 +119,8 @@ def main():
             print("!!  REKAMAN MENGENDAP: task belum menulis berjam-jam. Cek "
                   "`schtasks /query /tn FabiusUniverse /fo LIST /v` → kolom \"Last Result\" "
                   "dan pengaturan baterai (No Start On Batteries).")
+    if legacy_int:
+        print(f"i   {legacy_int} snapshot hanya cocok bila gdelt.cols_seen berkunci int (cacat penulis lama, P105d): isi utuh, hash tersimpan tidak ditulis ulang")
     if mismatched:
         print(f"!!  {mismatched} snapshot TIDAK cocok dengan sha256 yang tersimpan "
               f"-> datanya berubah setelah ditulis. Jangan percaya isinya, laporkan.")

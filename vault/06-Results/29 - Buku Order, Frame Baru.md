@@ -158,3 +158,5 @@ hanya yang **net-of-cost**, yang di kedua jendela sama-sama kalah.
 
 Lihat juga: [[06-Results/22 - Buku Order, Terkunci Lebih Dulu]] §6 ·
 [[06-Results/27 - Masuk Terpilih vs Masuk Acak]] §6 · [[03-Sinyal/Volume/V4 - Order Book dan Liquidity Heatmap]] · `00-Overview/03 - Decisions.md` F-D53, F-D66, F-D68.
+
+> **Koreksi 3 Okt (P105b):** "net-of-cost" di halaman ini = return dikurangi SETENGAH spread pada snapshot t, persis seperti teks kuncinya. Ini BUKAN ongkos tetap 59 bps pulang-pergi ([[Concepts/Cost Is Fixed]]). Vonis tidak berubah: syarat (4) sudah gagal dengan ongkos yang lebih ringan. Lihat [[00-Overview/05 - Corrections]].

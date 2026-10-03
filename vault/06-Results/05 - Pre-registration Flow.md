@@ -72,6 +72,8 @@ Tiga-duanya gagal, dan ini jawaban **ketiga dari arah yang berbeda** atas pertan
 aturan harga (`09` §1-4), label smart money (`09` §4c), aliran kerumunan (halaman ini). Tidak ada
 satu pun bidang yang kami punya yang menyisakan edge di atas 20 bps pada horizon 4 jam — dan dengan ongkos terukur 59 bps (P10, 28 Sep) ambangnya naik, tidak turun.
 
+> **Koreksi 3 Okt (P105c):** baris "lolos BH" di tabel atas HAMPA. Uji tanda memakai n = 2k untuk menang dari satu kelompok k, jadi p selalu 1,0 dan BH tidak mungkin lulus. Sesudah diperbaiki (`tools/flow_test.py::ekstrem_menang`): dijalankan ulang 3 Okt dengan uji tanda yang diperbaiki: H1 / H2 / H3 lolos BH = 0 / 0 / 0, p terkecil 0,032 / 0,014 / 0,40 (p < 0,05: 1 / 1 / 0 dari 62 token; BH alpha 0,10 butuh <= 0,0016), tanpa segmen terbaik -22,7 / -14,9 / -22,7 bps (26 Sep: -22,2 / -6,2 / -22,2; beda kecil karena cache kline diperbarui sejak itu). Vonis H1-H3 tetap GAGAL, karena syarat tanpa-segmen-terbaik gagal di ketiganya dan tidak terkena cacat ini. Lihat [[00-Overview/05 - Corrections]].
+
 ## Penyimpangan kami sendiri selama menjalankan (dicatat, tidak dihapus)
 
 1. **"Tiga hipotesis" sebenarnya dua.** H3 memakai statistik yang sama dengan H1 (`net_usd`), hanya

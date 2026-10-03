@@ -61,6 +61,7 @@ python -X utf8 tools/verify_signals.py                  # pemeriksa PUBLIK: komi
 # Railway (butuh login CLI builder; JANGAN `railway environment config --json` / `railway variable list --json|--kv`: mencetak kunci)
 railway logs --service fabius-engine --lines 40
 railway logs --service fabius-probe --lines 80                                       # mode bayangan tahap 2+3 (F-D86): VONIS bayangan
+# alert (P101): pasang ALERT_TELEGRAM_TOKEN + ALERT_TELEGRAM_CHAT di Railway (dashboard, JANGAN lewat chat); start ulang -> pesan "worker mulai"
 python -X utf8 tools/railway_up.py [--service fabius-probe]                                      # deploy dari HEAD
 ```
 

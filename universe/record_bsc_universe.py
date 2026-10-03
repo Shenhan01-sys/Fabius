@@ -370,7 +370,9 @@ def gdelt_slice():
             urls.update(re.findall(r"https?://[^\t\" ]{12,160}", (c[4] or "").lower()))
         out["themes"] = dict(sorted(th.items(), key=lambda kv: -kv[1]))
         out["watch"] = dict(sorted(watch.items(), key=lambda kv: -kv[1]))
-        out["cols_seen"] = dict(sorted(cols.items()))
+        # P105d: kunci STRING. Dulu kunci int (urut numerik 8 < 27) di-hash di memori, lalu dimuat ulang sebagai string ("27" < "8") -> hash tidak bisa
+        # dihitung ulang dari berkas (snapshot "60/62", Not Yet Proven #21). Snapshot lama TIDAK ditulis ulang; pemeriksa mengenali cacat itu terpisah.
+        out["cols_seen"] = {str(k): v for k, v in sorted(cols.items())}
         out["url_count"] = len(urls)
         out["tone"] = {"n_all": len(tone_all), "n_matched": len(tones_matched),
                        "mean_all": round(sum(tone_all) / len(tone_all), 3) if tone_all else None,

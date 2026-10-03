@@ -246,3 +246,4 @@ Buku order **pada cadence kami** ditutup sebagai jalur prediksi: `bi5`, `bi1`, `
 adalah kelompok yang sudah likuid tempat efeknya +0,03 bps net. Lihat keputusan **F-D67** dan
 penutupan T1 di [[08-Backlog/03 - Epik Teori Baru]].
 
+> **Koreksi 3 Okt (P105b):** "net-of-cost" di halaman ini = return dikurangi SETENGAH spread pada snapshot t, persis seperti teks kuncinya. Ini BUKAN ongkos tetap 59 bps pulang-pergi ([[Concepts/Cost Is Fixed]]). Vonis tidak berubah: syarat (4) sudah gagal dengan ongkos yang lebih ringan. Lihat [[00-Overview/05 - Corrections]].

@@ -10,10 +10,13 @@ Itu pekerjaan sistem ini. Ia bukan bot yang menjanjikan keuntungan; ia firma ris
 menyaring, menilai, dan **menahan diri** — lalu mencatat setiap keputusan, termasuk penolakannya,
 di sebuah ledger yang tidak bisa diubah setelahnya.
 
-> **Arah baru (rencana, 2 Okt 2026) - belum dibangun kecuali yang tertulis di bawah:** Fabius menjadi operator yang hanya
-> memilih di antara bot berspesifikasi terkunci, kelak menjual sinyal yang bisa diperiksa, dan membuka slot bot untuk penerbit
-> luar. Belum ada bot terkunci, sinyal maju, kontrak baru, atau penjualan. Keputusan: `vault/00-Overview/03 - Decisions.md`
-> F-D70 dan F-D71; rincian: `vault/08-Backlog/05 - Epik Enam Bot.md`, `06 - Epik Gerbang Sinyal.md`, `07 - Epik Kolaborasi Bot Terbuka.md`.
+> **Sekarang (3 Okt 2026): operator sinyal PAPER yang bisa diperiksa.** Dua bot berspesifikasi terkunci (B1-TREND, B3-CARRY) mencatat
+> posisinya tiap hari ke ledger maju berantai hash (`ledger/paper/`, ditulis rantai GitHub). Sinyalnya dikomit ke `SignalAnchor` di
+> chain 97 sebelum hasilnya ada, oleh worker Railway. Aturan uji maju (F-D16) dan syarat buang bot dikunci di `LockRegistry`. Siapa pun bisa
+> memeriksa tanpa kunci: `python -X utf8 -m engine.cli ledger verify` dan `python -X utf8 tools/verify_signals.py`.
+> **Yang BELUM ada:** uang nyata, penjualan sinyal, klaim edge (jendela maju baru mulai 1 Okt 2026), dan penerbit bot luar.
+> Status per item: `vault/08-Backlog/01 - Backlog.md` bagian *Arah operator*; keputusan F-D70..F-D87 di `vault/00-Overview/03 - Decisions.md`.
+> Bagian di bawah ini adalah agen riset BSC yang menjadi asal-usulnya. Bagian itu tetap benar sebagai riwayat, tetapi bukan produk sekarang.
 
 ```
 UNIVERSE BSC        ->  REFUSAL GATE      ->  DESK (typed questions)  ->  PM + GATES  ->  ANCHOR

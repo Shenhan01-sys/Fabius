@@ -140,8 +140,8 @@ def build_card(token_hint=None):
     return {
         "protocol": "x402/1 + erc-8004/1",
         "name": "Fabius",
-        "description": ("Agent riset yang menerbitkan keputusan BNB Chain yang bisa dibuktikan "
-                        "salah: gerbang deterministik, penolakan di-anchor, hasil dinilai ledger."),
+        # P105e (3 Okt): deskripsi lama ("agen riset ...") basi sejak arah operator (F-D70); kartu lama 27 Sep tetap di riwayat git.
+        "description": ('Operator sinyal PAPER yang bisa diperiksa (sejak 2 Okt 2026): bot berspesifikasi terkunci (B1-TREND, B3-CARRY), ledger maju berantai hash, sinyal dikomit ke SignalAnchor chain 97 sebelum hasilnya ada, pemeriksa publik tanpa kunci. Asal-usul: agen riset BNB Chain yang keputusannya di-anchor.'),
         "image": None,
         "registry": {"chainId": vd.CHAIN, "identityRegistry": REGISTRY,
                      # dibaca dari rekor kalau ada: kartu tidak boleh menyebut tokenId yang tidak
@@ -158,17 +158,24 @@ def build_card(token_hint=None):
              "description": "ringkasan vault + statistik (dibayar per permintaan)"},
             {"url": CARD_URL.replace("agent-card.json", "decisions/direction-latest.json"),
              "protocol": "http", "method": "GET", "paywall": None,
-             "description": "rekaman keputusan terbaru (terbaca publik, tanpa bayar)"},
+             "description": "rekaman keputusan terbaru agen riset lama (terbaca publik, tanpa bayar)"},
+            {"url": CARD_URL.replace("docs/agent-card.json", "ledger/paper/B1-TREND.jsonl"),
+             "protocol": "http", "method": "GET", "paywall": None,
+             "description": "ledger maju B1-TREND (berantai hash; juga B3-CARRY.jsonl); hitung ulang: python -X utf8 -m engine.cli ledger verify"},
         ],
         "evidence": {
             "anchor_contract": "0xdd162afb5f5f92d5092f845a93660e3b38259330",
             "check_yourself": "python tools/anchor.py --verify   # tanpa kunci, tanpa gas",
+            "signal_anchor": "0x9B78200beFbbBe836585d31bd5b6dB32587064f3",
+            "lock_registry": "0xcF6fBF95fc04DEd8d670512CEc0723a2246Fbb0C",
+            "check_signals_yourself": "python -X utf8 tools/verify_signals.py   # komit + ungkap vs ledger, tanpa kunci",
             "registered_tx": (read_record() or {}).get("tx"),
         },
         "limits_stated_honestly": [
             "semua settlement di BNB Chain TESTNET (97); tidak ada dana nyata",
             "token pembayaran adalah koin demo milik kami sendiri",
-            "strategi arah kami kalah setelah ongkos 20 bps (vault/06-Results/04 - Negative Results.md) - yang dijual adalah bukti, bukan sinyal",
+            "strategi arah agen lama kalah setelah ongkos (20 bps, lalu 59 bps terukur; vault/06-Results/04 - Negative Results.md)",
+            "operator sinyal: PAPER penuh, belum ada uang nyata, belum ada penjualan; jendela maju baru mulai 1 Okt 2026 - BUKAN klaim edge (F-D16 belum terpenuhi)",
         ],
         "generated_utc": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
     }

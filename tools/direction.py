@@ -248,7 +248,10 @@ def decide_one(f, fund, liq, model_ans):
                 why.append(f"model bilang {model_ans['side']} vs data {side} -> turun ke OBSERVASI")
                 conf = min(conf or 0.0, 0.5)
     # ukuran & horizon
-    risk = RISK_SAFE if (conf is None or conf < 0.6) else RISK_WARM
+    # P105a (audit 1-2 Okt, dibuktikan ulang 3 Okt): versi lama `RISK_WARM if conf >= 0.6` membuat `confidence` MODEL menggandakan ukuran (0,5 % -> 1 %),
+    # melanggar aturan di atas ("model hanya boleh membatalkan/mengecilkan"). Tanpa model ukurannya RISK_SAFE, jadi model tidak boleh di atas itu.
+    # Keputusan lama yang sudah di-hash/di-anchor dengan 1 % TIDAK ditulis ulang; koreksinya di vault/00-Overview/05 - Corrections.md.
+    risk = RISK_SAFE
     regime = "stop-loss" if (side != "flat" and conf and conf >= 0.6 and a and a >= ACF_STRUCTURED) \
         else "time-stop" if side != "flat" else "flat"
     atr = f.get("atr") or 0

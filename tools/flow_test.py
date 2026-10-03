@@ -23,7 +23,10 @@ import statistics
 import sys
 import time
 
-import numpy as np
+try:
+    import numpy as np
+except ImportError:          # hanya fungsi uji murni (sign_p, ekstrem_menang) yang dipakai tes CI tanpa numpy
+    np = None
 # Windows: cmd.exe default cp1252 dan glyph yang kami cetak (`①④⑥` di arah, `⚠` di laporan)
 # bukan bagian dari yang di-hash - jadi encoding stdout yang disetel, bukan stringnya.
 # Tanpa ini, `print` bisa pecah DI TENGAH tabel dan separuh hasilnya terbaca seperti laporan penuh.
@@ -151,6 +154,16 @@ def sign_p(wins, n):
     return min(1.0, math.exp(mx) * sum(math.exp(x - mx) for x in logs))
 
 
+def ekstrem_menang(hi, lo, want_sign):
+    """(jumlah menang, ukuran kelompok) pada kelompok ekstrem YANG DIMINTA hipotesis: HI bila want_sign > 0, LO bila < 0.
+
+    P105c (audit 1-2 Okt, diperiksa ulang 3 Okt): versi lama menghitung `wins` di SATU kelompok (k titik) tetapi memberi `sign_p` n = 2k, sehingga
+    `wins * 2 <= n` SELALU benar -> p = 1,0 -> BH secara struktur tidak mungkin lulus, apa pun datanya. Hasil H1-H3 26 Sep "lolos BH 0/0/0" itu hampa;
+    vonisnya tetap GAGAL karena syarat drop-best-fold (yang tidak terkena cacat ini) gagal di ketiganya. Lihat vault/00-Overview/05 - Corrections.md."""
+    side = hi if want_sign > 0 else lo
+    return sum(1 for x in side if x > 0), len(side)
+
+
 def bh(pvals, alpha=BH_ALPHA):
     m = len(pvals)
     if not m:
@@ -254,9 +267,9 @@ def main():
             hi = [x["net"] for x in v[-k:]]
             lo = [x["net"] for x in v[:k]]
             diff = statistics.fmean(hi) - statistics.fmean(lo)
-            wins = sum(1 for x in (hi if want_sign > 0 else lo) if x > 0)
+            wins, n_side = ekstrem_menang(hi, lo, want_sign)
             per_tok.append((tok, v[0]["sym"], n, diff, statistics.fmean(hi), statistics.fmean(lo),
-                            wins, 2 * k))
+                            wins, n_side))
         pvals = [sign_p(t[6], t[7]) for t in per_tok]
         oks = bh(pvals)
         pos = [t for t in per_tok if t[3] > 0]
