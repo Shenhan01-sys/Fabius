@@ -166,7 +166,7 @@ Aturan naik modal: sesudah 20 hari bursa `live` di dalam semua ambang, builder B
 ## 10. Risiko dan pertanyaan terbuka
 
 - **Akses Binance dari Indonesia** dan ketersediaan Agent OS untuk akun builder: tidak diketahui (H1). Bila tertutup: Aster naik ke prioritas 1 (keputusan builder).
-- **IP Railway (Singapura)** untuk endpoint trading Binance prod: belum diuji (data pasar REST dari Singapura sudah jalan). Diukur di E2.
+- **IP Railway (Singapura)** untuk endpoint trading Binance prod: ~~belum diuji~~ **TERUKUR 4 Okt ±01:3x WIB** dari dalam container `fabius-probe` (IP keluar SG, AS400940 Railway): testnet `/fapi/v1/time` 200, `/fapi/v1/order` tanpa kunci 401 `-2014 API-key format invalid`; prod `fapi.binance.com` `/fapi/v1/time` 200, `/fapi/v1/order` 401 `-2014`; `api.binance.com/sapi/v1/account/apiRestrictions` 400 `-2014`; Aster `/fapi/v1/time` 200. Artinya endpoint trading terjangkau (balasan dari lapisan otentikasi, bukan blokir wilayah 451/403). Dari perangkat builder testnet butuh Cloudflare WARP; dari Railway tidak. Min notional PROD belum dibaca (E2).
 - **Agent OS: konfirmasi "ya" per order** - catatan 2 Okt vs berita: belum pasti (epik 05 §6). Kalau benar wajib, eksekusi otomatis penuh tidak mungkin lewat jalur itu.
 - **Modal minimum:** B1 penuh di Binance >= ±800 USDT (testnet; prod mungkin lebih tinggi), di Aster >= ±80 USDT. Canary di bawahnya = sebagian aset tidak bisa
   dibuka = bukan B1 lagi (jangan diam-diam memotong universe).
