@@ -74,7 +74,7 @@ Bot lain (B2, B4, B5, B6) tidak di epik ini.
 ## 3. Aktor
 
 - **Builder:** pemilik akun dan kunci; satu-satunya yang menyalakan `live` dan menaikkan batas modal.
-- **Eksekutor** (service Railway baru `fabius-exec`, terpisah dari worker komit): memegang kunci TRADE tanpa izin tarik; tidak menulis repo.
+- **Eksekutor** (service Railway baru `fabius-exec`, terpisah dari worker komit): memegang kunci TRADE tanpa izin tarik; tidak menulis repo. **Revisi 4 Okt (F-D93):** paket gratis menolak service ketiga -> mode DEMO menumpang `fabius-engine` sebagai langkah terjaga; kunci demo terpasang + terverifikasi di sana. Kunci PROD tetap wajib service terpisah sebelum S3.
 - **Penulis ledger eksekusi** (rantai GitHub, penulis tunggal `ledger/eksekusi/`): memegang kunci READ-ONLY; membaca riwayat trade dari venue.
 - **Publik:** memeriksa urutan komit -> order dan selisih eksekusi vs paper.
 

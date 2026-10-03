@@ -2835,3 +2835,18 @@ Builder: *"Terkait dana awalan pastinya sangat terbatas maksimal hanya ada di 10
    tiap hari; 13 tes; T8 SK-E1..SK-E9 berjangkar. Rincian: PRD §0a, [[04-Tools/TL22 - eksekutor dan kertas-venue]].
 
 **Terkait:** F-D73 · F-D91 · [[09-Inbox/Session-2026-10-02]] §50
+
+## F-D93 — Paket gratis Railway menolak service ketiga: eksekutor mode demo menumpang `fabius-engine`; kunci demo Binance terpasang dan terverifikasi · 4 Okt 2026 (WIB)
+
+Builder: *"Gabisa cuy, saya mau tambah empty project gabisa karena free plan, jadi saya taruh di fabius-engine dulu ya, cek aja"*.
+
+1. `BINANCE_API_KEY` / `BINANCE_SECRET_KEY` / `BINANCE_API_ENV=demo` dipasang builder di `fabius-engine` (dashboard). Diverifikasi dari dalam container
+   (kunci SSH sementara, dicabut sesudahnya; nilai kunci tidak pernah dicetak, hanya panjangnya): `/fapi/v2/balance` HTTP 200 (saldo VIRTUAL demo BTC 0,01,
+   USDT 5.000, USDC 5.000), `/fapi/v2/positionRisk` HTTP 200 (0 posisi), kueri order palsu HTTP 400 `-2013` (= tidak ada, sesuai harapan). Worker sesudah
+   redeploy sehat (start 19:06Z, komit 2 Okt OK, alarm 0).
+2. **Eksekutor mode demo (P118) menumpang `fabius-engine`** sebagai langkah terpisah yang dijaga (gagal = dicatat + alert, worker komit tetap jalan),
+   bukan service `fabius-exec` (PRD §3) - sampai paket Railway di-upgrade (rencana ±1 Nov).
+3. **Kunci PROD (uang nyata) TIDAK boleh serumah dengan kunci committer:** sebelum tahap S3 canary, service terpisah wajib ada (upgrade) - atau builder
+   memutuskan lain secara eksplisit.
+
+**Terkait:** F-D91 · F-D92 · [[08-Backlog/10 - Epik Eksekusi Venue]] · [[09-Inbox/Session-2026-10-02]] §53
