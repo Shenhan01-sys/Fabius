@@ -71,6 +71,9 @@ permukaan audit publik adalah produknya, bukan biaya gas.
 
 ## Status deploy
 
+> **BN-BASI - 3 Okt 2026 (P76):** paragraf ini basi. DecisionAnchor HIDUP di chain 97 (`0xDD162AFB5F5f92d5092f845A93660e3B38259330`; dibaca 3 Okt:
+> `getAnchor(anchorIdAt(0))` -> agent `0x4bb30e3b…`, `anchoredAt` 1790238225), lihat [[02-Contracts/02 - Deployed on 97]].
+
 `script/Deploy.s.sol` ada dan **belum pernah dijalankan**. Tidak ada address publik dari proyek
 ini. Setelah deploy, klaim "live di testnet" baru boleh ditulis kalau terbukti dari **keadaan
 chain**, bukan dari baris `SUCCESS` di log — pola `verify_deploy97.py` di repo induk.

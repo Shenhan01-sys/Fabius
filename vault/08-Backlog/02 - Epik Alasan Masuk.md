@@ -4,6 +4,9 @@ tags: [backlog]
 
 # 02 - Epik: Alasan Untuk Masuk
 
+> **BN-PIVOT - 3 Okt 2026 (P76).** Epik ini milik agen riset BSC lama (pilih token, kapan masuk). Arah operator (F-D70) ada di
+> [[08-Backlog/01 - Backlog]] bagian *Arah operator* (P68+). Item di sini tetap benar sebagai riwayat riset; bukan antrean kerja sekarang.
+
 **Daftar induk:** [[08-Backlog/01 - Backlog]] P31 · **Keputusan:** F-D33 · **Dibuka:** 28 Sep 2026
 **Status epik:** 🔴 **BELUM TERPECAHKAN - dan ini jantung produknya**
 

@@ -9,6 +9,10 @@ artefak: decisions/backtest-20260924Z-h4.json, -h4-momonly.json, -h4-momonly-fli
 
 # 09 — Uji arah: aturan kita TIDAK punya edge setelah ongkos, di horizon mana pun
 
+> **BN-SKOP - 3 Okt 2026 (P76).** Vonis NEGATIF trend/momentum di halaman ini berlaku untuk SATU aturan yang diuji: SMA24 ± 1 % + ret24 pada bar
+> 1 jam, horison 4/24 bar, ongkos 20/59 bps, 12 perp (`tools/direction.py`). Itu BUKAN vonis untuk keluarga trend. B1-TREND (momentum deret waktu
+> HARIAN, N = 60, 16 perp, long/flat) adalah bot terpisah dengan spesifikasi terkunci yang sedang diuji maju ([[06-Results/30 - Spesifikasi Bot dan Kunci]]).
+
 Pertanyaan yang dijawab halaman ini adalah pertanyaan yang paling mungkin membuat kami terlihat
 bohong: kalau agen sudah bisa bilang "short, masuk di sini, stop di sini, 24 jam" — apakah itu
 lebih baik daripada lemparan koin? Jawabannya, seperti terukur di bawah: **tidak, belum.**

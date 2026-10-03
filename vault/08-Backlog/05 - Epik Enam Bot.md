@@ -325,7 +325,7 @@ ia dibaca mesin dan memuat klaim yang perlu ditinjau terpisah, P76). Pertanyaan 
 | P73 | pipeline event B4: kalender listing/unlock, ketersediaan perp | unlock API berbayar (HTTP 402) |
 | P74 | lapisan pemilih + evaluasi (EW/acak/trailing, skor Brier, jeda minimum) | |
 | P75 | telaah hukum/ToS sebelum uang nyata (§10) | |
-| P76 | suntingan minimal 12 pada klaim yang berbenturan | menunggu builder |
+| P76 | suntingan minimal 12 pada klaim yang berbenturan | menunggu builder -> **selesai 3 Okt** (status di [[01 - Backlog]]) |
 | P77 | M2 mesin: pengunduh dengan guard umur bar + paper ledger append-only + replay B4 dari event | **dibangun 2 Okt (F-D75..F-D78)**; replay B4 belum |
 | P78 | M3 kontrak: `LockRegistry`, anchor sinyal v2 (commit-reveal + akar Merkle), `OperatorGuard` | [[06 - Epik Gerbang Sinyal]] §3; **C-A/C-B ter-deploy chain 97 2 Okt (F-D80); `OperatorGuard` belum** |
 | P79 | M4 gerbang: x402 V2 + MCP + webhook/email | [[06 - Epik Gerbang Sinyal]] §4-§5; **setelah** P75 |

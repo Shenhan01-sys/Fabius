@@ -4,6 +4,11 @@ tags: [concept, "one-way-gate"]
 
 # One-Way Gate — gerbang yang hanya boleh mengurangi
 
+> **BN-DOKTRIN - 3 Okt 2026 (P76).** Dua tempat di kode dulu melanggar doktrin ini tanpa ketahuan: `confidence` model menggandakan ukuran posisi
+> (`tools/direction.py`, diperbaiki P105a) dan pemeriksa "sudah di-anchor" tidak pernah menyala (`tools/execute_live.py`, diperbaiki P72). Keduanya
+> kini diuji (`engine/tests/test_audit_p105.py`, `engine/tests/test_execute_anchored.py`). Di arah operator, doktrin yang sama berlaku untuk peninjau
+> deterministik (F-D72).
+
 > **BN-PIVOT - 2 Okt 2026 (konsep operator).** Untuk operator pemilih bot, "gerbang yang hanya boleh mengurangi" mengambil bentuk
 > **ruang aksi tertutup** `{NONE, bot terdaftar}`: model hanya boleh memilih dari himpunan itu, menolak, atau mengecilkan; tidak
 > pernah menambah bot atau menaikkan plafon. Peninjau pengajuan bot juga satu arah (hanya menolak atau meminta info; yang menerima

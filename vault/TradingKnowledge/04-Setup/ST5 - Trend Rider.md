@@ -4,6 +4,10 @@ tags: [tk, tk-setup, "ST5"]
 
 # ST5 - Trend Rider
 
+> **BN-SKOP - 3 Okt 2026 (P76).** Vonis NEGATIF trend/momentum di halaman ini berlaku untuk SATU aturan yang diuji: SMA24 ± 1 % + ret24 pada bar
+> 1 jam, horison 4/24 bar, ongkos 20/59 bps, 12 perp (`tools/direction.py`). Itu BUKAN vonis untuk keluarga trend. B1-TREND (momentum deret waktu
+> HARIAN, N = 60, 16 perp, long/flat) adalah bot terpisah dengan spesifikasi terkunci yang sedang diuji maju ([[06-Results/30 - Spesifikasi Bot dan Kunci]]).
+
 **Keluarga:** [[00 - Hub Setup]]
 **Anggota:** [[FD9 - Horizon Waktu dan Multi-Timeframe]] · [[I1 - Moving Average]] · [[S4 - Order Block dan Breaker]] ·
 [[S7 - Fibonacci Retracement dan Extension]] · [[V1 - Konfirmasi Volum dan Money Flow]] · [[FD7 - Invalidation Stop dan Time-Stop]] · [[FD8 - Volatilitas]]

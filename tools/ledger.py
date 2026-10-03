@@ -18,6 +18,7 @@ Yang membuatnya tidak bisa dipakai curang, dan ini isi sebenarnya dari file ini:
    kena (stop atau target) menentukan hasilnya; kalau keduanya tersentuh di bar yang SAMA,
    hasilnya ditulis AMBIGU - bukan dipilih yang lebih enak.
 4. **Ongkos nyata dipakai sejak awal** (20 bps RT, vault/01-Agent/01 - Asset Classes and Seats.md §3), dan yang dilaporkan adalah NET.
+   (Koreksi 3 Okt 2026, P76: sejak P10 28 Sep ongkos bawaan = 59 bps terukur di pool demo, `tools/costs.py`; "20 bps" di atas basi.)
 
 Rezimu ikut dibaca dari rekaman: `time-stop` = keluar di horizon (atau di stop/target kalau
 tersentuh, karena time-stop adalah plafon waktu, bukan larangan keluar), `stop-loss` = stop aktif.

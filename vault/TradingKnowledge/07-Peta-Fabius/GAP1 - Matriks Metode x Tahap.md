@@ -4,6 +4,14 @@ tags: [tk, tk-peta, "GAP1"]
 
 # GAP1 - Matriks Metode x Tahap
 
+> **BN-DATA - status per 3 Okt 2026 (P76).** Funding historis ADA (`ledger/bars/fund_<SYM>.csv`, 16 perp, zip bulanan Binance; REST = Vision, F-D83).
+> Buku order L2 DIREKAM perekam ⑨ (`universe/book-depth-manifest.txt`). REST Binance fapi/api TERJANGKAU dari Railway Singapura (HTTP 200, log worker
+> 3 Okt 06:38Z), DITOLAK dari laptop builder dan runner GitHub (451). Tanda `TIDAK-ADA` / `MATI` di bawah adalah keadaan pada tanggal tulisnya.
+
+> **BN-SKOP - 3 Okt 2026 (P76).** Vonis NEGATIF trend/momentum di halaman ini berlaku untuk SATU aturan yang diuji: SMA24 ± 1 % + ret24 pada bar
+> 1 jam, horison 4/24 bar, ongkos 20/59 bps, 12 perp (`tools/direction.py`). Itu BUKAN vonis untuk keluarga trend. B1-TREND (momentum deret waktu
+> HARIAN, N = 60, 16 perp, long/flat) adalah bot terpisah dengan spesifikasi terkunci yang sedang diuji maju ([[06-Results/30 - Spesifikasi Bot dan Kunci]]).
+
 **Keluarga:** [[00 - Hub Peta Fabius]] · **Tahap:** penilaian ([[PL6 - Menilai Hasil]])
 **Sumber:** `Fakta Terukur.md` §A/§C/§E/§H · daftar metode: `vault/TradingKnowledge/Plan.txt` +
 `vault/TradingKnowledge/QuantTrading/Info1.txt`

@@ -4,6 +4,11 @@ tags: [concept, "cost-is-fixed"]
 
 # Cost Is Fixed — ongkos tidak ikut mengecil saat modalmu mengecil
 
+> **BN-ONGKOS - 3 Okt 2026 (P76).** "59 bps" = ongkos pulang-pergi yang kami UKUR di pool demo kami sendiri (DemoPair: fee 30 bps/sisi + dampak
+> x·y=k, `tools/costs.py`). Itu BUKAN ongkos venue perp: bot operator memakai penggaris spesifikasinya (mis. B1: 7 bps/sisi + funding nyata;
+> penggaris per venue = P69, belum). Dan "gross harus > 118 bps" (2x ongkos) adalah salah turunan: 59 bps pulang-pergi SUDAH memuat kaki masuk
+> DAN keluar, jadi net > 0 cukup dengan gross > 59. Angka 2x tetap dipakai alat lama supaya uji yang sudah dikunci tidak bergeser ([[00-Overview/05 - Corrections]]).
+
 **Ringkas.** Fee, gas, dan slippage itu **per transaksi**. Kalau posisi diperkecil, biaya tidak
 mengecil — porsinya **membesar**. Ini alasan ukuran $0,5–1 kalah sebelum sinyalnya dinilai.
 

@@ -4,6 +4,11 @@ tags: [submission, "P-DETAIL"]
 
 # Project Detail — Fabius
 
+> **BN-KONTRAK - 3 Okt 2026 (P76/P72).** `ExecutionVault` hanya menolak hash NOL dan tidak terhubung ke `DecisionAnchor`. Pemeriksaan "keputusan
+> sudah di-anchor" hanya ada di alat (`tools/execute_live.py::require_anchored`), dan sampai 3 Okt pemeriksaan itu TIDAK PERNAH menyala: kata pertama
+> jawaban `getAnchor` selalu offset 0x20. Sejak 3 Okt ia menolak id tak dikenal dan decisionHash yang beda (3 tes). Kontraknya sendiri tetap tidak
+> menegakkan kalimat di bawah; yang menegakkan adalah alat.
+
 > **BN-PIVOT - 2 Okt 2026.** Arah proyek bergeser: Fabius menjadi **operator pemilih bot** yang kelak menjual **sinyal
 > berbukti** dan membuka slot bot untuk penerbit luar ([[00-Overview/03 - Decisions]] F-D70 dan F-D71). Halaman ini
 > menggambarkan keadaan **sebelum** pivot dan tetap benar untuk apa yang **sudah dibangun**; arah baru masih **usulan dan kode

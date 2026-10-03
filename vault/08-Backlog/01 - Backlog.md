@@ -20,11 +20,11 @@ Rincian tiap item ada di rumahnya (kolom terakhir); angka di sini dicetak oleh p
 | P69 | penggaris per venue di `tools/costs.py` (fee + ½-spread + dampak + funding) | ⬜ | [[05 - Epik Enam Bot]] §12 |
 | P70 | porting skrip sesi ke `tools/` + satu berkas kunci per bot | 🟡 sebagian lewat `engine/` (koreksi K1-K3 lahir dari sini) | §12 |
 | P71 | guard umur bar di `tools/direction.py` | ⬜ guard ada di `engine/freshness.py`; `direction.py` belum | §12 (temuan stop MARSCOIN 27 Sep) |
-| P72 | pemeriksaan ter-anchor yang benar (`tools/execute_live.py:117` tak pernah menyala) | ⬜ | §12 |
+| P72 | pemeriksaan ter-anchor yang benar (`tools/execute_live.py:117` tak pernah menyala) | ✅ **3 Okt**: `require_anchored` membaca kata 4 (decisionHash) + kata 7 (anchoredAt) jawaban dinamis `getAnchor`; tata letak dicocokkan dengan anchor sungguhan (`anchorIdAt(0)` -> agent `0x4bb30e3b…`, `anchoredAt` 1790238225); 3 tes `engine/tests/test_execute_anchored.py`; kontrak tetap tidak menegakkannya (BN-KONTRAK) | §12 |
 | P73 | pipeline event B4 (kalender listing/unlock) | 🚫 API unlock berbayar (HTTP 402) | §12 |
 | P74 | lapisan pemilih + evaluasi (EW/acak/trailing, Brier) | ⬜ | §12 |
 | P75 | telaah hukum/ToS sebelum uang nyata | ⬜ | [[05 - Epik Enam Bot]] §10 |
-| P76 | suntingan minimal klaim yang berbenturan + `docs/agent-card.json` | 🟠 | §12 |
+| P76 | suntingan minimal klaim yang berbenturan + `docs/agent-card.json` | ✅ **3 Okt**: banner aditif 3 Okt (+104 baris, 0 dihapus): BN-SKOP (GAP1, ST5, EV1, FD1, 06-Results/04), BN-ONGKOS (Cost Is Fixed, Thresholds, FD4, Fakta Terukur + docstring `tools/costs.py`), BN-DATA (GAP1, GAP4, FD4, FD8, Fakta Terukur, D3), BN-KONTRAK (C3, Project Detail), BN-DOKTRIN (One-Way Gate), BN-BASI (02-Contracts/01), BN-RWA (Asset Classes; Aster 3 Okt: 589 perp, STOCK 116, ETF 14, Commodities 11, USD1-RWA 13), BN-PIVOT (Epik Alasan Masuk), Conventions "pivot = kunci baru" + `N/A`, halaman baru [[06-Results/30 - Spesifikasi Bot dan Kunci]], 3 baris Corrections; README + kartu agen sudah di P105e; `tk_check` 100 catatan 0 rusak | §12 |
 | P77 | M2: pengunduh dengan guard umur bar + ledger paper maju | ✅ B1-TREND + B3-CARRY hidup: genesis + tick bar 2026-10-01 masing-masing, dibuat runner; 🟡 replay B4 belum | F-D75..F-D77 · [[04-Tools/TL9 - ledger paper maju]] |
 | P78 | M3 kontrak: `LockRegistry` (C-A) + `SignalAnchor` v2 (C-B); `OperatorGuard` (C-C) | ✅ C-A/C-B **ter-deploy chain 97 2 Okt 13:04Z**, B1/B3 dikunci committer; ⬜ C-C | F-D79/F-D80 · [[02-Contracts/C6 - LockRegistry]] · [[02-Contracts/C7 - SignalAnchor]] |
 | P79 | M4 gerbang: x402 V2 + MCP + webhook/email | ⬜ sesudah P75/P80 | [[06 - Epik Gerbang Sinyal]] §5 |

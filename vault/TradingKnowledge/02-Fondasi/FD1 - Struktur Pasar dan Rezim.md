@@ -4,6 +4,10 @@ tags: [tk, tk-fondasi, "FD1"]
 
 # FD1 - Struktur Pasar dan Rezim
 
+> **BN-SKOP - 3 Okt 2026 (P76).** Vonis NEGATIF trend/momentum di halaman ini berlaku untuk SATU aturan yang diuji: SMA24 ± 1 % + ret24 pada bar
+> 1 jam, horison 4/24 bar, ongkos 20/59 bps, 12 perp (`tools/direction.py`). Itu BUKAN vonis untuk keluarga trend. B1-TREND (momentum deret waktu
+> HARIAN, N = 60, 16 perp, long/flat) adalah bot terpisah dengan spesifikasi terkunci yang sedang diuji maju ([[06-Results/30 - Spesifikasi Bot dan Kunci]]).
+
 **Keluarga:** [[00 - Hub Fondasi]] · **Tahap:** analisis ([[PL3 - Menganalisis]]), mengikat keputusan ([[PL4 - Memutuskan]])
 **Sumber:** [[Fakta Terukur]] §A (apa yang bisa kita hargai sendiri), §E (ambang yang masih perlu diuji), §F (hasil uji arah) · sisanya pengetahuan standar pasar — tidak ada rujukannya di repo ini
 

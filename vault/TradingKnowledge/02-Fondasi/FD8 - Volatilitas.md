@@ -4,6 +4,10 @@ tags: [tk, tk-fondasi, "FD8"]
 
 # FD8 - Volatilitas
 
+> **BN-DATA - status per 3 Okt 2026 (P76).** Funding historis ADA (`ledger/bars/fund_<SYM>.csv`, 16 perp, zip bulanan Binance; REST = Vision, F-D83).
+> Buku order L2 DIREKAM perekam ⑨ (`universe/book-depth-manifest.txt`). REST Binance fapi/api TERJANGKAU dari Railway Singapura (HTTP 200, log worker
+> 3 Okt 06:38Z), DITOLAK dari laptop builder dan runner GitHub (451). Tanda `TIDAK-ADA` / `MATI` di bawah adalah keadaan pada tanggal tulisnya.
+
 **Keluarga:** [[00 - Hub Fondasi]] · **Tahap:** analisis ([[PL3 - Menganalisis]]), mengikat ukuran ([[FD6 - Ukuran Posisi]])
 **Sumber:** [[Fakta Terukur]] §A/§C/§E · `tools/direction.py` (ATR, `vol_annual`) · sisanya pengetahuan standar pasar — tidak ada rujukannya di repo ini
 

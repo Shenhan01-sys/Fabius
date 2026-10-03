@@ -41,6 +41,11 @@ besar akan tetap kosong; itu hasil, bukan kegagalan.
 | G Wrapped/pasangan stabil | BTCB WBNB USDT | — | **bukan aset yang bisa dipilih** (`not_a_choosable_asset`, terukur 4/jendela) | — | — |
 | H Token peristiwa | politik/"AI"/tren X | ⑤②⑥ | attention-driven; sinyal terbaik = **attention berhenti** | attention habis | ❌ |
 
+> **BN-RWA - 3 Okt 2026 (P76): kelas yang belum ada di tabel ini.** Aster punya perp RWA/TradFi. Diukur 3 Okt 07:3xZ lewat
+> `fapi.asterdex.com/fapi/v1/exchangeInfo`: 589 perp TRADING, `underlyingSubType` STOCK 116, ETF 14, Commodities 11, USD1-RWA 13. Usulan kelas I
+> (RWA/TradFi): gerbang token BSC ④⑥ untuk kelas ini berstatus `N/A` (tidak relevan secara struktural), bukan GAGAL dan bukan LOLOS. Kelas ini belum
+> punya bot; B5-CORE-RWA memakai spot PAXG/XAU ([[06-Results/30 - Spesifikasi Bot dan Kunci]]).
+
 ## 3. Kursi: 5 seat, per kelas, dengan status
 
 ```

@@ -139,4 +139,11 @@ Frontmatter `tags` (kategori + identitas, mis. `tags: [kontrak, "C2"]`), lalu
   salinan lokal dianggap keadaan sistem) dicatat di [[Concepts/Stale Local Copy]] — baca sebelum
   menyimpulkan "mati" dari satu sumber.
 
+## Pivot dan status `N/A` (P76, 3 Okt 2026)
+
+- **Pivot = kunci baru.** Mengubah spesifikasi bot, ambang, terjemahan pembunuh, atau parameter uji SESUDAH data terlihat bukan penyetelan. Itu
+  keputusan baru dengan kunci v2 (dan ledger baru untuk bot). Kunci lama tetap di chain dan di riwayat git, sehingga pergantiannya terlihat.
+- **`N/A` bukan LOLOS dan bukan GAGAL.** Gerbang yang tidak relevan secara struktural untuk suatu kelas aset (mis. gerbang token BSC untuk perp RWA)
+  ditulis `N/A` dengan alasannya. Ini berbeda dari `UNMEASURED` ([[Concepts/Unmeasured Is Not Clean]]), yang berarti relevan tetapi belum terukur.
+
 Lihat: [[Index]] · [[Quick-Reference]] · [[Dashboard]] · [[START-HERE]]

@@ -4,6 +4,10 @@ tags: [data, "D3"]
 
 # D3 - Price Depth per Sumber
 
+> **BN-DATA - status per 3 Okt 2026 (P76).** Funding historis ADA (`ledger/bars/fund_<SYM>.csv`, 16 perp, zip bulanan Binance; REST = Vision, F-D83).
+> Buku order L2 DIREKAM perekam ⑨ (`universe/book-depth-manifest.txt`). REST Binance fapi/api TERJANGKAU dari Railway Singapura (HTTP 200, log worker
+> 3 Okt 06:38Z), DITOLAK dari laptop builder dan runner GitHub (451). Tanda `TIDAK-ADA` / `MATI` di bawah adalah keadaan pada tanggal tulisnya.
+
 **Bagian dari:** [[03-Data/00 - Hub Data]]
 **Sumber:** `tools/bars.py`, `universe/record_bsc_universe.py`
 

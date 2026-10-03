@@ -4,6 +4,11 @@ tags: [kontrak, "C3"]
 
 # C3 - ExecutionVault
 
+> **BN-KONTRAK - 3 Okt 2026 (P76/P72).** `ExecutionVault` hanya menolak hash NOL dan tidak terhubung ke `DecisionAnchor`. Pemeriksaan "keputusan
+> sudah di-anchor" hanya ada di alat (`tools/execute_live.py::require_anchored`), dan sampai 3 Okt pemeriksaan itu TIDAK PERNAH menyala: kata pertama
+> jawaban `getAnchor` selalu offset 0x20. Sejak 3 Okt ia menolak id tak dikenal dan decisionHash yang beda (3 tes). Kontraknya sendiri tetap tidak
+> menegakkan kalimat di bawah; yang menegakkan adalah alat.
+
 **Bagian dari:** [[02-Contracts/00 - Hub Contracts]]
 **Sumber:** `contracts/ExecutionVault.sol`, `test/ExecutionVault.t.sol` (18 test lulus)
 

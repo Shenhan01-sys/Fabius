@@ -58,6 +58,9 @@ def gate_gross_bps(rt=None):
     sebuah kandidat dipilih kalau gross-nya di atas satu round-trip; setelah itu kita membayar
     round-trip yang sama untuk benar-benar menutup posisi. Sisanya nol. Maka yang harus
     dilampaui adalah dua kali - diukur dengan 59 bps, itu **118 bps** per trade.
+
+    KOREKSI 3 Okt 2026 (P76): rantai alasan di atas menghitung kaki keluar DUA kali - 59 bps pulang-pergi sudah memuat masuk DAN keluar, jadi
+    net > 0 cukup dengan gross > 59. GATE_MULT = 2 tetap dipakai alat lama supaya uji yang sudah dikunci tidak bergeser; anggap ia margin, bukan turunan.
     """
     return (MEASURED_RT_BPS if rt is None else float(rt)) * GATE_MULT
 

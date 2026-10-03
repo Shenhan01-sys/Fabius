@@ -114,7 +114,10 @@ def require_anchored(dec, agent_addr):
     aid = an.expected_id(agent_addr, dec["decisionHash"], dec["snapshotHash"])
     raw = vd.call(cs(contract), "getAnchor(bytes32)", ("bytes32",), (bytes.fromhex(aid[2:]),))
     body = raw[2:]
-    if len(body) < 192 or set(body[:192]) == {"0"}:
+    # P72 (audit 2 Okt, diperbaiki 3 Okt): `Anchor` punya `string asset`, jadi jawabannya dinamis - kata 0 SELALU offset 0x20 dan pemeriksaan lama
+    # `set(body[:192]) == {"0"}` tidak pernah benar (pemeriksa ini tidak pernah menyala). Tata letak: kata 1 agent, 4 decisionHash, 7 anchoredAt.
+    word = lambda i: body[64 * i:64 * (i + 1)]                                              # noqa: E731
+    if len(body) < 64 * 8 or int(word(7) or "0", 16) == 0 or word(4).lower() != dec["decisionHash"][2:].lower():
         raise SystemExit(
             f"decisionHash {dec['decisionHash'][:14]}… BEDA/NON-JADI di chain: getAnchor(id={aid[:14]}…) "
             "mengembalikan struct nol.-anchor dulu: `python -X utf8 tools/anchor.py "

@@ -4,6 +4,15 @@ tags: [tk, tk-fondasi, "FD4"]
 
 # FD4 - Ongkos Perdagangan
 
+> **BN-DATA - status per 3 Okt 2026 (P76).** Funding historis ADA (`ledger/bars/fund_<SYM>.csv`, 16 perp, zip bulanan Binance; REST = Vision, F-D83).
+> Buku order L2 DIREKAM perekam ⑨ (`universe/book-depth-manifest.txt`). REST Binance fapi/api TERJANGKAU dari Railway Singapura (HTTP 200, log worker
+> 3 Okt 06:38Z), DITOLAK dari laptop builder dan runner GitHub (451). Tanda `TIDAK-ADA` / `MATI` di bawah adalah keadaan pada tanggal tulisnya.
+
+> **BN-ONGKOS - 3 Okt 2026 (P76).** "59 bps" = ongkos pulang-pergi yang kami UKUR di pool demo kami sendiri (DemoPair: fee 30 bps/sisi + dampak
+> x·y=k, `tools/costs.py`). Itu BUKAN ongkos venue perp: bot operator memakai penggaris spesifikasinya (mis. B1: 7 bps/sisi + funding nyata;
+> penggaris per venue = P69, belum). Dan "gross harus > 118 bps" (2x ongkos) adalah salah turunan: 59 bps pulang-pergi SUDAH memuat kaki masuk
+> DAN keluar, jadi net > 0 cukup dengan gross > 59. Angka 2x tetap dipakai alat lama supaya uji yang sudah dikunci tidak bergeser ([[00-Overview/05 - Corrections]]).
+
 **Keluarga:** [[00 - Hub Fondasi]] · **Tahap:** keputusan ([[PL4 - Memutuskan]]), penilaian ([[PL6 - Menilai Hasil]])
 **Sumber:** [[Fakta Terukur]] §D (59 bps, 20 bps, $0,05, gas 97) · §E (ambang efektif) · §F (gross vs ongkos) · §H (`cost_bps_applied = 0.0`) · `tools/direction.py` (gerbang funding)
 
