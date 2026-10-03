@@ -136,12 +136,22 @@ def check(bots: Sequence[str], ledger_dir: str, cv, committer: str, now_s: int, 
     return code, rows
 
 
+def ringkasan(rows) -> Optional[Tuple[str, str]]:
+    """(kunci, teks) ringkasan harian bila SEMUA bot berstatus OK pada bar yang sama; None bila belum (MENUNGGU/ALARM/SEBELUM KUNCI tidak diringkas sebagai beres).
+    Kunci per bar: rantai GitHub menjalankan penjaga tiap 5 menit, tetapi ringkasan untuk satu bar hanya sekali."""
+    if not rows or any(st != OK for _, _, st, _ in rows) or len({d for _, d, _, _ in rows}) != 1:
+        return None
+    date = rows[0][1]
+    return f"harian:{date}", f"harian bar {date}: SEMUA BERES - " + "; ".join(f"{b} {det}" for b, _, _, det in rows)
+
+
 def main() -> int:
     ap = argparse.ArgumentParser(description="Penjaga luar worker Railway: tick resmi terakhir sudah dikomit + diungkap? (tanpa kunci)")
     ap.add_argument("--bots", default=",".join(sc.BOTS_DEFAULT))
     ap.add_argument("--ledger", default=os.path.join(ROOT, "ledger", "paper"))
     ap.add_argument("--tenggang", type=int, default=TENGGANG_S)
     ap.add_argument("--alert", action="store_true", help="kirim Telegram bila ALARM (butuh ALERT_TELEGRAM_TOKEN/CHAT di lingkungan)")
+    ap.add_argument("--ringkasan", action="store_true", help="P112: bila semua OK, kirim SATU ringkasan harian (detak untuk manusia: tak ada pesan = periksa)")
     a = ap.parse_args()
     addrs = sc.load_addresses()
     committer = addrs["committer"]
@@ -164,6 +174,11 @@ def main() -> int:
         for bot, date, st, det in rows:
             if st == ALARM:
                 al.send(f"watch:{bot}:{date}", f"{bot} bar {date}: {det}")
+    if code == 0 and a.ringkasan:
+        r = ringkasan(rows)
+        if r:
+            import alert as alertmod
+            alertmod.Alerter(prefix="Fabius").send(r[0], r[1], sekali=True)
     print({0: "VONIS: worker hidup", 1: "VONIS: ALARM", 2: "VONIS: MENUNGGU (periksa lagi)"}[code])
     return code
 

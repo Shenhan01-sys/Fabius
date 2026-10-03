@@ -121,5 +121,22 @@ class CheckTests(unittest.TestCase):
         self.assertEqual(seen, [sc.commit_id(COMMITTER, "B3-CARRY", SPECS["B3-CARRY"].sha(), ASOF)])
 
 
+class SummaryTests(unittest.TestCase):
+    """P112: satu ringkasan harian hanya bila SEMUA bot OK pada bar yang sama."""
+
+    def test_all_ok_same_bar_gives_one_summary_keyed_by_bar(self):
+        rows = [("B1-TREND", "2026-10-02", ww.OK, "dikomit ..., 0/0 terungkap"), ("B3-CARRY", "2026-10-02", ww.OK, "dikomit ..., 1/1 terungkap")]
+        key, text = ww.ringkasan(rows)
+        self.assertEqual(key, "harian:2026-10-02")
+        self.assertIn("SEMUA BERES", text)
+        self.assertIn("B3-CARRY", text)
+
+    def test_waiting_alarm_or_before_lock_is_not_summarised_as_fine(self):
+        for st in (ww.MENUNGGU, ww.ALARM, ww.SEBELUM):
+            self.assertIsNone(ww.ringkasan([("B1-TREND", "2026-10-02", ww.OK, "-"), ("B3-CARRY", "2026-10-02", st, "-")]))
+        self.assertIsNone(ww.ringkasan([("B1-TREND", "2026-10-02", ww.OK, "-"), ("B3-CARRY", "2026-10-01", ww.OK, "-")]))
+        self.assertIsNone(ww.ringkasan([]))
+
+
 if __name__ == "__main__":
     unittest.main()

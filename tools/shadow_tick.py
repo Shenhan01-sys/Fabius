@@ -397,7 +397,7 @@ def main() -> int:
             if d is not None:
                 sh.run_day(d)
             for line in sh.compare_pending():
-                if any(w in line for w in ("BEDA", "ALARM", "DITOLAK")):
+                if any(w in line for w in ("BEDA", "ALARM", "DITOLAK", "IDENTIK", "SAMA")):          # P112: vonis baik juga dikirim (sekali per vonis)
                     al.send("vonis:" + line[:80], line, sekali=True)
             fails = 0
             if time.time() - last_beat >= 6 * 3600:

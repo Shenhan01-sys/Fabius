@@ -18,6 +18,8 @@ sudah diungkap?
   worker (eth-abi) pada komit sungguhan.
 - ALARM = `::error::` di run + Telegram bila secrets `ALERT_TELEGRAM_TOKEN` / `ALERT_TELEGRAM_CHAT` dipasang di GitHub; rantai ledger tetap jalan.
 
+**Ringkasan harian (P112, 3 Okt):** `--ringkasan` mengirim satu pesan "SEMUA BERES" per bar bila semua bot OK. Tidak datangnya pesan itu sendiri adalah tanda untuk diperiksa (detak untuk manusia).
+
 **Yang ia TOLAK lakukan:** menuduh worker mati karena chain tak terbaca atau karena dirinya sendiri crash (keluar 3, bukan 1); menghentikan rantai ledger; memakai kunci.
 
 **Terkait:** [[TL11 - komit sinyal M3]] · [[TL9 - ledger paper maju]] · [[07-Testing/T8 - Semantik Kegagalan Operator]] SK-R5/SK-W24/SK-W25

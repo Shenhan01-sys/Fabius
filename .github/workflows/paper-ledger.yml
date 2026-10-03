@@ -143,7 +143,7 @@ jobs:
               fi
             fi
             if [ "$DONE" = "$TODAY" ] && [ "$WATCHED" != "$TODAY" ]; then
-              python -u -X utf8 tools/worker_watch.py --alert
+              python -u -X utf8 tools/worker_watch.py --alert --ringkasan
               WRC=$?
               case "$WRC" in
                 0) WATCHED="$TODAY"; echo "penjaga luar: worker hidup (komit tick hari ini ada / sebelum kunci)" ;;
