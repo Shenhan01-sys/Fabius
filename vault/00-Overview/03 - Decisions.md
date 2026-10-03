@@ -2819,3 +2819,19 @@ Tokocrypto, gas buat planningnya di vault, workflownya sesuaikan di vault juga a
    prioritas 1 - keputusan builder, bukan otomatis.
 
 **Terkait:** F-D72 · F-D73 · F-D90 · [[08-Backlog/05 - Epik Enam Bot]] §6 §7 · [[09-Inbox/Session-2026-10-02]] §48
+
+## F-D92 — Modal nyata maksimal 10 USDT: akurasi diuji di kertas-venue dulu, uang nyata hanya untuk canary pipa satu aset · 4 Okt 2026 (WIB)
+
+Builder: *"Terkait dana awalan pastinya sangat terbatas maksimal hanya ada di 10 usdt, eksekusi aja prdnya sebagian yg paling posible tapi minimal mencakup
+50% dari PRD. Pastikan konsep paper sebagai awalan test akurasi tetap ada sebelum open posisi uang asli ya"*.
+
+1. **Batas modal nyata: 10 USDT.** B1 penuh tidak bisa dibuka dengan modal itu di venue mana pun (Aster >= ±80, Binance >= ±800 USDT; snapshot filter
+   4 Okt). Tidak ada pemotongan universe diam-diam: aset yang tidak bisa dibuka tercatat `dilewati`.
+2. **Kertas wajib sebelum uang nyata:** tahap S1 kertas-venue (keputusan resmi dieksekusi di atas kertas dengan harga, lot, min notional, dan fee venue;
+   modal virtual 2.000 dan 10 USDT) harus lulus sebelum testnet (S2) dan canary (S3). PRD v1.1: [[08-Backlog/10 - Epik Eksekusi Venue]] §0a.
+3. **Uang nyata = canary pipa:** satu aset, <= 10 USDT, mengikuti keputusan B1 untuk aset itu. Ia membuktikan mekanisme (isi, fee nyata, rekonsiliasi,
+   latihan mati), BUKAN kinerja B1. Tidak ada klaim kinerja dari canary.
+4. **Dibangun hari ini (>= 50 % PRD):** inti eksekutor, adaptor Binance (tanpa order sungguhan), kertas-venue + metrik, rantai GitHub menjalankannya
+   tiap hari; 13 tes; T8 SK-E1..SK-E9 berjangkar. Rincian: PRD §0a, [[04-Tools/TL22 - eksekutor dan kertas-venue]].
+
+**Terkait:** F-D73 · F-D91 · [[09-Inbox/Session-2026-10-02]] §50

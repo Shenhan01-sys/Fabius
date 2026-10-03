@@ -144,6 +144,25 @@ jobs:
                   git checkout -q -- ledger/book 2>/dev/null || true
                   git clean -fdq ledger/book 2>/dev/null || true
                 fi
+                # P119 (epik 10, F-D92): kertas-venue - keputusan B1 dieksekusi DI ATAS KERTAS pada harga 1m Vision sesudah komit, biaya + lot venue.
+                # Akurasi diuji sebelum uang nyata. Tick yang bahannya belum ada = TUNDA dan dikejar besok (tidak dilompati). Gagal = peringatan saja.
+                if python -u -X utf8 tools/kertas_eksekusi.py run; then
+                  git add ledger/kertas
+                  if ! git diff --cached --quiet; then
+                    git commit -q -m "kertas eksekusi $(date -u +%Y-%m-%dT%H:%M:%SZ) [skip ci]"
+                    KP=0
+                    for t in 1 2 3 4 5; do
+                      if git pull --rebase -q origin "$GITHUB_REF_NAME" && git push -q; then echo "push kertas OK (percobaan $t)"; KP=1; break; fi
+                      git rebase --abort 2>/dev/null || true
+                      sleep 12
+                    done
+                    if [ "$KP" = "0" ]; then echo "::warning::push kertas gagal 5x - dikejar besok"; git reset -q --hard "origin/$GITHUB_REF_NAME"; fi
+                  fi
+                else
+                  echo "::warning::kertas eksekusi GAGAL - tidak di-commit; rantai ledger tetap jalan"
+                  git checkout -q -- ledger/kertas 2>/dev/null || true
+                  git clean -fdq ledger/kertas 2>/dev/null || true
+                fi
               fi
             fi
             if [ "$DONE" = "$TODAY" ] && [ "$WATCHED" != "$TODAY" ]; then

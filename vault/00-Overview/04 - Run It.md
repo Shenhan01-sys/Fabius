@@ -67,6 +67,11 @@ python -X utf8 tools/web_snapshot.py --if-changed       # tulis hanya bila isi b
 gh workflow run web-snapshot.yml                         # snapshot landing dari GitHub (biasanya dipicu rantai paper-ledger sesudah tick); push -> Vercel
 python -X utf8 tools/waitlist.py --poll                 # daftar tunggu P115 (butuh ALERT_TELEGRAM_*; rantai paper-ledger menjalankannya tiap 5 menit)
 
+# eksekusi venue (epik 10): kertas-venue dulu, uang nyata hanya canary pipa <= 10 USDT atas kata builder (F-D92)
+python -X utf8 tools/kertas_eksekusi.py filters        # snapshot lot/min notional venue -> ledger/kertas/filter/
+python -X utf8 tools/kertas_eksekusi.py run            # eksekusi B1 di atas kertas (rantai GitHub menjalankannya tiap hari)
+python -X utf8 tools/kertas_eksekusi.py ringkas        # tracking error vs paper, bobot terpenuhi, vs ambang PRD §6
+
 # peninjau pengajuan penerbit (P83): k keluarga dari registri ledger/pengajuan/registri.jsonl; pratinjau tidak mengikat
 python -X utf8 -m engine.cli review --file engine/examples/submission.example.json --data ledger/bars            # pratinjau (alpha A1/k)
 python -X utf8 -m engine.cli review --file <sub.json> --data <dir> --signature 0x.. --nonce N --deadline D --catat  # resmi: dicatat, memakan anggaran

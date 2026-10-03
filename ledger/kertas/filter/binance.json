@@ -1,0 +1,88 @@
+{
+ "diambil_utc": "2026-10-03T18:13:40Z",
+ "filters": {
+  "ADAUSDT": {
+   "min_notional": 5.0,
+   "min_qty": 1.0,
+   "step": 1.0
+  },
+  "ATOMUSDT": {
+   "min_notional": 5.0,
+   "min_qty": 0.01,
+   "step": 0.01
+  },
+  "AVAXUSDT": {
+   "min_notional": 5.0,
+   "min_qty": 1.0,
+   "step": 1.0
+  },
+  "BCHUSDT": {
+   "min_notional": 5.0,
+   "min_qty": 0.001,
+   "step": 0.001
+  },
+  "BNBUSDT": {
+   "min_notional": 5.0,
+   "min_qty": 0.01,
+   "step": 0.01
+  },
+  "BTCUSDT": {
+   "min_notional": 50.0,
+   "min_qty": 0.0001,
+   "step": 0.0001
+  },
+  "DOGEUSDT": {
+   "min_notional": 5.0,
+   "min_qty": 1.0,
+   "step": 1.0
+  },
+  "DOTUSDT": {
+   "min_notional": 5.0,
+   "min_qty": 0.1,
+   "step": 0.1
+  },
+  "ETCUSDT": {
+   "min_notional": 5.0,
+   "min_qty": 0.01,
+   "step": 0.01
+  },
+  "ETHUSDT": {
+   "min_notional": 20.0,
+   "min_qty": 0.001,
+   "step": 0.001
+  },
+  "LINKUSDT": {
+   "min_notional": 5.0,
+   "min_qty": 0.01,
+   "step": 0.01
+  },
+  "LTCUSDT": {
+   "min_notional": 5.0,
+   "min_qty": 0.001,
+   "step": 0.001
+  },
+  "NEARUSDT": {
+   "min_notional": 5.0,
+   "min_qty": 1.0,
+   "step": 1.0
+  },
+  "SOLUSDT": {
+   "min_notional": 5.0,
+   "min_qty": 0.01,
+   "step": 0.01
+  },
+  "TRXUSDT": {
+   "min_notional": 5.0,
+   "min_qty": 1.0,
+   "step": 1.0
+  },
+  "XRPUSDT": {
+   "min_notional": 5.0,
+   "min_qty": 0.1,
+   "step": 0.1
+  }
+ },
+ "sumber": "Binance USD\u24c8-M TESTNET (prod terblokir dari jaringan builder; diganti prod saat diukur dari Railway, E2)",
+ "url": "https://testnet.binancefuture.com/fapi/v1/exchangeInfo",
+ "venue": "binance"
+}

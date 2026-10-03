@@ -13,6 +13,42 @@ baru kalau sempet itu Tokocrypto, gas buat planningnya di vault, workflownya ses
 > menyetujui PRD ini; sesudah itu ia dikunci seperti ambang lain (mengubahnya = keputusan baru yang terlihat). **Uang nyata hanya atas kata builder per venue**
 > (saklar `live`, §5 R-E7); "paper penuh sampai builder yakin" (F-D73) tetap berlaku sampai kata itu ada.
 
+
+## 0a. Revisi v1.1 (4 Okt): modal nyata maksimal 10 USDT, kertas WAJIB sebelum uang nyata (F-D92)
+
+Builder: *"Terkait dana awalan pastinya sangat terbatas maksimal hanya ada di 10 usdt, eksekusi aja prdnya sebagian yg paling posible tapi minimal mencakup
+50% dari PRD. Pastikan konsep paper sebagai awalan test akurasi tetap ada sebelum open posisi uang asli ya"*.
+
+**Akibat yang terukur:** B1 penuh (16 aset x 6,25 %) butuh >= ±80 USDT di Aster dan >= ±800 USDT di Binance (min notional per aset, snapshot
+`ledger/kertas/filter/`). Dengan 10 USDT tiap aset hanya 0,625 USDT, jadi **tidak satu pun posisi B1 bisa dibuka**. Itu tercatat sebagai `dilewati`, bukan
+dipotong diam-diam. Maka tahapnya menjadi:
+
+| tahap | apa | uang nyata | gerbang keluar |
+|---|---|---|---|
+| **S0** paper | ledger resmi (sudah ada) | tidak | - |
+| **S1** kertas-venue | keputusan yang sama dieksekusi di atas kertas: harga 1m sesudah komit, lot + min notional + fee venue; modal virtual 2.000 dan 10 USDT; jadwal `komit` (kenyataan) dan `p99` (andaian) | tidak | >= 10 hari bursa; tracking error dalam ambang §6 pada jadwal yang akan dipakai live |
+| **S2** testnet pipa | adaptor mengirim order sungguhan ke testnet (kunci testnet, tanpa dana nyata) | tidak | 10 tick: 0 order ganda, selisih posisi 0, 100 % sesudah komit |
+| **S3** canary pipa | **1 aset, <= 10 USDT**: order buka + tutup mengikuti keputusan B1 untuk aset itu. Membuktikan MEKANISME (isi, fee nyata, rekonsiliasi, latihan mati), BUKAN kinerja B1 | ya, atas kata builder | 5 siklus tanpa pelanggaran keselamatan; fee + slippage nyata tercatat |
+| S4 skala | B1 penuh | ya | modal >= batas venue + kata builder |
+
+**Cakupan yang dibangun 4 Okt (>= 50 % PRD):**
+
+| butir | status |
+|---|---|
+| R-E1 bukti dulu | ✅ kertas: tick tanpa komit = TUNDA, lebih tua dari kunci = SEBELUM_KUNCI (eksekutor live memakai fungsi yang sama) |
+| R-E2 idempoten | ✅ client id deterministik + `place` mencari id dulu |
+| R-E3 rekonsiliasi | 🟡 fungsi deteksi; turun ke dry = eksekutor live |
+| R-E4 rencana | ✅ lot, min notional, ubah kecil, tutup reduce-only |
+| R-E5 pagar | ✅ universe, long-only, notional <= modal x 1, batas per order; batas rugi: fungsi (berhenti = live) |
+| R-E6 izin kunci | ✅ cek izin (fungsi + panggilan prod `apiRestrictions`), belum pernah dipakai dengan kunci sungguhan |
+| R-E7 saklar | ⬜ bagian eksekutor live (P118) |
+| R-E8 semantik kegagalan | ✅ T8 SK-E1..SK-E9 berjangkar kode + tes |
+| R-E9 rahasia | ✅ env, disamarkan di galat (diuji) |
+| R-E10 ledger eksekusi | 🟡 ledger kertas berantai hash + verify; ledger dari riwayat trade venue menunggu order sungguhan |
+
+Tonggak: E0 ✅ · E1 ✅ kode (keluar "5 tick sungguhan" = 5 catatan kertas berturut, menyusul otomatis) · E2 🟡 adaptor tanpa testnet · E3 🟡 kertas + metrik ·
+E4-E6 ⬜. Hitungan: 7 dari 10 kebutuhan ✅, 2 🟡, 1 ⬜.
+
 ## 1. Masalah dan tujuan
 
 Hari ini sinyal Fabius hanya paper: target bobot B1/B3 dihitung, ditulis ke ledger, dan disegel ke SignalAnchor, tetapi tidak ada order. Tujuan epik ini:
