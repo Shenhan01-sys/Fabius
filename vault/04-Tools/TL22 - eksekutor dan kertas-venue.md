@@ -26,7 +26,9 @@ tags: [perkakas, "TL22"]
     **bobot terpenuhi**.
   - Dijalankan rantai GitHub `paper-ledger` sesudah tick (penulis tunggal `ledger/kertas/`); bahan belum ada = TUNDA, tick tidak dilompati.
 
-**Yang ia TOLAK lakukan (T8 SK-E1..SK-E9):** mengeksekusi tick yang komitnya belum ada (atau lebih tua dari kunci); menebak posisi saat venue tak terbaca;
+- **Eksekutor (`tools/eksekutor.py`, P118, 4 Okt):** dipanggil worker `fabius-engine` di akhir tiap putaran (`Worker.exec_step`, DIBUNGKUS SENDIRI: galatnya tidak pernah menggagalkan komit/ungkap). `EXEC_MODE` = off (bawaan) / dry / demo / testnet / live. Satu eksekusi per bar per bot, hanya sesudah komit ada; leverage dipaksa 1x; cadangan 0,2 % (ukuran sama dengan kertas); target di luar universe, mode hedge, kunci hilang, posisi tidak cocok sesudah 3 kali baca, atau rugi harian > `EXEC_MAX_LOSS` = BERHENTI + alert sampai builder me-restart; `live` ditolak di `fabius-engine` (F-D93) dan tanpa `EXEC_LIVE_OK=binance:<hari ini>`. 8 tes.
+
+**Yang ia TOLAK lakukan (T8 SK-E1..SK-E13):** mengeksekusi tick yang komitnya belum ada (atau lebih tua dari kunci); menebak posisi saat venue tak terbaca;
 start dengan kunci yang bisa menarik dana; membuka posisi di bawah min notional diam-diam; mengirim order ganda untuk tick yang sama; memakai kas negatif.
 
 **Hasil pertama (4 Okt ±01:2x WIB):** 8 ledger kertas (2 venue x 2 modal x 2 jadwal): bar 2026-10-01 = SEBELUM_KUNCI (tick lebih tua dari kunci, tidak

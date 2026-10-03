@@ -13,6 +13,8 @@ Lingkungan (variabel Railway):
                           (F-D85: book_sha tiap epoch dicatat di chain). 0 = hanya dicatat "PERLU pin", tidak mengirim.
   ALERT_TELEGRAM_TOKEN / ALERT_TELEGRAM_CHAT   P101: kanal alert (dipasang builder sendiri; tanpa keduanya alert hanya dicatat di log), lihat tools/alert.py.
   ALERT_MIN_TBNB (0.01)   saldo committer di bawah ini = alert.
+  EXEC_MODE (off) + BINANCE_API_KEY / BINANCE_SECRET_KEY / BINANCE_API_ENV   P118 (epik 10, F-D93): eksekutor venue di akhir putaran, DIBUNGKUS
+                          SENDIRI (galatnya tidak menggagalkan komit/ungkap); lihat tools/eksekutor.py. Mode live ditolak di service ini.
 
 Saat mulai, worker mencatat apakah API Binance (fapi/api), Binance Vision, dan GitHub bisa dijangkau dari region-nya: bahan keputusan tahap 3
 (bar dari REST segera sesudah penutupan, bukan zip Vision ~9 jam kemudian). Runner GitHub (AS) mendapat HTTP 451 dari fapi.
@@ -61,6 +63,7 @@ SUMMARY_EVERY_S = 6 * 3600
 UA = {"User-Agent": "Mozilla/5.0 (compatible; fabius-worker/1.0)"}
 PROBES = (("binance fapi", "https://fapi.binance.com/fapi/v1/time"),
           ("binance api", "https://api.binance.com/api/v3/time"),
+          ("binance demo fapi", "https://demo-fapi.binance.com/fapi/v1/time"),
           ("binance vision", "https://data.binance.vision/data/futures/um/daily/klines/BTCUSDT/1d/BTCUSDT-1d-2026-10-01.zip.CHECKSUM"),
           ("github", "https://api.github.com/zen"))
 
@@ -107,6 +110,9 @@ class Worker:
         self.last_book = None
         self.last_summary = 0.0
         self.fails = 0
+        self.executor = None
+        self.exec_fails = 0
+        self.last_exec = None
         import alert as alertmod
         self.alert = alertmod.Alerter(log=lambda m: log(m))
 
@@ -159,6 +165,26 @@ class Worker:
         ok = receipt_ok(r)
         log(f"pin buku {name}: tx {r.get('transactionHash')} {'blok ' + str(ev.num(r.get('blockNumber'))) if ok else 'STATUS 0'} | uri {pb.book_uri(head)}")
         return "kirim" if ok else "gagal"
+
+    def exec_step(self, cv, committer: str) -> str:
+        """P118 (epik 10): eksekutor venue, DIBUNGKUS SENDIRI - galatnya dicatat (+ alert sesudah 3 kali berturut) dan TIDAK PERNAH menggagalkan
+        putaran komit/ungkap (T8 SK-E10)."""
+        try:
+            if self.executor is None:
+                import eksekutor
+                self.executor = eksekutor.Executor(log=lambda m: log(m), alert=self.alert)
+            st = self.executor.round(os.path.join(self.workdir, "ledger", "paper"), cv, committer)
+            if st != "off" and st != self.last_exec:
+                log(f"eksekutor: {st}")
+                self.last_exec = st
+            self.exec_fails = 0
+            return st
+        except Exception as e:  # noqa: BLE001 - eksekutor tidak boleh mematikan worker komit
+            self.exec_fails += 1
+            log(f"eksekutor GAGAL (komit/ungkap tidak terpengaruh): {type(e).__name__}: {str(e)[:200]}")
+            if self.exec_fails >= FAILS_BEFORE_ALERT:
+                self.alert.send("eksekutor-gagal", f"eksekutor: {self.exec_fails} putaran gagal berturut-turut; terakhir {type(e).__name__}: {str(e)[:160]}")
+            return "gagal"
 
     def alerts_for(self, acts, sent: dict = None, missing=()) -> None:
         """P101: aksi yang butuh mata manusia -> alert (dedupe per kunci di `tools/alert.py`)."""
@@ -213,6 +239,7 @@ class Worker:
         pin = self.book_pin(ev, addrs["registry"], committer, pk, head)
         if pin in ("tolak", "gagal"):
             self.alert.send(f"pin-buku:{pin}", f"pin book_sha {pin.upper()}: {self.last_book}")
+        self.exec_step(cv, committer)
         if time.time() - self.last_summary >= SUMMARY_EVERY_S:
             kinds = {k: sum(1 for a in acts if a.kind == k) for k in ("commit", "reveal", "ok", "skip", "alarm")}
             bal = ev.balance(committer) / 1e18
@@ -266,7 +293,7 @@ def main() -> int:
     specs = " ".join(f"{b}={SPECS[b].sha()[:12]}" for b in BOTS if b in SPECS)
     log(f"worker mulai | repo {REPO}@{BRANCH} | bot {specs} | poll {POLL_S}s | ungkap +{REVEAL_DELAY_S}s | "
         f"region {os.environ.get('RAILWAY_REPLICA_REGION', '?')} | build {os.environ.get('RAILWAY_GIT_COMMIT_SHA', 'lokal')[:10]} | "
-        f"kunci {'ADA' if sc.committer_key() else 'TIDAK ADA (mode rencana)'}")
+        f"kunci {'ADA' if sc.committer_key() else 'TIDAK ADA (mode rencana)'} | eksekutor {os.environ.get('EXEC_MODE', 'off')}")
     for name, url in PROBES:
         log(f"probe {name}: {probe(url)}")
     w = Worker()

@@ -146,6 +146,26 @@ class BinanceFutures:
             raise VenueError(f"positionRisk: HTTP {code} {self._clean(str(body)[:120])}")
         return {r["symbol"]: float(r["positionAmt"]) for r in body if float(r.get("positionAmt") or 0) != 0}
 
+    def equity(self) -> float:
+        """Ekuitas akun futures (totalMarginBalance, quote) - bahan batas rugi harian (R-E5)."""
+        code, body = self._signed("GET", BASE[self.env]["fapi"], "/fapi/v2/account")
+        if code != 200 or not isinstance(body, dict) or "totalMarginBalance" not in body:
+            raise VenueError(f"account: HTTP {code} {self._clean(str(body)[:120])}")
+        return float(body["totalMarginBalance"])
+
+    def dual_side(self) -> bool:
+        """True = mode hedge (posisi LONG/SHORT terpisah). Eksekutor hanya mendukung one-way: hedge = TOLAK, builder mengubahnya di UI."""
+        code, body = self._signed("GET", BASE[self.env]["fapi"], "/fapi/v1/positionSide/dual")
+        if code != 200 or not isinstance(body, dict) or "dualSidePosition" not in body:
+            raise VenueError(f"positionSide/dual: HTTP {code} {self._clean(str(body)[:120])}")
+        return bool(body["dualSidePosition"])
+
+    def set_leverage(self, symbol: str, leverage: int = 1) -> None:
+        """PRD R-E5 leverage 1x: margin = notional penuh, likuidasi praktis tidak mungkin pada posisi long tanpa leverage."""
+        code, body = self._signed("POST", BASE[self.env]["fapi"], "/fapi/v1/leverage", {"symbol": symbol, "leverage": int(leverage)})
+        if code != 200 or int((body or {}).get("leverage", -1)) != int(leverage):
+            raise VenueError(f"leverage {symbol} -> {leverage}: HTTP {code} {self._clean(str(body)[:120])}")
+
     def order_by_client_id(self, symbol: str, cid: str) -> Optional[dict]:
         code, body = self._signed("GET", BASE[self.env]["fapi"], "/fapi/v1/order", {"symbol": symbol, "origClientOrderId": cid})
         if code == 200:

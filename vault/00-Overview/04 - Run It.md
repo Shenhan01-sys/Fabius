@@ -72,6 +72,9 @@ python -X utf8 tools/kertas_eksekusi.py filters        # snapshot lot/min notion
 python -X utf8 tools/kertas_eksekusi.py run            # eksekusi B1 di atas kertas (rantai GitHub menjalankannya tiap hari)
 python -X utf8 tools/kertas_eksekusi.py ringkas        # tracking error vs paper, bobot terpenuhi, vs ambang PRD §6
 
+# eksekutor (P118) di worker fabius-engine: variabel Railway (dashboard) EXEC_MODE=off|dry|demo (bawaan off), EXEC_MODAL_USDT (2000), EXEC_MAX_LOSS (0.05);
+# live DITOLAK di fabius-engine (F-D93). Baca hasil: railway logs --service fabius-engine --lines 80  (cari 'eksekutor')
+
 # peninjau pengajuan penerbit (P83): k keluarga dari registri ledger/pengajuan/registri.jsonl; pratinjau tidak mengikat
 python -X utf8 -m engine.cli review --file engine/examples/submission.example.json --data ledger/bars            # pratinjau (alpha A1/k)
 python -X utf8 -m engine.cli review --file <sub.json> --data <dir> --signature 0x.. --nonce N --deadline D --catat  # resmi: dicatat, memakan anggaran
