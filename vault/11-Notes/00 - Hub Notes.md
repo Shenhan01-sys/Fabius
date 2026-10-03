@@ -14,6 +14,7 @@ halaman yang memilikinya, dan supaya tidak ada berkas yang masuk vault tanpa tem
 ## Bagian
 
 - [[Laya-LLM]] — catatan builder tentang Laya (System-One open-source); pemetaannya di
+- [[Astra-Quant-Agent]] — repo luar dari builder (3 Okt): **lisensi melarang layanan sinyal berbayar -> nol kode dipakai**; gagasan yang berguna: tabel semantik kegagalan, arah kegagalan menurut bisa-dibalik, sensus tes yang dilewati (P109/P110)
 
 <!-- di atas: append-only oleh scripts/sync_vault.py; gloss tulisan tangan utuh -->
 ```dataview
