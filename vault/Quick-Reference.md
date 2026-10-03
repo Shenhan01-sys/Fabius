@@ -25,7 +25,7 @@ dihapus saat audit, bukan disimpan sopan-sopanan.
 | LockRegistry (chain 97, M3) | `0xcF6fBF95fc04DEd8d670512CEc0723a2246Fbb0C` | [[02-Contracts/C6 - LockRegistry]] · ter-deploy 2 Okt 13:04Z |
 | SignalAnchor (chain 97, M3) | `0x9B78200beFbbBe836585d31bd5b6dB32587064f3` | [[02-Contracts/C7 - SignalAnchor]] · maxLag 43200 s, revealWindow 604800 s |
 | landing + server MCP (tingkat 0) | https://fabius-one.vercel.app · MCP `https://fabius-one.vercel.app/mcp` | project Vercel `fabius` (Root Directory `web`, GitHub `master`) · [[04-Tools/TL19 - web landing]] · [[04-Tools/TL20 - server MCP]] |
-| committer SignalAnchor (aktif) | `0xCA9c7322210E9a7F7d0953c862d4Ef60cC0D64A4` | `deployments/97.json` `m3.committer`; `0xE12e…812a` pensiun (F-D82) |
+| committer SignalAnchor (aktif) | `0xCA9c7322210E9a7F7d0953c862d4Ef60cC0D64A4` (saldo 0,12 tBNB sesudah isi ulang 3 Okt, tx `0x41e4bcf3…`; cara isi: `m3_setup.py --deployer-env ../app/.env --fund X --min Y` rencana dulu, lalu `--go`) | `deployments/97.json` `m3.committer`; `0xE12e…812a` pensiun (F-D82) |
 | kunci ambang peninjau v1 | sha `0xf145b70abd251b9fcf421bfb811bcf3788dade347c37b3bea331a09fedfe5f32`, anchoredAt 2026-10-02T08:17:48Z | `python -X utf8 tools/anchor_lock.py --verify` · F-D74 |
 | kunci parameter F-D16 maju | sha `0x5a47cc4b87758730b0a1898f5a626029806b287abbb730292422fe5136797a45`, di-pin LockRegistry `lockedAt` 2026-10-02T17:10:57Z (tx `0x6bf7d51201b9…`) | `python -X utf8 tools/lock_spec.py --file engine/locks/fd16.lock.json --name FABIUS-FD16-MAJU-v1 --verify` · F-D84 |
 | buku slot hidup epoch 690 | `book_sha 0xfe37d7595644fd7e23fc5cd2c9aa659db1b66e316069c7414dd478e231f6e05c`, di-pin `FABIUS-BUKU-E690` `lockedAt` 2026-10-02T17:26:09Z | `python -X utf8 tools/pin_book.py --verify` · F-D85 |
