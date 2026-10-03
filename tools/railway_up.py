@@ -20,7 +20,8 @@ import tempfile
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(HERE)
 PATHS = ["railway", "engine", "tools/evm.py", "tools/signal_commit.py", "tools/operator_loop.py", "tools/paper_tick.py", "tools/rest_vs_vision.py", "tools/rest_latency.py",
-         "tools/shadow_tick.py", "tools/feed_bars.py", "tools/pin_book.py", "tools/alert.py"]
+         "tools/shadow_tick.py", "tools/feed_bars.py", "tools/pin_book.py", "tools/alert.py",
+         "tools/eksekutor.py", "tools/venue_binance.py"]                       # P118 (epik 10): eksekutor di worker, F-D93
 
 
 def main() -> int:
