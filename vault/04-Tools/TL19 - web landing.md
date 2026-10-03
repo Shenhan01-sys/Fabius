@@ -28,6 +28,8 @@ menjelaskannya. Objek inti = blok kaca (satu blok = satu komitmen), dan agen Fab
 
 **Deploy Vercel:** import repo, **Root Directory = `web`**, tanpa env var (lihat `web/README.md`). Data diperbarui lewat `tools/web_snapshot.py` + push.
 
+**Pelajaran 3 Okt (sebelum deploy):** dua pola `.gitignore` akar repo diam-diam menelan berkas FE. `data/` (cache harga) menelan `web/public/data/snapshot.json`, dan `lib/` (pustaka Foundry) menelan `web/src/lib/`. Build lokal lulus karena berkasnya ada di disk; build dari clone bersih GAGAL (`Can't resolve '@/lib/copy'`). Diperbaiki dengan `!web/public/data/` + `!web/src/lib/`; simulasi clone bersih -> `npm ci` -> `npm run build` lulus. Aturan: sebelum menyatakan siap deploy, build dari clone bersih, bukan dari folder kerja.
+
 **Belum:** hosting (P3 Vercel, builder), snapshot otomatis, server MCP (P114), penampung daftar tunggu (P115).
 
 **Terkait:** [[TL14 - verify_signals]] · [[03-Data/D8 - Buku Slot Hidup]] · [[00-Overview/03 - Decisions]] F-D70/F-D72 · [[08-Backlog/06 - Epik Gerbang Sinyal]]
