@@ -8,6 +8,9 @@ dengan `m3.committer`. Buku diverifikasi lebih dulu (rantai + keputusan dihitung
     python -X utf8 tools/pin_book.py              # rencana (tanpa kunci, tanpa gas)
     python -X utf8 tools/pin_book.py --send       # SATU transaksi lock() bila epoch terakhir belum di-pin
     python -X utf8 tools/pin_book.py --verify     # baca ulang lockedAt
+
+Worker Railway memakai fungsi yang sama (`last_epoch`, `locked_at`, `lock_calldata`) untuk mem-pin epoch baru sendiri (P108); jalur CLI ini tetap ada
+untuk pin manual dan untuk mencatat `m3.pins` di deployments/97.json (worker tidak bisa menulis repo).
 """
 from __future__ import annotations
 
@@ -28,11 +31,39 @@ ROOT = os.path.dirname(HERE)
 sys.path.insert(0, ROOT)
 sys.path.insert(0, HERE)
 
+from typing import List, Optional, Tuple            # noqa: E402
+
 from engine import book_live, chain, ledger            # noqa: E402
 import signal_commit as sc                             # noqa: E402
 
 BOOK_FILE = os.path.join(ROOT, "ledger", "book", "buku.jsonl")
 REPO_URL = "https://github.com/Shenhan01-sys/Fabius"
+
+
+def last_epoch(recs) -> Tuple[Optional[dict], List[str]]:
+    """(catatan epoch terakhir atau None bila baru genesis, masalah). Buku yang tidak sah = masalah, dan tidak ada yang boleh di-pin."""
+    probs = book_live.verify_book(recs) if recs else ["buku kosong"]
+    if probs:
+        return None, probs
+    return (recs[-1] if recs[-1].get("type") == "epoch" else None), []
+
+
+def label_of(rec: dict) -> str:
+    return f"FABIUS-BUKU-E{rec['epoch']}"
+
+
+def locked_at(ev, registry: str, committer: str, rec: dict) -> int:
+    return int(ev.call_decode(registry, sc.SIG_LOCKED_AT, ("address", "bytes32", "bytes32"),
+                              (committer, chain.ascii32(label_of(rec)), chain.from_hex(rec["book_sha"])), ("uint64",))[0])
+
+
+def lock_calldata(rec: dict, uri: str) -> bytes:
+    from evm import calldata
+    return calldata(sc.SIG_LOCK, ("bytes32", "bytes32", "string"), (chain.ascii32(label_of(rec)), chain.from_hex(rec["book_sha"]), uri))
+
+
+def book_uri(head: str, rel: str = "ledger/book/buku.jsonl") -> str:
+    return f"{REPO_URL}/blob/{head}/{rel}"
 
 
 def main() -> int:
@@ -43,24 +74,22 @@ def main() -> int:
     mode.add_argument("--verify", action="store_true")
     a = ap.parse_args()
     import evm as evmmod
-    from evm import calldata, receipt_ok
+    from evm import receipt_ok
     recs = ledger.load(a.file)
-    probs = book_live.verify_book(recs)
-    if not recs or probs:
-        print("buku hidup kosong atau TIDAK SAH - tidak di-pin:", (probs or ["kosong"])[:3])
+    last, probs = last_epoch(recs)
+    if probs:
+        print("buku hidup kosong atau TIDAK SAH - tidak di-pin:", probs[:3])
         return 2
-    last = recs[-1]
-    if last.get("type") != "epoch":
+    if last is None:
         print("belum ada catatan epoch (hanya genesis) - tidak ada yang di-pin")
         return 0
-    name = f"FABIUS-BUKU-E{last['epoch']}"
-    bot_id, sha = chain.ascii32(name), last["book_sha"]
+    name, sha = label_of(last), last["book_sha"]
     with open(sc.DEPLOYMENTS, encoding="utf-8") as f:
         d = json.load(f)
     registry, committer = d["contracts"]["LockRegistry"], d["m3"]["committer"]
     ev = evmmod.Evm(sc.rpc_urls(), sc.CHAIN_ID)
     ev.chain_check()
-    rd = lambda: ev.call_decode(registry, sc.SIG_LOCKED_AT, ("address", "bytes32", "bytes32"), (committer, bot_id, chain.from_hex(sha)), ("uint64",))[0]   # noqa: E731
+    rd = lambda: locked_at(ev, registry, committer, last)          # noqa: E731
     at = rd()
     print(f"buku   : {os.path.relpath(a.file, ROOT)} SAH, {len(recs)} catatan | epoch {last['epoch']} ({last['now_utc']}) book_sha {sha}")
     print(f"label  : {name} | LockRegistry {registry} | committer {committer}")
@@ -78,8 +107,8 @@ def main() -> int:
         print("BERHENTI: kunci committer tidak ada atau alamatnya bukan m3.committer. Tidak ada tx terkirim.")
         return 2
     head = subprocess.run(["git", "rev-parse", "HEAD"], cwd=ROOT, check=True, capture_output=True, text=True).stdout.strip()
-    uri = f"{REPO_URL}/blob/{head}/{os.path.relpath(a.file, ROOT).replace(os.sep, '/')}"
-    r = ev.send(pk, registry, calldata(sc.SIG_LOCK, ("bytes32", "bytes32", "string"), (bot_id, chain.from_hex(sha), uri)))
+    uri = book_uri(head, os.path.relpath(a.file, ROOT).replace(os.sep, "/"))
+    r = ev.send(pk, registry, lock_calldata(last, uri))
     if not receipt_ok(r):
         print(f"DITOLAK status 0 tx {r.get('transactionHash')}")
         return 1

@@ -19,6 +19,7 @@ name: paper-ledger
 #                                   lalu per bot: `gap` hari terlewat, `tick` bar tertutup terakhir (<= 12 jam), `settle` yang kini bisa ditutup.
 #   2. engine.cli ledger verify    - rantai hash + HITUNG ULANG setiap tick/settle. Gagal = job merah dan rantai BERHENTI (jangan commit ledger yang tak bisa diperiksa).
 #   3. commit + push bila ada perubahan (hanya job ini yang menulis ledger/; dua penulis ke rantai hash yang sama harus bertabrakan secara terlihat).
+#   4. sesudah tick hari itu beres: `engine.cli book epoch --write` (P108; idempoten per epoch) + `book verify`, commit `ledger/book` bila epoch baru.
 #
 # Batas yang jujur: (a) funding REST tertutup dari runner (HTTP 451); `settle` final menunggu zip bulanan, laporan PROVISIONAL memakai estimasi (F-D76).
 # (b) Tidak ada kunci, tidak ada transaksi chain, tidak ada rahasia di sini. (c) Paper penuh; angka maju bukan klaim edge (F-D16).
@@ -111,7 +112,29 @@ jobs:
                 done
                 if [ "$PUSHED" = "0" ]; then echo "::error::5x push gagal - ledger tidak sampai ke branch"; exit 1; fi
               fi
-              if [ "$RC" = "0" ]; then DONE="$TODAY"; echo "tick $TODAY beres; diam sampai jendela besok"; fi
+              if [ "$RC" = "0" ]; then
+                DONE="$TODAY"; echo "tick $TODAY beres; diam sampai jendela besok"
+                # P108: epoch buku slot (idempoten: hanya menulis pada hari pertama epoch 30 hari yang baru; hari lain "sudah tercatat").
+                # Gagal di sini TIDAK menghentikan rantai ledger: buku tidak di-commit, peringatan terlihat di run, dicoba lagi besok (SK-B3).
+                # book_sha epoch baru di-pin ke LockRegistry oleh worker Railway (punya kunci committer; job ini tidak).
+                if python -u -X utf8 -m engine.cli book epoch --write && python -u -X utf8 -m engine.cli book verify; then
+                  git add ledger/book
+                  if ! git diff --cached --quiet; then
+                    git commit -q -m "buku slot epoch $(date -u +%Y-%m-%dT%H:%M:%SZ) [skip ci]"
+                    BP=0
+                    for t in 1 2 3 4 5; do
+                      if git pull --rebase -q origin "$GITHUB_REF_NAME" && git push -q; then echo "push buku OK (percobaan $t)"; BP=1; break; fi
+                      git rebase --abort 2>/dev/null || true
+                      sleep 12
+                    done
+                    if [ "$BP" = "0" ]; then echo "::warning::push buku gagal 5x - epoch dicoba lagi besok"; git reset -q --hard "origin/$GITHUB_REF_NAME"; fi
+                  fi
+                else
+                  echo "::warning::book epoch/verify GAGAL - buku TIDAK di-commit; rantai ledger tetap jalan"
+                  git checkout -q -- ledger/book 2>/dev/null || true
+                  git clean -fdq ledger/book 2>/dev/null || true
+                fi
+              fi
             fi
             sleep 300
           done

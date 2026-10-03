@@ -9,6 +9,8 @@ Lingkungan (variabel Railway):
   COMMITTER_PRIVATE_KEY   kunci committer (tanpa ini: mode RENCANA - menghitung dan mencatat, tidak mengirim apa pun)
   SIGNAL_ANCHOR_ADDRESS / LOCK_REGISTRY_ADDRESS   opsional; bawaan dari deployments/97.json di repo
   FABIUS_REPO (bawaan repo publik), FABIUS_BRANCH (master), FABIUS_BOTS (B1-TREND,B3-CARRY), POLL_S (300), RPC_URL, REVEAL_DELAY_S (0), WORKDIR
+  PIN_BOOK (bawaan 1)     P108: epoch buku slot baru yang ditulis rantai GitHub (`ledger/book/buku.jsonl`) di-pin ke LockRegistry oleh committer
+                          (F-D85: book_sha tiap epoch dicatat di chain). 0 = hanya dicatat "PERLU pin", tidak mengirim.
 
 Saat mulai, worker mencatat apakah API Binance (fapi/api), Binance Vision, dan GitHub bisa dijangkau dari region-nya: bahan keputusan tahap 3
 (bar dari REST segera sesudah penutupan, bukan zip Vision ~9 jam kemudian). Runner GitHub (AS) mendapat HTTP 451 dari fapi.
@@ -49,6 +51,7 @@ WORKDIR = os.environ.get("WORKDIR", os.path.join("/tmp", "fabius-ledger"))
 BOTS = [b.strip() for b in os.environ.get("FABIUS_BOTS", ",".join(sc.BOTS_DEFAULT)).split(",") if b.strip()]
 POLL_S = int(os.environ.get("POLL_S", "300"))
 REVEAL_DELAY_S = int(os.environ.get("REVEAL_DELAY_S", "0"))
+PIN_BOOK = os.environ.get("PIN_BOOK", "1") != "0"
 SUMMARY_EVERY_S = 6 * 3600
 UA = {"User-Agent": "Mozilla/5.0 (compatible; fabius-worker/1.0)"}
 PROBES = (("binance fapi", "https://fapi.binance.com/fapi/v1/time"),
@@ -96,6 +99,7 @@ class Worker:
         self.workdir = workdir
         self.last_lines = None
         self.last_state = None
+        self.last_book = None
         self.last_summary = 0.0
 
     def note_state(self, s: str) -> None:
@@ -104,6 +108,49 @@ class Worker:
         if s != self.last_state:
             log(s)
             self.last_state = s
+
+    def note_book(self, s: str) -> None:
+        if s != self.last_book:
+            log(s)
+            self.last_book = s
+
+    def book_pin(self, ev, registry: str, committer: str, pk, head: str, pin: bool = None) -> str:
+        """P108: pin `book_sha` epoch terakhir buku hidup ke LockRegistry bila belum. Membaca dari repo yang disinkron (penulis buku = rantai GitHub).
+        Gagal membaca `lockedAt` TIDAK berarti "belum di-pin" (TUNDA, dicoba putaran berikutnya); buku tidak sah tidak di-pin (TOLAK). -> keadaan."""
+        import pin_book as pb
+        from engine import ledger as led
+        pin = PIN_BOOK if pin is None else pin
+        try:
+            recs = led.load(os.path.join(self.workdir, "ledger", "book", "buku.jsonl"))
+            rec, probs = pb.last_epoch(recs)
+            if probs:
+                self.note_book(f"buku hidup TIDAK SAH - tidak di-pin: {probs[0]}")
+                return "tolak"
+            if rec is None:
+                return "kosong"
+            at = pb.locked_at(ev, registry, committer, rec)
+        except Exception as e:  # noqa: BLE001 - gagal baca != belum di-pin
+            self.note_book(f"pin buku GAGAL dibaca ({type(e).__name__}: {str(e)[:120]}); dicoba lagi putaran berikutnya")
+            return "tunda"
+        name = pb.label_of(rec)
+        if at:
+            self.note_book(f"buku {name} sudah di-pin (lockedAt {led.utc_iso(at * 1000)}, book_sha {rec['book_sha'][:14]}…)")
+            return "ok"
+        if not pk or not pin:
+            self.note_book(f"buku {name} PERLU pin (book_sha {rec['book_sha'][:14]}…): {'tanpa kunci' if not pk else 'PIN_BOOK=0'}")
+            return "perlu"
+        if ev.has_pending(committer):
+            self.note_book(f"buku {name}: committer masih punya transaksi tertunda; pin ditunda")
+            return "tunda"
+        from evm import RpcError, error_name, receipt_ok
+        try:
+            r = ev.send(pk, registry, pb.lock_calldata(rec, pb.book_uri(head)))
+        except RpcError as e:
+            self.note_book(f"pin buku {name} DITOLAK sebelum kirim ({error_name(e.data, sc.ERRORS) or e}); nol gas terbakar")
+            return "tolak"
+        ok = receipt_ok(r)
+        log(f"pin buku {name}: tx {r.get('transactionHash')} {'blok ' + str(ev.num(r.get('blockNumber'))) if ok else 'STATUS 0'} | uri {pb.book_uri(head)}")
+        return "kirim" if ok else "gagal"
 
     def heartbeat(self, head: str, extra: str) -> None:
         if time.time() - self.last_summary >= SUMMARY_EVERY_S:
@@ -140,6 +187,7 @@ class Worker:
             st = sc.execute(acts, ev, addrs["anchor"], pk, log=lambda m: log(m))
             log(f"terkirim: {st['commit']} komit, {st['reveal']} ungkap, {st['gagal']} gagal")
             self.last_lines = None                      # paksa catat keadaan baru putaran berikutnya
+        self.book_pin(ev, addrs["registry"], committer, pk, head)
         if time.time() - self.last_summary >= SUMMARY_EVERY_S:
             kinds = {k: sum(1 for a in acts if a.kind == k) for k in ("commit", "reveal", "ok", "skip", "alarm")}
             self.heartbeat(head, f"saldo committer {ev.balance(committer) / 1e18:.6f} tBNB | aksi {kinds}")

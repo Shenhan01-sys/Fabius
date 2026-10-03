@@ -132,6 +132,130 @@ class WorkerRoundTests(unittest.TestCase):
         self.assertTrue(got and got[0].startswith("putaran GAGAL: RuntimeError"), got)
 
 
+BOOK = os.path.join(ROOT, "ledger", "book", "buku.jsonl")
+
+
+def tampered_copy(src, dst):
+    lines = rd(src, "r").splitlines()
+    lines[-1] = lines[-1][:-1] + ',"x":1}'                          # catatan terakhir disunting, hash tidak dihitung ulang
+    with open(dst, "w", encoding="utf-8", newline="\n") as f:
+        f.write("\n".join(lines) + "\n")
+
+
+class BookEpochTests(unittest.TestCase):
+    """P108: rantai GitHub menjalankan `book epoch --write` tiap hari sesudah tick; hanya hari pertama epoch baru yang menulis."""
+
+    def setUp(self):
+        self.tmp = tempfile.mkdtemp()
+        self.f = os.path.join(self.tmp, "buku.jsonl")
+
+    def tearDown(self):
+        shutil.rmtree(self.tmp, ignore_errors=True)
+
+    def epoch(self, now):
+        from engine import cli
+        return quiet(cli.main, ["book", "epoch", "--write", "--no-gates", "--file", self.f, "--now", now])
+
+    def test_invalid_book_writes_no_epoch(self):
+        tampered_copy(BOOK, self.f)
+        before = rd(self.f)
+        rc, out = self.epoch("2026-10-04T09:30:00Z")
+        self.assertEqual(rc, 1, out)
+        self.assertIn("TIDAK SAH", out)
+        self.assertEqual(rd(self.f), before)
+
+    def test_new_epoch_is_written_once_then_left_alone(self):
+        shutil.copy(BOOK, self.f)
+        rc, out = self.epoch("2026-10-04T09:30:00Z")
+        self.assertEqual(rc, 0, out)
+        once = rd(self.f)
+        self.assertEqual(len(once.splitlines()), 3)
+        rc, out = self.epoch("2026-10-05T09:30:00Z")
+        self.assertEqual((rc, rd(self.f)), (0, once))
+        self.assertIn("tidak menulis dua kali", out)
+
+
+class FakeRegistry:
+    def __init__(self, locked=0, pending=False, fail_read=False):
+        self.locked, self.pending, self.fail_read, self.sent = locked, pending, fail_read, []
+
+    def call_decode(self, to, sig, types, values, out):
+        if self.fail_read:
+            raise RuntimeError("RPC eth_call gagal di 3 endpoint")
+        return (self.locked,)
+
+    def has_pending(self, addr):
+        return self.pending
+
+    def send(self, pk, to, data):
+        self.sent.append(data)
+        return {"status": "0x1", "transactionHash": "0x" + "ab" * 32, "blockNumber": "0x10"}
+
+    @staticmethod
+    def num(h):
+        return int(h, 16) if h else 0
+
+
+@unittest.skipUnless(HAVE_ETH, "eth-abi tidak terpasang")
+class WorkerBookPinTests(unittest.TestCase):
+    """P108: worker mem-pin book_sha epoch baru yang ditulis rantai GitHub."""
+
+    def setUp(self):
+        import operator_loop as ol
+        self.ol = ol
+        self.tmp = tempfile.mkdtemp()
+        os.makedirs(os.path.join(self.tmp, "ledger", "book"))
+        self.f = os.path.join(self.tmp, "ledger", "book", "buku.jsonl")
+        shutil.copy(BOOK, self.f)
+        self.logs = []
+        self.orig = ol.log
+        ol.log = self.logs.append
+        self.w = ol.Worker(workdir=self.tmp)
+
+    def tearDown(self):
+        self.ol.log = self.orig
+        shutil.rmtree(self.tmp, ignore_errors=True)
+
+    def pin(self, ev, pk=DEV_PK1, pin=True):
+        return self.w.book_pin(ev, "0x" + "33" * 20, COMMITTER, pk, "f" * 40, pin=pin)
+
+    def test_book_pin_sends_once_and_never_twice(self):
+        ev = FakeRegistry()
+        self.assertEqual(self.pin(ev), "kirim")
+        self.assertEqual(len(ev.sent), 1)
+        recs = ledger.load(self.f)
+        self.assertIn(b"FABIUS-BUKU-E" + str(recs[-1]["epoch"]).encode(), ev.sent[0])
+        self.assertIn(bytes.fromhex(recs[-1]["book_sha"][2:]), ev.sent[0])
+        ev.locked = 1_790_961_969
+        self.assertEqual(self.pin(ev), "ok")
+        self.assertEqual(len(ev.sent), 1)
+
+    def test_failed_lockedat_read_is_not_read_as_unpinned(self):
+        ev = FakeRegistry(fail_read=True)
+        self.assertEqual(self.pin(ev), "tunda")
+        self.assertEqual(ev.sent, [])
+        self.assertIn("GAGAL dibaca", self.logs[-1])
+
+    def test_tampered_book_is_not_pinned(self):
+        tampered_copy(BOOK, self.f)
+        ev = FakeRegistry()
+        self.assertEqual(self.pin(ev), "tolak")
+        self.assertEqual(ev.sent, [])
+        self.assertIn("TIDAK SAH", self.logs[-1])
+
+    def test_pin_off_or_no_key_only_reports(self):
+        ev = FakeRegistry()
+        self.assertEqual(self.pin(ev, pin=False), "perlu")
+        self.assertEqual(self.pin(ev, pk=None), "perlu")
+        self.assertEqual(ev.sent, [])
+        self.assertIn("PERLU pin", self.logs[-1])
+
+    def test_pending_transaction_postpones_the_pin(self):
+        ev = FakeRegistry(pending=True)
+        self.assertEqual(self.pin(ev), "tunda")
+        self.assertEqual(ev.sent, [])
+
+
 @unittest.skipUnless(HAVE_ETH, "eth-abi tidak terpasang")
 class VerifierReadTests(unittest.TestCase):
     def test_rejected_log_range_is_halved_then_raised_never_read_as_no_reveals(self):
