@@ -24,6 +24,8 @@ jamnya = waktu blok.
 
 **3 Okt WIB (F-D84):** kunci kelima = parameter pemeriksa F-D16 maju (`FABIUS-FD16-MAJU-v1`, sha `0x5a47cc4b…`) lewat [[04-Tools/TL15 - lock_spec]]: `lockedAt` 2026-10-02T17:10:57Z, gas **123.050** di chain 97 (angka chain pertama untuk `lock`); `lockCount()` = 5. Kunci keenam = `book_sha` epoch 690 buku slot hidup (`FABIUS-BUKU-E690`, gas 122.954, `lockedAt` 2026-10-02T17:26:09Z, F-D85); `lockCount()` = 6.
 
+**3 Okt WIB (F-D87):** kunci ketujuh = terjemahan pembunuh terstruktur B1/B3 (`FABIUS-PEMBUNUH-v1`, sha `0xa55b4782…`): tx `0x7b053afcfdae9634856564cc81757eb30a669619fe6a5c35fcf74330412d960a`, blok 134581846, gas 123.074, `lockedAt` 1791008788 = 2026-10-03T06:26:28Z, uri ke commit `3250574f`; `--verify` membaca ulang lockedAt yang sama; `lockCount()` = 7.
+
 **Yang TIDAK dibuktikan:** bahwa spesifikasinya bagus atau dijalankan dengan jujur - hanya keberadaan dan urutan waktu.
 
 **Terkait:** [[02-Contracts/C7 - SignalAnchor]] · [[02-Contracts/02 - Deployed on 97]] · [[00-Overview/03 - Decisions]] F-D79/F-D80/F-D82 · [[Quick-Reference]]

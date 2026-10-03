@@ -28,6 +28,7 @@ dihapus saat audit, bukan disimpan sopan-sopanan.
 | kunci ambang peninjau v1 | sha `0xf145b70abd251b9fcf421bfb811bcf3788dade347c37b3bea331a09fedfe5f32`, anchoredAt 2026-10-02T08:17:48Z | `python -X utf8 tools/anchor_lock.py --verify` · F-D74 |
 | kunci parameter F-D16 maju | sha `0x5a47cc4b87758730b0a1898f5a626029806b287abbb730292422fe5136797a45`, di-pin LockRegistry `lockedAt` 2026-10-02T17:10:57Z (tx `0x6bf7d51201b9…`) | `python -X utf8 tools/lock_spec.py --file engine/locks/fd16.lock.json --name FABIUS-FD16-MAJU-v1 --verify` · F-D84 |
 | buku slot hidup epoch 690 | `book_sha 0xfe37d7595644fd7e23fc5cd2c9aa659db1b66e316069c7414dd478e231f6e05c`, di-pin `FABIUS-BUKU-E690` `lockedAt` 2026-10-02T17:26:09Z | `python -X utf8 tools/pin_book.py --verify` · F-D85 |
+| pembunuh terstruktur B1/B3 (F-D87) | `engine/locks/pembunuh.lock.json` sha `0xa55b4782a6d5ec97a90df00634798a3887dc3300921a6ca3f21fb1e95a8607d4`, di-pin `FABIUS-PEMBUNUH-v1` `lockedAt` 2026-10-03T06:26:28Z | `python -X utf8 tools/lock_spec.py --file engine/locks/pembunuh.lock.json --name FABIUS-PEMBUNUH-v1 --verify` · `python -X utf8 -m engine.cli ledger pembunuh` |
 
 ## Perintah yang paling sering dipakai
 

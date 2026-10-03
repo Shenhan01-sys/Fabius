@@ -61,6 +61,14 @@
     "sha": "0x5a47cc4b87758730b0a1898f5a626029806b287abbb730292422fe5136797a45",
     "tx": "0x6bf7d51201b956ec2869d4272b3066710c14af9d334b0e0984407d46c58b9cd0",
     "uri": "https://github.com/Shenhan01-sys/Fabius/blob/7e6f6d377f7a5abb7f98e064e224389272dfe017/engine/locks/fd16.lock.json"
+   },
+   "FABIUS-PEMBUNUH-v1": {
+    "file": "engine/locks/pembunuh.lock.json",
+    "lockedAt": 1791008788,
+    "lockedAt_utc": "2026-10-03T06:26:28Z",
+    "sha": "0xa55b4782a6d5ec97a90df00634798a3887dc3300921a6ca3f21fb1e95a8607d4",
+    "tx": "0x7b053afcfdae9634856564cc81757eb30a669619fe6a5c35fcf74330412d960a",
+    "uri": "https://github.com/Shenhan01-sys/Fabius/blob/3250574f9ac1c17c515738e41a7a53936026b771/engine/locks/pembunuh.lock.json"
    }
   },
   "retired_committers": [

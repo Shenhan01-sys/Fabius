@@ -35,7 +35,7 @@ bulan aktif yang lengkap.
 **Keadaan hari ini** (`python -X utf8 -m engine.cli ledger pembunuh`, 3 Okt): USULAN, belum dikunci (sha `0xa55b4782a6d5ec97…`). B1: BELUM (0/365 hari
 settle final). B3: BELUM (0 bulan aktif selesai); ADL = TIDAK BERLAKU.
 
-**Keputusan 3 Okt (F-D87):** builder memilih 1a, 2a, 3a, 4a, semuanya usulan. Kunci sha `0xa55b4782a6d5ec97…` (06:14:54Z). Pin on-chain menunggu kata builder.
+**Keputusan 3 Okt (F-D87):** builder memilih 1a, 2a, 3a, 4a, semuanya usulan. Kunci sha `0xa55b4782a6d5ec97…` (06:14:54Z). Pin on-chain menunggu kata builder. **Di-pin 06:26:28Z** (`FABIUS-PEMBUNUH-v1`, blok 134581846).
 
 ## Cara mengunci (sesudah builder memilih)
 

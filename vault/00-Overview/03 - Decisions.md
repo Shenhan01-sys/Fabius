@@ -2720,6 +2720,6 @@ Pertanyaan yang dijawab builder (empat pilihan, AskUserQuestion, 3 Okt ±13:15 W
 bot; tes `test_repo_lock_matches_the_code` gagal bila terjemahan atau spesifikasi digeser. Mengubahnya = keputusan baru + kunci v2.
 **Efek:** mulai epoch 691, catatan epoch memuat YA / BELUM / TIDAK menggantikan "TEKS" (`engine/cli.py::_book_killers`). simulasi epoch 691 pada salinan buku (`--now 2026-10-04T09:30:00Z`): penghuni B1-TREND "pembunuh BELUM" (sebelumnya TEKS), B3 REJECT (shadow 2 hari < 60), `book verify` SAH.
 **Pin on-chain:** `tools/lock_spec.py --file engine/locks/pembunuh.lock.json --name FABIUS-PEMBUNUH-v1 --send` = satu transaksi committer, MENUNGGU kata
-builder (rencana 3 Okt: `lockedAt = 0`).
+builder (rencana 3 Okt: `lockedAt = 0`). Builder: *"Oalah gas"* (sesudah bertanya arti label). **Terkirim:** tx `0x7b053afcfdae9634856564cc81757eb30a669619fe6a5c35fcf74330412d960a`, blok 134581846, gas 123.074, `lockedAt` 1791008788 = 2026-10-03T06:26:28Z, uri ke commit `3250574f`; `--verify` membaca ulang lockedAt yang sama; `lockCount()` = 7. Dicatat di `deployments/97.json` `m3.pins`.
 
 **Terkait:** F-D73 · F-D84 · F-D85 · [[08-Backlog/09 - Usulan P107 Pembunuh Terstruktur]] · [[03-Data/D8 - Buku Slot Hidup]] · [[09-Inbox/Session-2026-10-02]] §34
