@@ -2,7 +2,7 @@
 tags: [generated]
 ---
 
-_Auto-Index — 6 halaman · 2026-10-03T04:47Z · dari `vault/scripts/sync_vault.py`_
+_Auto-Index — 6 halaman · 2026-10-03T05:13Z · dari `vault/scripts/sync_vault.py`_
 
 ### 00-Overview (8)
 - [[00-Overview/00 - Hub Overview]]
@@ -99,7 +99,7 @@ _Auto-Index — 6 halaman · 2026-10-03T04:47Z · dari `vault/scripts/sync_vault
 - [[06-Results/28 - Venue Kami Bukan Pasar]]
 - [[06-Results/29 - Buku Order, Frame Baru]]
 
-### 07-Testing (8)
+### 07-Testing (9)
 - [[07-Testing/00 - Hub Testing]]
 - [[07-Testing/T2 - Anchor Verify]]
 - [[07-Testing/T3 - Execution Suite]]
@@ -107,6 +107,7 @@ _Auto-Index — 6 halaman · 2026-10-03T04:47Z · dari `vault/scripts/sync_vault
 - [[07-Testing/T5 - Integrity Harness]]
 - [[07-Testing/T6 - Clean Clone Evidence]]
 - [[07-Testing/T7 - Pre-Push Gate]]
+- [[07-Testing/T8 - Semantik Kegagalan Operator]]
 - [[07-Testing/01 - Test Commands]]
 
 ### 08-Backlog (9)

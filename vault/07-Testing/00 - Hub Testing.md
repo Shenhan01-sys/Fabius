@@ -24,6 +24,7 @@ hasil boleh **mengutip** angka dari sini, tidak pernah menghitung ulang.
 - [[T5 - Integrity Harness]] — check_links / hub_shape / vendor / manifest: kesehatan dokumen
 - [[T6 - Clean Clone Evidence]] — 4/4 jalur pemeriksaan hidup dari clone bersih; tesnya yang
 - [[T7 - Pre-Push Gate]] — gerbang atribusi sebelum push (self-test 6/6; `--all` = 1/393) dan
+- [[T8 - Semantik Kegagalan Operator]] — 41 masukan pipeline operator yang bisa gagal: arah tetap (TUNDA/TOLAK/PERTAHANKAN/UNGKAPKAN) + jangkar kode + jangkar tes, diperiksa gerbang (P109)
 
 <!-- di atas: append-only oleh scripts/sync_vault.py; gloss tulisan tangan utuh -->
 ```dataview

@@ -1,0 +1,83 @@
+---
+tags: [testing]
+---
+
+# T8 - Semantik Kegagalan Operator (P109)
+
+**Bagian dari:** [[07-Testing/00 - Hub Testing]]
+**Gerbang:** `python -X utf8 vault/scripts/check_failure_semantics.py` (jangkar ada + tes tidak hampa) · `--run` (jalankan juga semua tes jangkar, cetak yang DILEWATI)
+
+Satu baris per masukan yang bisa gagal di pipeline operator (feed bar -> tick ledger -> komit/ungkap SignalAnchor -> pemeriksa publik -> buku slot).
+Masalah yang dijaga: **gagal membaca tidak boleh terbaca sebagai "tidak ada"**. Contohnya: jawaban RPC kosong yang didekode sebagai "belum ada komit"
+membuat worker mengomit ulang, dan rentang log yang ditolak RPC lalu dianggap "tidak ada pengungkapan" membuat pemeriksa memvonis TIDAK DIUNGKAP.
+Ini doktrin [[Concepts/Unmeasured Is Not Clean]] dalam bentuk yang diperiksa mesin. Gagasannya (tabel + jangkar + gerbang) dari
+[[11-Notes/Astra-Quant-Agent]]; isi, kosakata, dan kodenya ditulis sendiri karena lisensi mereka melarang kodenya dipakai.
+
+## Kosakata ARAH (tetap; gerbang menolak kata lain)
+
+Arah dipilih menurut bisa-tidaknya tindakan itu dibalik:
+
+| Arah | Artinya | Dipakai untuk |
+|---|---|---|
+| `TUNDA` | tidak dikerjakan sekarang, dicoba lagi otomatis putaran berikutnya; lewat batas waktu = dicatat (gap / TERLEWAT), tidak diisi belakangan | data belum terbit, jaringan, RPC |
+| `TOLAK` | tidak dikerjakan dan butuh manusia (ALARM / kode keluar 3); tidak ada yang ditulis atau dikirim | isi tidak bisa direproduksi, rantai rusak, kode basi |
+| `PERTAHANKAN` | keadaan yang sudah ada dibiarkan, tidak pernah ditimpa (tindakan yang tak bisa dibalik) | komit on-chain, catatan ledger, identitas terakhir di buku |
+| `UNGKAPKAN` | jalan terus, tetapi kekurangannya ditulis terang-terangan (tak terukur, provisional, bukan dari sumber utama) | gap, TERLEWAT, mode rencana, cadangan zip bulanan |
+
+## Tabel
+
+Kolom jangkar kode = `berkas::fungsi` + frasa yang HARUS ada di badan fungsi itu. Kolom jangkar tes = `berkas::Kelas.tes` (tes harus ada dan punya
+assert). `BELUM DIBANGUN` = baris rencana tahap 2/3: dihitung dan dilaporkan gerbang, bukan dianggap beres.
+
+| ID | Masukan -> kegagalan | Arah | Akibat yang dijamin | Jangkar kode | Jangkar tes |
+|---|---|---|---|---|---|
+| SK-F1 | zip kline Vision -> 404 (belum terbit) | TUNDA | deret berhenti di hari itu, hari bolong tidak diloncati; tick ditolak sampai bar ada | `tools/feed_bars.py::update_klines` "belum terbit" | `engine/tests/test_feed.py::KlineTests.test_stops_at_the_first_unpublished_day_and_never_skips_a_hole` |
+| SK-F2 | HTTP 403/451/jaringan sesudah percobaan ulang | TUNDA | FeedError dilaporkan; tidak ada baris yang ditebak | `tools/feed_bars.py::http_get` "raise FeedError" | `engine/tests/test_feed.py::KlineTests.test_network_failure_is_reported_not_guessed` |
+| SK-F3 | bar salah hari / harga tidak positif / high-low tidak mengurung | TOLAK | baris tidak ditulis, deret berhenti di situ | `tools/feed_bars.py::update_klines` "_valid_bar(" | `engine/tests/test_feed.py::KlineTests.test_rejects_a_bar_with_the_wrong_day_or_bad_prices` |
+| SK-F4 | berkas seed tidak ada | TOLAK | riwayat tidak dibuat dari nol | `tools/feed_bars.py::update_klines` "berkas seed tidak ada" | `engine/tests/test_feed.py::KlineTests.test_missing_seed_is_refused` |
+| SK-F5 | REST funding ditolak (451 dari runner GitHub) | UNGKAPKAN | cadangan zip bulanan, hanya bulan yang sudah tutup, dan catatannya ikut tercetak | `tools/feed_bars.py::update_funding` "zip bulanan" | `engine/tests/test_feed.py::FundingTests.test_rest_failure_falls_back_to_closed_months_only_and_says_so` |
+| SK-F6 | menit indeks premium hilang | TUNDA | estimasi hari itu tidak ditulis; tidak ada menit yang diisi | `engine/funding_est.py::estimate_day` "return None" | `engine/tests/test_funding_est.py::EstFeedTests.test_missing_minutes_stop_the_day_and_missing_seed_is_refused` |
+| SK-F7 | galat tak terduga di satu deret feed | UNGKAPKAN | deret lain jalan terus; deret itu tercetak berhenti, tidak hilang diam-diam | `tools/feed_bars.py::update_all` "galat tak terduga" | `engine/tests/test_feed.py::KlineTests.test_update_all_skips_nothing_silently` |
+| SK-L1 | baris ledger tidak terbaca | TOLAK | LedgerError; rantai berhenti di baris itu | `engine/ledger.py::load` "tidak terbaca" | `engine/tests/test_ledger.py::FileTests.test_load_refuses_a_garbage_line` |
+| SK-L2 | rantai hash ledger tidak sah | TOLAK | putaran harian keluar 3, berkas tidak bertambah satu byte pun | `tools/paper_tick.py::tick_bot` "rantai TIDAK sah" | `engine/tests/test_failure_semantics.py::LedgerWriterTests.test_broken_chain_writes_nothing` |
+| SK-L3 | spesifikasi bot di kode beda dari genesis | TOLAK | tidak ada tick; pivot = ledger baru | `engine/ledger.py::make_tick` "spesifikasi berubah sejak genesis" | `engine/tests/test_ledger.py::GapAndGuardTests.test_spec_change_after_genesis_is_refused` |
+| SK-L4 | bar basi/terpotong, masih dalam 12 jam | TUNDA | tidak ada catatan; dicoba lagi | `engine/ledger.py::step` "DITOLAK" | `engine/tests/test_ledger.py::GapAndGuardTests.test_stale_bars_within_deadline_leave_no_record_and_retry_later` |
+| SK-L5 | tidak ada tick sampai lewat 12 jam | UNGKAPKAN | catatan `gap`, tidak pernah diisi belakangan; statistik hanya hari kontigu | `engine/ledger.py::step` "tidak ada tick sebelum batas 12 jam" | `engine/tests/test_ledger.py::GapAndGuardTests.test_missed_day_becomes_a_gap_and_is_never_backfilled` |
+| SK-L6 | aset hilang dari feed dibanding kemarin | TUNDA | tick ditolak (bukan universe mengecil diam-diam) | `engine/ledger.py::make_tick` "aset hilang" | `engine/tests/test_ledger.py::GapAndGuardTests.test_asset_dropping_out_of_the_feed_is_refused` |
+| SK-L7 | B3: funding hari asof belum ada | TUNDA | tick ditolak, bukan posisi datar karena tak terukur | `engine/ledger.py::make_tick` "belum ada untuk" | `engine/tests/test_funding_est.py::B3ViewTests.test_b3_tick_is_refused_while_the_asof_funding_is_missing_instead_of_going_silently_flat` |
+| SK-L8 | data settle (bar/funding) belum lengkap | TUNDA | settle ditunda, tidak diisi nol | `engine/ledger.py::settle_pending_reason` "belum ada" | `engine/tests/test_ledger.py::ChainTests.test_settle_waits_for_funding_instead_of_filling_zero` |
+| SK-L9 | rantai tick bolong (turnover tak terukur) | UNGKAPKAN | bar itu tidak pernah di-settle | `engine/ledger.py::settle_inputs` "return None" | `engine/tests/test_ledger.py::GapAndGuardTests.test_missed_day_becomes_a_gap_and_is_never_backfilled` |
+| SK-L10 | catatan baru tidak menyambung ke ujung rantai | PERTAHANKAN | ditolak; isi berkas lama tidak disentuh | `engine/ledger.py::append` "tidak menyambung" | `engine/tests/test_ledger.py::FileTests.test_append_refuses_a_record_that_does_not_extend_the_head` |
+| SK-L11 | bar historis diubah sesudah tick | TOLAK | verifikasi menghitung ulang dan menandai tick BEDA | `engine/ledger.py::verify_against_data` "BEDA dari hitung-ulang" | `engine/tests/test_ledger.py::TamperTests.test_altering_a_historical_bar_is_caught_by_recompute` |
+| SK-W1 | satu putaran worker gagal (git, RPC, data) | TUNDA | dicatat "putaran GAGAL", worker hidup, tidak ada rencana/kiriman dari putaran itu | `tools/operator_loop.py::guarded_round` "putaran GAGAL" | `engine/tests/test_failure_semantics.py::WorkerRoundTests.test_sync_failure_plans_and_sends_nothing_and_the_worker_survives` |
+| SK-W2 | semua endpoint RPC mati | TUNDA | galat, bukan jawaban kosong | `tools/evm.py::Evm.rpc` "gagal di" | `engine/tests/test_failure_semantics.py::EvmReadTests.test_all_endpoints_down_is_an_error_not_an_empty_answer` |
+| SK-W3 | `eth_call` menjawab kosong ("0x") | TUNDA | galat; TIDAK didekode sebagai "belum ada komit" (yang akan memicu komit ulang) | `tools/evm.py::Evm.call_decode` "jawaban kosong" | `engine/tests/test_failure_semantics.py::EvmReadTests.test_empty_call_answer_raises_instead_of_reading_as_no_commit` |
+| SK-W4 | RPC menjawab chainId lain | TOLAK | berhenti sebelum mengirim apa pun | `tools/evm.py::Evm.chain_check` "berhenti sebelum mengirim" | `engine/tests/test_failure_semantics.py::EvmReadTests.test_wrong_chain_id_stops_before_sending` |
+| SK-W5 | spec_sha ledger beda dari kode worker (image basi) | TOLAK | ALARM, tidak ada yang dikomit | `tools/signal_commit.py::plan` "image basi" | `engine/tests/test_failure_semantics.py::PlanRefusalTests.test_ledger_spec_differs_from_worker_code_is_alarm` |
+| SK-W6 | tick ledger tidak bisa direproduksi dari bar | TOLAK | ALARM, tidak dikomit; yang dikomit selalu isi ledger, bukan tebakan worker | `tools/signal_commit.py::plan` "tidak bisa direproduksi" | `engine/tests/test_signal_commit.py::PlanTests.test_resealed_but_altered_tick_is_refused` |
+| SK-W7 | akar on-chain beda dari ledger | PERTAHANKAN | ALARM; komit tidak pernah ditimpa (satu komit per bar) | `tools/signal_commit.py::plan` "BEDA dari ledger" | `engine/tests/test_signal_commit.py::PlanTests.test_onchain_root_different_from_ledger_is_an_alarm` |
+| SK-W8 | sudah dekat/lewat batas maxLag | UNGKAPKAN | TERLEWAT tercatat, tidak dipaksa | `tools/signal_commit.py::plan` "TERLEWAT" | `engine/tests/test_signal_commit.py::PlanTests.test_too_late_is_never_forced` |
+| SK-W9 | spesifikasi belum dikunci committer | TUNDA | dilewati sampai dikunci; tick lebih tua dari kunci tidak pernah dikomit | `tools/signal_commit.py::plan` "belum dikunci" | `engine/tests/test_signal_commit.py::PlanTests.test_not_locked_is_skipped` |
+| SK-W10 | committer masih punya transaksi tertunda | TUNDA | tidak mengirim apa pun putaran itu (nonce bertumpuk = transaksi ganda) | `tools/signal_commit.py::execute` "tertunda" | `engine/tests/test_failure_semantics.py::EvmReadTests.test_pending_transaction_sends_nothing` |
+| SK-W11 | kontrak akan revert | TOLAK | ketahuan saat estimasi gas, dinamai, nol gas terbakar | `tools/signal_commit.py::execute` "DITOLAK sebelum kirim" | `engine/tests/test_signal_commit.py::AnvilEndToEndTests.test_contract_reverts_are_named_before_any_gas_is_spent` |
+| SK-W12 | receipt tidak datang dalam batas tunggu | TUNDA | galat, tidak dikirim ulang; putaran berikutnya dijaga SK-W10 dan `AlreadyCommitted` | `tools/evm.py::Evm.send` "belum masuk blok" | `engine/tests/test_failure_semantics.py::EvmReadTests.test_receipt_that_never_arrives_raises_instead_of_resending` |
+| SK-W13 | worker tanpa kunci committer | UNGKAPKAN | mode RENCANA: kebutuhan komit dilaporkan, tidak ada batch, tidak ada kiriman | `tools/signal_commit.py::plan` "akar dihitung saat --send" | `engine/tests/test_signal_commit.py::PlanTests.test_without_key_reports_need_but_builds_nothing` |
+| SK-V1 | RPC menolak rentang `eth_getLogs` | TUNDA | rentang dibelah dua; di bawah 100 blok = galat, TIDAK dibaca "tidak ada pengungkapan" | `tools/verify_signals.py::revealed_events` "chunk //= 2" | `engine/tests/test_failure_semantics.py::VerifierReadTests.test_rejected_log_range_is_halved_then_raised_never_read_as_no_reveals` |
+| SK-V2 | komit dari alamat lain di kontrak yang sama | UNGKAPKAN | dihitung terpisah, tidak pernah dipercaya sebagai komit resmi | `tools/verify_signals.py::verify` "others = [" | `engine/tests/test_verify_signals.py::VerifyTests.test_commit_from_other_address_is_counted_not_trusted` |
+| SK-V3 | komit resmi tanpa tick di ledger repo | TOLAK | ALARM | `tools/verify_signals.py::verify` "komit resmi tanpa tick" | `engine/tests/test_verify_signals.py::VerifyTests.test_official_commit_without_ledger_tick_is_alarm` |
+| SK-B1 | keputusan buku disunting lalu di-seal ulang | TOLAK | hitung-ulang menandai BEDA | `engine/book_live.py::verify_book` "BEDA dari hitung-ulang" | `engine/tests/test_book_live.py::BookLiveTests.test_tampered_decision_is_caught_even_when_resealed` |
+| SK-B2 | pembunuh terstruktur mengenai identitas terakhir | PERTAHANKAN | bot identitas terakhir tetap di buku, status pembunuh tercatat | `engine/book_live.py::build_epoch` "identitas terakhir" | `engine/tests/test_book_live.py::BookLiveTests.test_structured_killer_removes_non_identity_but_not_last_identity` |
+| SK-R1 | REST: bacaan pertama sesudah 00:00Z belum final (P98: BTC close berubah di +15 s) | TUNDA | baca paling cepat +2 menit; terima hanya dua bacaan identik berjarak >= 60 s | BELUM DIBANGUN (P100, mode bayangan) | BELUM DIBANGUN |
+| SK-R2 | funding aktual dari REST masuk SEBELUM estimasi beku hari itu ditulis | TOLAK | estimasi hari itu tidak akan pernah terbentuk (`update_funding_est` mulai sesudah peristiwa aktual terakhir) -> tick B3 ditolak sampai jadi gap; urutan wajib: estimasi dulu, atau funding aktual tidak ditulis worker | BELUM DIBANGUN (P100) | BELUM DIBANGUN |
+| SK-R3 | dua penulis ledger (rantai GitHub + Railway) | PERTAHANKAN | rantai hash bercabang; satu penulis saja, pindah = matikan yang lama dulu | BELUM DIBANGUN (P99) | BELUM DIBANGUN |
+| SK-R4 | bar REST beda dari Vision yang terbit belakangan | PERTAHANKAN | tick yang sudah ditulis tidak diubah; bedanya dicatat ALARM dan dilaporkan | BELUM DIBANGUN (P100) | BELUM DIBANGUN |
+| SK-R5 | worker mati saat jam tick | UNGKAPKAN | tidak ada tick; lewat 12 jam = gap (SK-L5); alert belum ada | BELUM DIBANGUN (P101) | BELUM DIBANGUN |
+
+## Yang TIDAK dibuktikan halaman ini
+
+- Gerbang memeriksa bahwa jangkar ADA dan tesnya punya assert. Kalau ditambah `--run`, ia juga menjalankan tesnya. Ia tidak membuktikan tabelnya lengkap:
+  masukan yang lupa ditulis tidak akan ketahuan. Menambah baris adalah pekerjaan manusia setiap kali pipeline berubah.
+- Tes bersyarat (anvil) bisa dilewati di mesin tanpa anvil; `--run` mencetaknya sebagai DILEWATI, bukan lulus (gagasan P110).
+
+**Terkait:** [[08-Backlog/01 - Backlog]] P109/P110/P99/P100 · [[04-Tools/TL11 - komit sinyal M3]] · [[04-Tools/TL9 - ledger paper maju]] ·
+[[00-Overview/03 - Decisions]] F-D80/F-D83

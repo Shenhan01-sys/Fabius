@@ -19,4 +19,6 @@ tags: [perkakas, "TL11"]
 
 **Detail:** hidup sejak 2 Okt 12:35Z (mode rencana), mode KIRIM sejak 13:06Z, kunci dirotasi 15:50Z (F-D82). Bukti kerja pertama: komit bar 2026-10-02 (P94).
 
-**Terkait:** [[TL9 - ledger paper maju]] · [[TL12 - m3_setup]] · [[00-Overview/03 - Decisions]] F-D80/F-D82
+**Semantik kegagalan (P109, 3 Okt):** tiap titik gagal worker + `evm.py` punya baris di [[07-Testing/T8 - Semantik Kegagalan Operator]] (SK-W1..W13, SK-V1); putaran worker kini lewat `guarded_round` (galat apa pun dicatat "putaran GAGAL", worker hidup, tidak ada rencana/kiriman dari putaran itu).
+
+**Terkait:** [[TL9 - ledger paper maju]] · [[TL12 - m3_setup]] · [[00-Overview/03 - Decisions]] F-D80/F-D82 · [[07-Testing/T8 - Semantik Kegagalan Operator]]

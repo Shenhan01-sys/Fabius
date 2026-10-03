@@ -145,6 +145,20 @@ class Worker:
             self.heartbeat(head, f"saldo committer {ev.balance(committer) / 1e18:.6f} tBNB | aksi {kinds}")
 
 
+def guarded_round(w: "Worker") -> bool:
+    """Satu putaran yang tidak boleh mematikan worker: galat apa pun (git, RPC, data) dicatat lalu diulang putaran berikutnya. Tidak ada yang dikirim
+    dari putaran yang gagal sebelum `execute`; yang gagal DI TENGAH `execute` dilindungi `has_pending` + `AlreadyCommitted` di putaran berikutnya."""
+    try:
+        w.once()
+        return True
+    except Exception as e:  # noqa: BLE001
+        log(f"putaran GAGAL: {type(e).__name__}: {str(e)[:240]}")
+        tb = traceback.format_exc().strip().splitlines()
+        log("  " + " | ".join(tb[-3:])[:400])
+        w.last_lines = None
+        return False
+
+
 def main() -> int:
     ap = argparse.ArgumentParser(description="Worker Railway: komit sinyal ledger ke SignalAnchor (tahap 1).")
     ap.add_argument("--once", action="store_true")
@@ -158,13 +172,7 @@ def main() -> int:
     w = Worker()
     while True:
         t0 = time.time()
-        try:
-            w.once()
-        except Exception as e:  # noqa: BLE001 - satu putaran gagal tidak boleh mematikan worker; diulang putaran berikutnya
-            log(f"putaran GAGAL: {type(e).__name__}: {str(e)[:240]}")
-            tb = traceback.format_exc().strip().splitlines()
-            log("  " + " | ".join(tb[-3:])[:400])
-            w.last_lines = None
+        guarded_round(w)
         if a.once:
             return 0
         time.sleep(max(5.0, POLL_S - (time.time() - t0)))

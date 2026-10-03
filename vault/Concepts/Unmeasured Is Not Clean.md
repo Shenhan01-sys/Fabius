@@ -18,4 +18,6 @@ keadaan sistem.
 `is_honeypot=null`), `03-Data/01 - Dataset.md` (baris tanpa alasan risiko dipisah dari baris
 "bersih"), `06-Results/03 - Not Yet Proven.md`.
 
+**Terapan pipeline operator (3 Okt, P109):** [[07-Testing/T8 - Semantik Kegagalan Operator]]: 41 masukan yang bisa gagal, masing-masing dengan arah (TUNDA / TOLAK / PERTAHANKAN / UNGKAPKAN), jangkar kode, dan jangkar tes yang diperiksa gerbang. Contoh kelas yang sama: jawaban `eth_call` kosong kini galat, bukan "belum ada komit".
+
 Lihat: [[One-Way Gate]] · [[Stale Local Copy]]
