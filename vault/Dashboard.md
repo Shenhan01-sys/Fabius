@@ -14,9 +14,12 @@ tags: [dashboard]
 > `LockRegistry` + `SignalAnchor` ter-deploy di chain 97 (M3, F-D79/F-D80); worker Railway mengomit tiap tick (F-D80; committer dirotasi, F-D82); perekam
 > wallet-flow dihentikan (F-D81); data REST = data Vision untuk engine (F-D83). Semua tetap **paper**: tanpa uang nyata, tanpa klaim edge.
 > **3 Okt:** tabel semantik kegagalan pipeline operator + gerbangnya ([[07-Testing/T8 - Semantik Kegagalan Operator]], P109); tahap 2+3 berjalan sebagai
+> **mode bayangan** di Railway `fabius-probe`: tick dari REST beberapa menit sesudah tutup, dibandingkan dengan tick resmi (F-D86, [[04-Tools/TL17 - shadow_tick]]).
 > **3 Okt sore (bukti):** hari pertama penuh TANPA tangan manusia. Rantai GitHub menulis tick bar 2 Okt (08:40Z), worker Railway mengomit + mengungkap
 > (2 komit, 1 ungkap, 0 gagal), `verify_signals` memvonis SAH untuk B1 dan B3, dan mode bayangan IDENTIK dengan tick resmi (80 baris REST = Vision).
-> **mode bayangan** di Railway `fabius-probe`: tick dari REST beberapa menit sesudah tutup, dibandingkan dengan tick resmi (F-D86, [[04-Tools/TL17 - shadow_tick]]).
+> **3 Okt malam (hidup untuk orang lain, F-D89):** landing tingkat 0 https://fabius-one.vercel.app + server MCP untuk agen di `/mcp` (8 alat hanya baca;
+> `fabius_verify` memeriksa sinyal mana pun langsung dari chain), data landing dicetak mesin sesudah bukti harian, daftar tunggu tingkat 1 lewat bot Telegram
+> (P113-P115). Tingkat 1 tetap TERKUNCI (F-D72); semua tetap paper.
 > Status per item: [[08-Backlog/01 - Backlog]] bagian *Arah operator*.
 
 Pertanyaan proyek dalam bentuk tabel. Semua barisnya diambil dari perintah yang ada di repo;
@@ -34,8 +37,9 @@ kolom "diperbarui" adalah tanggal run, bukan tanggal edit halaman.
 | Berapa sisa waktu | tenggat 30 Sep 23:59 **WIB** (sudah lewat; arah operator tidak punya tenggat hackathon) | [[00-Overview/06 - Roadmap]] | 2026-09-27 |
 | Arah sekarang? | operator pemilih bot, **paper penuh**: B1-TREND + B3-CARRY di ledger maju, sinyal dikomit ke chain | [[08-Backlog/01 - Backlog]] *Arah operator* · F-D70..F-D83 | 2026-10-02 |
 | Kontrak baru? | `LockRegistry` `0xcF6fBF95fc04DEd8d670512CEc0723a2246Fbb0C` · `SignalAnchor` `0x9B78200beFbbBe836585d31bd5b6dB32587064f3` (chain 97) | [[02-Contracts/C6 - LockRegistry]] · [[02-Contracts/C7 - SignalAnchor]] | 2026-10-02 |
-| Jalan 24/7 di mana? | rantai GitHub `paper-ledger` (penulis ledger) + Railway `fabius-engine` (Singapura, komit sinyal) | [[00-Overview/04 - Run It]] | 2026-10-02 |
-| Yang belum terbukti | tick tanpa tangan manusia + komit pertama on-chain: 3 Okt | [[08-Backlog/01 - Backlog]] P93/P94 | 2026-10-02 |
+| Jalan 24/7 di mana? | rantai GitHub `paper-ledger` (penulis ledger; sejak 3 Okt juga memicu snapshot landing + membaca daftar tunggu) + Railway `fabius-engine` (Singapura, komit sinyal) + Railway `fabius-probe` (mode bayangan) + Vercel `fabius` (landing + MCP, dibangun dari GitHub) | [[00-Overview/04 - Run It]] · F-D89 | 2026-10-03 |
+| Bisa dilihat orang lain? | landing https://fabius-one.vercel.app · MCP `https://fabius-one.vercel.app/mcp` (produksi: `fabius_verify B3-CARRY 2026-10-02` = SAH) | [[04-Tools/TL19 - web landing]] · [[04-Tools/TL20 - server MCP]] · [[07-Testing/01 - Test Commands]] 5i | 2026-10-03 |
+| Yang belum terbukti | ~~tick tanpa tangan manusia + komit pertama on-chain: 3 Okt~~ **terbukti 3 Okt sore** (SAH 2, ALARM 0). Belum: hari 2-5 bayangan (P99), settle final pertama + F-D16 maju, agen luar memakai MCP, pendaftar pertama | [[06-Results/03 - Not Yet Proven]] #22-#26 · [[09-Inbox/Session-2026-10-02]] §39 | 2026-10-03 |
 
 ```dataview
 TABLE WITHOUT ID file.folder AS folder, file.name AS halaman

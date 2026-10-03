@@ -2743,3 +2743,25 @@ Pertanyaan builder: *"Menurutmu paling optimal A1/A2"*. Jawaban asisten merevisi
 6. **Pin on-chain** (builder: *"Gas"*): `FABIUS-ANGGARAN-v1`, tx `0x3254212fb06a705465857f61d31e79f76abf697f389852ac6a6a1c9728253165`, blok 134593740, gas 123.086, `lockedAt` 1791014141 = 2026-10-03T07:55:41Z, uri ke commit `b8783f42`; `--verify` membaca ulang lockedAt yang sama; `lockCount()` = 8. Dicatat di `deployments/97.json` `m3.pins`.
 
 **Terkait:** F-D16 · F-D84 · F-D87 · [[08-Backlog/08 - Riset Optimasi Ambang]] §1 · [[09-Inbox/Session-2026-10-02]] §38
+
+## F-D89 — Pintu tingkat 0 hidup: hosting hanya lewat GitHub, data landing ikut bukti harian, daftar tunggu = chat builder · 3 Okt 2026 (WIB)
+
+Builder: *"Kan bisa tuh trigger deploy via vercel cli, klo blom connect tinggal di re-connect aja"*, lalu *"Gasss"* dua kali (snapshot otomatis + P115).
+Rancangan butir 3-5 diusulkan asisten di chat dan dijalankan atas "Gasss" itu; butir ini mencatatnya supaya bisa dibantah, bukan menyatakannya pilihan builder.
+
+1. **Hosting:** landing + server MCP di Vercel, project `fabius`, Root Directory `web`, tersambung GitHub `master`: https://fabius-one.vercel.app, MCP di
+   `/mcp`. Deploy HANYA lewat push GitHub: Vercel membangun dari clone, jadi hanya berkas ter-track yang ikut. `vercel deploy` dari folder kerja DILARANG,
+   karena CLI mengunggah `.env` / `.committer.env` / `.deployer.env` (kunci privat) yang tidak ada di daftar abaikan bawaan Vercel. Commit yang tidak
+   menyentuh `web/` tidak dibangun (perintah lewati-build), supaya commit bot tidak menghabiskan kuota (terbukti: `11b98493` CANCELED).
+2. **Server MCP tingkat 0 (P114):** 8 alat hanya baca, tanpa kunci. Tingkat 1 tidak punya alat di server ini (F-D72 tetap). Endpoint MCP = endpoint
+   pertama `docs/agent-card.json` (kartu ERC-8004 token 2494).
+3. **Data landing dicetak mesin:** rantai `paper-ledger` memicu `web-snapshot.yml` sesudah penjaga luar menilai tick hari itu; commit hanya bila isi
+   berubah; chain tak terbaca = snapshot lama dipertahankan (T8 SK-P1).
+4. **Daftar tunggu (P115):** penampungnya riwayat chat Telegram builder, bukan basis data dan bukan repo. Alasan: privat, permanen, tanpa layanan baru, dan
+   repo ini publik. Data yang dikumpulkan = yang dikirim Telegram sendiri (nama tampilan, @username, chat id) + asal tombol; tidak ada email atau nomor
+   telepon. Log publik hanya hitungan (SK-P4).
+5. **Batas yang jujur:** kontak pendaftar = data pribadi menurut UU PDP. Telaah hukum P80 kini juga mencakup daftar tunggu ini (persetujuan, tujuan,
+   penghapusan). `/stop` hanya dikabarkan ke builder; menghapus entri = tangan builder. Sampai P80 selesai: tidak ada pesan pemasaran; satu-satunya pesan
+   yang dijanjikan ke pendaftar = kabar saat tingkat 1 dibuka.
+
+**Terkait:** F-D70 · F-D72 · F-D78 · [[04-Tools/TL19 - web landing]] · [[04-Tools/TL20 - server MCP]] · [[04-Tools/TL21 - waitlist]] · [[09-Inbox/Session-2026-10-02]] §41-§43

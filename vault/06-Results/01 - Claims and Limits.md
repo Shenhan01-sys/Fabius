@@ -26,6 +26,19 @@ tidak bisa ditunjuk artefaknya.
 | "Registry ERC-8004 (Identity, Reputation) hidup di 97 dan 56" | `verify_erc8004.py` — `eth_chainId` + `eth_getCode` + `eth_call` | probe chain |
 | "Funding rate & open interest BNB tersedia tanpa API key" | Hyperliquid `metaAndAssetCtxs`: 234 perp, BNB OI 65.047, funding 0,004781%/jam | probe HTTP |
 
+## Boleh diucapkan sejak 3 Okt (arah operator, terukur)
+
+> Arah operator (BN-PIVOT) kini punya bagian yang SUDAH ADA. Baris di bawah boleh diucapkan; sebut n-nya, karena bukti maju baru berumur hari.
+
+| Klaim | Buktinya | Level |
+|---|---|---|
+| "Sinyal bot Fabius dikomit ke BNB Chain (SignalAnchor, chain 97) sebelum hasilnya ada, lalu diungkap; siapa pun bisa memeriksanya tanpa kunci" | `python -X utf8 tools/verify_signals.py` 3 Okt 08:44:16Z: B1-TREND + B3-CARRY bar 2026-10-02 SAH, ALARM 0; `fabius_verify` di server MCP produksi = SAH ([[07-Testing/01 - Test Commands]] 5g, 5i) | terukur on-chain, **satu hari bukti** |
+| "Ledger paper maju ditulis mesin dan sinyalnya dikomit worker tanpa tangan manusia" | [[09-Inbox/Session-2026-10-02]] §39; `python -X utf8 -m engine.cli ledger verify` | terukur sejak 2 Okt |
+| "Umpan bukti tingkat 0 terbuka untuk manusia dan agen (MCP)" | https://fabius-one.vercel.app · `https://fabius-one.vercel.app/mcp` ([[04-Tools/TL20 - server MCP]]) | hidup, diuji di produksi 3 Okt |
+
+**Masih dilarang:** "sinyal kami menguntungkan" / "punya edge" (F-D16 maju belum terpenuhi), "dipakai agen lain" (belum ada bukti pemakai luar),
+"punya pelanggan/pendaftar" (sampai ada angkanya), "sinyal real-time tersedia" (tingkat 1 TERKUNCI, F-D72).
+
 ## Dilarang diucapkan
 
 - **Angka apa pun yang berbentuk keuntungan**: return, ROI, win rate, "alpha", proyeksi profit,

@@ -15,6 +15,9 @@ tags: [klaim, "OI-CS"]
 > sedang diuji maju secara ter-anchor; belum ada hasil maju" - dan sebut gerbang mana yang gagal bila ada. Mengirim sinyal berbayar
 > baru boleh setelah F-D16 lolos pada data maju dan telaah hukum selesai ([[08-Backlog/06 - Epik Gerbang Sinyal]] §1).
 
+> **Sejak 3 Okt (F-D89):** tingkat 0 adalah fitur yang ADA. Boleh: "sinyal dikomit sebelum hasilnya dan bisa diperiksa siapa pun" (sebut: satu hari
+> bukti) dan "umpan bukti untuk manusia + agen (MCP) di fabius-one.vercel.app". Kalimat baku + yang masih dilarang: [[06-Results/01 - Claims and Limits]] bagian *sejak 3 Okt*.
+
 **Bagian dari:** [[10-Submissions/00 - Hub Submissions]]
 **Sumber:** `README.md`, `06-Results/`, `07-Testing/`
 

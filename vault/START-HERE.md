@@ -14,9 +14,12 @@ tags: [entry]
 > `LockRegistry` + `SignalAnchor` ter-deploy di chain 97 (M3, F-D79/F-D80); worker Railway mengomit tiap tick (F-D80; committer dirotasi, F-D82); perekam
 > wallet-flow dihentikan (F-D81); data REST = data Vision untuk engine (F-D83). Semua tetap **paper**: tanpa uang nyata, tanpa klaim edge.
 > **3 Okt:** tabel semantik kegagalan pipeline operator + gerbangnya ([[07-Testing/T8 - Semantik Kegagalan Operator]], P109); tahap 2+3 berjalan sebagai
+> **mode bayangan** di Railway `fabius-probe`: tick dari REST beberapa menit sesudah tutup, dibandingkan dengan tick resmi (F-D86, [[04-Tools/TL17 - shadow_tick]]).
 > **3 Okt sore (bukti):** hari pertama penuh TANPA tangan manusia. Rantai GitHub menulis tick bar 2 Okt (08:40Z), worker Railway mengomit + mengungkap
 > (2 komit, 1 ungkap, 0 gagal), `verify_signals` memvonis SAH untuk B1 dan B3, dan mode bayangan IDENTIK dengan tick resmi (80 baris REST = Vision).
-> **mode bayangan** di Railway `fabius-probe`: tick dari REST beberapa menit sesudah tutup, dibandingkan dengan tick resmi (F-D86, [[04-Tools/TL17 - shadow_tick]]).
+> **3 Okt malam (hidup untuk orang lain, F-D89):** landing tingkat 0 https://fabius-one.vercel.app + server MCP untuk agen di `/mcp` (8 alat hanya baca;
+> `fabius_verify` memeriksa sinyal mana pun langsung dari chain), data landing dicetak mesin sesudah bukti harian, daftar tunggu tingkat 1 lewat bot Telegram
+> (P113-P115). Tingkat 1 tetap TERKUNCI (F-D72); semua tetap paper.
 > Status per item: [[08-Backlog/01 - Backlog]] bagian *Arah operator*.
 
 **Baca dulu ini, tiga baris:**
@@ -35,6 +38,7 @@ tags: [entry]
 |---|---|
 | juri / orang baru | [[00-Overview/01 - Briefing]] → [[10-Submissions/02 - Project Detail]] |
 | yang mau menjalankan | [[00-Overview/04 - Run It]] (semua perintah, sekali copy) |
+| yang mau memeriksa sinyal sekarang (manusia/agen) | https://fabius-one.vercel.app · MCP `https://fabius-one.vercel.app/mcp` ([[04-Tools/TL20 - server MCP]]) |
 | yang mengaudit klaim | [[06-Results/01 - Claims and Limits]] + [[07-Testing/01 - Test Commands]] |
 | agen lanjutan (sesi berikutnya) | [[09-Inbox/00 - Hub Inbox]] terakhir + [[08-Backlog/01 - Backlog]] |
 | yang mau menambah metode analisis | [[TradingKnowledge/00 - Hub Trading Knowledge]] lalu matriksnya: [[TradingKnowledge/07-Peta-Fabius/GAP1 - Matriks Metode x Tahap]] |

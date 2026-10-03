@@ -40,7 +40,7 @@ dibuka pada waktunya"**. Tiga tingkat:
 
 | tingkat | isi | syarat | harga |
 |---|---|---|---|
-| 0 - umpan bukti | komit sinyal on-chain + pembukaan tertunda + rekam jejak paper; tanpa klaim keuntungan | boleh sekarang (setelah M2-M3) | gratis atau murah (kurva di sisi biaya saja) |
+| 0 - umpan bukti | komit sinyal on-chain + pembukaan tertunda + rekam jejak paper; tanpa klaim keuntungan | boleh sekarang (setelah M2-M3) · **HIDUP 3 Okt (F-D89, P113/P114): landing + MCP di fabius-one.vercel.app** | gratis atau murah (kurva di sisi biaya saja) |
 | 1 - sinyal waktu-nyata | muatan sinyal sebelum pembukaan publik, lewat x402/MCP | hanya untuk bot yang lolos gerbang F-D16 pada data maju ter-anchor **dan** telaah hukum (P80) | tetap per sinyal atau per periode; `NONE` gratis |
 | 2 - eksekusi | mengeksekusi untuk orang lain | **tidak dijual** | pengguna menjalankan sendiri; pagar on-chain milik pengguna (§3 C-C) |
 
@@ -120,6 +120,9 @@ bytes32 dataHash)`; bobot ×1e-9, harga ×1e-8 (0 = tak ada); akar nol = "bot di
   `subscribe(...)`. `resources/subscribe` + `notifications/resources/updated` hanya bekerja **selama klien tersambung**; agen yang
   sedang mati butuh pemicu lain: **webhook bertanda tangan**, push notification A2A, atau peristiwa chain `SignalCommitted` sebagai
   pemicu lalu agen menarik muatan lewat MCP. Peristiwa chain saja tidak memuat muatan (itu intinya).
+- **Status 3 Okt (F-D89, P114):** MCP tingkat 0 HIDUP di `https://fabius-one.vercel.app/mcp` (Streamable HTTP, stateless, hanya baca): `fabius_overview`,
+  `fabius_latest_signals`, `fabius_signals`, `fabius_verify`, `fabius_track_record`, `fabius_proof_feed`, `fabius_list_bots`, `fabius_locks`. Belum:
+  `subscribe`/notifikasi/webhook dan muatan berbayar (tingkat 1, terkunci). Kanal manusia sementara = bot Telegram + daftar tunggu (P115; UU PDP -> P80).
 - **Email:** berguna untuk pelanggan manusia, tapi **bukan Gmail pribadi** untuk produksi (batas kirim harian rendah, deliverability,
   ToS); pakai penyedia transaksional dengan domain sendiri (SPF/DKIM/DMARC), persetujuan eksplisit dan tautan berhenti berlangganan
   (UU PDP), dan jangan menaruh alamat email di chain. Email = ringkasan terbaca manusia + tautan/lampiran muatan bertanda tangan.
@@ -133,7 +136,7 @@ bytes32 dataHash)`; bobot ×1e-9, harga ×1e-8 (0 = tak ada); akar nol = "bot di
 |---|---|---|
 | M2 (P77) | pengunduh dengan guard umur bar, paper ledger append-only, replay B4 dari event | - ; **DIBANGUN 2 Okt (F-D75):** `engine/ledger.py`, `tools/feed_bars.py`, `tools/paper_tick.py`, workflow `paper-ledger.yml` (dipush 2 Okt; lari manual pertama sukses, run 36987654079; funding REST 451 dari runner; **P92/F-D76: funding direkonstruksi dari indeks premium untuk laporan PROVISIONAL, settle final tetap menunggu aktual**; **B3 aktif sejak bar 2026-10-01, F-D77**); **replay B4 belum**; jam maju B1 dimulai di bar 2026-10-01 |
 | M3 (P78) | C-A, C-B (lalu C-C) di testnet 97; satu kunci per bot | keputusan §8 #2 (varian hash); **C-A/C-B TER-DEPLOY 2 Okt 13:04Z (F-D80): LockRegistry `0xcF6f…Fbb0C`, SignalAnchor `0x9B78…64f3`; B1/B3 dikunci committer; worker Railway mengomit tiap tick (P94); committer dirotasi 15:49Z (F-D82); C-C belum** |
-| M4 (P79) | gerbang: x402 V2 + MCP + webhook (+ email); lalu FE | tingkat 1 hanya setelah P75/P80 dan gerbang F-D16 |
+| M4 (P79) | gerbang: x402 V2 + MCP + webhook (+ email); lalu FE | tingkat 1 hanya setelah P75/P80 dan gerbang F-D16; **3 Okt: bagian tingkat 0 (FE + MCP hanya baca) sudah HIDUP lebih dulu (P113/P114, F-D89); sisa M4 = tingkat 1** |
 
 FE paling akhir (pola F-D20: bukti dulu, permukaan sesudahnya). Tingkat 0 bisa jalan lebih awal karena tidak menjual apa pun.
 

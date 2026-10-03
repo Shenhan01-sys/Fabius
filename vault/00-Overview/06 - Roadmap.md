@@ -7,7 +7,7 @@ tags: [overview, "O6"]
 **Bagian dari:** [[00-Overview/00 - Hub Overview]]
 **Sumber:** [[08-Backlog/01 - Backlog]] · tenggat resmi 30 Sep **23:59 WIB**
 
-> **Sesudah tenggat (2 Okt):** urutan kerja sekarang = [[08-Backlog/01 - Backlog]] bagian *Arah operator*: M1 ✅ -> M2 ✅ -> M3 C-A/C-B ✅ ter-deploy -> worker komit ✅ -> bukti 3 Okt ⏳ (P93/P94) -> jeda REST (P98) -> tahap 2/3 (🟠 P99/P100) -> M4 gerbang sesudah telaah hukum (P75/P79/P80). Tabel di bawah adalah riwayat menuju 30 Sep.
+> **Sesudah tenggat (2 Okt):** urutan kerja sekarang = [[08-Backlog/01 - Backlog]] bagian *Arah operator*: M1 ✅ -> M2 ✅ -> M3 C-A/C-B ✅ ter-deploy -> worker komit ✅ -> bukti 3 Okt ⏳ (P93/P94) -> jeda REST (P98) -> tahap 2/3 (🟠 P99/P100) -> M4 gerbang sesudah telaah hukum (P75/P79/P80). **Per 3 Okt malam:** bukti hari pertama ✅ (P93/P94) -> tingkat 0 HIDUP ✅ (landing + MCP, P113/P114, F-D89) -> daftar tunggu ✅ terpasang (P115) -> bayangan 1/5 hari (P99) -> M4 tingkat 1 tetap sesudah F-D16 maju + telaah hukum. Tabel di bawah adalah riwayat menuju 30 Sep.
 
 **Ringkas:** sisa waktu dipakai untuk membuat klaim bisa diperiksa orang lain, bukan untuk menambah
 fitur yang tidak bisa diverifikasi.
