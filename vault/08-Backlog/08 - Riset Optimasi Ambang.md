@@ -32,8 +32,8 @@ Anggaran yang saya usulkan (**belum diputuskan**; builder menetapkannya sebelum 
 
 | kode | anggaran | status |
 |---|---|---|
-| A1 | peluang bot **tanpa edge** lolos semua gerbang pada **satu pengajuan jujur** ≤ 1 % | usulan |
-| A2 | penambang yang mengirim banyak konfigurasi: rata-rata penerimaan palsu **per keluarga penerbit per tahun** ≤ 0,1 pada batas antrean (`queue_max_per_family`, `cooldown_days`) | usulan |
+| A1 | peluang bot **tanpa edge** lolos semua gerbang pada **satu pengajuan jujur** ≤ 1 % | usulan -> **DIPUTUSKAN 3 Okt: 5 %** (F-D88; gerbang = saringan pertama sebelum F-D16 maju) |
+| A2 | penambang yang mengirim banyak konfigurasi: rata-rata penerimaan palsu **per keluarga penerbit per tahun** ≤ 0,1 pada batas antrean (`queue_max_per_family`, `cooldown_days`) | usulan -> **DIPUTUSKAN 3 Okt: 0,2** lewat alpha A1/k per pengajuan ke-k (26 pengajuan/tahun -> 0,193; F-D88) |
 | A3 | daya minimum pada edge tertentu | **tidak diusulkan angka**: ditetapkan setelah R2, dan tidak boleh melampaui plafon di bawah |
 
 **Plafon aritmetika daya** (`python -X utf8 09-Inbox/Session-2026-10-02-skrip/run14_power_arithmetic.py`; pendekatan: Sharpe taksiran ~ Normal(s, (1 + s²/2)/T), satu uji satu-sisi 5 %, hasil iid,
@@ -173,6 +173,7 @@ G1, G2, G6, G10, K4, K5 lolos/tidak berlaku secara trivial di dunia ini (data be
 
 - Rencana, belum ada hasil riset. Dunia sintetik ≠ pasar; satu sumber data nyata (16 penyintas, 2020-2026, dengan bolong). Tidak ada klaim edge.
 - Garis dasar §3.3 eksploratif; presisinya rendah (aturan #6) dan hanya dua template, satu simbol per universe.
+- **3 Okt: A1 = 5 %, A2 = 0,2 DIPUTUSKAN dan DIKUNCI** (F-D88, `engine/locks/anggaran.lock.json`); kalimat berikut adalah keadaan sebelumnya.
 - Anggaran A1-A2 adalah usulan saya; belum ada kata builder (builder bertanya "maksudnya apa?" - dijelaskan di §1a; keputusan menunggu).
 
 **Terkait:** [[08-Backlog/07 - Epik Kolaborasi Bot Terbuka]] · [[08-Backlog/05 - Epik Enam Bot]] · [[08-Backlog/06 - Epik Gerbang Sinyal]] · [[00-Overview/03 - Decisions]] (F-D73, F-D72, F-D71, F-D16) ·

@@ -1,0 +1,19 @@
+{
+  "catatan": "Builder 3 Okt 2026 (\"OKe gas\" atas usulan A1 5 % per pengajuan, A2 0,2 per keluarga per tahun lewat alpha A1/k): F-D88. Menggantikan usulan awal 1 % / 0,1 karena gerbang adalah saringan pertama sebelum F-D16 maju.",
+  "dikunci": "2026-10-03T07:51:23Z",
+  "params": {
+    "anggaran": {
+      "a1_per_pengajuan": 0.05,
+      "a2_per_keluarga_tahun": 0.2,
+      "jendela_hari": 365,
+      "pengeluaran_alpha": "harmonik: pengajuan ke-k dari keluarga yang sama dalam jendela dinilai dengan alpha = A1 / k"
+    },
+    "antrean": {
+      "cooldown_days": 30,
+      "queue_max_per_family": 2
+    },
+    "v": 1
+  },
+  "sha": "0x833f25987bae2dbddf7f2aaa94477744e1b8bb55284271e0815e75293cd5a94d",
+  "v": 1
+}

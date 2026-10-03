@@ -18,6 +18,7 @@ Tidak ada modul di sini yang menyentuh jaringan, kunci, atau chain.
     fd16                                                    F-D16 pada data MAJU (P88): n sinyal, rerata net, CI bootstrap blok, buang bulan terbaik, BH lintas bot
     forward                                                 skor maju + statistik berpasangan dari ledger (P85): bahan Entry.score_bps / Challenger untuk slots.decide
     pembunuh                                                pembunuh TERSTRUKTUR B1/B3 (P107): terjemahan kalimat spesifikasi, USULAN sampai dikunci
+    anggaran                                                anggaran kesalahan gerbang A1/A2 + alpha per keluarga (F-D88)
 
 Perintah (dari akar repo; `<dir>` = folder CSV keluaran vault/09-Inbox/Session-2026-10-02-skrip/fetch.py):
 
@@ -36,4 +37,4 @@ Perintah (dari akar repo; `<dir>` = folder CSV keluaran vault/09-Inbox/Session-2
     python -X utf8 -m unittest discover -s engine/tests -t .
 """
 __all__ = ["spec", "series", "data", "target", "sinyal", "freshness", "quality", "replay", "report", "bots", "chain",
-           "submission", "gates", "kpi", "review", "slots", "economics", "book", "ledger", "funding_est", "locks", "fd16", "forward", "pembunuh"]
+           "submission", "gates", "kpi", "review", "slots", "economics", "book", "ledger", "funding_est", "locks", "fd16", "forward", "pembunuh", "anggaran"]

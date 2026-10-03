@@ -31,14 +31,14 @@ Rincian tiap item ada di rumahnya (kolom terakhir); angka di sini dicetak oleh p
 | P80 | telaah hukum menjual sinyal (OJK, UU PDP) | ⬜ | bagian dari P75 |
 | P81 | `BotRegistry` + `RevenueSplitter` | ⬜ | [[07 - Epik Kolaborasi Bot Terbuka]] §11 |
 | P82 | peninjau-bot: FE/antrean, nonce, pemeriksa URL rujukan | 🟡 kode `engine/review.py` selesai; sisanya belum | §11 |
-| P83 | penghitung percobaan global + BH lintas kandidat | ⬜ | §11 |
+| P83 | penghitung percobaan global + BH lintas kandidat | ⬜ spesifikasi alpha per keluarga sudah ada: pengajuan ke-k dalam 365 hari = A1/k (`engine/anggaran.py::alpha_for`, F-D88); penegakannya di gerbang belum | §11 |
 | P84 | jalur `method_pr` | ⬜ ditutup sampai ada keperluan | §11 |
 | P85 | ledger shadow maju per bot + skor bergulir + statistik berpasangan | ✅ ledger maju hidup (P77); kepala ledger dikomit per tick lewat SignalAnchor (P94); **skor bergulir + statistik berpasangan dari ledger dibangun** (`engine/forward.py`, `python -X utf8 -m engine.cli ledger skor`, 6 tes; masuk `slots.decide` lewat `challenger_fields`); ⏳ data: 0 settle = skor tak terukur; yang memanggilnya tiap epoch = P87 | §11 · [[04-Tools/TL8 - engine]] |
 | P86 | kunci `GateParams`/`KpiParams`/`SlotParams` v1 | ✅ sementara (F-D73), ter-anchor 2026-10-02T08:17:48Z (F-D74) | §11 · [[04-Tools/TL10 - kunci dan anchor kunci]] |
 | P87 | orkestrator buku hidup | ✅ `ledger/book/buku.jsonl` + `engine.cli book epoch|verify` (6 tes); epoch 690 tercatat (B3 LOLOS_SHADOW, REJECT: shadow 0 hari < 60) dan `book_sha` di-pin LockRegistry 2026-10-02T17:26:09Z; 🟡 pembunuh teks (P107); jadwal + pin otomatis sejak 3 Okt (P108) | F-D85 · [[03-Data/D8 - Buku Slot Hidup]] |
 | P88 | pemeriksa F-D16 pada data maju | ✅ pemeriksa dibangun (`engine/fd16.py`, `python -X utf8 -m engine.cli ledger fd16`, 7 tes); ✅ parameter **DIKUNCI** (F-D84, sha `0x5a47cc4b…`, di-pin LockRegistry 2026-10-02T17:10:57Z) sebelum settle maju pertama; ⏳ data 2 Okt: B1 0/20 sinyal, B3 2/20, 0 settle = BELUM CUKUP DATA | [[07 - Epik Kolaborasi Bot Terbuka]] §11 · [[04-Tools/TL8 - engine]] |
 | P89 | G5/G8 + `NULL_KIND`/`PHASE_VARIANTS` eksplisit | ⬜ | §11 |
-| P90 | riset optimasi ambang R1-R11 | 🟠 anggaran A1/A2 belum diputuskan (3 Okt: builder bertanya "penting ga sih"; dijawab: penting tetapi tidak mendesak - wajib diputuskan SEBELUM riset P90 melihat hasil atau sebelum slot dibuka untuk penerbit luar; usulan 1 % / 0,1 per keluarga per tahun) | [[08 - Riset Optimasi Ambang]] |
+| P90 | riset optimasi ambang R1-R11 | 🟡 **anggaran A1 = 5 % / A2 = 0,2 DIKUNCI 3 Okt (F-D88)**; riset R1-R11 belum mulai (sebelumnya: 3 Okt: builder bertanya "penting ga sih"; dijawab: penting tetapi tidak mendesak - wajib diputuskan SEBELUM riset P90 melihat hasil atau sebelum slot dibuka untuk penerbit luar; usulan 1 % / 0,1 per keluarga per tahun) | [[08 - Riset Optimasi Ambang]] |
 | P91 | anchor sha kunci v1 + commit `engine/` | ✅ anchoredAt 2026-10-02T08:17:48Z | F-D74 |
 | P92 | funding direkonstruksi dari indeks premium | ✅ estimasi hanya untuk laporan PROVISIONAL + target B3; `settle` final tetap funding aktual | F-D76 |
 | P93 | jadwal ledger yang menyambung dirinya sendiri + watchdog (cron GitHub di repo ini tidak pernah menembak) | ✅ dipasang; ⏳ bukti: tick bar 2026-10-02 tanpa tangan manusia, 3 Okt ±08:40-12:00Z | F-D78 · [[04-Tools/TL9 - ledger paper maju]] |

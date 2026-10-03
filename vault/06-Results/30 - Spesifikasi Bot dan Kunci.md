@@ -39,6 +39,7 @@ shadow -> slot (`engine/book.py`).
 | F-D16 maju (`fd16.lock.json`, F-D84) | syarat uji maju | `0x5a47cc4b87758730…` | dikunci 2026-10-02T17:07:59Z | pin `FABIUS-FD16-MAJU-v1` |
 | buku epoch 690 (F-D85) | susunan slot | `book_sha 0xfe37d7595644fd7e…` | 2026-10-02T17:26:09Z | pin `FABIUS-BUKU-E690` |
 | pembunuh B1/B3 (`pembunuh.lock.json`, F-D87) | syarat buang bot | `0xa55b4782a6d5ec97…` | dikunci 2026-10-03T06:14:54Z | pin `FABIUS-PEMBUNUH-v1`, `lockedAt` 2026-10-03T06:26:28Z |
+| anggaran gerbang (`anggaran.lock.json`, F-D88) | A1 5 % / A2 0,2 + antrean | `0x833f25987bae2dbddf…` | dikunci 2026-10-03T07:51:23Z | belum di-pin |
 
 Status kunci di kode (3 Okt): ambang v1 TERKUNCI, F-D16 TERKUNCI, pembunuh TERKUNCI. Bila kodenya digeser, ketiganya mencetak MENYIMPANG dan tesnya gagal.
 

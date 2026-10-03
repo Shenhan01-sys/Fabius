@@ -2723,3 +2723,20 @@ bot; tes `test_repo_lock_matches_the_code` gagal bila terjemahan atau spesifikas
 builder (rencana 3 Okt: `lockedAt = 0`). Builder: *"Oalah gas"* (sesudah bertanya arti label). **Terkirim:** tx `0x7b053afcfdae9634856564cc81757eb30a669619fe6a5c35fcf74330412d960a`, blok 134581846, gas 123.074, `lockedAt` 1791008788 = 2026-10-03T06:26:28Z, uri ke commit `3250574f`; `--verify` membaca ulang lockedAt yang sama; `lockCount()` = 7. Dicatat di `deployments/97.json` `m3.pins`.
 
 **Terkait:** F-D73 · F-D84 · F-D85 · [[08-Backlog/09 - Usulan P107 Pembunuh Terstruktur]] · [[03-Data/D8 - Buku Slot Hidup]] · [[09-Inbox/Session-2026-10-02]] §34
+
+## F-D88 — Anggaran kesalahan gerbang masuk buku: A1 = 5 % per pengajuan jujur, A2 = 0,2 per keluarga penerbit per tahun (alpha A1/k) · 3 Okt 2026 (WIB)
+
+Pertanyaan builder: *"Menurutmu paling optimal A1/A2"*. Jawaban asisten merevisi usulannya sendiri (1 % / 0,1 -> 5 % / 0,2). Builder: *"OKe gas"*.
+
+1. **A1 = 5 %**: peluang bot tanpa edge lolos gerbang pada SATU pengajuan jujur. Alasannya, gerbang adalah saringan PERTAMA. Tidak ada sinyal yang dijual
+   sebelum bot juga lolos F-D16 maju (F-D84), jadi peluang bot tanpa edge sampai dijual ~ A1 x 2,5 % (kasar) ~ 0,13 %. Menurunkan A1 ke 1 % hanya membeli
+   0,1 poin persen keamanan, tetapi menjatuhkan daya pada Sharpe 1,0 / 3 tahun dari 53 % ke 31 %. Usulan awal 1 % belum memperhitungkan saringan kedua.
+2. **A2 = 0,2**: rata-rata penerimaan palsu per keluarga penerbit per tahun, ditegakkan dengan pengeluaran alpha harmonik. Pengajuan ke-k dari keluarga yang
+   sama dalam 365 hari dinilai dengan alpha 5 %/k. Batas antrean sekarang membolehkan paling banyak 26 pengajuan/tahun, sehingga batasnya 0,193.
+3. **A3 (daya)**: tidak diberi angka. Plafon aritmetika riwayat membatasi daya apa pun ambangnya.
+4. **Angka:** dihitung 3 Okt (`python -X utf8 -c "..."`, rumus `run14_power_arithmetic.py` dengan alpha diganti): daya pada Sharpe 1,0 / riwayat 3 th = 31 % (alpha 1 %) vs 53 % (alpha 5 %); Sharpe 0,5: 8 % vs 23 %; Sharpe 1,5: 57 % vs 74 %; positif-palsu sampai dijual ~ A1 x 2,5 % = 0,025 % vs 0,125 %; batas antrean (2 berjalan, jeda 30 hari) = 26 pengajuan/tahun -> tanpa pinalti 1,3 lolos palsu/tahun, dengan alpha A1/k 0,193. Pendekatan: Sharpe taksiran normal, hasil iid, union bound.
+5. **Kunci:** `engine/locks/anggaran.lock.json` sha `0x833f25987bae2dbddf7f2aaa94477744e1b8bb55284271e0815e75293cd5a94d`, dikunci 2026-10-03T07:51:23Z (jam laptop). Kunci mengikat angka DAN parameter antrean
+   (`queue_max_per_family` 2, `cooldown_days` 30); melonggarkan antrean = MENYIMPANG + tes gagal. `engine/anggaran.py` belum dipakai gerbang: penerapannya
+   adalah P83 (penghitung percobaan + alpha per keluarga) dan P90 (riset ambang yang kini punya anggaran tetap).
+
+**Terkait:** F-D16 · F-D84 · F-D87 · [[08-Backlog/08 - Riset Optimasi Ambang]] §1 · [[09-Inbox/Session-2026-10-02]] §38
