@@ -40,6 +40,8 @@ decisions/decisions-*.jsonl
 data/
 # snapshot FE (tools/web_snapshot.py) WAJIB ikut repo: landing page dibangun dari berkas ini (Vercel gagal tanpanya)
 !web/public/data/
+# kode FE di web/src/lib/ (teks, tipe snapshot) WAJIB ikut repo; pola `lib/` di atas/bawah untuk pustaka Foundry, bukan untuk ini
+!web/src/lib/
 # Ekspor sesi Qwen Code disimpan builder DI DALAM folder repo. Isinya teks terang: private key agen,
 # Dune key, GMGN key, Jev key. Repo ini publik. Baris ini ada supaya satu `git add -A` yang tidak
 # sengaja tidak pernah mengubah berkas itu menjadi commit yang tidak bisa ditarik kembali.
