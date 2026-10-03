@@ -2638,7 +2638,11 @@ Builder: *"gas"* (validasi REST vs Vision, langkah pertama tahap 3).
    funding. **Belum diukur:** kapan REST menyajikan bar yang baru tertutup dan funding 00:00Z (perlu uji 00:00-00:10Z dari Railway), dan apakah bar yang diambil di
    menit-menit pertama sudah final. Itu langkah berikutnya, sebelum desain tahap 2+3 diajukan ke builder.
 
-**Terkait:** F-D75 · F-D76 · F-D80 · F-D82 · [[09-Inbox/Session-2026-10-02]] §19
+Tambahan 3 Okt (P98, `tools/rest_latency.py` di `fabius-probe` Singapura, bar 2026-10-02): bar perp + spot 16/16 terlihat tertutup 0,1-11 detik sesudah 00:00:00Z (median 8,7 / 8,9 s), funding 00:00Z 16/16 dalam 3,2-15,5 s; TETAPI 3 bar perp berubah sesudah pertama terlihat (di +15 s): BTCUSDT close 84482,7 -> 84482,8 + volume, ETHUSDT dan BNBUSDT volume; sesudah +18 s tidak ada perubahan lagi sampai +60 menit (1.459 panggilan, 0 gagal). Artinya: data REST hadir dalam detik, tetapi
+bacaan PALING AWAL belum final - termasuk harga penutupan BTC. Aturan untuk tahap 3 (usulan): baca paling cepat +2 menit, terima hanya sesudah dua bacaan
+identik berjarak >= 60 detik, dan cocokkan dengan Vision begitu terbit (rest_vs_vision). Satu malam = satu sampel.
+
+**Terkait:** F-D75 · F-D76 · F-D80 · F-D82 · [[09-Inbox/Session-2026-10-02]] §19 · §27
 
 ## F-D84 — Parameter pemeriksa F-D16 maju (P88) DIKUNCI sebelum settle maju pertama, dan di-pin di LockRegistry · 3 Okt 2026 (WIB)
 

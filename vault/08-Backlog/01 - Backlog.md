@@ -46,9 +46,9 @@ Rincian tiap item ada di rumahnya (kolom terakhir); angka di sini dicetak oleh p
 | P95 | rotasi kunci committer sesudah terpapar di transkrip sesi | ✅ 15:49Z; committer aktif `0xCA9c7322210E9a7F7d0953c862d4Ef60cC0D64A4` | F-D82 |
 | P96 | hentikan perekam wallet-flow sebelum batas 100 MB GitHub | ✅ 15:06Z, kedua workflow `disabled_manually` | F-D81 · [[03-Data/D2 - Wallet Flow]] |
 | P97 | uji kesamaan REST Binance vs Vision | ✅ harga 0 beda; funding 114.228/114.228 identik; volume beda 52 (perp) / 88 (spot) bar | F-D83 · [[04-Tools/TL13 - rest_vs_vision]] · [[03-Data/D7 - Ledger Bars]] |
-| P98 | ukur jeda terbit REST sesudah 00:00Z (bar + funding) dan finalitas menit pertama | 🟡 **job terpasang 2 Okt 16:27Z** (`tools/rest_latency.py` di `fabius-probe`, Singapura; selisih jam server-lokal −38 ms); ⏳ hasil 3 Okt ±01:01Z: `railway logs --service fabius-probe --lines 200` | F-D83 #5 · [[04-Tools/TL13 - rest_vs_vision]] |
+| P98 | ukur jeda terbit REST sesudah 00:00Z (bar + funding) dan finalitas menit pertama | ✅ **terukur 3 Okt** (bar 2026-10-02): bar perp + spot 16/16 terlihat tertutup 0,1-11 detik sesudah 00:00:00Z (median 8,7 / 8,9 s), funding 00:00Z 16/16 dalam 3,2-15,5 s; TETAPI 3 bar perp berubah sesudah pertama terlihat (di +15 s): BTCUSDT close 84482,7 -> 84482,8 + volume, ETHUSDT dan BNBUSDT volume; sesudah +18 s tidak ada perubahan lagi sampai +60 menit (1.459 panggilan, 0 gagal). Aturan tahap 3: baca >= +2 menit, dua bacaan identik >= 60 s, cocokkan dengan Vision | F-D83 #5 · [[04-Tools/TL13 - rest_vs_vision]] |
 | P99 | tahap 2: Railway menjadi penulis ledger (rantai GitHub dimatikan) | 🟠 sesudah P93/P94/P98 terbukti | F-D80 #3 |
-| P100 | tahap 3: tick dari REST segera sesudah penutupan | ⬜ prasyarat data ✅ (P97); jeda ⬜ (P98) | F-D83 |
+| P100 | tahap 3: tick dari REST segera sesudah penutupan | 🟠 prasyarat data ✅ (P97) + jeda/finalitas ✅ (P98: hadir <= 11 s, final sesudah +18 s); menunggu bukti P93/P94 lalu kata builder (bersama P99) | F-D83 |
 | P101 | perawatan Railway: restart ALWAYS, alert (ALARM/TERLEWAT/saldo), sambung GitHub + watch paths | ⬜ restart + watch paths lewat dashboard builder (CLI menjawab "No changes to apply") | F-D80 #6, #8 |
 | P102 | tarik saldo ±0,0497 tBNB dari committer lama | ⬜ opsional (testnet, kecil) | F-D82 #4 |
 | P103 | cadangan `.committer.env` di luar laptop | 🟠 builder | F-D80 |
