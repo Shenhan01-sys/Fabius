@@ -105,6 +105,7 @@ hasil keluar — koreksi lewat halaman baru, supaya urutannya bisa dipertanggung
   sekarang dua lengan paper pada data yang belum terjadi; vonis 17:13Z.
 - [[09 - Whale Cluster Test]] — **DICABUT sebagian (F-D30)**: headline `px→px` +93,0 bps ternyata artefak harga masuk beku; `tx→px` +0,1 bps (p=0,53). Halaman tetap berdiri sebagai tempat banner pencabutan, dan baris `ttx`/`px` di ⑦ adalah warisannya
 - [[10 - Evidence Stack]] — **DICABUT (F-D30)**: tumpukan bukti yang tampak menguatkan 'kerumunan beli = sinyal' disusun dari sumber harga yang sama; yang bertahan dari kerumunan hanya sisi **jual** (halaman 13, F-D31)
+- [[31 - Pra-Registrasi P90 R1+R2]] — protokol ber-sha riset ambang gelombang 1 (R1 positif-palsu, R2 daya) pada pasar sintetik, di-push sebelum lari; BELUM ada hasil
 - [[30 - Spesifikasi Bot dan Kunci]] — enam spesifikasi bot (spec_sha, sidik jari) + urutan kunci (ambang v1, spesifikasi B1/B3, F-D16, buku E690, pembunuh); bukan hasil kinerja
 
 <!-- di atas: append-only oleh scripts/sync_vault.py; gloss tulisan tangan utuh -->

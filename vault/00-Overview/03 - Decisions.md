@@ -2775,3 +2775,30 @@ Rancangan butir 3-5 diusulkan asisten di chat dan dijalankan atas "Gasss" itu; b
    yang dijanjikan ke pendaftar = kabar saat tingkat 1 dibuka.
 
 **Terkait:** F-D70 · F-D72 · F-D78 · [[04-Tools/TL19 - web landing]] · [[04-Tools/TL20 - server MCP]] · [[04-Tools/TL21 - waitlist]] · [[09-Inbox/Session-2026-10-02]] §41-§43
+
+## F-D90 — Venue lokal berizin OJK: Tokocrypto punya API trading spot terbuka, Pintu hanya API mitra; pajak + VPN dikesampingkan, compliance P80 ditunda; P90 dijalankan · 3 Okt 2026 (WIB)
+
+Builder: *"Coba cek tokocrypto dan pintu ada api untuk trading agent ga, masalah pajak abaikan dulu aja, vpn skip, selama ini kan aman" aja kan"*, lalu
+*"P80 gausa mikirin compliance dulu, sisanya acc. P90 udh mantap. Gas eksekusi"*.
+
+1. **Tokocrypto (berizin OJK):** API trading terbuka untuk pemegang akun: `POST /open/v1/orders` (spot; LIMIT, MARKET, STOP_LOSS, TAKE_PROFIT, LIMIT_MAKER),
+   HMAC-SHA256 dengan header `X-MBX-APIKEY`, batas laju per IP + per akun, dokumen diperbarui 2026-06-05 (https://www.tokocrypto.com/apidocs/); CCXT disebut
+   SDK resminya. **Futures belum ada**: target akhir 2026 (Kontan, "tokocrypto siapkan trading futures target meluncur akhir 2026"). API terpisah TCDX
+   (https://developer.tcdx.id/) untuk integrasi mitra (registrasi, KYC, catatan transaksi) dan tidak bisa membuat order. **Dibaca dari API publik 3 Okt**
+   (`GET https://www.tokocrypto.com/open/v1/common/symbols`, 852 simbol): 16 dari 16 aset B1 punya pasangan USDT dengan `spotTradingEnable` 1.
+   Akibatnya: B1-TREND (long/flat) secara teknis bisa dijalankan di sana; B3-CARRY (butuh short perp) tidak.
+2. **Pintu:** aplikasi konsumen tanpa API. Pintu Pro punya API mitra/institusi (HTTP + WebSocket, HMAC, buat/batal order, sandbox
+   `wss://partner.sandbox.pintu.co.id/ws/v1`; contoh resmi https://github.com/pintu-crypto/pintu-api-sample-go memakai spot `DOGE-USDT`). Dokumennya
+   (https://docs.pintu.pro/) di balik login (HTTP 401 dari kami), jadi aksesnya lewat permohonan kemitraan. Produk futures ada (Pintu Pro Futures perpetual 5x,
+   Futures Lite 25x); tidak ada bukti API mitra mencakup futures.
+3. **"Agen" bukan fitur khusus di kedua bursa:** agen = program yang memegang API key + secret. Kunci itu rahasia setingkat `.committer.env` (izin trade TANPA
+   izin tarik; daftar IP bila tersedia). Belum dibuat; uang nyata tetap menunggu kata builder (paper sampai builder yakin).
+4. **Pajak dikesampingkan dulu, VPN tidak dipakai** (kata builder). Catatan jujur atas "selama ini aman": benar untuk keadaan sekarang, karena semuanya paper di
+   testnet (tanpa uang, tanpa order, data publik, tanpa VPN; Railway di Singapura). Pajak PMK 50/2025 tetap tertulis di epik 05 §10 sebagai risiko yang belum
+   dinilai, tidak dihapus.
+5. **P80: compliance ditunda** atas kata builder. Hari ini tidak ada yang berubah: tingkat 1 tetap TERKUNCI karena F-D16 maju belum terpenuhi (paling cepat
+   ±2 bulan). Syarat telaah hukum di F-D72 tidak dicabut; ditinjau lagi sebelum tingkat 1 dibuka. Sama untuk daftar tunggu (F-D89 #5).
+6. **P90 diterima** ("udh mantap"): gelombang 1 R1+R2 dijalankan dengan protokol ter-pra-registrasi ([[06-Results/31 - Pra-Registrasi P90 R1+R2]],
+   sha `0xce2f814e334244f8e43c3d9d862b8e654896f3ba1772d20c9e4397e89f2820bd`), di-push sebelum lari.
+
+**Terkait:** F-D16 · F-D72 · F-D88 · F-D89 · [[08-Backlog/05 - Epik Enam Bot]] §6 §10 · [[09-Inbox/Session-2026-10-02]] §46

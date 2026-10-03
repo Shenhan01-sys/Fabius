@@ -153,7 +153,7 @@ G1, G2, G6, G10, K4, K5 lolos/tidak berlaku secara trivial di dunia ini (data be
 
 0. **Selesai (2 Okt):** aturan §2, plafon §1, garis dasar §3.
 1. **Builder menetapkan anggaran A1-A2** (§1) - sebelum hasil riset apa pun.
-2. **Protokol R1+R2** → sha → jalankan dengan parameter terkunci (bukan `GateParams.fast()`, yang mengubah gerbangnya sendiri). Biaya (ekstrapolasi linear dari garis dasar: 400 konfigurasi = ±2 menit pada 10 pekerja;
+2. **Protokol R1+R2** (**ditulis + di-push 3 Okt malam: [[06-Results/31 - Pra-Registrasi P90 R1+R2]], `tools/riset_p90.py`**) → sha → jalankan dengan parameter terkunci (bukan `GateParams.fast()`, yang mengubah gerbangnya sendiri). Biaya (ekstrapolasi linear dari garis dasar: 400 konfigurasi = ±2 menit pada 10 pekerja;
    **belum diukur**): 1.100 pasar × 1 konfigurasi ≈ ±6 menit; 1.100 pasar × 60 konfigurasi ≈ 66.000 konfigurasi ≈ ±6 jam per dunia. Dunia ini dipakai ulang oleh langkah 3-6.
 3. R4, R7, R6, R5 (mesin statistik). 4. R3 dan R10 (ekonomi; data eksternal bertanggal) - bisa paralel. 5. R11 sesudah R1. 6. R9 sesudah R1/R2.
 7. **R8 menunggu** M2 (ledger paper per bot, jam maju) dan ≥ 90 hari shadow. **Update F-D75:** M2 dibangun; jam maju B1-TREND dimulai di bar 2026-10-01, jadi 90 hari tercapai paling cepat akhir Desember 2026 (bila tidak ada hari bolong); `settle` bisa tertunda oleh funding (lihat `ledger/README.md`).

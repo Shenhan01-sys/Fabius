@@ -229,6 +229,10 @@ tidak bisa dijangkau (sertifikat yang disajikan `*.ioh.co.id`). Terjangkau: Aste
   lewat BTC + token emas); B2 (kaki short), B3 (kaki perp short), dan B4 (short) butuh venue lain (Agent OS/Aster/Hyperliquid) atau tetap paper/sinyal saja.
   Bot identitas yang diusulkan (B5-CORE-RWA, [[07 - Epik Kolaborasi Bot Terbuka]] §10) kebetulan long-only.
 
+**Venue lokal berizin OJK (3 Okt malam, F-D90; dibaca dari dokumen resmi + API publik):** Tokocrypto punya API trading SPOT terbuka untuk pemegang akun
+(`/open/v1/orders`, HMAC; 16/16 aset B1 punya pasangan USDT aktif); futures belum ada (target akhir 2026). Pintu hanya API mitra Pintu Pro (permohonan
+kemitraan; contoh resmi spot). Akibatnya: B1-TREND (long/flat) bisa dijalankan di venue lokal berizin; B3-CARRY (short perp) belum punya venue lokal.
+
 ## 7. Penggaris biaya (menggantikan "59 bps untuk semuanya")
 
 59 bps = fee DemoPair (2 × 30 bps) pada 1 unit - ruler **venue demo**, bukan venue nyata (`tools/costs.py:13,35`).
