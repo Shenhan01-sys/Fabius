@@ -212,12 +212,12 @@ def g3_net(c: _Ctx) -> GateResult:
     pnl = c.pnl()
     years = len(pnl) / 365.0
     req = min_sharpe_for_trials(p.n_trials, years, p.min_net_sharpe)
-    rule = (f"Sharpe net >= max({p.min_net_sharpe}, ambang terdeflasi untuk N={p.n_trials} percobaan) dan persentil-{int(p.boot_q * 100)} "
+    rule = (f"Sharpe net >= max({p.min_net_sharpe}, ambang terdeflasi untuk N={p.n_trials} percobaan) dan persentil-{p.boot_q * 100:g} "
             f"bootstrap blok > 0")
     vals = [v for _, v in pnl]
     sh, q = sharpe(vals), _boot_q(vals, p)
     ok = not math.isnan(sh) and not math.isnan(q) and sh >= req and q > 0
-    return GateResult("G3", "NET", PASS if ok else FAIL, f"Sharpe {_fmt(sh)}; p{int(p.boot_q * 100)} {_fmt(q)}; ambang {req:.2f} (N={p.n_trials})", rule)
+    return GateResult("G3", "NET", PASS if ok else FAIL, f"Sharpe {_fmt(sh)}; p{p.boot_q * 100:g} {_fmt(q)}; ambang {req:.2f} (N={p.n_trials})", rule)
 
 
 def g4_recent(c: _Ctx) -> GateResult:

@@ -67,6 +67,10 @@ python -X utf8 tools/web_snapshot.py --if-changed       # tulis hanya bila isi b
 gh workflow run web-snapshot.yml                         # snapshot landing dari GitHub (biasanya dipicu rantai paper-ledger sesudah tick); push -> Vercel
 python -X utf8 tools/waitlist.py --poll                 # daftar tunggu P115 (butuh ALERT_TELEGRAM_*; rantai paper-ledger menjalankannya tiap 5 menit)
 
+# peninjau pengajuan penerbit (P83): k keluarga dari registri ledger/pengajuan/registri.jsonl; pratinjau tidak mengikat
+python -X utf8 -m engine.cli review --file engine/examples/submission.example.json --data ledger/bars            # pratinjau (alpha A1/k)
+python -X utf8 -m engine.cli review --file <sub.json> --data <dir> --signature 0x.. --nonce N --deadline D --catat  # resmi: dicatat, memakan anggaran
+
 # Railway (butuh login CLI builder; JANGAN `railway environment config --json` / `railway variable list --json|--kv`: mencetak kunci)
 railway logs --service fabius-engine --lines 40
 railway logs --service fabius-probe --lines 80                                       # mode bayangan tahap 2+3 (F-D86): VONIS bayangan

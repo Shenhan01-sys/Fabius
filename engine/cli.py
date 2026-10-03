@@ -9,6 +9,7 @@
     python -X utf8 -m engine.cli schema                                                           # skema formulir penerbit (JSON)
     python -X utf8 -m engine.cli intake --file sub.json [--data <dir>]                            # validasi (+ gerbang untuk kind=template)
     python -X utf8 -m engine.cli review --file sub.json --data <dir> [--json] [--signature 0x..]  # peninjau-bot penuh, laporan ber-sha
+    python -X utf8 -m engine.cli review ... [--catat]                                             # P83: k keluarga dari registri; --catat = resmi (alpha A1/k)
     python -X utf8 -m engine.cli lock   [--write --note "disetujui Hans <tanggal>" [--supersede]]  # kunci ambang (perlu kata builder)
     python -X utf8 -m engine.cli book                                                             # buku genesis: bot identitas Fabius (F-D73)
     python -X utf8 -m engine.cli book epoch [--write] [--no-gates] [--now ISO]                    # buku HIDUP (P87, F-D85): satu catatan per epoch
@@ -380,9 +381,20 @@ def cmd_review(a) -> int:
         ident = {"signature": a.signature, "chain_id": a.chain_id, "nonce": a.nonce, "deadline": a.deadline,
                  "now_s": a.now if a.now is not None else int(time.time()), "payout_signature": a.payout_signature}
     gp = GateParams(placebo_n=a.placebo_n, boot_n=a.boot_n)
-    rep = reviewmod.review(sub, md, _incumbents(md, a.incumbents), gate_params=gp, identity=ident, prior_family_submissions=a.prior_submissions)
-    print(json.dumps(rep, indent=2, ensure_ascii=False, sort_keys=True) if a.json else reviewmod.render(rep))
-    return 0 if rep["vonis"] == "LOLOS_SHADOW" else 1
+    if a.prior_submissions is not None:
+        # jalur MANUAL (lama): k diketik operator -> laporan selalu indikatif (sumber 'manual')
+        rep = reviewmod.review(sub, md, _incumbents(md, a.incumbents), gate_params=gp, identity=ident, prior_family_submissions=a.prior_submissions)
+        rc, msgs = (0 if rep["vonis"] == "LOLOS_SHADOW" else 1), ["k dari --prior-submissions (manual): laporan tidak mengikat"]
+    else:
+        # P83: k dari registri pengajuan; registri tak terbaca/rusak = keluar 3 (TOLAK), k tidak ditebak
+        now = a.now if a.now is not None else int(time.time())
+        rc, rep, msgs = reviewmod.tinjau_tercatat(sub, md, _incumbents(md, a.incumbents), path=a.registri, now_s=now, catat=a.catat,
+                                                  identity=ident, gate_params=gp)
+    for m in msgs:
+        print(m, file=sys.stderr if a.json else sys.stdout)
+    if rep is not None:
+        print(json.dumps(rep, indent=2, ensure_ascii=False, sort_keys=True) if a.json else reviewmod.render(rep))
+    return rc
 
 
 def cmd_lock(a) -> int:
@@ -639,7 +651,9 @@ def main(argv=None) -> int:
     rv.add_argument("--nonce", type=int, default=0)
     rv.add_argument("--deadline", type=int, default=0)
     rv.add_argument("--now", type=int, help="detik Unix (bawaan: jam sekarang)")
-    rv.add_argument("--prior-submissions", type=int, default=0, help="pengajuan sebelumnya oleh keluarga yang sama (dari registri)")
+    rv.add_argument("--prior-submissions", type=int, default=None, help="MANUAL: pengajuan sebelumnya keluarga ini (laporan tidak mengikat); bawaan: dihitung dari registri (P83)")
+    rv.add_argument("--registri", default=os.path.join(REPO_ROOT, "ledger", "pengajuan", "registri.jsonl"), help="registri pengajuan (P83)")
+    rv.add_argument("--catat", action="store_true", help="catat pengajuan ini di registri (resmi; hanya bila identitas terverifikasi): memakan anggaran A1/k keluarga")
     rv.add_argument("--placebo-n", type=int, default=200)
     rv.add_argument("--boot-n", type=int, default=1000)
     rv.add_argument("--incumbents", choices=("book", "six"), default="book", help="petahana G10: buku slot sekarang (bawaan) atau enam bot Fabius")

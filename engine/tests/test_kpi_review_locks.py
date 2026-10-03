@@ -298,7 +298,10 @@ class ReviewTests(unittest.TestCase):
             with mock.patch.object(reviewmod.submission, "verify_identity", return_value=[]):
                 rep2 = self.run_review(identity={"signature": "0x00", "chain_id": 97, "nonce": 1, "deadline": 2, "now_s": 1})
             self.assertTrue(rep2["identitas"]["diverifikasi"])
-            self.assertEqual(rep2["mengikat"], rep2["vonis"] == "LOLOS_SHADOW")
+            # sejak P83 (3 Okt): k yang diketik (sumber 'manual') TIDAK PERNAH mengikat, lolos atau tidak; jalur yang mengikat (k dari registri)
+            # diuji di test_registri.RegistryReviewTests.test_binding_needs_k_from_the_registry
+            self.assertEqual(rep2["keluarga"]["sumber"], "manual")
+            self.assertFalse(rep2["mengikat"])
             with mock.patch.object(reviewmod.submission, "verify_identity", return_value=["salah"]):
                 rep3 = self.run_review(identity={"signature": "0x00", "chain_id": 97, "nonce": 1, "deadline": 2, "now_s": 1})
             self.assertEqual(rep3["vonis"], "TOLAK_IDENTITAS")

@@ -1,4 +1,5 @@
-"""Anggaran kesalahan gerbang masuk buku slot (P90 §1; keputusan F-D88, 3 Okt 2026). Fungsi murni + kunci; belum dipakai gerbang (itu P83/P90).
+"""Anggaran kesalahan gerbang masuk buku slot (P90 §1; keputusan F-D88, 3 Okt 2026). Fungsi murni + kunci. Sejak P83 (3 Okt malam) dipakai peninjau:
+`gate_params_for(k)` = parameter gerbang untuk pengajuan ke-k keluarga, k dihitung `engine/registri.py` dari registri, bukan diketik.
 
   A1  peluang bot TANPA edge lolos gerbang pada SATU pengajuan jujur <= 5 %. Gerbang adalah saringan PERTAMA: tidak ada sinyal yang dijual sebelum bot juga lolos
       uji maju F-D16 (terkunci, F-D84), sehingga peluang bot tanpa edge sampai dijual ~ A1 x (positif-palsu F-D16, kasar <= 2,5 %) ~ 0,13 %.
@@ -15,10 +16,12 @@ from __future__ import annotations
 import dataclasses
 import datetime as dt
 import json
+import math
 import os
 from dataclasses import dataclass
 from typing import Any, Dict, Optional
 
+from .gates import GateParams
 from .locks import LOCK_DIR
 from .slots import SlotParams
 from .spec import sha0x
@@ -40,6 +43,22 @@ def alpha_for(k: int, a: Anggaran = Anggaran()) -> float:
     if k < 1:
         raise ValueError("k mulai dari 1")
     return a.a1_per_pengajuan / k
+
+
+def gate_params_for(k: int, base: GateParams = GateParams(), a: Anggaran = Anggaran()) -> GateParams:
+    """Parameter gerbang untuk pengajuan ke-k (P83): dua uji statistik gerbang - G3 (persentil bootstrap blok > 0) dan G8 (batas atas p placebo) -
+    dinilai pada alpha A1/k. Gerbang adalah KONJUNGSI, jadi satu uji pada taraf alpha sudah membatasi lolos-palsu seluruh gerbang; keduanya
+    diturunkan karena ukuran (size) masing-masing hanya taksiran (bootstrap persentil, placebo geser-melingkar) dan riset R1/R4 belum mengukurnya.
+    Harganya daya: pengajuan ke-k lebih sulit lolos untuk bot yang BERedge juga.
+
+    Jumlah resampling dinaikkan sebanding (x base_q/alpha = x k): jumlah sampel di ekor tetap sama, dan G8 tetap MUNGKIN lolos (dengan 0 placebo
+    di atas Sharpe asli, batas atas p ~ 2,6/N; tanpa penskalaan N=200 tidak pernah bisa <= 0,05/4). k = 1 mengembalikan `base` apa adanya."""
+    alpha = alpha_for(k, a)
+    if k == 1 and base.boot_q == alpha and base.placebo_max_p == alpha:
+        return base
+    return dataclasses.replace(base, boot_q=alpha, placebo_max_p=alpha,
+                               boot_n=math.ceil(base.boot_n * base.boot_q / alpha - 1e-9),
+                               placebo_n=math.ceil(base.placebo_n * base.placebo_max_p / alpha - 1e-9))
 
 
 def max_pengajuan_per_tahun(p: SlotParams = SlotParams(), a: Anggaran = Anggaran()) -> int:

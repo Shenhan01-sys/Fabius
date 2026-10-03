@@ -2741,8 +2741,18 @@ Pertanyaan builder: *"Menurutmu paling optimal A1/A2"*. Jawaban asisten merevisi
    (`queue_max_per_family` 2, `cooldown_days` 30); melonggarkan antrean = MENYIMPANG + tes gagal. `engine/anggaran.py` belum dipakai gerbang: penerapannya
    adalah P83 (penghitung percobaan + alpha per keluarga) dan P90 (riset ambang yang kini punya anggaran tetap).
 6. **Pin on-chain** (builder: *"Gas"*): `FABIUS-ANGGARAN-v1`, tx `0x3254212fb06a705465857f61d31e79f76abf697f389852ac6a6a1c9728253165`, blok 134593740, gas 123.086, `lockedAt` 1791014141 = 2026-10-03T07:55:41Z, uri ke commit `b8783f42`; `--verify` membaca ulang lockedAt yang sama; `lockCount()` = 8. Dicatat di `deployments/97.json` `m3.pins`.
+7. **Penegakan (P83, 3 Okt malam; builder: *"Gasss"*):** `engine/registri.py` menghitung k dari registri pengajuan, bukan dari angka yang diketik
+   (`review --prior-submissions` kini jalur MANUAL yang tidak pernah mengikat). Pilihan penerapan yang diusulkan asisten, dicatat supaya bisa dibantah:
+   (a) alpha A1/k dipakai di DUA uji statistik gerbang, G3 (persentil bootstrap > 0) dan G8 (batas atas p placebo). Satu uji sudah cukup secara
+   konjungsi; dua dipilih karena ukuran tiap uji baru taksiran (R1/R4 belum mengukur), dan harganya daya. (b) Resampling naik x k, supaya G8 tetap
+   mungkin lolos (tanpa itu 200 placebo tidak pernah bisa <= 0,05/4). (c) `TOLAK_FORMULIR` tidak memakan alpha (tidak ada uji yang jalan). (d) Hanya
+   identitas terverifikasi yang dicatat (dompet tanpa tanda tangan bisa menaikkan k keluarga orang lain). (e) Masa tunggu 30 hari sesudah penolakan
+   dibaca dari registri, jadi batas 26/tahun yang menjadi dasar A2 ditegakkan, bukan diandaikan. (f) `mengikat` kini juga menuntut k dari registri.
+   Contoh pengajuan (`engine/examples/submission.example.json`, Sharpe +1,36) di `ledger/bars`: k=1 p5 +0,73 / placebo 0/120; k=4 p1,25 +0,42 /
+   0/480; k=10 p0,5 +0,42 / 0/1200 - tetap LOLOS_SHADOW. Yang BELUM: jumlah pengajuan berjalan per keluarga (menunggu antrean P82); BH lintas kandidat,
+   seed rahasia dari hash blok, tahan 12 bulan (menunggu R4 di P90, yang membandingkan penangkal mana yang terbaik).
 
-**Terkait:** F-D16 · F-D84 · F-D87 · [[08-Backlog/08 - Riset Optimasi Ambang]] §1 · [[09-Inbox/Session-2026-10-02]] §38
+**Terkait:** F-D16 · F-D84 · F-D87 · [[08-Backlog/08 - Riset Optimasi Ambang]] §1 · [[09-Inbox/Session-2026-10-02]] §38 §45
 
 ## F-D89 — Pintu tingkat 0 hidup: hosting hanya lewat GitHub, data landing ikut bukti harian, daftar tunggu = chat builder · 3 Okt 2026 (WIB)
 

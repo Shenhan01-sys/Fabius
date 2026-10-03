@@ -19,6 +19,7 @@ Tidak ada modul di sini yang menyentuh jaringan, kunci, atau chain.
     forward                                                 skor maju + statistik berpasangan dari ledger (P85): bahan Entry.score_bps / Challenger untuk slots.decide
     pembunuh                                                pembunuh TERSTRUKTUR B1/B3 (P107): terjemahan kalimat spesifikasi, USULAN sampai dikunci
     anggaran                                                anggaran kesalahan gerbang A1/A2 + alpha per keluarga (F-D88)
+    registri                                                registri pengajuan: k keluarga dari catatan, alpha A1/k ditegakkan (P83)
 
 Perintah (dari akar repo; `<dir>` = folder CSV keluaran vault/09-Inbox/Session-2026-10-02-skrip/fetch.py):
 

@@ -126,7 +126,7 @@ G1, G2, G6, G10, K4, K5 lolos/tidak berlaku secara trivial di dunia ini (data be
 **Pembacaan jujur:**
 - **Penyaring awal bekerja:** dari 340 konfigurasi tanpa edge, Sharpe mentah ≥ 0,5 meloloskan 25; seluruh gerbang menurunkannya ke 4 (N = 1) dan 0 (N = 340).
 - **Tetapi N diisi sendiri oleh penerbit.** Penambang yang diam lolos 4 dari 340 (≈ satu per 85 konfigurasi), dan setiap konfigurasi gratis diuji sendiri karena kode gerbang publik: **oracle** (epik 07 §9 #1).
-  Penangkalnya (penghitung percobaan global P83, seed rahasia, tahan 12 bulan terakhir) diukur di R4; sampai itu ada, shadow maju adalah satu-satunya penyaring yang tidak bisa diakali dengan percobaan gratis.
+  Penangkalnya (penghitung percobaan global P83 - **dibangun 3 Okt malam, F-D88 #7** -, seed rahasia, tahan 12 bulan terakhir) diukur di R4; sampai itu ada, shadow maju adalah satu-satunya penyaring yang tidak bisa diakali dengan percobaan gratis.
 - **Empat yang lolos hanyalah paling banyak dua kejadian berbeda:** tiga parameter bertetangga B1 (20, 30, 45) pada satu deret sintetik dan satu B6 pada deret lain. Selang Wilson pada A terlalu sempit
   karena konfigurasi bergantungan; B (0 dari 60) tidak bisa menyingkirkan positif-palsu 6 %. Itu alasan R1 butuh ≈ 1.100 pasar (aturan #6).
 - **Dunia ini ramah:** gaussian iid, volatilitas konstan, hanya B1 dan B6 satu-simbol, G10 tak diuji. Ekor tebal, klaster volatilitas, autokorelasi, dan faktor bersama belum diuji (R1).

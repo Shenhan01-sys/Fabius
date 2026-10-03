@@ -17,6 +17,7 @@ tags: [perkakas, "TL8"]
 - `engine/fd16.py` (P88): F-D16 pada data MAJU - `python -X utf8 -m engine.cli ledger fd16` menilai hanya ledger yang SAH (rantai + hitung ulang dari bar); parameter DIKUNCI (F-D84, `engine/locks/fd16.lock.json`; kode yang bergeser dicetak MENYIMPANG) - rincian di [[08-Backlog/07 - Epik Kolaborasi Bot Terbuka]] §11.
 - `engine/forward.py` (P85): skor maju 90 hari kalender + statistik berpasangan (hari yang sama) dari settle final - bahan `slots.decide`; `python -X utf8 -m engine.cli ledger skor` (hanya ledger SAH; hari tanpa settle = tak terukur, bukan nol).
 - `engine/book_live.py` (P87, F-D85): buku slot hidup - `python -X utf8 -m engine.cli book epoch [--write]` (gerbang penantang terhadap buku sekarang, keputusan `slots.decide_epoch`) dan `book verify` (keputusan dihitung ulang dari masukan yang tercatat).
+- `engine/registri.py` + `anggaran.gate_params_for` (P83, 3 Okt malam): registri pengajuan `ledger/pengajuan/registri.jsonl` (append-only berantai hash) = penghitung percobaan GLOBAL per keluarga (union-find dompet penerbit/payout). Pengajuan ke-k dalam 365 hari dinilai dengan alpha A1/k di G3 + G8, resampling x k; masa tunggu sesudah penolakan dibaca dari registri; hanya identitas terverifikasi yang dicatat; laporan mengikat hanya bila k dari registri. `python -X utf8 -m engine.cli review --file <sub> --data <dir> [--catat]`.
 
 **Yang ia TOLAK lakukan:** mengintip bar besok (ada tes yang menangkapnya); mengubah `data_hash` tick lama ketika data jenis lain datang belakangan (`ledger.target_view`).
 
