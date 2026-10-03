@@ -49,6 +49,7 @@ python -X utf8 -m engine.cli book verify            # buku slot hidup: rantai + 
 python -X utf8 tools/pin_book.py --verify           # book_sha epoch terakhir di LockRegistry
 python -X utf8 tools/lock_spec.py --file engine/locks/fd16.lock.json --name FABIUS-FD16-MAJU-v1 --verify   # kunci F-D16 maju di chain (F-D84)
 python -X utf8 tools/paper_tick.py --dry-run         # rencana tick tanpa menulis
+python -X utf8 tools/test_census.py                  # suite Python + sensus: lulus / DILEWATI / GAGAL (P110); CI: gh run list --workflow tests.yml
 gh run list --workflow paper-ledger.yml --limit 5    # rantai GitHub = penulis TUNGGAL ledger (F-D78)
 
 # M3 di chain 97 - baca tanpa kunci

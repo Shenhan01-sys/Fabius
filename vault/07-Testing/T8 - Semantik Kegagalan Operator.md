@@ -86,6 +86,7 @@ assert). `BELUM DIBANGUN` = baris rencana tahap 2/3: dihitung dan dilaporkan ger
 - Gerbang memeriksa bahwa jangkar ADA dan tesnya punya assert. Kalau ditambah `--run`, ia juga menjalankan tesnya. Ia tidak membuktikan tabelnya lengkap:
   masukan yang lupa ditulis tidak akan ketahuan. Menambah baris adalah pekerjaan manusia setiap kali pipeline berubah.
 - Tes bersyarat (anvil) bisa dilewati di mesin tanpa anvil; `--run` mencetaknya sebagai DILEWATI, bukan lulus (gagasan P110).
+  Sejak 3 Okt (P110) workflow `tests.yml` menjalankan gerbang ini dengan `--run` di runner yang memasang anvil, eth-account, dan `forge build`.
 
 **Terkait:** [[08-Backlog/01 - Backlog]] P109/P110/P99/P100 · [[04-Tools/TL11 - komit sinyal M3]] · [[04-Tools/TL9 - ledger paper maju]] ·
 [[00-Overview/03 - Decisions]] F-D80/F-D83
