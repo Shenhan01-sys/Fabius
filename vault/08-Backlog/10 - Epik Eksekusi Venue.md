@@ -159,7 +159,7 @@ Aturan naik modal: sesudah 20 hari bursa `live` di dalam semua ambang, builder B
 | H1 | pastikan akun Binance bisa dipakai dari Indonesia + Agent OS tersedia untuk akunmu (aplikasi; tanpa VPN, F-D90) | E4 |
 | H2 | buat sub-akun Agentic: Futures + Spot, **tanpa izin tarik**; transfer modal canary | E4 |
 | H3 | buat kunci API sub-akun; pasang di variabel Railway `fabius-exec` lewat dashboard (JANGAN lewat chat) | E2 (testnet) / E4 (prod) |
-| H3a | **kunci UJI (4 Okt):** web testnet futures kini dialihkan ke Binance **Demo Trading** (`demo.binance.com`, butuh akun Binance; dari perangkat builder lewat WARP). Buat kunci API di Demo Trading -> `BINANCE_API_ENV=demo` | E2 |
+| H3a | **kunci UJI (4 Okt):** web testnet futures kini dialihkan ke Binance **Demo Trading** (`demo.binance.com`, butuh akun Binance; dari perangkat builder lewat WARP). Buat kunci API di halaman API Key Management Demo Trading `https://demo.binance.com/en/my/settings/api-management` (dokumen resmi `binance-spot-api-docs/demo-mode/general-info.md`, commit 2026-01-29) -> `BINANCE_API_ENV=demo`. Akar `https://demo-fapi.binance.com` membalas 403 di peramban = wajar (host API); `.../fapi/v1/time` membalas 200 | E2 |
 | H4 | tetapkan modal canary per venue | E4, E5 |
 | H5 | kata "live <venue>" | E4, E5, E6 |
 | H6 | Aster: dompet + agent wallet (`canPerpTrade` saja) | E5 |
