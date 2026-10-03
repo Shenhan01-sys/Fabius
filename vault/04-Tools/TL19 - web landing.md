@@ -24,6 +24,10 @@ menjelaskannya. Objek inti = blok kaca (satu blok = satu komitmen), dan agen Fab
 
 **Cara menjalankan:** `cd web && npm install && npm run dev` lalu buka http://localhost:3000; data baru: `python -X utf8 tools/web_snapshot.py`.
 
-**Belum:** hosting (P3 Vercel), snapshot otomatis, server MCP (P114), penampung daftar tunggu (P115).
+**Revisi 3 Okt sore (builder: "3D cubenya terlalu cerah, turunin glownya"):** emisi inti 3,2 -> 1,15, blok terbukti 1,8 -> 0,75, lampu dalam 14 -> 5,5, lampu detak 22 -> 9, bloom 0,55 -> 0,22 (ambang 0,82 -> 0,92), pantulan kaca 1,7 -> 1,05, Lightformer turun sekitar 35 %, dan kaca kosong lebih ungu. ContactShadows dibuang: bidangnya ikut berputar/miring dan tampil sebagai pita abu-abu di belakang judul; diganti elips gradien radial di bawah kubus.
+
+**Deploy Vercel:** import repo, **Root Directory = `web`**, tanpa env var (lihat `web/README.md`). Data diperbarui lewat `tools/web_snapshot.py` + push.
+
+**Belum:** hosting (P3 Vercel, builder), snapshot otomatis, server MCP (P114), penampung daftar tunggu (P115).
 
 **Terkait:** [[TL14 - verify_signals]] · [[03-Data/D8 - Buku Slot Hidup]] · [[00-Overview/03 - Decisions]] F-D70/F-D72 · [[08-Backlog/06 - Epik Gerbang Sinyal]]

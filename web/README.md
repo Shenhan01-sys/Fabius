@@ -1,36 +1,29 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Fabius — landing page (tingkat 0: umpan bukti)
 
-## Getting Started
+Next.js 16 + React 19 + three.js (@react-three/fiber, drei, postprocessing) + motion. Brief desain: `../docs/design/landing.md`.
+Semua angka di halaman berasal dari `public/data/snapshot.json`, yang dicetak `../tools/web_snapshot.py` dari ledger + buku + kunci + chain 97.
 
-First, run the development server:
+## Jalankan lokal
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install
+npm run dev        # http://localhost:3000
+npm run build      # pemeriksaan produksi (harus bersih sebelum push)
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Deploy ke Vercel
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+1. Vercel -> **Add New Project** -> import repo `Shenhan01-sys/Fabius`.
+2. **Root Directory: `web`** (wajib; akar repo berisi engine Python, kontrak, vault).
+3. Framework terdeteksi otomatis (Next.js). Build command dan output bawaan. Tidak ada environment variable yang dibutuhkan.
+4. Deploy. Setiap push ke `master` yang menyentuh `web/` membangun ulang halaman.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Memperbarui data
 
-## Learn More
+```bash
+python -X utf8 tools/web_snapshot.py     # dari akar repo; menulis web/public/data/snapshot.json
+git add web/public/data/snapshot.json && git commit -m "snapshot web" && git push
+```
 
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Batas kejujuran (F-D72): tingkat 1 (sinyal waktu-nyata berbayar) tampil TERKUNCI sampai bot lolos uji maju F-D16 dan telaah hukum. Jangan menambah klaim
+keuntungan atau angka yang tidak berasal dari snapshot.

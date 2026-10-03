@@ -56,6 +56,8 @@ export default function Hero({ s }: { s: Snapshot }) {
   return (
     <section ref={sec} id="top" className="relative h-[100svh] min-h-[720px] overflow-hidden rounded-[30px] bg-lav">
       <Crystal counts={counts} onBeat={setBeat} active={inView} />
+      {/* bayangan lantai kubus: elips CSS DI ATAS kanvas (latar kanvas buram), di bawah teks; letaknya mengikuti kubus di layar lebar (x = 0,22 viewport) */}
+      <div className="pointer-events-none absolute left-[72%] top-[64%] z-[1] hidden h-[6%] w-[30%] -translate-x-1/2 rounded-[50%] bg-[radial-gradient(closest-side,rgba(75,47,209,.26),rgba(75,47,209,.09)_55%,transparent)] blur-[5px] lg:block" />
 
       <div className="pointer-events-none relative z-10 flex h-full flex-col justify-end px-6 pb-10 sm:px-12 sm:pb-12 lg:px-16">
         <h1 className="font-display leading-[0.86] tracking-[-0.035em] text-ink">
@@ -119,7 +121,7 @@ export default function Hero({ s }: { s: Snapshot }) {
       </div>
 
       {/* Detak: blok aturan yang sedang keluar dari kristal = kunci on-chain itu */}
-      <div className="pointer-events-none absolute left-1/2 top-[18%] z-20 hidden -translate-x-1/2 lg:block lg:left-[63%]">
+      <div className="pointer-events-none absolute right-[5%] top-[16%] z-20 hidden lg:block">
         <AnimatePresence mode="wait">
           {lock && (
             <motion.div

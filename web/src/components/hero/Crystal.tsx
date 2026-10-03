@@ -6,7 +6,7 @@
 // lalu kembali (onBeat memberi tahu DOM blok mana). Interaksi: kubus condong ke arah kursor.
 
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
-import { ContactShadows, Environment, Lightformer } from "@react-three/drei";
+import { Environment, Lightformer } from "@react-three/drei";
 import { Bloom, EffectComposer } from "@react-three/postprocessing";
 import { useMemo, useRef } from "react";
 import * as THREE from "three";
@@ -78,16 +78,16 @@ function useMaterials() {
   return useMemo(() => {
     const glass = (o: THREE.MeshPhysicalMaterialParameters) =>
       new THREE.MeshPhysicalMaterial({
-        transparent: true, depthWrite: false, roughness: 0.06, metalness: 0, clearcoat: 1, clearcoatRoughness: 0.05, envMapIntensity: 1.7,
+        transparent: true, depthWrite: false, roughness: 0.06, metalness: 0, clearcoat: 1, clearcoatRoughness: 0.05, envMapIntensity: 1.05,
         side: THREE.DoubleSide, ...o,
       });
     return {
-      emptyA: glass({ color: "#f3efff", opacity: 0.26, iridescence: 0.6, iridescenceIOR: 1.3 }),
-      emptyB: glass({ color: "#d9ccff", opacity: 0.34, iridescence: 0.3 }),
-      sealed: glass({ color: "#2d1d9e", opacity: 0.82, envMapIntensity: 1.3 }),
-      verified: new THREE.MeshPhysicalMaterial({ color: "#ffffff", emissive: "#d2c4ff", emissiveIntensity: 1.8, roughness: 0.2, clearcoat: 1 }),
-      core: new THREE.MeshPhysicalMaterial({ color: "#ffffff", emissive: "#f1ecff", emissiveIntensity: 3.2, roughness: 0.3 }),
-      edge: new THREE.LineBasicMaterial({ color: "#ffffff", transparent: true, opacity: 0.55 }),
+      emptyA: glass({ color: "#e4dcff", opacity: 0.24, iridescence: 0.45, iridescenceIOR: 1.3 }),
+      emptyB: glass({ color: "#c8b8ff", opacity: 0.32, iridescence: 0.25 }),
+      sealed: glass({ color: "#2a1a94", opacity: 0.84, envMapIntensity: 0.9 }),
+      verified: new THREE.MeshPhysicalMaterial({ color: "#f4f0ff", emissive: "#b9a6ff", emissiveIntensity: 0.75, roughness: 0.25, clearcoat: 1 }),
+      core: new THREE.MeshPhysicalMaterial({ color: "#efe9ff", emissive: "#cbbcff", emissiveIntensity: 1.15, roughness: 0.35 }),
+      edge: new THREE.LineBasicMaterial({ color: "#ffffff", transparent: true, opacity: 0.42 }),
       edgeDark: new THREE.LineBasicMaterial({ color: "#8f78ff", transparent: true, opacity: 0.7 }),
     };
   }, []);
@@ -151,11 +151,11 @@ function Blocks({ counts, onBeat }: { counts: Counts; onBeat?: (order: number) =
     });
 
     const coreK = clamp01((t - 0.2) / 1.2);
-    coreLight.current.intensity = coreK * (14 + Math.sin(t * 1.7) * 3);
+    coreLight.current.intensity = coreK * (5.5 + Math.sin(t * 1.7) * 1.2);
     if (active >= 0) {
       const k = bump(phase);
       beatLight.current.position.copy(blocks[active].target).addScaledVector(blocks[active].normal, 0.9);
-      beatLight.current.intensity = 22 * k;
+      beatLight.current.intensity = 9 * k;
     } else beatLight.current.intensity = 0;
   });
 
@@ -177,7 +177,6 @@ function Blocks({ counts, onBeat }: { counts: Counts; onBeat?: (order: number) =
           {b.kind !== "core" && <lineSegments geometry={edges} material={b.kind === "sealed" ? mats.edgeDark : mats.edge} />}
         </mesh>
       ))}
-      <ContactShadows position={[0, -2.45, 0]} opacity={0.38} scale={9} blur={2.8} far={4} color="#4b2fd1" />
     </group>
   );
 }
@@ -188,17 +187,17 @@ export default function Crystal({ counts, onBeat, active = true }: { counts: Cou
     <Canvas frameloop={active ? "always" : "never"} camera={{ position: [0, 0, 11], fov: 30 }} dpr={[1, 1.75]} gl={{ antialias: true }} style={{ position: "absolute", inset: 0 }}>
       <color attach="background" args={["#ece8fa"]} />
       <fog attach="fog" args={["#ece8fa", 14, 26]} />
-      <ambientLight intensity={0.55} />
-      <directionalLight position={[3, 7, 5]} intensity={1.1} />
+      <ambientLight intensity={0.42} />
+      <directionalLight position={[3, 7, 5]} intensity={0.85} />
       <Blocks counts={counts} onBeat={onBeat} />
       <Environment resolution={256} frames={1}>
-        <Lightformer form="rect" intensity={3.2} position={[0, 6, -3]} scale={[12, 5, 1]} color="#ffffff" />
-        <Lightformer form="rect" intensity={2.2} position={[-6, 1, 2]} rotation-y={Math.PI / 2} scale={[8, 3, 1]} color="#d8ccff" />
+        <Lightformer form="rect" intensity={2.1} position={[0, 6, -3]} scale={[12, 5, 1]} color="#ffffff" />
+        <Lightformer form="rect" intensity={1.5} position={[-6, 1, 2]} rotation-y={Math.PI / 2} scale={[8, 3, 1]} color="#d8ccff" />
         <Lightformer form="rect" intensity={1.6} position={[6, -1, 2]} rotation-y={-Math.PI / 2} scale={[8, 3, 1]} color="#7a5cff" />
-        <Lightformer form="ring" intensity={2.4} position={[0, 0, 6]} scale={3} color="#b9a6ff" />
+        <Lightformer form="ring" intensity={1.4} position={[0, 0, 6]} scale={3} color="#b9a6ff" />
       </Environment>
       <EffectComposer>
-        <Bloom intensity={0.55} luminanceThreshold={0.82} luminanceSmoothing={0.2} mipmapBlur />
+        <Bloom intensity={0.22} luminanceThreshold={0.92} luminanceSmoothing={0.15} mipmapBlur />
       </EffectComposer>
     </Canvas>
   );
