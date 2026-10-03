@@ -1,0 +1,66 @@
+name: tests
+
+# P110 - lingkungan yang DITETAPKAN untuk suite lengkap. Sebelum ini tidak ada CI yang menjalankan tes Python: angka "lulus" di vault berasal dari laptop
+# builder, dan tes bersyarat (anvil, eth-account) bisa dilewati diam-diam di mesin lain sementara `unittest` tetap mencetak OK.
+#
+# Di sini semua syaratnya dipasang (eth-account/eth-abi dari railway/requirements.txt, foundry = forge + anvil, `forge build` = out/), lalu:
+#   1. tools/test_census.py --wajib-semua           - satu tes Python dilewati = merah (sensus penanda skip dicetak dulu)
+#   2. check_failure_semantics.py --run             - tabel T8: jangkar kode + tes jangkar ada dan lulus
+#   3. forge test                                   - kontrak, profil default (tanpa jaringan; profil fork tidak dijalankan di sini)
+# Hanya membaca: tidak ada kunci, tidak ada rahasia, tidak ada tulisan ke repo. Commit bot ber-[skip ci] (ledger, snapshot) tidak memicunya.
+
+on:
+  push:
+    paths:
+      - "engine/**"
+      - "tools/**"
+      - "contracts/**"
+      - "test/**"
+      - "railway/**"
+      - "foundry.toml"
+      - "vendor/**"
+      - ".github/workflows/tests.yml"
+      - "vault/scripts/check_failure_semantics.py"
+      - "vault/07-Testing/T8 - Semantik Kegagalan Operator.md"
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: tests-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  suite:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+          persist-credentials: false
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: eth-account + eth-abi (sama dengan image Railway)
+        run: pip install -r railway/requirements.txt
+
+      - uses: foundry-rs/foundry-toolchain@v1
+        with:
+          version: stable
+
+      - name: forge build (out/ untuk uji anvil)
+        run: forge build
+
+      - name: sensus tes Python - dilewati = gagal
+        run: python -X utf8 tools/test_census.py --wajib-semua
+
+      - name: tabel semantik kegagalan (jangkar + tes jangkar)
+        run: python -X utf8 vault/scripts/check_failure_semantics.py --run
+
+      - name: forge test (profil default)
+        run: forge test
