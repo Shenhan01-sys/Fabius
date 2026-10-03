@@ -100,6 +100,13 @@ assert). `BELUM DIBANGUN` = baris rencana tahap 2/3: dihitung dan dilaporkan ger
 | SK-G3 | keluarga masih dalam masa tunggu sesudah penolakan (P83) | TOLAK | gerbang tidak dijalankan, tidak dicatat (batas 26 pengajuan/tahun yang menjadi dasar A2 ditegakkan) | `engine/review.py::tinjau_tercatat` "ANTREAN" | `engine/tests/test_registri.py::RegistryReviewTests.test_recorded_submissions_raise_k_and_the_cooldown_blocks_a_quick_retry` |
 | SK-G4 | `--catat` dengan identitas belum terverifikasi, atau penulisan registri gagal | TOLAK | tidak dicatat; laporan diturunkan ke `tidak-dicatat`, tidak mengikat, disegel ulang (dompet tanpa tanda tangan tidak boleh menaikkan k keluarga orang lain) | `engine/review.py::tinjau_tercatat` "tidak-dicatat" | `engine/tests/test_registri.py::RegistryReviewTests.test_preview_and_unverified_identity_are_never_recorded_or_binding` |
 | SK-G5 | k di registri dikarang (tidak cocok dengan hitung ulang dari catatan sebelumnya) | TOLAK | `registri.verify` melaporkannya -> registri rusak -> SK-G1 | `engine/registri.py::verify` "hitung ulang" | `engine/tests/test_registri.py::FamilyTests.test_verify_recomputes_k_and_catches_a_made_up_one` |
+| SK-E1 | tick ada tetapi komitnya belum ada di SignalAnchor saat eksekutor jalan | TUNDA | tidak ada order; dicoba lagi tiap putaran; lewat jendela = TERLEWAT + alert (bukti dulu, order kemudian, R-E1) | BELUM DIBANGUN (P117) | BELUM DIBANGUN |
+| SK-E2 | venue tak terjangkau atau balasannya tak terbaca | TUNDA | tidak ada order baru, posisi tidak ditebak; lewat jendela = TERLEWAT + alert | BELUM DIBANGUN (P118) | BELUM DIBANGUN |
+| SK-E3 | posisi venue tidak sama dengan posisi yang dimaksud | TOLAK | mode turun ke dry, alert, tunggu builder (R-E3) | BELUM DIBANGUN (P117) | BELUM DIBANGUN |
+| SK-E4 | kunci venue punya izin tarik | TOLAK | eksekutor tidak start (R-E6) | BELUM DIBANGUN (P118) | BELUM DIBANGUN |
+| SK-E5 | order ditolak venue (min notional, filter harga atau lot) | UNGKAPKAN | dicatat, dihitung ke tracking error, tidak diulang membabi buta | BELUM DIBANGUN (P118) | BELUM DIBANGUN |
+| SK-E6 | tick yang sama diproses dua kali, atau dua eksekutor | PERTAHANKAN | clientOrderId deterministik: order lama tidak ditimpa, tidak ada order ganda (R-E2) | BELUM DIBANGUN (P117) | BELUM DIBANGUN |
+| SK-E7 | rugi harian melewati batas | TOLAK | berhenti, mode dry, alert; hanya builder yang menyalakan lagi (R-E5) | BELUM DIBANGUN (P117) | BELUM DIBANGUN |
 
 ## Yang TIDAK dibuktikan halaman ini
 

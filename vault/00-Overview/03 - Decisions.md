@@ -2802,3 +2802,20 @@ Builder: *"Coba cek tokocrypto dan pintu ada api untuk trading agent ga, masalah
    sha `0xce2f814e334244f8e43c3d9d862b8e654896f3ba1772d20c9e4397e89f2820bd`), di-push sebelum lari.
 
 **Terkait:** F-D16 · F-D72 · F-D88 · F-D89 · [[08-Backlog/05 - Epik Enam Bot]] §6 §10 · [[09-Inbox/Session-2026-10-02]] §46
+
+## F-D91 — Eksekusi venue diimplementasikan: Binance Agent OS dulu, lalu Aster, Tokocrypto bila sempat; PRD terukur, uang nyata tetap atas kata builder per venue · 4 Okt 2026 (WIB)
+
+Builder: *"Binance Agent OS + Aster gas + Tokocrypto, kita implementasikan, tapi prioritas no1 itu binance agent OS dulu, lalu aster, baru kalau sempet itu
+Tokocrypto, gas buat planningnya di vault, workflownya sesuaikan di vault juga agar PRDnya jelas + terukur"*.
+
+1. **Urutan:** (1) Binance Agent OS (sub-akun Agentic; USDⓈ-M futures + spot: B1, lalu B3), (2) Aster (agent wallet; perp: B1), (3) Tokocrypto (spot: B1) bila sempat.
+2. **PRD:** [[08-Backlog/10 - Epik Eksekusi Venue]] - tujuan, non-goals, alur harian, kebutuhan R-E1..R-E10 dengan cara ukurnya, metrik + ambang USULAN (§6),
+   tonggak E0-E6 dengan gerbang keluar terukur, alur kerja pengembangan, langkah builder H1-H6, risiko. Backlog P116-P123.
+3. **Yang TIDAK berubah:** paper penuh sampai builder yakin (F-D73); `live` per venue hanya atas kata builder (saklar `EXEC_LIVE_OK`); leverage 1x; tanpa izin
+   tarik; tingkat 1 (menjual sinyal) tetap terkunci (F-D72).
+4. **Angka yang membentuk rencana, diukur 4 Okt dari endpoint publik:** min notional futures TESTNET Binance BTC 50 / ETH 20 / lainnya 5 USDT -> modal B1 penuh
+   >= ±800 USDT (prod belum terukur: terblokir dari jaringan builder); Aster 5 USDT untuk 16/16 aset -> >= ±80 USDT.
+5. **Pertanyaan terbuka yang bisa membalik urutan:** akses Binance + Agent OS untuk akun builder dari Indonesia tanpa VPN (H1). Bila tertutup, Aster naik ke
+   prioritas 1 - keputusan builder, bukan otomatis.
+
+**Terkait:** F-D72 · F-D73 · F-D90 · [[08-Backlog/05 - Epik Enam Bot]] §6 §7 · [[09-Inbox/Session-2026-10-02]] §48

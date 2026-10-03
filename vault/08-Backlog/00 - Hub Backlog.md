@@ -33,6 +33,7 @@ nama filenya. Itu lubang navigasi, bukan lubang data; sekarang ditutup, dan gerb
   Agentic Wallet, testnet), konflik dengan klaim vault, dan P68-P76. Semua angka eksploratif, bukan klaim.
   **Berisi KOREKSI K1-K3 (2 Okt malam):** B2 1,29 = undian fase (0,85 tanpa pilihan hari), gabungan 2025-26 = 0,071, bolong data;
   §14 = mesin `engine/` (M1, belum di-commit)
+- [[10 - Epik Eksekusi Venue]] - **PRD v1 (4 Okt, F-D91)**: eksekutor sinyal -> order di Binance Agent OS (prioritas 1), Aster (2), Tokocrypto (3); kebutuhan R-E1..R-E10, metrik + ambang usulan, tonggak E0-E6 terukur; P116-P123
 - [[06 - Epik Gerbang Sinyal]] - **USULAN rancangan** (C-A `LockRegistry` + C-B `SignalAnchor` **ter-deploy 2 Okt**, F-D80; **tingkat 0 HIDUP 3 Okt**: landing + MCP, F-D89) kirim sinyal lewat x402 V2 + MCP (+ email), tiga tingkat produk, dan jawaban
   "kontrak selain anchor tiap sinyal": `LockRegistry`, komit-ungkap v2, `OperatorGuard`, rekam jejak/siklus hidup, pass, escrow/bond,
   reputasi ERC-8004; benturan dengan "kami tidak menjual sinyal" dan F-D16/17/18; P77-P80
