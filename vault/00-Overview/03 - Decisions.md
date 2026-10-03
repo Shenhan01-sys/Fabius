@@ -2738,5 +2738,6 @@ Pertanyaan builder: *"Menurutmu paling optimal A1/A2"*. Jawaban asisten merevisi
 5. **Kunci:** `engine/locks/anggaran.lock.json` sha `0x833f25987bae2dbddf7f2aaa94477744e1b8bb55284271e0815e75293cd5a94d`, dikunci 2026-10-03T07:51:23Z (jam laptop). Kunci mengikat angka DAN parameter antrean
    (`queue_max_per_family` 2, `cooldown_days` 30); melonggarkan antrean = MENYIMPANG + tes gagal. `engine/anggaran.py` belum dipakai gerbang: penerapannya
    adalah P83 (penghitung percobaan + alpha per keluarga) dan P90 (riset ambang yang kini punya anggaran tetap).
+6. **Pin on-chain** (builder: *"Gas"*): `FABIUS-ANGGARAN-v1`, tx `0x3254212fb06a705465857f61d31e79f76abf697f389852ac6a6a1c9728253165`, blok 134593740, gas 123.086, `lockedAt` 1791014141 = 2026-10-03T07:55:41Z, uri ke commit `b8783f42`; `--verify` membaca ulang lockedAt yang sama; `lockCount()` = 8. Dicatat di `deployments/97.json` `m3.pins`.
 
 **Terkait:** F-D16 · F-D84 · F-D87 · [[08-Backlog/08 - Riset Optimasi Ambang]] §1 · [[09-Inbox/Session-2026-10-02]] §38

@@ -26,6 +26,8 @@ jamnya = waktu blok.
 
 **3 Okt WIB (F-D87):** kunci ketujuh = terjemahan pembunuh terstruktur B1/B3 (`FABIUS-PEMBUNUH-v1`, sha `0xa55b4782…`): tx `0x7b053afcfdae9634856564cc81757eb30a669619fe6a5c35fcf74330412d960a`, blok 134581846, gas 123.074, `lockedAt` 1791008788 = 2026-10-03T06:26:28Z, uri ke commit `3250574f`; `--verify` membaca ulang lockedAt yang sama; `lockCount()` = 7.
 
+**3 Okt WIB (F-D88):** kunci kedelapan = anggaran gerbang A1/A2 (`FABIUS-ANGGARAN-v1`, sha `0x833f2598…`): tx `0x3254212fb06a705465857f61d31e79f76abf697f389852ac6a6a1c9728253165`, blok 134593740, gas 123.086, `lockedAt` 1791014141 = 2026-10-03T07:55:41Z, uri ke commit `b8783f42`; `--verify` membaca ulang lockedAt yang sama; `lockCount()` = 8.
+
 **Yang TIDAK dibuktikan:** bahwa spesifikasinya bagus atau dijalankan dengan jujur - hanya keberadaan dan urutan waktu.
 
 **Terkait:** [[02-Contracts/C7 - SignalAnchor]] · [[02-Contracts/02 - Deployed on 97]] · [[00-Overview/03 - Decisions]] F-D79/F-D80/F-D82 · [[Quick-Reference]]

@@ -46,6 +46,14 @@
   },
   "maxLag_s": 43200,
   "pins": {
+   "FABIUS-ANGGARAN-v1": {
+    "file": "engine/locks/anggaran.lock.json",
+    "lockedAt": 1791014141,
+    "lockedAt_utc": "2026-10-03T07:55:41Z",
+    "sha": "0x833f25987bae2dbddf7f2aaa94477744e1b8bb55284271e0815e75293cd5a94d",
+    "tx": "0x3254212fb06a705465857f61d31e79f76abf697f389852ac6a6a1c9728253165",
+    "uri": "https://github.com/Shenhan01-sys/Fabius/blob/b8783f42bda84bb1437c46b8b802f654dd0404ef/engine/locks/anggaran.lock.json"
+   },
    "FABIUS-BUKU-E690": {
     "file": "ledger/book/buku.jsonl",
     "lockedAt": 1790961969,
