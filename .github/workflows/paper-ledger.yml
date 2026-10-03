@@ -20,6 +20,8 @@ name: paper-ledger
 #   2. engine.cli ledger verify    - rantai hash + HITUNG ULANG setiap tick/settle. Gagal = job merah dan rantai BERHENTI (jangan commit ledger yang tak bisa diperiksa).
 #   3. commit + push bila ada perubahan (hanya job ini yang menulis ledger/; dua penulis ke rantai hash yang sama harus bertabrakan secara terlihat).
 #   4. sesudah tick hari itu beres: `engine.cli book epoch --write` (P108; idempoten per epoch) + `book verify`, commit `ledger/book` bila epoch baru.
+#   5. P111 penjaga LUAR worker Railway: `tools/worker_watch.py --alert` tiap putaran sampai tick hari itu terbukti dikomit + diungkap di SignalAnchor
+#      (worker yang mati tidak bisa melapor dirinya sendiri). ALARM = ::error:: + Telegram bila secrets ALERT_TELEGRAM_* ada; rantai ledger TETAP jalan.
 #
 # Batas yang jujur: (a) funding REST tertutup dari runner (HTTP 451); `settle` final menunggu zip bulanan, laporan PROVISIONAL memakai estimasi (F-D76).
 # (b) Tidak ada kunci, tidak ada transaksi chain, tidak ada rahasia di sini. (c) Paper penuh; angka maju bukan klaim edge (F-D16).
@@ -72,6 +74,9 @@ jobs:
 
       - name: Loop ±5 jam - pada jendela 08:40-11:58Z jalankan tick/settle tiap 5 menit sampai beres
         if: env.RANTAI_ADA == '0'
+        env:
+          ALERT_TELEGRAM_TOKEN: ${{ secrets.ALERT_TELEGRAM_TOKEN }}
+          ALERT_TELEGRAM_CHAT: ${{ secrets.ALERT_TELEGRAM_CHAT }}
         run: |
           set +e
           git config user.name "paper-ledger"
@@ -79,6 +84,7 @@ jobs:
           git config pull.rebase true
           END=$(( $(date +%s) + 300*60 ))
           DONE=""
+          WATCHED=""
           K=0
           while [ "$(date +%s)" -lt "$END" ]; do
             TODAY=$(date -u +%F)
@@ -135,6 +141,16 @@ jobs:
                   git clean -fdq ledger/book 2>/dev/null || true
                 fi
               fi
+            fi
+            if [ "$DONE" = "$TODAY" ] && [ "$WATCHED" != "$TODAY" ]; then
+              python -u -X utf8 tools/worker_watch.py --alert
+              WRC=$?
+              case "$WRC" in
+                0) WATCHED="$TODAY"; echo "penjaga luar: worker hidup (komit tick hari ini ada / sebelum kunci)" ;;
+                1) WATCHED="$TODAY"; echo "::error::penjaga luar: WORKER DIAM atau ungkap tertahan (baris di atas) - rantai ledger tetap jalan" ;;
+                2) echo "penjaga luar: komit belum ada, masih dalam tenggang - periksa lagi 5 menit lagi" ;;
+                *) echo "::warning::penjaga luar tidak bisa membaca chain (rc=$WRC) - bukan bukti worker mati; diulang" ;;
+              esac
             fi
             sleep 300
           done

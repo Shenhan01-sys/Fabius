@@ -29,6 +29,7 @@ berbahaya dari alat yang gagal keras.
 - [[TL15 - lock_spec]] — pin berkas kunci ke LockRegistry (jam = waktu blok); dipakai untuk kunci F-D16 maju (F-D84)
 - [[TL16 - pin_book]] — pin `book_sha` epoch buku slot hidup ke LockRegistry (F-D85)
 - [[TL17 - shadow_tick]] — mode bayangan tahap 2+3: tick dari REST beberapa menit sesudah tutup, dibandingkan dengan tick resmi; tidak menulis ledger, tanpa kunci (F-D86)
+- [[TL18 - worker_watch]] — penjaga LUAR worker Railway di rantai GitHub: tick tanpa komit >= 30 menit = WORKER DIAM (stdlib, tanpa kunci, P111)
 
 <!-- di atas: append-only oleh scripts/sync_vault.py; gloss tulisan tangan utuh -->
 ```dataview

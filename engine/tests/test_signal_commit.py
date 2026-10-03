@@ -357,6 +357,23 @@ class AnvilEndToEndTests(unittest.TestCase):
         self.assertEqual((got[("B3-CARRY", "2026-10-01")], got[("B1-TREND", "2026-10-01")]), ("SAH", "SAH"), [(r.bot, r.bar, r.vonis, r.detail) for r in rows])
         self.assertEqual(st["ALARM"], 0)
 
+    def test_external_watch_reads_the_same_chain_state(self):
+        """P111: penjaga luar (stdlib, tanpa eth-abi) membaca lockedAt + getCommit yang SAMA dengan pembaca worker, pada komit sungguhan."""
+        import worker_watch as ww
+        cv = sc.AnchorView(self.ev, self.anchor, self.registry)
+        acts = sc.plan(["B3-CARRY"], LEDGER, Views(BARS), cv, COMMITTER, sc.seed_from_key(DEV_PK1), self.ev.block_timestamp())
+        sc.execute(acts, self.ev, self.anchor, DEV_PK1, log=lambda m: None, settle_s=0)       # idempoten
+        wv = ww.ChainView(ww.Reader([f"http://127.0.0.1:{self.port}"]), self.anchor, self.registry)
+        spec = SPECS["B3-CARRY"].sha()
+        self.assertEqual(wv.locked_at(COMMITTER, "B3-CARRY", spec), cv.locked_at(COMMITTER, "B3-CARRY", spec))
+        cid = sc.commit_id(COMMITTER, "B3-CARRY", spec, B3_ASOF_S)
+        a, b = wv.get_commit(cid), cv.get_commit(cid)
+        self.assertEqual(int(a["committer"], 16), int(str(b["committer"]), 16))
+        for k in ("asof", "committedAt", "n", "revealed", "missed"):
+            self.assertEqual(a[k], b[k], k)
+        self.assertEqual(a["root"], bytes(b["root"]))
+        self.assertGreater(a["n"], 0)
+
     def test_contract_reverts_are_named_before_any_gas_is_spent(self):
         import evm
         bogus = sc.commit_id(COMMITTER, "B3-CARRY", SPECS["B3-CARRY"].sha(), 1)

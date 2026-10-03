@@ -18,6 +18,8 @@ tags: [perkakas, "TL9"]
 
 **Detail:** keadaan 2 Okt malam: B1-TREND dan B3-CARRY masing-masing genesis + satu tick (bar 2026-10-01, dibuat runner). Bukti tick tanpa tangan manusia: 3 Okt (P93).
 
+**Langkah ke-5 sejak 3 Okt (P111):** sesudah tick beres, rantai menjalankan penjaga luar worker ([[04-Tools/TL18 - worker_watch]]) tiap putaran sampai tick hari itu terbukti dikomit + diungkap.
+
 **Langkah ke-4 sejak 3 Okt (P108):** sesudah tick hari itu beres, rantai yang sama menjalankan `engine.cli book epoch --write` + `book verify` dan meng-commit `ledger/book` bila epoch baru ([[03-Data/D8 - Buku Slot Hidup]]). Gagal di langkah ini tidak menghentikan rantai ledger.
 
 **Terkait:** [[03-Data/D7 - Ledger Bars]] · [[TL11 - komit sinyal M3]] · [[00-Overview/03 - Decisions]] F-D75..F-D78
