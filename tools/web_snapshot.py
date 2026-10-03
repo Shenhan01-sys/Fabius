@@ -5,6 +5,7 @@ Isinya hanya keadaan publik (spesifikasi, tick, settle, komit, vonis pemeriksa, 
 
     python -X utf8 tools/web_snapshot.py              # baca chain juga (butuh eth-account/eth-abi, seperti verify_signals)
     python -X utf8 tools/web_snapshot.py --no-chain   # hanya repo
+    python -X utf8 tools/web_snapshot.py --if-changed # dipakai workflow web-snapshot: tulis hanya bila ISI berubah; keluar 3 = TUNDA (chain tak terbaca)
 """
 from __future__ import annotations
 
@@ -144,13 +145,49 @@ def build(with_chain: bool = True) -> dict:
     return snap
 
 
+# Bergeser tanpa ada yang berubah bagi pembaca: cap waktu pembuatan, HEAD repo (tiap commit bot), blok terkini. Diabaikan saat membandingkan.
+VOLATILE = ("generated_utc", "repo_head")
+CHAIN_VOLATILE = ("block", "block_utc")
+
+
+def substance(snap: dict) -> dict:
+    s = {k: v for k, v in snap.items() if k not in VOLATILE}
+    if isinstance(s.get("chain"), dict):
+        s["chain"] = {k: v for k, v in s["chain"].items() if k not in CHAIN_VOLATILE}
+    return s
+
+
+def decide(new: dict, old: dict | None) -> str:
+    """-> 'tulis' | 'sama' | 'tunda'. Chain tak terbaca padahal snapshot lama memuat chain = tunda: gagal baca bukan "tidak ada" (T8 SK-P1),
+    jadi landing tetap menampilkan vonis lama yang benar, bukan "belum dibaca"."""
+    if new.get("chain") is None and old is not None and old.get("chain") is not None:
+        return "tunda"
+    if old is not None and substance(new) == substance(old):
+        return "sama"
+    return "tulis"
+
+
 def main() -> int:
     ap = argparse.ArgumentParser(description="Snapshot data publik untuk landing page.")
     ap.add_argument("--no-chain", action="store_true")
     ap.add_argument("--out", default=OUT)
+    ap.add_argument("--if-changed", action="store_true", help="tulis hanya bila isinya berubah; chain tak terbaca = keluar 3 tanpa menulis")
     a = ap.parse_args()
     t0 = time.time()
     snap = build(not a.no_chain)
+    if a.if_changed:
+        try:
+            with open(a.out, encoding="utf-8") as f:
+                old = json.load(f)
+        except (OSError, ValueError):
+            old = None
+        verdict = decide(snap, old)
+        if verdict == "tunda":
+            print(f"TUNDA: chain tak terbaca ({snap.get('chain_error', '?')}) - snapshot lama dipertahankan, tidak ditulis")
+            return 3
+        if verdict == "sama":
+            print(f"isi sama dengan {os.path.relpath(a.out, ROOT)} (selain cap waktu/HEAD/blok) - tidak ditulis")
+            return 0
     os.makedirs(os.path.dirname(a.out), exist_ok=True)
     with open(a.out, "w", encoding="utf-8", newline="\n") as f:
         json.dump(snap, f, indent=1, ensure_ascii=False)

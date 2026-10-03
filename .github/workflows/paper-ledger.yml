@@ -22,6 +22,9 @@ name: paper-ledger
 #   4. sesudah tick hari itu beres: `engine.cli book epoch --write` (P108; idempoten per epoch) + `book verify`, commit `ledger/book` bila epoch baru.
 #   5. P111 penjaga LUAR worker Railway: `tools/worker_watch.py --alert` tiap putaran sampai tick hari itu terbukti dikomit + diungkap di SignalAnchor
 #      (worker yang mati tidak bisa melapor dirinya sendiri). ALARM = ::error:: + Telegram bila secrets ALERT_TELEGRAM_* ada; rantai ledger TETAP jalan.
+#   6. sesudah penjaga luar menilai tick hari itu: picu `web-snapshot.yml` (data landing; butuh pip, jadi workflow sendiri). Gagal = peringatan saja.
+#   7. P115 tiap putaran (5 menit, sepanjang hari): `tools/waitlist.py --poll` - daftar tunggu lewat bot Telegram, pendaftar dikabarkan ke chat builder.
+#      Log hanya hitungan (log Actions publik). Gagal = peringatan saja; update Telegram tersimpan 24 jam dan diulang putaran berikut.
 #
 # Batas yang jujur: (a) funding REST tertutup dari runner (HTTP 451); `settle` final menunggu zip bulanan, laporan PROVISIONAL memakai estimasi (F-D76).
 # (b) Tidak ada kunci, tidak ada transaksi chain, tidak ada rahasia di sini. (c) Paper penuh; angka maju bukan klaim edge (F-D16).
@@ -77,6 +80,7 @@ jobs:
         env:
           ALERT_TELEGRAM_TOKEN: ${{ secrets.ALERT_TELEGRAM_TOKEN }}
           ALERT_TELEGRAM_CHAT: ${{ secrets.ALERT_TELEGRAM_CHAT }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           set +e
           git config user.name "paper-ledger"
@@ -151,7 +155,18 @@ jobs:
                 2) echo "penjaga luar: komit belum ada, masih dalam tenggang - periksa lagi 5 menit lagi" ;;
                 *) echo "::warning::penjaga luar tidak bisa membaca chain (rc=$WRC) - bukan bukti worker mati; diulang" ;;
               esac
+              if [ "$WATCHED" = "$TODAY" ]; then
+                # bukti hari ini sudah dinilai -> cetak ulang data landing (web-snapshot.yml commit hanya bila isinya berubah; Vercel membangun ulang)
+                if printf '{"ref":"%s"}' "$GITHUB_REF_NAME" | gh api -X POST "repos/$GITHUB_REPOSITORY/actions/workflows/web-snapshot.yml/dispatches" --input -; then
+                  echo "snapshot web dipicu"
+                else
+                  echo "::warning::gagal memicu web-snapshot - landing tertinggal; rantai ledger tetap jalan"
+                fi
+              fi
             fi
+            python -u -X utf8 tools/waitlist.py --poll
+            LRC=$?
+            if [ "$LRC" != "0" ]; then echo "::warning::daftar tunggu rc=$LRC (diulang 5 menit lagi; update Telegram tersimpan 24 jam)"; fi
             sleep 300
           done
           echo "putaran kerja di mata rantai ini: $K"

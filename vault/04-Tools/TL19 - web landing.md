@@ -40,6 +40,15 @@ Root Directory `web`, tersambung repo GitHub `Shenhan01-sys/Fabius` (branch prod
 dari clone repo, yang hanya berisi berkas ter-track. Di Git Bash, `vercel api /v11/...` harus diawali `MSYS_NO_PATHCONV=1` (kalau tidak, path diubah
 jadi path Windows: `Endpoint must start with /`).
 
-**Belum:** snapshot otomatis, penampung daftar tunggu (P115). Server MCP (P114) hidup di deploy yang sama -> [[TL20 - server MCP]].
+**Snapshot otomatis (3 Okt malam):** rantai `paper-ledger` memicu `.github/workflows/web-snapshot.yml` begitu penjaga luar selesai menilai tick hari
+itu (komit + ungkap terbukti, atau ALARM). Workflow itu memasang eth-account/eth-abi, menjalankan `tools/web_snapshot.py --if-changed`, dan commit
+`web/public/data/snapshot.json` hanya bila ISINYA berubah (cap waktu, HEAD repo, nomor blok diabaikan). Push itu menyentuh `web/`, jadi Vercel
+membangun ulang landing. Chain tak terbaca padahal snapshot lama memuat chain = TUNDA, snapshot lama dipertahankan (T8 SK-P1). Uji lokal 3 Okt:
+`--if-changed` dua kali -> `isi sama ... tidak ditulis`, rc 0. Manual: `gh workflow run web-snapshot.yml`.
+
+**Daftar tunggu (P115):** tombol landing membuka bot Telegram dengan asal tautan (`?start=tingkat1`, `?start=pintu_manusia`); penampungnya
+[[TL21 - waitlist]].
+
+**Belum:** tidak ada (tingkat 1 tetap terkunci). Server MCP (P114) hidup di deploy yang sama -> [[TL20 - server MCP]].
 
 **Terkait:** [[TL14 - verify_signals]] · [[03-Data/D8 - Buku Slot Hidup]] · [[00-Overview/03 - Decisions]] F-D70/F-D72 · [[08-Backlog/06 - Epik Gerbang Sinyal]]

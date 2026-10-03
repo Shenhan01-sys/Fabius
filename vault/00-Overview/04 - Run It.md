@@ -63,6 +63,9 @@ python -X utf8 tools/worker_watch.py                   # penjaga LUAR worker (P1
 python -X utf8 tools/web_snapshot.py                    # data landing -> web/public/data/snapshot.json
 cd web && npm ci && npm run build && npx next start -p 3006                               # landing di :3006, MCP di :3006/mcp
 npx @modelcontextprotocol/inspector --cli http://localhost:3006/mcp --transport http --method tools/list   # klien MCP resmi: 8 alat
+python -X utf8 tools/web_snapshot.py --if-changed       # tulis hanya bila isi berubah; keluar 3 = chain tak terbaca, snapshot lama dipertahankan
+gh workflow run web-snapshot.yml                         # snapshot landing dari GitHub (biasanya dipicu rantai paper-ledger sesudah tick); push -> Vercel
+python -X utf8 tools/waitlist.py --poll                 # daftar tunggu P115 (butuh ALERT_TELEGRAM_*; rantai paper-ledger menjalankannya tiap 5 menit)
 
 # Railway (butuh login CLI builder; JANGAN `railway environment config --json` / `railway variable list --json|--kv`: mencetak kunci)
 railway logs --service fabius-engine --lines 40

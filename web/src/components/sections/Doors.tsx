@@ -120,7 +120,7 @@ export default function Doors({ s }: { s: Snapshot }) {
           </ul>
           <div className="mt-10 flex flex-wrap gap-3">
             <a href="#proof" className="rounded-full bg-ink px-5 py-3 text-sm font-semibold text-white transition hover:bg-violet">{t.doors.human.cta} →</a>
-            <a href={LINKS.telegram} target="_blank" rel="noreferrer" className="glass rounded-full px-5 py-3 text-sm font-semibold text-ink">{t.doors.human.cta2}</a>
+            <a href={`${LINKS.telegram}?start=pintu_manusia`} target="_blank" rel="noreferrer" className="glass rounded-full px-5 py-3 text-sm font-semibold text-ink">{t.doors.human.cta2}</a>
           </div>
         </motion.div>
 
@@ -162,7 +162,7 @@ export default function Doors({ s }: { s: Snapshot }) {
         </div>
         <div className="flex flex-col items-start gap-3 lg:items-end">
           <span className="rounded-full border border-white/20 px-3 py-1 font-mono text-xs text-white/70">{t.doors.tier1.status}</span>
-          <a href={LINKS.telegram} target="_blank" rel="noreferrer" className="rounded-full bg-violet px-6 py-3 text-sm font-semibold text-white shadow-[0_14px_40px_-12px_rgba(110,75,255,.8)]">
+          <a href={`${LINKS.telegram}?start=tingkat1`} target="_blank" rel="noreferrer" className="rounded-full bg-violet px-6 py-3 text-sm font-semibold text-white shadow-[0_14px_40px_-12px_rgba(110,75,255,.8)]">
             {t.doors.tier1.waitlist}
           </a>
         </div>

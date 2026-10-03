@@ -1,0 +1,55 @@
+name: web-snapshot
+
+# Data landing (`web/public/data/snapshot.json`, P113) dicetak MESIN, bukan diingat-ingat builder (3 Okt).
+#
+# Pemicu: rantai `paper-ledger` (workflow_dispatch) begitu penjaga luar selesai menilai tick hari itu (komit + ungkap terbukti di SignalAnchor, atau
+# ALARM). Landing jadi menampilkan bukti hari itu beberapa menit sesudah bukti itu lengkap di chain. Tanpa `schedule:` (F-D78: cron di repo ini bolong).
+# Bisa juga dijalankan manual dari tab Actions.
+#
+# Commit hanya bila ISI berubah (cap waktu, HEAD repo, dan nomor blok terkini diabaikan: `tools/web_snapshot.py::decide`). Chain tak terbaca padahal
+# snapshot lama memuat chain = TUNDA: keluar 3, tidak menulis, landing tetap menampilkan vonis lama (gagal baca bukan "tidak ada", T8 SK-P1).
+# Commit TANPA [skip ci]: push yang menyentuh web/ = Vercel membangun ulang landing (push dengan GITHUB_TOKEN tidak memicu workflow lain).
+# Tidak ada kunci, tidak ada transaksi; satu-satunya tulisan = web/public/data/snapshot.json.
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: web-snapshot
+  cancel-in-progress: false
+
+jobs:
+  snapshot:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: eth-account + eth-abi (pembaca chain sama dengan verify_signals)
+        run: pip install -r railway/requirements.txt
+
+      - name: cetak snapshot, commit bila isinya berubah
+        run: |
+          set +e
+          python -u -X utf8 tools/web_snapshot.py --if-changed
+          RC=$?
+          if [ "$RC" = "3" ]; then echo "::warning::chain tak terbaca - snapshot lama dipertahankan (bukan berarti kosong); jalankan lagi nanti"; exit 0; fi
+          if [ "$RC" != "0" ]; then echo "::error::web_snapshot rc=$RC"; exit 1; fi
+          git add web/public/data/snapshot.json
+          if git diff --cached --quiet; then echo "isi sama - tidak ada commit"; exit 0; fi
+          git config user.name "web-snapshot"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -q -m "snapshot web $(date -u +%Y-%m-%dT%H:%M:%SZ)"
+          for t in 1 2 3 4 5; do
+            if git pull --rebase -q origin "$GITHUB_REF_NAME" && git push -q; then echo "push OK (percobaan $t)"; exit 0; fi
+            git rebase --abort 2>/dev/null || true
+            echo "push ditolak (percobaan $t)"; sleep 12
+          done
+          echo "::error::5x push gagal - snapshot tidak sampai ke branch"; exit 1
