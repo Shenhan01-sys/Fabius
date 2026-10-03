@@ -2,7 +2,7 @@
 tags: [generated]
 ---
 
-_Auto-Index — 6 halaman · 2026-10-03T19:15Z · dari `vault/scripts/sync_vault.py`_
+_Auto-Index — 6 halaman · 2026-10-03T19:47Z · dari `vault/scripts/sync_vault.py`_
 
 ### 00-Overview (8)
 - [[00-Overview/00 - Hub Overview]]
@@ -67,11 +67,12 @@ _Auto-Index — 6 halaman · 2026-10-03T19:15Z · dari `vault/scripts/sync_vault
 - [[04-Tools/TL8 - engine]]
 - [[04-Tools/TL9 - ledger paper maju]]
 
-### 05-Ecosystem (4)
+### 05-Ecosystem (5)
 - [[05-Ecosystem/00 - Hub BNB Ecosystem]]
 - [[05-Ecosystem/01 - ERC-8004 Identity]]
 - [[05-Ecosystem/02 - x402 Payment]]
 - [[05-Ecosystem/03 - Discovery Gap]]
+- [[05-Ecosystem/04 - Alchemy]]
 
 ### 06-Results (33)
 - [[06-Results/00 - Hub Results]]
