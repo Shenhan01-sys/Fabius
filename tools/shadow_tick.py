@@ -313,7 +313,12 @@ class Shadow:
             self.log(f"bayangan {date}: {len(problems)} deret berhenti (diteruskan; make_tick yang memutuskan) - " + "; ".join(problems[:4]))
         n_rest = sum(len(v) for v in rows.values())
         if n_rest == 0:
-            self.log(f"bayangan {date}: bar resmi sudah memuat hari ini - bayangan TIDAK menguji REST (dicatat, bukan bukti)")
+            # Vision sudah ada di bar resmi: tidak ada yang bisa diuji. Hari dicatat SELESAI tanpa tick/vonis/alert - vonis "IDENTIK" di sini akan
+            # terbaca sebagai bukti kedua padahal bukan (terjadi 3 Okt 08:46Z sesudah redeploy: keadaan /tmp hilang, hari 2 Okt dijalankan ulang).
+            self.log(f"bayangan {date}: bar resmi sudah memuat hari ini - bayangan TIDAK menguji REST; hari dicatat tanpa vonis (bukan bukti)")
+            self.state["hari"][date] = {"bar": d, "uji_rest": False, "bot": {}, "baris_vonis": "TIDAK DIUJI"}
+            self.save()
+            return True
         sb = make_shadow_bars(bars, rows, os.path.join(self.state_dir, "bars"))
         now = self.now_fn()
         ticks = shadow_ticks(led, sb, self.bots, now)

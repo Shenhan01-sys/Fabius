@@ -41,11 +41,13 @@ def official_without_last_day(dst):
         rows = read_rows(p)
         if name.startswith(("fut_", "spot_")):
             kind, sym = name.split("_")[0], name.split("_")[1]
-            keep = [r for r in rows if not (r and r[0].isdigit() and int(r[0]) == BAR)]
+            # SEMUA bar sejak BAR dicabut, bukan hanya BAR: ledger/bars repo terus bertambah (rantai GitHub), dan mencabut satu hari di tengah
+            # membuat lubang buatan (patah 3 Okt 08:40Z saat bar 2026-10-02 masuk). REST tiruan hanya menyajikan BAR.
+            keep = [r for r in rows if not (r and r[0].isdigit() and int(r[0]) >= BAR)]
             removed[f"{kind}:{sym}"] = [(int(r[0]), *map(float, r[1:6])) for r in rows if r and r[0].isdigit() and int(r[0]) == BAR]
         elif name.startswith("fund_est_"):
             sym = name[len("fund_est_"):-4]
-            keep = [r for r in rows if not (r and r[0].isdigit() and BAR <= int(r[0]) < CLOSE)]
+            keep = [r for r in rows if not (r and r[0].isdigit() and int(r[0]) >= BAR)]
             removed[f"fest:{sym}"] = [(int(r[0]), float(r[1])) for r in rows if r and r[0].isdigit() and BAR <= int(r[0]) < CLOSE]
         else:
             continue
@@ -194,6 +196,7 @@ class ShadowVsOfficialTests(unittest.TestCase):
             self.assertTrue(e.sh.run_day(BAR))
             self.assertFalse(e.sh.state["hari"]["2026-10-01"]["uji_rest"])
             self.assertTrue(any("TIDAK menguji REST" in m for m in e.logs), e.logs)
+            self.assertEqual(e.sh.compare_pending(), [])                     # tidak ada vonis yang bisa dikira bukti (dan tidak ada alert)
         finally:
             e.close()
 
