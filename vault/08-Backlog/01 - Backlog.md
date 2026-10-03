@@ -71,6 +71,9 @@ Rincian tiap item ada di rumahnya (kolom terakhir); angka di sini dicetak oleh p
 | P121 | E5a adaptor Aster (agent wallet EIP-712) di testnet | ⬜ sesudah P118 | epik 10 §7 |
 | P122 | E5b Aster live canary | ⬜ sesudah P121 + kata builder | epik 10 §7 |
 | P123 | E6 Tokocrypto spot B1 (bila sempat): dry-run + canary kecil + basis spot vs perp | ⬜ prioritas 3 | epik 10 §7 · F-D90 |
+| P124 | FE: halaman /verify (pemeriksaan publik bot + hari di peramban; kode bersama dengan MCP) | 🟡 **lokal 4 Okt** ([[04-Tools/TL24 - halaman verify]]): `/api/verify` B3 2026-10-02 SAH, B1 SAH (akar nol), 2026-10-01 BEFORE_LOCK, input salah 400; build + lint bersih; cek visual desktop + ponsel; sel kalender landing menaut ke sini; ⏳ produksi sesudah push | builder: "Gas, UI dan FE stylenya disamakan" · [[04-Tools/TL23 - Sistem Visual FE]] |
+| P125 | FE: halaman /bot/[id] (spesifikasi + kunci, kalender sinyal, posisi paper, F-D16, pembunuh) | ⬜ urutan 2 | TL23 |
+| P126 | FE: halaman /status (kesehatan operasi: tick, komit, bayangan, gas, kertas vs paper, eksekusi demo; publik, tanpa kunci di Vercel) | ⬜ urutan 3 | TL23 |
 | P106 | alat verifikasi publik komit ↔ ledger (baca komit + event `Revealed`, cocokkan dengan ledger + bar, tanpa kunci) | ✅ alat + 8 tes (anvil: SAH); run chain 97 2 Okt 16:50Z = 0 komit, 0 ALARM; ⏳ vonis SAH sungguhan pertama sesudah komit bar 2026-10-02 (P94) -> **vonis publik pertama 3 Okt**: `python -X utf8 tools/verify_signals.py` 08:44:16Z (blok 134600218): B1-TREND 2026-10-02 SAH (akar nol, 0/0), B3-CARRY 2026-10-02 SAH (1/1), 2026-10-01 keduanya SEBELUM KUNCI; ALARM 0. | [[04-Tools/TL14 - verify_signals]] · [[02-Contracts/C7 - SignalAnchor]] |
 
 

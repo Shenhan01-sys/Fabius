@@ -3,6 +3,7 @@
 // 02 — Umpan bukti (docs/design/landing.md §3): kalender hari x bot. Sel = keping kaca dengan keadaan bukti dari ledger + vonis chain.
 // Hari bolong tetap bolong (retak merah). Tiga tabung F-D16 per bot terisi sesuai angka snapshot, bukan hiasan.
 
+import Link from "next/link";
 import { motion } from "motion/react";
 import { useLang } from "../lang";
 import IsoCube from "../ui/IsoCube";
@@ -134,9 +135,16 @@ function Row({ b, s, days, lastClosed }: { b: string; s: Snapshot; days: string[
             transition={{ delay: i * 0.018, type: "spring", stiffness: 200, damping: 18 }}
             className="group relative flex flex-col items-center"
           >
-            <div className={st === "pending" ? "animate-breathe" : ""}>
-              <IsoCube kind={st} size={30} glow={st === "verified"} />
-            </div>
+            {st === "verified" || st === "sealed" ? (
+              // sel yang sudah dikomit = pintu ke pemeriksaan publiknya (/verify)
+              <Link href={`/verify?bot=${b}&bar=${d}`} aria-label={`${t.verify.fromCalendar}: ${b} ${d}`} className="transition hover:-translate-y-0.5">
+                <IsoCube kind={st} size={30} glow={st === "verified"} />
+              </Link>
+            ) : (
+              <div className={st === "pending" ? "animate-breathe" : ""}>
+                <IsoCube kind={st} size={30} />
+              </div>
+            )}
             {tk && tk.signals > 0 && <span className="absolute -top-1 right-0 grid h-4 min-w-4 place-items-center rounded-full bg-violet px-1 font-mono text-[0.56rem] font-bold text-white">{tk.signals}</span>}
           </motion.div>
         );

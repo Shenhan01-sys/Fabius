@@ -4,11 +4,9 @@
 
 import type { McpServer } from "@modelcontextprotocol/server";
 import { z } from "zod";
-import type { Hex } from "viem";
 import type { Snapshot } from "./snapshot";
-import {
-  ChainReadError, COMMITTER, LOCK_REGISTRY, SIGNAL_ANCHOR, closeOf, commitCount, commitIdOf, describe, getCommit, getReveals, ledger, lockedAt, signalHashes, windows,
-} from "./fabius-chain";
+import { ChainReadError, COMMITTER, LOCK_REGISTRY, SIGNAL_ANCHOR, commitCount, describe, ledger } from "./fabius-chain";
+import { signalsFor as readSignals, verifyBar } from "./verify";
 
 type Result = { content: { type: "text"; text: string }[]; isError?: boolean };
 
@@ -43,34 +41,25 @@ const HONESTY = [
 export function registerFabiusTools(server: McpServer, s: Snapshot) {
   const forward = s.bots.filter((b) => b.forward).map((b) => b.id);
   const BOT = z.enum(s.bots.map((b) => b.id) as [string, ...string[]]);
-  const specOf = (bot: string) => s.bots.find((b) => b.id === bot)?.spec_sha as Hex | undefined;
 
+  // Satu pembaca untuk MCP dan halaman /verify (lib/verify.ts); bentuk keluaran MCP dipertahankan untuk klien yang sudah ada.
   async function signalsFor(bot: string, bar: string) {
-    const spec = specOf(bot);
-    if (!spec) throw new Error(`unknown bot ${bot}`);
-    const id = commitIdOf(bot, spec, bar);
-    const asof = closeOf(bar);
-    const c = await getCommit(id);
-    if (!c.exists) {
-      const [locked, w] = await Promise.all([lockedAt(bot, spec), windows()]);
-      const now = Math.floor(Date.now() / 1000);
-      const status = locked === 0 || locked > asof ? "BEFORE_LOCK" : now < asof ? "BAR_NOT_CLOSED" : now - asof <= w.maxLag ? "AWAITING_COMMIT" : "NOT_COMMITTED";
-      return { bot, bar, commit_id: id, status, committed: false, note: "no on-chain commit for this (bot, bar) under the official committer" };
+    const r = await readSignals(s, bot, bar);
+    if (!r.c.exists) {
+      return { bot, bar, commit_id: r.id, status: r.status as string, committed: false, note: "no on-chain commit for this (bot, bar) under the official committer" };
     }
-    const reveals = c.revealed > 0 ? await getReveals(id, Number(c.committedAt), c.revealed) : [];
     return {
       bot,
       bar,
-      commit_id: id,
+      commit_id: r.id,
       committed: true,
-      committed_utc: iso(Number(c.committedAt)),
-      commit_lag_hours: +((Number(c.committedAt) - asof) / 3600).toFixed(2),
-      root: c.root,
-      n: c.n,
-      revealed: c.revealed,
-      silent: c.n === 0,
-      signals: reveals.map((r) => ({ ...describe(r.args), leaf: r.leaf, salt: r.args.salt, tx: r.tx, block: r.block })),
-      _raw: { c, reveals },
+      committed_utc: iso(Number(r.c.committedAt)),
+      commit_lag_hours: +((Number(r.c.committedAt) - r.asof) / 3600).toFixed(2),
+      root: r.c.root,
+      n: r.c.n,
+      revealed: r.c.revealed,
+      silent: r.c.n === 0,
+      signals: r.reveals.map((x) => ({ ...describe(x.args), leaf: x.leaf, salt: x.args.salt, tx: x.tx, block: x.block })),
     };
   }
 
@@ -191,10 +180,8 @@ export function registerFabiusTools(server: McpServer, s: Snapshot) {
     async ({ bot, bar }) => {
       try {
         const r = await signalsFor(bot, bar);
-        const { _raw, ...pub } = r as typeof r & { _raw?: unknown };
-        void _raw;
         const line = r.committed ? `${bot} ${bar}: committed ${"committed_utc" in r ? r.committed_utc : ""}, ${"revealed" in r ? r.revealed : 0}/${"n" in r ? r.n : 0} revealed.` : `${bot} ${bar}: ${r.status}.`;
-        return ok(line, pub);
+        return ok(line, r);
       } catch (e) {
         return fail(e);
       }
@@ -217,10 +204,7 @@ export function registerFabiusTools(server: McpServer, s: Snapshot) {
           out.push({ bot, status: "NO_TICK_YET" });
           continue;
         }
-        const r = await signalsFor(bot, last.asof_date);
-        const { _raw, ...pub } = r as typeof r & { _raw?: unknown };
-        void _raw;
-        out.push(pub);
+        out.push(await signalsFor(bot, last.asof_date));
       }
       return ok(`Latest bar per bot: ${out.map((x) => `${x.bot} ${"bar" in x ? x.bar : "-"}`).join(", ")}. Total commits on chain: ${await commitCount()}.`, { latest: out });
     }),
@@ -236,32 +220,17 @@ export function registerFabiusTools(server: McpServer, s: Snapshot) {
     },
     async ({ bot, bar }) => {
       try {
-        const [recs, r] = await Promise.all([ledger(bot), signalsFor(bot, bar)]);
-        const tick = recs.find((x) => x.type === "tick" && x.asof_date === bar);
-        if (!tick) return ok(`${bot} ${bar}: no ledger tick - nothing to verify.`, { bot, bar, verdict: "NO_TICK" });
-        const ids = tick.signal_ids ?? [];
-        if (!r.committed) return ok(`${bot} ${bar}: ${r.status}.`, { bot, bar, verdict: r.status, ledger_signals: ids.length });
-        const raw = (r as unknown as { _raw: { c: { botId: Hex; specSha: Hex; asof: bigint; n: number; revealed: number; root: Hex }; reveals: Awaited<ReturnType<typeof getReveals>> } })._raw;
-        const problems: string[] = [];
-        const rows = raw.reveals.map((ev) => {
-          const h = signalHashes(raw.c, ev.args);
-          const leafOk = h.leaf.toLowerCase() === ev.leaf.toLowerCase();
-          const inTick = ids.map((x) => x.toLowerCase()).includes(h.id.toLowerCase());
-          if (!leafOk) problems.push(`leaf of ${describe(ev.args).asset} does not recompute from its payload`);
-          if (!inTick) problems.push(`revealed ${describe(ev.args).asset} ${describe(ev.args).action} is not in the ledger tick`);
-          return { ...describe(ev.args), signal_id: h.id, leaf_recomputes: leafOk, in_ledger_tick: inTick, tx: ev.tx };
-        });
-        if (raw.c.n !== ids.length) problems.push(`commit n=${raw.c.n} but the ledger tick has ${ids.length} signals`);
-        if ((/^0x0*$/.test(raw.c.root)) !== (raw.c.n === 0)) problems.push("zero root and n=0 disagree");
-        const verdict = problems.length ? "ALARM" : raw.c.revealed < raw.c.n ? "SEALED_NOT_YET_REVEALED" : "SAH";
-        return ok(`${bot} ${bar}: ${verdict}${problems.length ? ` - ${problems.join("; ")}` : ` (${raw.c.revealed}/${raw.c.n} revealed, all ids match the ledger)`}.`, {
+        const v = await verifyBar(s, bot, bar);
+        if (v.verdict === "NO_TICK") return ok(`${bot} ${bar}: no ledger tick - nothing to verify.`, { bot, bar, verdict: "NO_TICK", problems: v.problems });
+        if (!v.commit.committed) return ok(`${bot} ${bar}: ${v.verdict}.`, { bot, bar, verdict: v.verdict, ledger_signals: v.tick?.signal_ids.length ?? 0 });
+        return ok(`${bot} ${bar}: ${v.verdict}${v.problems.length ? ` - ${v.problems.join("; ")}` : ` (${v.commit.revealed}/${v.commit.n} revealed, all ids match the ledger)`}.`, {
           bot,
           bar,
-          verdict,
-          problems,
-          commit: { id: r.commit_id, root: raw.c.root, n: raw.c.n, revealed: raw.c.revealed, committed_utc: "committed_utc" in r ? r.committed_utc : null },
-          signals: rows,
-          ledger_tick: { signal_ids: ids, emitted_utc: tick.emitted_utc },
+          verdict: v.verdict,
+          problems: v.problems,
+          commit: { id: v.commit.id, root: v.commit.root, n: v.commit.n, revealed: v.commit.revealed, committed_utc: v.commit.committed_utc },
+          signals: v.signals,
+          ledger_tick: { signal_ids: v.tick?.signal_ids ?? [], emitted_utc: v.tick?.emitted_utc ?? null },
         });
       } catch (e) {
         return fail(e);
