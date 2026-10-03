@@ -28,6 +28,7 @@ berbahaya dari alat yang gagal keras.
 - [[TL14 - verify_signals]] — pemeriksa PUBLIK: komit + ungkap di chain vs ledger + bar repo, tanpa kunci; vonis SAH/ALARM per bot per bar
 - [[TL15 - lock_spec]] — pin berkas kunci ke LockRegistry (jam = waktu blok); dipakai untuk kunci F-D16 maju (F-D84)
 - [[TL16 - pin_book]] — pin `book_sha` epoch buku slot hidup ke LockRegistry (F-D85)
+- [[TL17 - shadow_tick]] — mode bayangan tahap 2+3: tick dari REST beberapa menit sesudah tutup, dibandingkan dengan tick resmi; tidak menulis ledger, tanpa kunci (F-D86)
 
 <!-- di atas: append-only oleh scripts/sync_vault.py; gloss tulisan tangan utuh -->
 ```dataview

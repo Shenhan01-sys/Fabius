@@ -2681,3 +2681,21 @@ LockRegistry. Builder: *"Gas, pakai opsi B"* - dibaca sebagai: kerjakan oleh asi
    epoch bulanan + pin otomatis (sekarang manual; epoch 691 bisa dicatat mulai 4 Okt 00:00Z).
 
 **Terkait:** F-D71 · F-D73 · F-D84 · [[08-Backlog/07 - Epik Kolaborasi Bot Terbuka]] §11 (P87) · [[03-Data/D8 - Buku Slot Hidup]] · [[09-Inbox/Session-2026-10-02]] §26
+
+## F-D86 — Tahap 2+3 berjalan dulu sebagai MODE BAYANGAN: tick dari REST di Railway, dibandingkan dengan tick resmi; penulis ledger tetap rantai GitHub · 3 Okt 2026 (WIB)
+
+Saran yang dijawab: "Gas tahap 2+3 mode bayangan? Usulku P109 dikerjakan duluan". Builder: *"Gas"*.
+
+1. **Di mana:** service Railway `fabius-probe` (Singapura, tanpa variabel rahasia), `FABIUS_JOB=shadow_tick`, image dari HEAD `33183b0d`, hidup sejak 3 Okt 05:22Z.
+   Worker `fabius-engine` (committer) tidak disentuh.
+2. **Aturan baca (SK-R1, dari P98):** bacaan pertama paling cepat +2 menit sesudah 00:00Z. Data diterima hanya kalau dua bacaan berurutan berjarak >= 60 s identik.
+3. **Data bayangan:** bar resmi disalin, lalu ditambah kline perp/spot dari REST dan estimasi funding dari indeks premium 1m REST (rumus yang sama). Funding
+   AKTUAL tidak ditulis (SK-R2: kalau masuk lebih dulu, estimasi hari itu tidak pernah terbentuk dan tick B3 ditolak).
+4. **Keluaran:** hanya log dan keadaan lokal. Tidak ada tulisan ke ledger resmi dan tidak ada transaksi. Penulis tunggal tetap rantai GitHub (F-D78).
+   Vonis per bot per bar: IDENTIK / BEDA / RESMI GAP / RESMI ADA, BAYANGAN DITOLAK; baris REST vs Vision: SAMA / ALARM.
+5. **Hasil pertama:** bar 2026-10-02 dihitung 05:23:55Z, diterima pada bacaan ke-2 (dua bacaan identik). B1-TREND: 16 aset, 0 sinyal, data_hash `0x6f027a68f47b…`. B3-CARRY: 1 aset, 1 sinyal, data_hash `0xfa55591ad8f8…`. Jeda 19.433 s (5,4 jam) karena bayangan baru hidup 05:22Z; jeda ±2-4 menit baru teruji mulai bar 2026-10-03. Vonis menunggu tick resmi bar itu dari rantai GitHub.
+6. **Syarat pindah penulis (P99), USULAN, menunggu kata builder:** minimal 5 hari berturut-turut IDENTIK untuk B1 dan B3, ditambah baris REST SAMA dengan Vision
+   (termasuk estimasi funding, yang belum pernah dibandingkan). Sesudah itu rantai GitHub dimatikan lebih dulu, baru Railway menulis (SK-R3).
+7. **Batas:** satu region REST; keadaan bayangan ada di `/tmp` container dan hilang saat deploy ulang, jadi log adalah catatannya; satu hari = satu sampel.
+
+**Terkait:** F-D78 · F-D80 · F-D83 · [[04-Tools/TL17 - shadow_tick]] · [[07-Testing/T8 - Semantik Kegagalan Operator]] · [[09-Inbox/Session-2026-10-02]] §30

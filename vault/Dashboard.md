@@ -13,6 +13,8 @@ tags: [dashboard]
 > **STATUS 2 Okt malam (dicetak ulang):** arah baru bukan lagi sekadar usulan. Ledger paper maju B1-TREND + B3-CARRY hidup (M2, F-D75..F-D78); kontrak
 > `LockRegistry` + `SignalAnchor` ter-deploy di chain 97 (M3, F-D79/F-D80); worker Railway mengomit tiap tick (F-D80; committer dirotasi, F-D82); perekam
 > wallet-flow dihentikan (F-D81); data REST = data Vision untuk engine (F-D83). Semua tetap **paper**: tanpa uang nyata, tanpa klaim edge.
+> **3 Okt:** tabel semantik kegagalan pipeline operator + gerbangnya ([[07-Testing/T8 - Semantik Kegagalan Operator]], P109); tahap 2+3 berjalan sebagai
+> **mode bayangan** di Railway `fabius-probe`: tick dari REST beberapa menit sesudah tutup, dibandingkan dengan tick resmi (F-D86, [[04-Tools/TL17 - shadow_tick]]).
 > Status per item: [[08-Backlog/01 - Backlog]] bagian *Arah operator*.
 
 Pertanyaan proyek dalam bentuk tabel. Semua barisnya diambil dari perintah yang ada di repo;
