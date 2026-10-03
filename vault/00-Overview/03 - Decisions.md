@@ -2704,6 +2704,8 @@ Saran yang dijawab: "Gas tahap 2+3 mode bayangan? Usulku P109 dikerjakan duluan"
    (termasuk estimasi funding, yang belum pernah dibandingkan). Sesudah itu rantai GitHub dimatikan lebih dulu, baru Railway menulis (SK-R3).
 7. **Batas:** satu region REST; keadaan bayangan ada di `/tmp` container dan hilang saat deploy ulang, jadi log adalah catatannya; satu hari = satu sampel.
 
+Tambahan 3 Okt sore (hari 1): `fabius-probe` 08:44:25Z: `VONIS bayangan B1-TREND 2026-10-02: IDENTIK`, `B3-CARRY: IDENTIK` (bayangan 323,9 menit vs resmi 8,7 jam - bayangan baru hidup 05:22Z); `VONIS baris REST 2026-10-02: 80 sama persis, beda harga 0, beda estimasi funding 0, beda volume saja 0` - estimasi funding dari indeks premium REST = estimasi dari zip Vision, risiko terbesar yang belum pernah diuji. P99 butuh 5 hari berturut; ini hari 1.
+
 **Terkait:** F-D78 · F-D80 · F-D83 · [[04-Tools/TL17 - shadow_tick]] · [[07-Testing/T8 - Semantik Kegagalan Operator]] · [[09-Inbox/Session-2026-10-02]] §30
 
 ## F-D87 — Pembunuh B1/B3 TERSTRUKTUR dikunci terpisah dari spesifikasi; buku slot menilainya otomatis · 3 Okt 2026 (WIB)

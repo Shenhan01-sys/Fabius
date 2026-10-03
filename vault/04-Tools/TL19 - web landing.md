@@ -1,0 +1,29 @@
+---
+tags: [perkakas, "TL19"]
+---
+
+# TL19 - web landing (FE tingkat 0)
+
+**Bagian dari:** [[04-Tools/00 - Hub Tools]]
+**Sumber:** `web/` (Next.js 16, React 19, three.js lewat @react-three/fiber + drei + postprocessing, motion) · data `tools/web_snapshot.py` ->
+`web/public/data/snapshot.json` · brief `docs/design/landing.md`
+
+**Ringkas:** landing page untuk pembeli/pelanggan sinyal, baik manusia maupun agen. Mengikuti FE Doctrine: halaman MEWAKILI prosesnya, tidak sekadar
+menjelaskannya. Objek inti = blok kaca (satu blok = satu komitmen), dan agen Fabius = kristal komitmen 3D.
+
+**Poin kunci:**
+- Hero: kristal 3x3x3 bergerak (masuk = blok terbang lalu mengunci; berdenyut; tiap ~3,4 s satu blok aturan keluar dan chip-nya menampilkan kunci on-chain itu).
+  Jumlah blok per warna = data snapshot (indigo = aturan terkunci, putih = sinyal SAH, bening = slot kosong).
+- 01 satu sinyal: sumbu waktu dengan blok yang berjalan mengikuti scroll (tutup lilin -> putusan -> segel Merkle -> komit -> buka + SAH).
+- 02 umpan bukti: kalender hari x bot dari ledger + vonis chain, hari bolong tampil retak; tabung F-D16 per bot.
+- 03 buku slot: 10 slot, B1 identitas, B3 dengan cincin bayangan hari-hidup/60, rantai 7 kunci on-chain (tautan ke BscScan).
+- 04 dua pintu: tingkat 0 terbuka (manusia + agen/MCP), tingkat 1 TERKUNCI dengan cincin syarat (uji maju dari data, telaah hukum 0, mulai 0).
+- EN/ID; kanvas 3D berhenti me-render saat hero di luar layar.
+
+**Yang ia TOLAK lakukan:** menampilkan klaim keuntungan atau angka kinerja yang belum bermakna; menjual tingkat 1; mengetik angka dengan tangan (semua dari snapshot).
+
+**Cara menjalankan:** `cd web && npm install && npm run dev` lalu buka http://localhost:3000; data baru: `python -X utf8 tools/web_snapshot.py`.
+
+**Belum:** hosting (P3 Vercel), snapshot otomatis, server MCP (P114), penampung daftar tunggu (P115).
+
+**Terkait:** [[TL14 - verify_signals]] · [[03-Data/D8 - Buku Slot Hidup]] · [[00-Overview/03 - Decisions]] F-D70/F-D72 · [[08-Backlog/06 - Epik Gerbang Sinyal]]

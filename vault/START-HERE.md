@@ -14,6 +14,8 @@ tags: [entry]
 > `LockRegistry` + `SignalAnchor` ter-deploy di chain 97 (M3, F-D79/F-D80); worker Railway mengomit tiap tick (F-D80; committer dirotasi, F-D82); perekam
 > wallet-flow dihentikan (F-D81); data REST = data Vision untuk engine (F-D83). Semua tetap **paper**: tanpa uang nyata, tanpa klaim edge.
 > **3 Okt:** tabel semantik kegagalan pipeline operator + gerbangnya ([[07-Testing/T8 - Semantik Kegagalan Operator]], P109); tahap 2+3 berjalan sebagai
+> **3 Okt sore (bukti):** hari pertama penuh TANPA tangan manusia. Rantai GitHub menulis tick bar 2 Okt (08:40Z), worker Railway mengomit + mengungkap
+> (2 komit, 1 ungkap, 0 gagal), `verify_signals` memvonis SAH untuk B1 dan B3, dan mode bayangan IDENTIK dengan tick resmi (80 baris REST = Vision).
 > **mode bayangan** di Railway `fabius-probe`: tick dari REST beberapa menit sesudah tutup, dibandingkan dengan tick resmi (F-D86, [[04-Tools/TL17 - shadow_tick]]).
 > Status per item: [[08-Backlog/01 - Backlog]] bagian *Arah operator*.
 

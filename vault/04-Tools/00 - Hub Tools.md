@@ -30,6 +30,7 @@ berbahaya dari alat yang gagal keras.
 - [[TL16 - pin_book]] — pin `book_sha` epoch buku slot hidup ke LockRegistry (F-D85)
 - [[TL17 - shadow_tick]] — mode bayangan tahap 2+3: tick dari REST beberapa menit sesudah tutup, dibandingkan dengan tick resmi; tidak menulis ledger, tanpa kunci (F-D86)
 - [[TL18 - worker_watch]] — penjaga LUAR worker Railway di rantai GitHub: tick tanpa komit >= 30 menit = WORKER DIAM (stdlib, tanpa kunci, P111)
+- [[TL19 - web landing]] — landing page tingkat 0: kristal komitmen 3D, perjalanan satu sinyal, kalender bukti, buku slot, dua pintu; data dari `tools/web_snapshot.py` (P113)
 
 <!-- di atas: append-only oleh scripts/sync_vault.py; gloss tulisan tangan utuh -->
 ```dataview

@@ -23,6 +23,8 @@ menulis ledger resmi, tidak mengirim transaksi, dan tidak memakai kunci.
 **Yang ia TOLAK lakukan:** menerima bacaan yang masih berubah; menulis ledger resmi; menulis funding aktual; meloncati hari yang bolong; mengubah apa pun saat
 REST beda dari Vision (hanya mencatat ALARM).
 
+**Vonis pertama (3 Okt):** `fabius-probe` 08:44:25Z: `VONIS bayangan B1-TREND 2026-10-02: IDENTIK`, `B3-CARRY: IDENTIK` (bayangan 323,9 menit vs resmi 8,7 jam - bayangan baru hidup 05:22Z); `VONIS baris REST 2026-10-02: 80 sama persis, beda harga 0, beda estimasi funding 0, beda volume saja 0` - estimasi funding dari indeks premium REST = estimasi dari zip Vision, risiko terbesar yang belum pernah diuji.
+
 **Cara membaca hasil:** `railway logs --service fabius-probe --lines 80`, cari baris `bayangan`, `VONIS bayangan`, `VONIS baris REST`. Keadaan disimpan di
 `/tmp` container: hilang saat deploy ulang, jadi log adalah catatannya.
 
