@@ -16,7 +16,7 @@ tags: [perkakas, "TL22"]
   long-only, notional <= modal x 1), rekonsiliasi (> setengah lot = selisih), isi kertas (slippage searah order + fee), dan batas rugi harian.
 - **Adaptor Binance (`tools/venue_binance.py`):** tanda tangan HMAC (sama persis dengan vektor resmi dokumen Binance), filter + harga publik, cek izin
   kunci (tarik HARUS mati, futures HARUS hidup; medan hilang = tidak aman), posisi, order pasar idempoten (id yang sudah ada tidak dikirim lagi). Kunci dari
-  env `BINANCE_API_KEY` / `BINANCE_SECRET_KEY` + lingkungan `BINANCE_API_ENV` (bawaan `testnet`; prod tidak pernah jadi bawaan), disamarkan di setiap pesan galat. **Belum pernah mengirim order** (butuh kunci testnet, langkah builder).
+  env `BINANCE_API_KEY` / `BINANCE_SECRET_KEY` + lingkungan `BINANCE_API_ENV` (`testnet` bawaan, `demo` = Demo Trading demo-fapi.binance.com, `prod`; alamat = konstanta SDK resmi `binance-connector-python`; prod tidak pernah jadi bawaan), disamarkan di setiap pesan galat. **Belum pernah mengirim order** (butuh kunci testnet, langkah builder).
 - **Kertas-venue (`tools/kertas_eksekusi.py`):** keputusan B1 dari ledger resmi dieksekusi di atas kertas.
   - Harga eksekusi = pembukaan kline 1m perp Vision pada 2 menit sesudah komit di SignalAnchor (jadwal `komit` = kenyataan), atau 10 menit sesudah bar tutup
     (jadwal `p99` = andaian bila tick + komit dibuat dari REST, P99).

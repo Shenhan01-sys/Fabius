@@ -1,7 +1,8 @@
 """Adaptor Binance USDⓈ-M futures (P118, epik 10 "Eksekusi Venue"; prioritas 1 menurut F-D91: lewat sub-akun Agentic Binance Agent OS).
 
 Stdlib. Kunci dibaca dari env `BINANCE_API_KEY` / `BINANCE_SECRET_KEY` (nama sama dengan `binance-cli` resmi), dipasang builder di variabel
-Railway - tidak pernah di chat, repo, atau log. Lingkungan: `prod` (fapi.binance.com + api.binance.com) dan `testnet` (testnet.binancefuture.com).
+Railway - tidak pernah di chat, repo, atau log. Lingkungan (`BINANCE_API_ENV`): `testnet` (bawaan; testnet.binancefuture.com), `demo` (Demo Trading,
+demo-fapi.binance.com; kunci dibuat di demo.binance.com), `prod` (fapi.binance.com + api.binance.com).
 Dari jaringan builder domain prod Binance terblokir (2 Okt); jalankan dari Railway (Singapura) - akses endpoint trading dari sana diukur di E2.
 
 Yang ada (4 Okt): tanda tangan HMAC-SHA256 (diuji dengan vektor resmi dokumen Binance), filter + harga publik, cek izin kunci (PRD R-E6:
@@ -26,7 +27,10 @@ sys.path.insert(0, os.path.dirname(HERE))
 
 from engine.eksekusi import Filter, Order                                      # noqa: E402
 
+# Alamat = konstanta SDK resmi `binance-connector-python` (common/constants.py, commit 2026-09-23). Sejak 2026 web testnet futures DIALIHKAN ke
+# Demo Trading (demo.binance.com, butuh akun Binance); kunci demo bekerja di demo-fapi. Testnet API lama tetap ada untuk kunci testnet lama.
 BASE = {"prod": {"fapi": "https://fapi.binance.com", "sapi": "https://api.binance.com"},
+        "demo": {"fapi": "https://demo-fapi.binance.com", "sapi": None},
         "testnet": {"fapi": "https://testnet.binancefuture.com", "sapi": None}}
 RECV_WINDOW = 5000
 
@@ -128,8 +132,8 @@ class BinanceFutures:
 
     # ---------------------------------------------------------------- privat (kunci)
     def assert_safe_key(self) -> None:
-        """PRD R-E6. Testnet tidak punya endpoint izin: di sana hanya kunci testnet yang dipakai (tanpa dana nyata)."""
-        if self.env == "testnet":
+        """PRD R-E6. Testnet/demo tidak punya endpoint izin: di sana hanya kunci uji yang dipakai (saldo virtual, tanpa dana nyata)."""
+        if self.env in ("testnet", "demo"):
             return
         code, body = self._signed("GET", BASE["prod"]["sapi"], "/sapi/v1/account/apiRestrictions")
         if code != 200:

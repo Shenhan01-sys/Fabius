@@ -93,6 +93,19 @@ class BinanceAdapterTests(unittest.TestCase):
                                                               {"filterType": "MIN_NOTIONAL", "notional": "100"}]}]}
         self.assertEqual(vb.parse_filters(info, ["BTCUSDT", "XYZ"]), {"BTCUSDT": ex.Filter(0.001, 0.001, 100.0)})
 
+    def test_environments_point_at_the_official_sdk_hosts_and_prod_is_never_default(self):
+        self.assertEqual(vb.BASE["demo"]["fapi"], "https://demo-fapi.binance.com")
+        self.assertEqual(vb.BASE["testnet"]["fapi"], "https://testnet.binancefuture.com")
+        self.assertEqual(vb.BASE["prod"]["fapi"], "https://fapi.binance.com")
+        with mock.patch.dict(os.environ, {}, clear=True):
+            self.assertEqual(vb.BinanceFutures(key="k", secret="s").env, "testnet")
+        with mock.patch.dict(os.environ, {"BINANCE_API_ENV": "demo"}):
+            b = vb.BinanceFutures(key="k", secret="s")
+            self.assertEqual(b.env, "demo")
+            b.assert_safe_key()                                                   # demo: saldo virtual, tidak ada panggilan izin
+        with self.assertRaises(ValueError):
+            vb.BinanceFutures(env="mainnet", key="k", secret="s")
+
     def test_key_with_withdraw_or_unknown_permissions_never_starts(self):
         for bad in ({"enableWithdrawals": True, "enableFutures": True}, {"enableFutures": True}, {"enableWithdrawals": False}):
             with self.assertRaises(vb.KeyPermissionError):
