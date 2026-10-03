@@ -81,10 +81,12 @@ def check_no_withdraw(r: dict) -> None:
 
 
 class BinanceFutures:
-    def __init__(self, env: str = "testnet", key: Optional[str] = None, secret: Optional[str] = None,
+    def __init__(self, env: Optional[str] = None, key: Optional[str] = None, secret: Optional[str] = None,
                  http: Callable[..., Tuple[int, dict]] = _http, now_ms: Callable[[], int] = lambda: int(time.time() * 1000)):
+        # env dari argumen, lalu variabel `BINANCE_API_ENV` (nama sama dengan binance-cli), bawaan testnet: prod tidak pernah jadi bawaan
+        env = env or (os.environ.get("BINANCE_API_ENV") or "testnet").strip().lower()
         if env not in BASE:
-            raise ValueError(env)
+            raise ValueError(f"BINANCE_API_ENV tidak dikenal: {env} (pilihan: {', '.join(BASE)})")
         self.env, self.http, self.now_ms = env, http, now_ms
         self.key = key if key is not None else (os.environ.get("BINANCE_API_KEY") or "").strip()
         self.secret = secret if secret is not None else (os.environ.get("BINANCE_SECRET_KEY") or "").strip()
