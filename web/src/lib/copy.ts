@@ -72,7 +72,7 @@ export const copy = {
       agent: {
         k: "For agents",
         h: "MCP + x402",
-        open: "MCP server · in build",
+        open: "MCP server · live · tier 0",
         pts: ["Read the proof feed as tools", "Verify any signal against its root", "Pay per signal with x402 when tier 1 opens"],
         cta: "agent-card.json",
       },
@@ -157,7 +157,7 @@ export const copy = {
       agent: {
         k: "Untuk agen",
         h: "MCP + x402",
-        open: "Server MCP · sedang dibangun",
+        open: "Server MCP · hidup · tingkat 0",
         pts: ["Baca umpan bukti sebagai tool", "Periksa sinyal mana pun terhadap akarnya", "Bayar per sinyal dengan x402 saat tingkat 1 dibuka"],
         cta: "agent-card.json",
       },

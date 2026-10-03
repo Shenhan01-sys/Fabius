@@ -3,6 +3,7 @@
 // 04 — Dua pintu (docs/design/landing.md §5). Manusia dan agen masuk ke bukti yang SAMA. Tingkat 0 (umpan bukti) terbuka; tingkat 1
 // (sinyal waktu-nyata berbayar) terkunci dengan cincin syarat yang terisi sesuai data (F-D72, F-D16, P80) - bukan produk yang bisa dibeli hari ini.
 
+import { useSyncExternalStore } from "react";
 import { motion } from "motion/react";
 import { useLang } from "../lang";
 import IsoCube from "../ui/IsoCube";
@@ -74,13 +75,18 @@ function KeyRings({ values, labels }: { values: number[]; labels: readonly strin
   );
 }
 
+// Alamat server MCP (P114) = asal halaman ini + /mcp. Server merender penampung; klien menggantinya sesudah hidrasi.
+const noop = () => () => {};
+const originOf = () => window.location.origin;
+
 export default function Doors({ s }: { s: Snapshot }) {
   const { t } = useLang();
+  const origin = useSyncExternalStore(noop, originOf, () => "https://<fabius-host>");
   const req = s.fd16.required.signals;
   const best = Math.max(0, ...Object.values(s.fd16.bots).map((b) => b.signals / req));
   const mcp = `{
   "mcpServers": {
-    "fabius": { "url": "https://<fabius-host>/mcp" }
+    "fabius": { "type": "http", "url": "${origin}/mcp" }
   }
 }`;
 

@@ -1,0 +1,271 @@
+// Alat MCP tingkat 0 (P114; F-D70/F-D72): umpan bukti gratis, hanya baca, tanpa kunci. Tingkat 1 (sinyal waktu-nyata berbayar lewat x402) TERKUNCI
+// sampai bot lolos uji maju F-D16 + telaah hukum - tidak ada alat untuk itu di sini. Data: snapshot di build + ledger publik (GitHub raw) + chain 97 langsung.
+// Gagal membaca sumber mana pun = isError dengan alasannya, tidak pernah daftar kosong (T8: gagal baca != tidak ada).
+
+import type { McpServer } from "@modelcontextprotocol/server";
+import { z } from "zod";
+import type { Hex } from "viem";
+import type { Snapshot } from "./snapshot";
+import {
+  ChainReadError, COMMITTER, LOCK_REGISTRY, SIGNAL_ANCHOR, closeOf, commitCount, commitIdOf, describe, getCommit, getReveals, ledger, lockedAt, signalHashes, windows,
+} from "./fabius-chain";
+
+type Result = { content: { type: "text"; text: string }[]; isError?: boolean };
+
+const ok = (summary: string, data: unknown): Result => ({ content: [{ type: "text", text: `${summary}\n\n${JSON.stringify(data, null, 2)}` }] });
+const fail = (e: unknown): Result => ({
+  isError: true,
+  content: [{ type: "text", text: e instanceof ChainReadError ? e.message : `galat: ${e instanceof Error ? e.message : String(e)}` }],
+});
+const guard = (f: () => Promise<Result>) => async () => {
+  try {
+    return await f();
+  } catch (e) {
+    return fail(e);
+  }
+};
+const iso = (s: number) => new Date(s * 1000).toISOString().replace(".000", "");
+const BAR = z
+  .string()
+  .regex(/^\d{4}-\d{2}-\d{2}$/, "YYYY-MM-DD (UTC date of the daily bar)")
+  .refine((v) => {
+    const t = Date.parse(`${v}T00:00:00Z`);
+    return Number.isFinite(t) && new Date(t).toISOString().startsWith(v);
+  }, "not a real calendar date");
+
+const HONESTY = [
+  "PAPER ONLY: no real money is traded.",
+  "NO EDGE CLAIMED: the forward record started 2026-10-01; the forward test (F-D16: >=20 signals, >=20 settled days, >=2 months, CI lower bound > 0, BH across bots) is not met.",
+  "Tier 0 (this server): proof feed, free. Tier 1 (real-time paid signals via x402): LOCKED until a bot passes F-D16 AND a legal review.",
+  "Signals are position INTENTS (enter / exit / resize), not orders, not leverage advice.",
+];
+
+export function registerFabiusTools(server: McpServer, s: Snapshot) {
+  const forward = s.bots.filter((b) => b.forward).map((b) => b.id);
+  const BOT = z.enum(s.bots.map((b) => b.id) as [string, ...string[]]);
+  const specOf = (bot: string) => s.bots.find((b) => b.id === bot)?.spec_sha as Hex | undefined;
+
+  async function signalsFor(bot: string, bar: string) {
+    const spec = specOf(bot);
+    if (!spec) throw new Error(`unknown bot ${bot}`);
+    const id = commitIdOf(bot, spec, bar);
+    const asof = closeOf(bar);
+    const c = await getCommit(id);
+    if (!c.exists) {
+      const [locked, w] = await Promise.all([lockedAt(bot, spec), windows()]);
+      const now = Math.floor(Date.now() / 1000);
+      const status = locked === 0 || locked > asof ? "BEFORE_LOCK" : now < asof ? "BAR_NOT_CLOSED" : now - asof <= w.maxLag ? "AWAITING_COMMIT" : "NOT_COMMITTED";
+      return { bot, bar, commit_id: id, status, committed: false, note: "no on-chain commit for this (bot, bar) under the official committer" };
+    }
+    const reveals = c.revealed > 0 ? await getReveals(id, Number(c.committedAt), c.revealed) : [];
+    return {
+      bot,
+      bar,
+      commit_id: id,
+      committed: true,
+      committed_utc: iso(Number(c.committedAt)),
+      commit_lag_hours: +((Number(c.committedAt) - asof) / 3600).toFixed(2),
+      root: c.root,
+      n: c.n,
+      revealed: c.revealed,
+      silent: c.n === 0,
+      signals: reveals.map((r) => ({ ...describe(r.args), leaf: r.leaf, salt: r.args.salt, tx: r.tx, block: r.block })),
+      _raw: { c, reveals },
+    };
+  }
+
+  server.registerTool(
+    "fabius_overview",
+    {
+      title: "Fabius: what this is",
+      description:
+        "Start here. Fabius runs locked trading bots and commits every signal on BNB Chain testnet (97) BEFORE the outcome; anyone can verify. Returns the honesty boundaries, tiers, contracts, snapshot time and which tools to call next.",
+      inputSchema: z.object({}),
+    },
+    guard(async () =>
+      ok("Fabius - signals sealed before the outcome (tier 0 proof feed).", {
+        honesty: HONESTY,
+        bots_with_forward_clock: forward,
+        contracts: { chain_id: 97, SignalAnchor: SIGNAL_ANCHOR, LockRegistry: LOCK_REGISTRY, DecisionAnchor: s.chain?.decision_anchor ?? null, official_committer: COMMITTER },
+        how_signals_work: "bar closes 00:00 UTC -> bot computes intents -> salted Merkle root committed to SignalAnchor within 12 h -> payloads revealed -> anyone recomputes them from public bars",
+        tools: {
+          fabius_latest_signals: "latest committed signals for each bot, read live from chain",
+          fabius_signals: "signals of one (bot, bar), live from chain",
+          fabius_verify: "full public check of one (bot, bar): leaves recomputed from revealed payloads and matched to the public ledger tick",
+          fabius_track_record: "forward ledger of one bot (ticks, settles, gaps) + forward-test progress",
+          fabius_proof_feed: "verdict per (bot, bar) as of the build snapshot",
+          fabius_list_bots: "the six bot specifications and the slot book",
+          fabius_locks: "rules locked on-chain before the data, in order",
+        },
+        verify_yourself: ["git clone https://github.com/Shenhan01-sys/Fabius", "python -X utf8 tools/verify_signals.py", "python -X utf8 -m engine.cli ledger verify"],
+        snapshot_utc: s.generated_utc,
+      }),
+    ),
+  );
+
+  server.registerTool(
+    "fabius_list_bots",
+    {
+      title: "Bot specifications and slot book",
+      description: "The six locked bot specifications (one method, one parameter each, spec hash), which ones run a forward clock, and the current slot book (occupants, challengers).",
+      inputSchema: z.object({}),
+    },
+    guard(async () =>
+      ok(`${s.bots.length} specifications; forward clock: ${forward.join(", ")}.`, {
+        bots: s.bots.map((b) => ({ id: b.id, method: b.method, parameter: b.param, assets: b.assets, tier: b.tier, spec_sha: b.spec_sha, forward_clock: b.forward, kill_rule_text: b.killer })),
+        book: s.book,
+        snapshot_utc: s.generated_utc,
+      }),
+    ),
+  );
+
+  server.registerTool(
+    "fabius_track_record",
+    {
+      title: "Forward track record of one bot",
+      description:
+        "Live from the public hash-chained ledger: every daily tick (bar, number of signals, lag after close), every final settle (net bps, paper), gaps (unmeasured days are NOT zero) and progress toward the forward test F-D16.",
+      inputSchema: z.object({ bot: BOT }),
+    },
+    async ({ bot }) => {
+      try {
+        const recs = await ledger(bot);
+        const g = recs.find((r) => r.type === "genesis");
+        const ticks = recs.filter((r) => r.type === "tick").map((r) => ({ bar: r.asof_date, signals: r.signal_ids?.length ?? 0, lag_hours: r.lag_s != null ? +(r.lag_s / 3600).toFixed(2) : null, emitted_utc: r.emitted_utc }));
+        const settles = recs.filter((r) => r.type === "settle").map((r) => ({ bar: r.bar_date, net_bps: r.net != null ? +(r.net * 1e4).toFixed(2) : null }));
+        const gaps = recs.filter((r) => r.type === "gap").map((r) => ({ bar: r.asof_date, reason: r.reason }));
+        const months = new Set(settles.map((x) => String(x.bar).slice(0, 7))).size;
+        const signals = ticks.reduce((a, t) => a + t.signals, 0);
+        const req = s.fd16.required;
+        return ok(`${bot}: ${ticks.length} ticks, ${signals} forward signals, ${settles.length} settled days, ${gaps.length} gaps. Paper only; not an edge claim.`, {
+          bot,
+          forward_clock_started: g?.first_asof_date ?? null,
+          ticks,
+          settles,
+          gaps,
+          forward_test_F_D16: { signals: `${signals}/${req.signals}`, settled_days: `${settles.length}/${req.days}`, months: `${months}/${req.months}`, met: false },
+          note: "final settles wait for Binance's monthly funding file; provisional numbers are not published as results",
+        });
+      } catch (e) {
+        return fail(e);
+      }
+    },
+  );
+
+  server.registerTool(
+    "fabius_proof_feed",
+    {
+      title: "Proof feed (build snapshot)",
+      description: "Verdict per (bot, bar) from the public verifier at build time: SAH (verified), BELUM DIUNGKAP (sealed), MENUNGGU KOMIT, TIDAK DIKOMIT, SEBELUM KUNCI, ALARM. For a live check call fabius_verify.",
+      inputSchema: z.object({}),
+    },
+    guard(async () => {
+      if (!s.chain) return fail(new ChainReadError(`snapshot has no chain section (${s.chain_error ?? "not read at build"}) - call fabius_verify for a live check`));
+      return ok(`${s.chain.totals.SAH ?? 0} verified (SAH), ${s.chain.totals.ALARM ?? 0} alarms, ${s.chain.commit_count} commits as of block ${s.chain.block}.`, {
+        verdicts: s.chain.verdicts,
+        totals: s.chain.totals,
+        block: s.chain.block,
+        block_utc: s.chain.block_utc,
+        snapshot_utc: s.generated_utc,
+      });
+    }),
+  );
+
+  server.registerTool(
+    "fabius_locks",
+    {
+      title: "Rules locked on-chain",
+      description: "Everything Fabius fixed on-chain BEFORE the forward data existed (gate thresholds, bot specs, forward-test rules, slot book, kill rules, gate error budget), with timestamps and transactions.",
+      inputSchema: z.object({}),
+    },
+    guard(async () => ok(`${s.locks.length} locks, oldest first.`, { locks: s.locks.map((l) => ({ ...l, explorer: l.tx ? `https://testnet.bscscan.com/tx/${l.tx}` : null })), states: s.lock_states })),
+  );
+
+  server.registerTool(
+    "fabius_signals",
+    {
+      title: "Signals of one bot on one bar (live)",
+      description: "Reads SignalAnchor on chain 97: the commit for (bot, bar) under the official committer, and every revealed signal (asset, action, weight before/after, reference price, salt, leaf, tx). A silent bot commits a zero root.",
+      inputSchema: z.object({ bot: BOT, bar: BAR }),
+    },
+    async ({ bot, bar }) => {
+      try {
+        const r = await signalsFor(bot, bar);
+        const { _raw, ...pub } = r as typeof r & { _raw?: unknown };
+        void _raw;
+        const line = r.committed ? `${bot} ${bar}: committed ${"committed_utc" in r ? r.committed_utc : ""}, ${"revealed" in r ? r.revealed : 0}/${"n" in r ? r.n : 0} revealed.` : `${bot} ${bar}: ${r.status}.`;
+        return ok(line, pub);
+      } catch (e) {
+        return fail(e);
+      }
+    },
+  );
+
+  server.registerTool(
+    "fabius_latest_signals",
+    {
+      title: "Latest signals (live)",
+      description: "For every bot with a forward clock: its latest ledger tick and the matching on-chain commit + revealed signals. The usual entry point for an agent following Fabius (paper; intents, not orders).",
+      inputSchema: z.object({}),
+    },
+    guard(async () => {
+      const out = [];
+      for (const bot of forward) {
+        const recs = await ledger(bot);
+        const last = [...recs].reverse().find((r) => r.type === "tick");
+        if (!last?.asof_date) {
+          out.push({ bot, status: "NO_TICK_YET" });
+          continue;
+        }
+        const r = await signalsFor(bot, last.asof_date);
+        const { _raw, ...pub } = r as typeof r & { _raw?: unknown };
+        void _raw;
+        out.push(pub);
+      }
+      return ok(`Latest bar per bot: ${out.map((x) => `${x.bot} ${"bar" in x ? x.bar : "-"}`).join(", ")}. Total commits on chain: ${await commitCount()}.`, { latest: out });
+    }),
+  );
+
+  server.registerTool(
+    "fabius_verify",
+    {
+      title: "Verify one bot/bar publicly (live)",
+      description:
+        "Independent check, no key: recomputes every revealed leaf and signal id from its on-chain payload with the engine's ABI encoding, and matches the ids to the public ledger tick for that bar. Verdict SAH only if counts, leaves and ids all agree.",
+      inputSchema: z.object({ bot: BOT, bar: BAR }),
+    },
+    async ({ bot, bar }) => {
+      try {
+        const [recs, r] = await Promise.all([ledger(bot), signalsFor(bot, bar)]);
+        const tick = recs.find((x) => x.type === "tick" && x.asof_date === bar);
+        if (!tick) return ok(`${bot} ${bar}: no ledger tick - nothing to verify.`, { bot, bar, verdict: "NO_TICK" });
+        const ids = tick.signal_ids ?? [];
+        if (!r.committed) return ok(`${bot} ${bar}: ${r.status}.`, { bot, bar, verdict: r.status, ledger_signals: ids.length });
+        const raw = (r as unknown as { _raw: { c: { botId: Hex; specSha: Hex; asof: bigint; n: number; revealed: number; root: Hex }; reveals: Awaited<ReturnType<typeof getReveals>> } })._raw;
+        const problems: string[] = [];
+        const rows = raw.reveals.map((ev) => {
+          const h = signalHashes(raw.c, ev.args);
+          const leafOk = h.leaf.toLowerCase() === ev.leaf.toLowerCase();
+          const inTick = ids.map((x) => x.toLowerCase()).includes(h.id.toLowerCase());
+          if (!leafOk) problems.push(`leaf of ${describe(ev.args).asset} does not recompute from its payload`);
+          if (!inTick) problems.push(`revealed ${describe(ev.args).asset} ${describe(ev.args).action} is not in the ledger tick`);
+          return { ...describe(ev.args), signal_id: h.id, leaf_recomputes: leafOk, in_ledger_tick: inTick, tx: ev.tx };
+        });
+        if (raw.c.n !== ids.length) problems.push(`commit n=${raw.c.n} but the ledger tick has ${ids.length} signals`);
+        if ((/^0x0*$/.test(raw.c.root)) !== (raw.c.n === 0)) problems.push("zero root and n=0 disagree");
+        const verdict = problems.length ? "ALARM" : raw.c.revealed < raw.c.n ? "SEALED_NOT_YET_REVEALED" : "SAH";
+        return ok(`${bot} ${bar}: ${verdict}${problems.length ? ` - ${problems.join("; ")}` : ` (${raw.c.revealed}/${raw.c.n} revealed, all ids match the ledger)`}.`, {
+          bot,
+          bar,
+          verdict,
+          problems,
+          commit: { id: r.commit_id, root: raw.c.root, n: raw.c.n, revealed: raw.c.revealed, committed_utc: "committed_utc" in r ? r.committed_utc : null },
+          signals: rows,
+          ledger_tick: { signal_ids: ids, emitted_utc: tick.emitted_utc },
+        });
+      } catch (e) {
+        return fail(e);
+      }
+    },
+  );
+}

@@ -48,6 +48,8 @@ python -X utf8 tools/verify_signals.py                          # komit sinyal d
 python -X utf8 -m engine.cli ledger fd16                         # gerbang F-D16 pada ledger maju (P88)
 python -X utf8 -m engine.cli ledger skor                         # skor maju 90 hari + berpasangan (P85)
 python -X utf8 -m engine.cli book verify                         # buku slot hidup (P87)
+python -X utf8 tools/web_snapshot.py                             # data landing web (P113) -> web/public/data/snapshot.json
+cd web && npm run build && npx next start -p 3006                # landing + server MCP /mcp (P114, 8 alat hanya baca)
 python -X utf8 -m unittest discover -s engine/tests -t .        # 272 lulus (2 Okt malam)
 ```
 

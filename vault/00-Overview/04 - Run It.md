@@ -59,6 +59,11 @@ python -X utf8 tools/signal_commit.py --committer 0xCA9c7322210E9a7F7d0953c862d4
 python -X utf8 tools/verify_signals.py                  # pemeriksa PUBLIK: komit + ungkap vs ledger + bar; vonis per bot per bar (P106)
 python -X utf8 tools/worker_watch.py                   # penjaga LUAR worker (P111): tick terakhir sudah dikomit + diungkap? (stdlib, tanpa kunci)
 
+# web: landing tingkat 0 + server MCP untuk agen (P113/P114) - butuh node 20+; tanpa kunci, tanpa env var
+python -X utf8 tools/web_snapshot.py                    # data landing -> web/public/data/snapshot.json
+cd web && npm ci && npm run build && npx next start -p 3006                               # landing di :3006, MCP di :3006/mcp
+npx @modelcontextprotocol/inspector --cli http://localhost:3006/mcp --transport http --method tools/list   # klien MCP resmi: 8 alat
+
 # Railway (butuh login CLI builder; JANGAN `railway environment config --json` / `railway variable list --json|--kv`: mencetak kunci)
 railway logs --service fabius-engine --lines 40
 railway logs --service fabius-probe --lines 80                                       # mode bayangan tahap 2+3 (F-D86): VONIS bayangan
