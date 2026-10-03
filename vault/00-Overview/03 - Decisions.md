@@ -2705,3 +2705,21 @@ Saran yang dijawab: "Gas tahap 2+3 mode bayangan? Usulku P109 dikerjakan duluan"
 7. **Batas:** satu region REST; keadaan bayangan ada di `/tmp` container dan hilang saat deploy ulang, jadi log adalah catatannya; satu hari = satu sampel.
 
 **Terkait:** F-D78 · F-D80 · F-D83 · [[04-Tools/TL17 - shadow_tick]] · [[07-Testing/T8 - Semantik Kegagalan Operator]] · [[09-Inbox/Session-2026-10-02]] §30
+
+## F-D87 — Pembunuh B1/B3 TERSTRUKTUR dikunci terpisah dari spesifikasi; buku slot menilainya otomatis · 3 Okt 2026 (WIB)
+
+Pertanyaan yang dijawab builder (empat pilihan, AskUserQuestion, 3 Okt ±13:15 WIB), semuanya pilihan yang diusulkan:
+1. B1-K1 "12 bulan tanpa mengalahkan buy&hold pada MDD dan Sharpe" = **harus menang di KEDUANYA**; kalah di salah satu = mati. Jendela 365 hari maju dengan
+   >= 90 % hari settle final.
+2. Patokan buy&hold = **sama rata 16 perp universe B1**, return close-to-close, tanpa ongkos.
+3. B1-K2 "kalah dari placebo masuk-acak" = **net bot <= median** 1000 placebo geser-melingkar (eksposur dan lama tahan sama, seperti G8).
+4. B3-K1 "hasil hedged negatif tiga bulan berjalan saat aktif" = **tiga bulan kalender aktif terakhir (sudah lewat, >= 10 hari memegang posisi) masing-masing
+   net < 0**; bulan dorman dilewati. B3-K2 ADL: di paper TIDAK BERLAKU, berlaku sejak eksekusi nyata ada.
+
+**Kunci:** `engine/locks/pembunuh.lock.json`, sha `0xa55b4782a6d5ec97a90df00634798a3887dc3300921a6ca3f21fb1e95a8607d4`, dikunci 2026-10-03T06:14:54Z (jam laptop). Kunci ini mengikat `spec_sha` + kalimat asli kedua
+bot; tes `test_repo_lock_matches_the_code` gagal bila terjemahan atau spesifikasi digeser. Mengubahnya = keputusan baru + kunci v2.
+**Efek:** mulai epoch 691, catatan epoch memuat YA / BELUM / TIDAK menggantikan "TEKS" (`engine/cli.py::_book_killers`). simulasi epoch 691 pada salinan buku (`--now 2026-10-04T09:30:00Z`): penghuni B1-TREND "pembunuh BELUM" (sebelumnya TEKS), B3 REJECT (shadow 2 hari < 60), `book verify` SAH.
+**Pin on-chain:** `tools/lock_spec.py --file engine/locks/pembunuh.lock.json --name FABIUS-PEMBUNUH-v1 --send` = satu transaksi committer, MENUNGGU kata
+builder (rencana 3 Okt: `lockedAt = 0`).
+
+**Terkait:** F-D73 · F-D84 · F-D85 · [[08-Backlog/09 - Usulan P107 Pembunuh Terstruktur]] · [[03-Data/D8 - Buku Slot Hidup]] · [[09-Inbox/Session-2026-10-02]] §34

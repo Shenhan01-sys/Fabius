@@ -2,10 +2,10 @@
 tags: [backlog]
 ---
 
-# 09 - Usulan P107: Pembunuh Terstruktur B1/B3 (menunggu kata builder)
+# 09 - Usulan P107: Pembunuh Terstruktur B1/B3 (DIKUNCI 3 Okt, F-D87)
 
 **Bagian dari:** [[08-Backlog/00 - Hub Backlog]]
-**Kode:** `engine/pembunuh.py` · `python -X utf8 -m engine.cli ledger pembunuh` · uji `engine/tests/test_pembunuh.py` (12)
+**Kode:** `engine/pembunuh.py` · `python -X utf8 -m engine.cli ledger pembunuh` · uji `engine/tests/test_pembunuh.py` (12, lalu 13 sesudah kunci: kunci repo = kode)
 
 **Masalahnya:** "pembunuh" adalah syarat yang mengeluarkan bot dari buku slot. Untuk bot Fabius, syarat itu berupa KALIMAT di spesifikasi, dan kalimat itu
 ikut `spec_sha`. Jadi kalimat tidak bisa disunting tanpa membuat bot baru dan ledger baru. Akibatnya setiap epoch mencatat pembunuh B1 sebagai "TEKS
@@ -34,6 +34,8 @@ bulan aktif yang lengkap.
 
 **Keadaan hari ini** (`python -X utf8 -m engine.cli ledger pembunuh`, 3 Okt): USULAN, belum dikunci (sha `0xa55b4782a6d5ec97…`). B1: BELUM (0/365 hari
 settle final). B3: BELUM (0 bulan aktif selesai); ADL = TIDAK BERLAKU.
+
+**Keputusan 3 Okt (F-D87):** builder memilih 1a, 2a, 3a, 4a, semuanya usulan. Kunci sha `0xa55b4782a6d5ec97…` (06:14:54Z). Pin on-chain menunggu kata builder.
 
 ## Cara mengunci (sesudah builder memilih)
 

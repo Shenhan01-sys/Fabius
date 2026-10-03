@@ -1,0 +1,54 @@
+{
+  "catatan": "Builder 3 Okt 2026 (AskUserQuestion): B1-K1 harus menang Sharpe DAN MDD; patokan buy&hold sama rata 16 perp universe B1; B1-K2 mati bila net <= median placebo geser-melingkar; B3-K1 tiga bulan aktif berturut negatif (bulan dorman dilewati). Semua = usulan P107 tanpa perubahan.",
+  "dikunci": "2026-10-03T06:14:54Z",
+  "params": {
+    "bot": {
+      "B1-TREND": {
+        "spec_sha": "0x23cb026bd8c665eb5e94a2764ae122e8eaed1777a6e7f76d84da21b4b3b43daf",
+        "syarat": [
+          {
+            "aturan": "terpicu bila TIDAK (Sharpe bot > Sharpe patokan DAN MDD bot > MDD patokan)",
+            "cakupan_min": 0.9,
+            "id": "B1-K1",
+            "jendela_hari": 365,
+            "jenis": "patokan_bh",
+            "patokan": "bh_sama_rata_universe"
+          },
+          {
+            "aturan": "terpicu bila net bot <= median net placebo geser-melingkar",
+            "cakupan_min": 0.9,
+            "geser_min": 60,
+            "id": "B1-K2",
+            "jendela_hari": 365,
+            "jenis": "placebo_geser",
+            "n": 1000
+          }
+        ],
+        "teks": "12 bulan maju tanpa mengalahkan buy&hold pada MDD dan Sharpe; atau kalah dari placebo masuk-acak dengan distribusi lama tahan sama"
+      },
+      "B3-CARRY": {
+        "spec_sha": "0xc528abf51585f401399ddb3279bced5adc4fd7f6dbde0aed0653e715352ef100",
+        "syarat": [
+          {
+            "aturan": "terpicu bila tiga bulan kalender aktif terakhir (sudah lewat, >= 10 hari memegang posisi) masing-masing net < 0",
+            "bulan": 3,
+            "hari_aktif_min": 10,
+            "id": "B3-K1",
+            "jenis": "bulan_aktif_negatif_beruntun"
+          },
+          {
+            "aturan": "terpicu pada kejadian pertama; paper = tidak berlaku",
+            "batas": 1,
+            "id": "B3-K2",
+            "jenis": "kejadian_eksekusi",
+            "kejadian": "ADL pada kaki perp"
+          }
+        ],
+        "teks": "hasil hedged negatif tiga bulan berjalan saat aktif, atau satu kejadian ADL pada kaki perp"
+      }
+    },
+    "v": 1
+  },
+  "sha": "0xa55b4782a6d5ec97a90df00634798a3887dc3300921a6ca3f21fb1e95a8607d4",
+  "v": 1
+}

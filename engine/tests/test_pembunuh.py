@@ -138,6 +138,10 @@ class VerdictAndLockTests(unittest.TestCase):
         finally:
             pb.USULAN["B3-CARRY"][0]["hari_aktif_min"] = orig
 
+    def test_repo_lock_matches_the_code(self):
+        """Kunci 3 Okt (P107, kata builder): terjemahan atau spesifikasi yang digeser sesudahnya membuat tes ini gagal - geser = keputusan baru + kunci v2."""
+        self.assertEqual(pb.status()["state"], "TERKUNCI", pb.status())
+
     def test_book_keeps_text_killers_until_the_translation_is_locked(self):
         from engine import cli
         from engine.book import genesis_book
