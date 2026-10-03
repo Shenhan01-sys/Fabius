@@ -38,6 +38,8 @@ decisions/decisions-*.jsonl
 # bukti point-in-time kita. Beda dengan universe/bsc-universe.jsonl, yang justru bukti "kami
 # merekam sebelum tahu hasilnya" dan karena itu di-commit. Lihat tools/bars.py.
 data/
+# snapshot FE (tools/web_snapshot.py) WAJIB ikut repo: landing page dibangun dari berkas ini (Vercel gagal tanpanya)
+!web/public/data/
 # Ekspor sesi Qwen Code disimpan builder DI DALAM folder repo. Isinya teks terang: private key agen,
 # Dune key, GMGN key, Jev key. Repo ini publik. Baris ini ada supaya satu `git add -A` yang tidak
 # sengaja tidak pernah mengubah berkas itu menjadi commit yang tidak bisa ditarik kembali.

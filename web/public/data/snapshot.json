@@ -1,0 +1,294 @@
+{
+ "v": 1,
+ "generated_utc": "2026-10-03T09:04:08Z",
+ "repo_head": "fd173be33cbba2c0b5641f5ba2567e241df68d59",
+ "bots": [
+  {
+   "id": "B1-TREND",
+   "method": "long bila penutupan > penutupan N hari lalu, selain itu flat (momentum deret waktu, long/flat)",
+   "param": "N = 60",
+   "assets": 16,
+   "tier": "A-",
+   "spec_sha": "0x23cb026bd8c665eb5e94a2764ae122e8eaed1777a6e7f76d84da21b4b3b43daf",
+   "fingerprint": "0x99c58fce87484e5a9d15d09f7e85e2c80be6aa606178614db381e0726310a9bb",
+   "forward": true,
+   "killer": "12 bulan maju tanpa mengalahkan buy&hold pada MDD dan Sharpe; atau kalah dari placebo masuk-acak dengan distribusi lama tahan sama"
+  },
+  {
+   "id": "B2-RS",
+   "method": "long k teratas, short k terbawah menurut return L hari (rotasi kekuatan relatif, dollar-neutral); 7 sub-buku, masing-masing dirotasi mingguan pada hari-UTC berbeda (tanpa pilihan hari)",
+   "param": "L = 28",
+   "assets": 16,
+   "tier": "B",
+   "spec_sha": "0x2dd6ccf261abaa27e4c05110b05d471f211bc60a36975c3797788ba85b87fcb7",
+   "fingerprint": "0x6d74c6342734642cb5de9f5a2b1c87c4eee8c6b3d1b16f46f2153088752c3c8c",
+   "forward": false,
+   "killer": "net Sharpe < 0 dua kuartal beruntun, atau tidak mengalahkan placebo peringkat-acak"
+  },
+  {
+   "id": "B3-CARRY",
+   "method": "long spot + short perp saat funding rata-rata 7 hari (disetahunkan) > theta, selain itu flat",
+   "param": "theta = 0.1",
+   "assets": 16,
+   "tier": "A (dorman)",
+   "spec_sha": "0xc528abf51585f401399ddb3279bced5adc4fd7f6dbde0aed0653e715352ef100",
+   "fingerprint": "0x9618db8e7a94d01bc4d953b5a955af88456fc10541f33f49058aa185cc72aed8",
+   "forward": true,
+   "killer": "hasil hedged negatif tiga bulan berjalan saat aktif, atau satu kejadian ADL pada kaki perp"
+  },
+  {
+   "id": "B4-LISTING-FADE",
+   "method": "short perp yang baru onboard pada penutupan hari-1; tutup setelah H hari; ukuran kecil, margin isolated",
+   "param": "H = 14",
+   "assets": 1,
+   "tier": "B-",
+   "spec_sha": "0x78bb0e32b4e4f406120767ac0e6529f7708a26124000f0de53ab4135f3067386",
+   "fingerprint": "0x8cd5990b2250dbab2312095ad3e80404bb88ec7a80436d3cb8e8ba05ffc56100",
+   "forward": false,
+   "killer": "20 listing maju dengan rata-rata PnL short <= 0, atau satu trade lebih buruk dari -100% notional"
+  },
+  {
+   "id": "B5-CORE-RWA",
+   "method": "bobot BTC dan emas proporsional 1/sigma (sigma = simpangan baku return harian L hari); bobot diperbarui bulanan",
+   "param": "L = 90",
+   "assets": 2,
+   "tier": "B",
+   "spec_sha": "0x2dfb0fa4ae71a357aae4900944ad9a07d56eddd2904b861cc194a5d6755cd619",
+   "fingerprint": "0xc6d365b72f6aae7f6ed95d3efd9901dd85d6e61c62da85bff9b4f1a0894d7d71",
+   "forward": false,
+   "killer": "Sharpe < BTC buy&hold DAN MDD tidak lebih baik dari -50% dalam 12 bulan maju"
+  },
+  {
+   "id": "B6-BOUNCE",
+   "method": "beli bila z-score harga (rerata dan simpangan baku N hari) < -z_masuk; keluar saat z >= 0 (long/flat)",
+   "param": "N = 10",
+   "assets": 16,
+   "tier": "C",
+   "spec_sha": "0x4a6d180d93ea34e7c1dcffbe2cd6abab9ffe7d648aa6b235096e9f85064a8370",
+   "fingerprint": "0x6695d8c46bc6593b16f4306bba2a9a81d2316413e7e92559a1f7f27a9b6bb5c9",
+   "forward": false,
+   "killer": "sinyal maju tidak menaikkan Sharpe EW, atau n >= 20 sinyal dengan rata-rata net <= 0"
+  }
+ ],
+ "ledger": {
+  "B1-TREND": {
+   "genesis": "2026-10-01",
+   "chain_ok": true,
+   "ticks": [
+    {
+     "date": "2026-10-01",
+     "signals": 0,
+     "held": 16,
+     "lag_s": 33201,
+     "emitted_utc": "2026-10-02T09:13:21Z"
+    },
+    {
+     "date": "2026-10-02",
+     "signals": 0,
+     "held": 16,
+     "lag_s": 31208,
+     "emitted_utc": "2026-10-03T08:40:08Z"
+    }
+   ],
+   "settles": [],
+   "gaps": [],
+   "n_signals": 0,
+   "n_settled_days": 0,
+   "n_months": 0,
+   "head": "0x00969604109c62e179d92fb8083811441ff6e05badfba78a7b855c4ae9fc00ff",
+   "days_live": 2,
+   "last_closed": "2026-10-02"
+  },
+  "B3-CARRY": {
+   "genesis": "2026-10-01",
+   "chain_ok": true,
+   "ticks": [
+    {
+     "date": "2026-10-01",
+     "signals": 2,
+     "held": 2,
+     "lag_s": 36021,
+     "emitted_utc": "2026-10-02T10:00:21Z"
+    },
+    {
+     "date": "2026-10-02",
+     "signals": 1,
+     "held": 1,
+     "lag_s": 31208,
+     "emitted_utc": "2026-10-03T08:40:08Z"
+    }
+   ],
+   "settles": [],
+   "gaps": [],
+   "n_signals": 3,
+   "n_settled_days": 0,
+   "n_months": 0,
+   "head": "0xb2f703cbc6245958269ca1fac8143dbb0fa2df94978aed9c71f7de69031cddd5",
+   "days_live": 2,
+   "last_closed": "2026-10-02"
+  }
+ },
+ "book": {
+  "epoch": 690,
+  "recorded_utc": "2026-10-02T17:22:43Z",
+  "capacity": 10,
+  "book_sha": "0xfe37d7595644fd7e23fc5cd2c9aa659db1b66e316069c7414dd478e231f6e05c",
+  "occupants": [
+   {
+    "id": "B1-TREND",
+    "identity": true
+   }
+  ],
+  "challengers": [
+   {
+    "id": "B3-CARRY",
+    "gate": "LOLOS_SHADOW",
+    "shadow_days": 0
+   }
+  ],
+  "decisions": [
+   {
+    "id": "B3-CARRY",
+    "action": "REJECT",
+    "reason": "shadow maju baru 0 hari < 60"
+   }
+  ],
+  "killers": {
+   "B1-TREND": "TEKS"
+  }
+ },
+ "locks": [
+  {
+   "label": "THRESHOLDS-v1",
+   "what": "gate thresholds",
+   "at_utc": "2026-10-02T08:17:48Z",
+   "tx": "0xf09d61e601e218017aa225ebaf3ae86429031cbf46042cc80de9c0e8af7ae45f",
+   "where": "DecisionAnchor"
+  },
+  {
+   "label": "SPEC B1-TREND",
+   "what": "bot specification",
+   "at_utc": "2026-10-02T15:49:20Z",
+   "tx": "0xae9e7132fe5c4691098b3d30fe95521378bc9480fa489029eb88b7ba6e965c35",
+   "where": "LockRegistry"
+  },
+  {
+   "label": "SPEC B3-CARRY",
+   "what": "bot specification",
+   "at_utc": "2026-10-02T15:49:25Z",
+   "tx": "0x03f42b78b3aa0e42cc635e7e5a1c723940754546ed5d8e580220fb9fe0355b1f",
+   "where": "LockRegistry"
+  },
+  {
+   "label": "FABIUS-FD16-MAJU-v1",
+   "what": "FABIUS-FD16-MAJU-v1",
+   "at_utc": "2026-10-02T17:10:57Z",
+   "tx": "0x6bf7d51201b956ec2869d4272b3066710c14af9d334b0e0984407d46c58b9cd0",
+   "where": "LockRegistry"
+  },
+  {
+   "label": "FABIUS-BUKU-E690",
+   "what": "FABIUS-BUKU-E690",
+   "at_utc": "2026-10-02T17:26:09Z",
+   "tx": "0x2d6b96726f66e6e73c1c202bc15ea6dcb637690b6e30c90d85debbc694553d7f",
+   "where": "LockRegistry"
+  },
+  {
+   "label": "FABIUS-PEMBUNUH-v1",
+   "what": "FABIUS-PEMBUNUH-v1",
+   "at_utc": "2026-10-03T06:26:28Z",
+   "tx": "0x7b053afcfdae9634856564cc81757eb30a669619fe6a5c35fcf74330412d960a",
+   "where": "LockRegistry"
+  },
+  {
+   "label": "FABIUS-ANGGARAN-v1",
+   "what": "FABIUS-ANGGARAN-v1",
+   "at_utc": "2026-10-03T07:55:41Z",
+   "tx": "0x3254212fb06a705465857f61d31e79f76abf697f389852ac6a6a1c9728253165",
+   "where": "LockRegistry"
+  }
+ ],
+ "fd16": {
+  "required": {
+   "signals": 20,
+   "days": 20,
+   "months": 2
+  },
+  "bots": {
+   "B1-TREND": {
+    "signals": 0,
+    "days": 0,
+    "months": 0
+   },
+   "B3-CARRY": {
+    "signals": 3,
+    "days": 0,
+    "months": 0
+   }
+  },
+  "lock": "TERKUNCI"
+ },
+ "lock_states": {
+  "thresholds": "TERKUNCI",
+  "fd16": "TERKUNCI",
+  "killers": "TERKUNCI",
+  "gate_budget": "TERKUNCI"
+ },
+ "chain": {
+  "id": 97,
+  "block": 134602872,
+  "block_utc": "2026-10-03T09:04:11Z",
+  "signal_anchor": "0x9B78200beFbbBe836585d31bd5b6dB32587064f3",
+  "lock_registry": "0xcF6fBF95fc04DEd8d670512CEc0723a2246Fbb0C",
+  "decision_anchor": "0xDD162AFB5F5f92d5092f845A93660e3B38259330",
+  "committer": "0xCA9c7322210E9a7F7d0953c862d4Ef60cC0D64A4",
+  "commit_count": 2,
+  "lock_count": 8,
+  "verdicts": [
+   {
+    "bot": "B1-TREND",
+    "bar": "2026-10-01",
+    "verdict": "SEBELUM KUNCI",
+    "n": null,
+    "revealed": null,
+    "lag_s": null
+   },
+   {
+    "bot": "B1-TREND",
+    "bar": "2026-10-02",
+    "verdict": "SAH",
+    "n": 0,
+    "revealed": 0,
+    "lag_s": 31431
+   },
+   {
+    "bot": "B3-CARRY",
+    "bar": "2026-10-01",
+    "verdict": "SEBELUM KUNCI",
+    "n": null,
+    "revealed": null,
+    "lag_s": null
+   },
+   {
+    "bot": "B3-CARRY",
+    "bar": "2026-10-02",
+    "verdict": "SAH",
+    "n": 1,
+    "revealed": 1,
+    "lag_s": 31434
+   }
+  ],
+  "totals": {
+   "SAH": 2,
+   "BELUM DIUNGKAP": 0,
+   "TIDAK DIUNGKAP": 0,
+   "MENUNGGU KOMIT": 0,
+   "TIDAK DIKOMIT": 0,
+   "SEBELUM KUNCI": 2,
+   "ALARM": 0,
+   "komit_resmi": 2,
+   "komit_alamat_lain_untuk_bot_kita": 0,
+   "komit_total": 2
+  }
+ }
+}
