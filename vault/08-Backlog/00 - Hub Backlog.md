@@ -42,6 +42,7 @@ nama filenya. Itu lubang navigasi, bukan lubang data; sekarang ditutup, dan gerb
 - [[08 - Riset Optimasi Ambang]] - **USULAN agenda riset** untuk mengoptimalkan ambang kunci v1 (F-D73: *"sementara ini oke, nanti riset lagi"*; v1 **terkunci sementara**, **ter-anchor 2026-10-02T08:17:48Z**, F-D74): **aturan anti-snooping dipasang
   sebelum riset** (enam bot Fabius bukan target), anggaran positif-palsu/daya yang usulannya menunggu builder, plafon daya aritmetika (edge Sharpe ≤ 0,5 tak terpisahkan dari noise oleh riwayat beberapa tahun),
   garis dasar kalibrasi nol (`run13_null_calibration.py`: penambang diam lolos 4 dari 340, percobaan diakui 0 dari 340), pertanyaan R1-R11, urutan kerja, jalur ke kunci v2; P90-P91
+- [[09 - Usulan P107 Pembunuh Terstruktur]] — terjemahan mesin untuk kalimat pembunuh B1/B3, kunci terpisah dari spesifikasi; 4 pilihan tafsir menunggu builder
 
 <!-- di atas: append-only oleh scripts/sync_vault.py; gloss tulisan tangan utuh -->
 ## Yang menunggu di folder ini

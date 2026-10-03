@@ -17,6 +17,7 @@ Tidak ada modul di sini yang menyentuh jaringan, kunci, atau chain.
     locks                                                   kunci ambang (sha atas semua angka lolos/gagal); v1 ditulis 2 Okt 2026, mengubah angka = kunci baru
     fd16                                                    F-D16 pada data MAJU (P88): n sinyal, rerata net, CI bootstrap blok, buang bulan terbaik, BH lintas bot
     forward                                                 skor maju + statistik berpasangan dari ledger (P85): bahan Entry.score_bps / Challenger untuk slots.decide
+    pembunuh                                                pembunuh TERSTRUKTUR B1/B3 (P107): terjemahan kalimat spesifikasi, USULAN sampai dikunci
 
 Perintah (dari akar repo; `<dir>` = folder CSV keluaran vault/09-Inbox/Session-2026-10-02-skrip/fetch.py):
 
@@ -29,10 +30,10 @@ Perintah (dari akar repo; `<dir>` = folder CSV keluaran vault/09-Inbox/Session-2
     python -X utf8 -m engine.cli review --file engine/examples/submission.example.json --data <dir>
     python -X utf8 -m engine.cli lock                      # keadaan kunci + angka; `--write [--supersede] --note "..."` hanya atas kata builder
     python -X utf8 -m engine.cli book                      # buku genesis (bot identitas) + book_sha
-    python -X utf8 -m engine.cli ledger verify|report|fd16|skor   # ledger paper maju (ledger/paper + ledger/bars); jaringan HANYA di tools/feed_bars.py
+    python -X utf8 -m engine.cli ledger verify|report|fd16|skor|pembunuh   # ledger paper maju (ledger/paper + ledger/bars); jaringan HANYA di tools/feed_bars.py
     python -X utf8 -m engine.cli schema
     python -X utf8 -m engine.golden --data <dir>
     python -X utf8 -m unittest discover -s engine/tests -t .
 """
 __all__ = ["spec", "series", "data", "target", "sinyal", "freshness", "quality", "replay", "report", "bots", "chain",
-           "submission", "gates", "kpi", "review", "slots", "economics", "book", "ledger", "funding_est", "locks", "fd16", "forward"]
+           "submission", "gates", "kpi", "review", "slots", "economics", "book", "ledger", "funding_est", "locks", "fd16", "forward", "pembunuh"]

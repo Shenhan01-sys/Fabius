@@ -44,6 +44,7 @@ python -X utf8 -u tools/whale_sweep.py --days 90         # butuh DUNE_API_KEY
 python -X utf8 -m engine.cli ledger verify          # hitung ulang tiap tick/settle dari ledger/bars
 python -X utf8 -m engine.cli ledger report
 python -X utf8 -m engine.cli ledger fd16            # F-D16 pada data maju (P88): LOLOS / BELUM CUKUP DATA / TIDAK LOLOS
+python -X utf8 -m engine.cli ledger pembunuh        # pembunuh terstruktur B1/B3 (P107): USULAN sampai dikunci; YA / BELUM / TIDAK
 python -X utf8 -m engine.cli ledger skor            # skor maju + berpasangan (P85) - bahan keputusan slot
 python -X utf8 -m engine.cli book verify            # buku slot hidup: rantai + keputusan dihitung ulang (P87); `book epoch --write` = penulis
 python -X utf8 tools/pin_book.py --verify           # book_sha epoch terakhir di LockRegistry

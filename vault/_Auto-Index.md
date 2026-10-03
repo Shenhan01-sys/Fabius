@@ -2,7 +2,7 @@
 tags: [generated]
 ---
 
-_Auto-Index — 6 halaman · 2026-10-03T05:24Z · dari `vault/scripts/sync_vault.py`_
+_Auto-Index — 6 halaman · 2026-10-03T06:08Z · dari `vault/scripts/sync_vault.py`_
 
 ### 00-Overview (8)
 - [[00-Overview/00 - Hub Overview]]
@@ -111,7 +111,7 @@ _Auto-Index — 6 halaman · 2026-10-03T05:24Z · dari `vault/scripts/sync_vault
 - [[07-Testing/T8 - Semantik Kegagalan Operator]]
 - [[07-Testing/01 - Test Commands]]
 
-### 08-Backlog (9)
+### 08-Backlog (10)
 - [[08-Backlog/00 - Hub Backlog]]
 - [[08-Backlog/01 - Backlog]]
 - [[08-Backlog/02 - Epik Alasan Masuk]]
@@ -121,6 +121,7 @@ _Auto-Index — 6 halaman · 2026-10-03T05:24Z · dari `vault/scripts/sync_vault
 - [[08-Backlog/06 - Epik Gerbang Sinyal]]
 - [[08-Backlog/07 - Epik Kolaborasi Bot Terbuka]]
 - [[08-Backlog/08 - Riset Optimasi Ambang]]
+- [[08-Backlog/09 - Usulan P107 Pembunuh Terstruktur]]
 
 ### 09-Inbox (6)
 - [[09-Inbox/00 - Hub Inbox]]

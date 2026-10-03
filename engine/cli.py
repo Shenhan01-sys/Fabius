@@ -229,6 +229,22 @@ def _verified_ledgers(ledger_dir: str, view) -> dict:
     return ok
 
 
+def _book_killers(book, ok: dict, view, end_ms: int) -> dict:
+    """Status pembunuh penghuni untuk catatan epoch (P107). Bot Fabius: terjemahan terstruktur (`engine/pembunuh.py`) HANYA bila kuncinya TERKUNCI
+    dan ledgernya sah -> YA / BELUM / TIDAK; selain itu "TEKS" (kalimat spesifikasi, dinilai manusia). Penerbit luar belum ada -> "TIDAK"."""
+    from . import pembunuh
+    locked = pembunuh.status()["state"] == "TERKUNCI"
+    out = {}
+    for e in book:
+        if e.bot_id not in SPECS:
+            out[e.bot_id] = "TIDAK"
+        elif locked and e.bot_id in pembunuh.USULAN and e.bot_id in ok:
+            out[e.bot_id] = pembunuh.evaluate(e.bot_id, ok[e.bot_id], view("actual"), end_ms)["vonis"]
+        else:
+            out[e.bot_id] = "TEKS"
+    return out
+
+
 def _book_epoch(a) -> int:
     """Satu epoch buku hidup: skor maju penghuni (P85) -> penantang (bot SHADOW_ELIGIBLE di luar buku; gerbang dijalankan terhadap BUKU SEKARANG) ->
     status pembunuh -> slots.decide_epoch -> catatan. Idempoten per epoch: epoch yang sudah tercatat tidak ditulis dua kali."""
@@ -265,7 +281,7 @@ def _book_epoch(a) -> int:
     ok = _verified_ledgers(a.ledger, view)
     end = forward.common_end(ok, ledgermod.last_closed_bar(now_s * 1000))
     scores = {e.bot_id: (forward.stats_for(e.bot_id, ok[e.bot_id], end, p).score_bps if e.bot_id in ok else None) for e in book}
-    killers = {e.bot_id: ("TEKS" if e.bot_id in SPECS else "TIDAK") for e in book}       # pembunuh bot Fabius = teks (P107); penerbit luar belum ada
+    killers = _book_killers(book, ok, view, end)
     bsha = slots_book_sha(book)
     in_book = {e.bot_id for e in book}
     challengers = []
@@ -454,6 +470,39 @@ def _ledger_fd16(files, view) -> int:
     return 0
 
 
+def _ledger_pembunuh(a, view) -> int:
+    """`ledger pembunuh` (P107): terjemahan terstruktur kalimat pembunuh B1/B3 dinilai pada ledger maju yang SAH. `--kunci "catatan"` menulis kuncinya
+    (hanya atas kata builder; menolak menimpa)."""
+    import time
+    from . import forward, pembunuh
+    if a.kunci:
+        try:
+            lock = pembunuh.write_lock(a.kunci)
+        except (ValueError, FileExistsError) as e:
+            print(f"TIDAK dikunci: {e}")
+            return 1
+        print(f"DIKUNCI {lock['dikunci']}: sha {lock['sha']} -> engine/locks/pembunuh.lock.json | pin: python -X utf8 tools/lock_spec.py "
+              f"--file engine/locks/pembunuh.lock.json --name FABIUS-PEMBUNUH-v1 --send")
+    st = pembunuh.status()
+    label = {"TERKUNCI": f"TERKUNCI sha {str(st['sha_kunci'])[:18]}… (dikunci {st['dikunci']})",
+             "BELUM_DIKUNCI": f"USULAN, belum dikunci (sha {st['sha_kini'][:18]}…); buku slot tetap mencatat TEKS",
+             "MENYIMPANG": f"PERINGATAN: terjemahan/spesifikasi di kode MENYIMPANG dari kunci {str(st['sha_kunci'])[:18]}… - TIDAK mengikat",
+             "RUSAK": "PERINGATAN: berkas kunci pembunuh RUSAK - TIDAK mengikat"}[st["state"]]
+    ok = _verified_ledgers(a.ledger, view)
+    end = forward.common_end(ok, ledgermod.last_closed_bar(int(time.time() * 1000)))
+    print(f"PEMBUNUH TERSTRUKTUR ({label}); ujung jendela {ledgermod.date_of(end)}")
+    for bot, syarat in sorted(pembunuh.USULAN.items()):
+        print(f"{bot}: \"{SPECS[bot].pembunuh}\"")
+        for k in syarat:
+            print(f"  {k['id']} {k['aturan']}")
+        if bot not in ok:
+            print("  ledger tidak ada atau TIDAK SAH - tidak dinilai")
+            continue
+        print(pembunuh.fmt(pembunuh.evaluate(bot, ok[bot], view("actual"), end)))
+    print("Paper maju. Pembunuh yang terpicu mengeluarkan bot dari buku pada epoch berikutnya (kecuali bot identitas terakhir), hanya bila kuncinya TERKUNCI.")
+    return 0
+
+
 def _ledger_skor(files, view) -> int:
     """`ledger skor` (P85): skor maju per bot + statistik berpasangan pada satu ujung jendela bersama - bahan `slots.decide`. Hanya ledger SAH."""
     import time
@@ -508,6 +557,8 @@ def cmd_ledger(a) -> int:
         return _ledger_fd16(files, view)
     if a.action == "skor":
         return _ledger_skor(files, view)
+    if a.action == "pembunuh":
+        return _ledger_pembunuh(a, view)
     for path in files:
         name = os.path.basename(path)
         try:
@@ -593,7 +644,8 @@ def main(argv=None) -> int:
     rv.add_argument("--boot-n", type=int, default=1000)
     rv.add_argument("--incumbents", choices=("book", "six"), default="book", help="petahana G10: buku slot sekarang (bawaan) atau enam bot Fabius")
     lg = sub.add_parser("ledger")
-    lg.add_argument("action", choices=("verify", "report", "fd16", "skor"))
+    lg.add_argument("action", choices=("verify", "report", "fd16", "skor", "pembunuh"))
+    lg.add_argument("--kunci", help="bersama `pembunuh`: tulis kunci terjemahan pembunuh dengan catatan ini (hanya atas kata builder)")
     lg.add_argument("--ledger", default=os.path.join(REPO_ROOT, "ledger", "paper"), help="folder berkas <bot>.jsonl (bawaan: ledger/paper)")
     lg.add_argument("--bars", default=os.path.join(REPO_ROOT, "ledger", "bars"), help="folder CSV bar yang dipakai tick (bawaan: ledger/bars)")
     lg.add_argument("--bot")
