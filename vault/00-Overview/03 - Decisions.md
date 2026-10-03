@@ -2680,7 +2680,13 @@ LockRegistry. Builder: *"Gas, pakai opsi B"* - dibaca sebagai: kerjakan oleh asi
 5. **Yang dibuka:** P107 - pembunuh B1/B3 masih TEKS di spesifikasi (mengubahnya = spesifikasi baru), perlu bentuk terstruktur yang dikunci terpisah; P108 - jadwal
    epoch bulanan + pin otomatis (sekarang manual; epoch 691 bisa dicatat mulai 4 Okt 00:00Z).
 
-**Terkait:** F-D71 · F-D73 · F-D84 · [[08-Backlog/07 - Epik Kolaborasi Bot Terbuka]] §11 (P87) · [[03-Data/D8 - Buku Slot Hidup]] · [[09-Inbox/Session-2026-10-02]] §26
+Tambahan 3 Okt (P108, commit `cccbc3ce`): butir 4 tidak lagi manual. (a) Rantai GitHub `paper-ledger.yml` (penulis tunggal `ledger/`) menjalankan
+`engine.cli book epoch --write` + `book verify` sesudah tick hari itu beres. Langkah ini idempoten: hanya hari pertama epoch baru yang menulis. Kalau gagal,
+rantai ledger tetap jalan, buku tidak di-commit, dan peringatan terlihat di run. (b) Worker Railway (punya kunci committer) mem-pin `book_sha` epoch terakhir
+yang sah ke LockRegistry dengan label `FABIUS-BUKU-E<epoch>` dan uri ke commit yang disinkron. Ini butir 2 keputusan ini; matikan dengan `PIN_BOOK=0`.
+`deployments/97.json` `m3.pins` TIDAK diperbarui otomatis (worker tidak menulis repo); bukti = chain (`tools/pin_book.py --verify`). Uji: simulasi pada salinan buku dengan `--now 2026-10-04T09:30:00Z`: epoch 691 tertulis dalam 9 s, gerbang B3 LOLOS_SHADOW, keputusan REJECT ("shadow maju baru 2 hari < 60"), book_sha sama dengan E690 (`0xfe37d7595644fd7e…`, buku tidak berubah); putaran kedua "sudah tercatat", berkas tidak berubah.
+
+**Terkait:** F-D71 · F-D73 · F-D84 · [[08-Backlog/07 - Epik Kolaborasi Bot Terbuka]] §11 (P87) · [[03-Data/D8 - Buku Slot Hidup]] · [[09-Inbox/Session-2026-10-02]] §26 · §31
 
 ## F-D86 — Tahap 2+3 berjalan dulu sebagai MODE BAYANGAN: tick dari REST di Railway, dibandingkan dengan tick resmi; penulis ledger tetap rantai GitHub · 3 Okt 2026 (WIB)
 

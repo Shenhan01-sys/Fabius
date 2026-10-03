@@ -19,4 +19,6 @@ sehingga keputusan bisa dihitung ulang siapa pun tanpa data pasar.
 
 **Detail:** penulis sementara manual (P108 = jadwal bulanan); pembunuh bot Fabius masih teks (P107).
 
+**Sejak 3 Okt (P108):** penulisnya rantai GitHub `paper-ledger.yml`, sesudah tick harian beres. Langkahnya idempoten, jadi hanya hari pertama epoch baru yang menulis; kalau gagal, ledger tetap jalan. Pin `book_sha` dikerjakan worker Railway (`Worker.book_pin`). Titik gagalnya ada di [[07-Testing/T8 - Semantik Kegagalan Operator]] SK-B3/B4, SK-W14..W17.
+
 **Terkait:** [[03-Data/D7 - Ledger Bars]] · [[04-Tools/TL8 - engine]] · [[00-Overview/03 - Decisions]] F-D85

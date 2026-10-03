@@ -21,6 +21,9 @@ python -X utf8 -m engine.cli book verify            # rantai + keputusan tiap ep
 python -X utf8 tools/pin_book.py --verify           # book_sha epoch terakhir di LockRegistry chain 97 (jam blok)
 ```
 
+Sejak 3 Okt (P108) tidak ada yang perlu menjalankan ini dengan tangan. Rantai `paper-ledger.yml` menulis epoch baru sesudah tick harian (idempoten),
+lalu worker Railway mem-pin `book_sha`-nya ke LockRegistry (label `FABIUS-BUKU-E<epoch>`).
+
 Batas: pembunuh bot Fabius berupa teks di spesifikasi (dinilai manusia sampai ada versi terstruktur yang dikunci, P107); penulisnya sementara manual
 (jadwal bulanan = P108).
 
