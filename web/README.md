@@ -13,6 +13,14 @@ npm run build      # pemeriksaan produksi (harus bersih sebelum push)
 
 ## Deploy ke Vercel
 
+**Sudah hidup (3 Okt 2026):** https://fabius-one.vercel.app · server MCP `https://fabius-one.vercel.app/mcp` (project Vercel `fabius`, tersambung ke
+GitHub `master`; build dilewati bila commit tidak menyentuh `web/`). Push ke `master` = deploy.
+
+**Jangan `vercel deploy` dari akar repo:** CLI mengunggah folder kerja apa adanya, termasuk `.env` / `.committer.env` / `.deployer.env` (kunci privat;
+tidak ada di daftar abaikan bawaan Vercel). Deploy selalu lewat GitHub: Vercel membangun dari clone, yang hanya berisi berkas ter-track.
+
+Langkah membuat project dari nol (sekali saja, sudah dilakukan):
+
 1. Vercel -> **Add New Project** -> import repo `Shenhan01-sys/Fabius`.
 2. **Root Directory: `web`** (wajib; akar repo berisi engine Python, kontrak, vault).
 3. Framework terdeteksi otomatis (Next.js). Build command dan output bawaan. Tidak ada environment variable yang dibutuhkan.

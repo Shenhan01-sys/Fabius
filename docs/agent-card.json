@@ -2,6 +2,21 @@
  "description": "Operator sinyal PAPER yang bisa diperiksa (sejak 2 Okt 2026): bot berspesifikasi terkunci (B1-TREND, B3-CARRY), ledger maju berantai hash, sinyal dikomit ke SignalAnchor chain 97 sebelum hasilnya ada, pemeriksa publik tanpa kunci. Asal-usul: agen riset BNB Chain yang keputusannya di-anchor.",
  "endpoints": [
   {
+   "description": "server MCP: 8 alat (mulai fabius_overview; fabius_latest_signals live dari chain 97; fabius_verify menghitung ulang leaf + id dan mencocokkannya dengan ledger)",
+   "paywall": null,
+   "protocol": "mcp",
+   "status": "HIDUP tingkat 0 (gratis, hanya baca); tingkat 1 TERKUNCI sampai F-D16 + telaah hukum",
+   "transport": "streamable-http",
+   "url": "https://fabius-one.vercel.app/mcp"
+  },
+  {
+   "description": "landing tingkat 0: umpan bukti untuk manusia (kristal komitmen, kalender bukti, buku slot)",
+   "method": "GET",
+   "paywall": null,
+   "protocol": "http",
+   "url": "https://fabius-one.vercel.app"
+  },
+  {
    "description": "ringkasan vault + statistik (dibayar per permintaan)",
    "method": "GET",
    "paywall": "x402 exact eip155:97",
@@ -32,7 +47,7 @@
   "registered_tx": "0x33f47391c3a313b1d167e68a760e24746adac2d1aa39b44383b1f232ea2013dd",
   "signal_anchor": "0x9B78200beFbbBe836585d31bd5b6dB32587064f3"
  },
- "generated_utc": "2026-10-03T06:42:17Z",
+ "generated_utc": "2026-10-03T13:15:58Z",
  "image": null,
  "limits_stated_honestly": [
   "semua settlement di BNB Chain TESTNET (97); tidak ada dana nyata",

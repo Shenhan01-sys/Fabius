@@ -48,7 +48,13 @@ Status pintu: "MCP server · live · tier 0".
 build lama dan uji berikutnya diam-diam mengenai kode lama (validasi tanggal "masih gagal"). Sebelum uji ulang, pastikan port kosong
 (`Get-NetTCPConnection -LocalPort 3006`) dan server baru mencetak `Ready`.
 
-**Belum:** endpoint MCP di `docs/agent-card.json` (menunggu URL Vercel); tingkat 1 x402 (terkunci); snapshot otomatis (P113).
+**HIDUP 3 Okt (builder: "kan bisa trigger deploy via vercel cli"):** `https://fabius-one.vercel.app/mcp`. Produksi diuji dengan JSON-RPC:
+`initialize` -> `fabius 0.1.0`; `fabius_verify B3-CARRY 2026-10-02` -> `SAH (1/1 revealed, all ids match the ledger)`; `fabius_latest_signals` -> B1/B3
+2026-10-02, 2 komit; `fabius_track_record B1-TREND` -> 2 tick, 0 sinyal; `2026-02-30` -> galat validasi. Endpoint ini jadi endpoint PERTAMA di
+`docs/agent-card.json` (ditulis `python -X utf8 tools/x8004_register.py --card`, tanpa tx; kartu ERC-8004 token 2494 menunjuk berkas itu di repo publik).
+Claude Code: `claude mcp add --transport http fabius https://fabius-one.vercel.app/mcp`.
+
+**Belum:** tingkat 1 x402 (terkunci); snapshot otomatis (P113).
 
 **Terkait:** [[TL19 - web landing]] · [[TL14 - verify_signals]] · [[02-Contracts/C7 - SignalAnchor]] · [[07-Testing/T8 - Semantik Kegagalan Operator]] ·
 [[00-Overview/03 - Decisions]] F-D70/F-D72 · [[08-Backlog/06 - Epik Gerbang Sinyal]]

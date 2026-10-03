@@ -30,6 +30,16 @@ menjelaskannya. Objek inti = blok kaca (satu blok = satu komitmen), dan agen Fab
 
 **Pelajaran 3 Okt (sebelum deploy):** dua pola `.gitignore` akar repo diam-diam menelan berkas FE. `data/` (cache harga) menelan `web/public/data/snapshot.json`, dan `lib/` (pustaka Foundry) menelan `web/src/lib/`. Build lokal lulus karena berkasnya ada di disk; build dari clone bersih GAGAL (`Can't resolve '@/lib/copy'`). Diperbaiki dengan `!web/public/data/` + `!web/src/lib/`; simulasi clone bersih -> `npm ci` -> `npm run build` lulus. Aturan: sebelum menyatakan siap deploy, build dari clone bersih, bukan dari folder kerja.
 
-**Belum:** hosting (P3 Vercel, builder), snapshot otomatis, server MCP (P114; lokal 3 Okt -> [[TL20 - server MCP]]), penampung daftar tunggu (P115).
+**HIDUP 3 Okt 13:15Z: https://fabius-one.vercel.app.** Project Vercel `fabius` dibuat lewat `vercel api` (POST `/v11/projects`): framework nextjs,
+Root Directory `web`, tersambung repo GitHub `Shenhan01-sys/Fabius` (branch produksi `master`), perintah lewati-build `git diff --quiet HEAD^ HEAD -- .`
+(commit bot ledger/universe yang tidak menyentuh `web/` tidak memicu build). Deploy pertama dipicu dari commit `4cb8b8ac` lewat POST `/v13/deployments`
+(`gitSource`), `dpl_6c9NZRp8PjRLiBik2sqMbHAa1MfU`, landing 200.
+
+**Aturan deploy (3 Okt):** JANGAN `vercel deploy` dari akar repo. CLI mengunggah folder kerja apa adanya, dan `.env`, `.agent.env`, `.committer.env`,
+`.deployer.env` TIDAK ada di daftar abaikan bawaan Vercel, jadi kunci privat ikut terunggah ke build. Jalur yang benar: push ke GitHub; Vercel membangun
+dari clone repo, yang hanya berisi berkas ter-track. Di Git Bash, `vercel api /v11/...` harus diawali `MSYS_NO_PATHCONV=1` (kalau tidak, path diubah
+jadi path Windows: `Endpoint must start with /`).
+
+**Belum:** snapshot otomatis, penampung daftar tunggu (P115). Server MCP (P114) hidup di deploy yang sama -> [[TL20 - server MCP]].
 
 **Terkait:** [[TL14 - verify_signals]] · [[03-Data/D8 - Buku Slot Hidup]] · [[00-Overview/03 - Decisions]] F-D70/F-D72 · [[08-Backlog/06 - Epik Gerbang Sinyal]]
