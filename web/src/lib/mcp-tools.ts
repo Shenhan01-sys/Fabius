@@ -7,6 +7,7 @@ import { z } from "zod";
 import type { Snapshot } from "./snapshot";
 import { ChainReadError, COMMITTER, LOCK_REGISTRY, SIGNAL_ANCHOR, commitCount, describe, ledger } from "./fabius-chain";
 import { signalsFor as readSignals, verifyBar } from "./verify";
+import { getStatus } from "./status";
 
 type Result = { content: { type: "text"; text: string }[]; isError?: boolean };
 
@@ -85,6 +86,7 @@ export function registerFabiusTools(server: McpServer, s: Snapshot) {
           fabius_proof_feed: "verdict per (bot, bar) as of the build snapshot",
           fabius_list_bots: "the six bot specifications and the slot book",
           fabius_locks: "rules locked on-chain before the data, in order",
+          fabius_status: "operations health today: tick, commit, reveal, venue-rules paper, gas, GitHub chain heartbeat (health, not performance)",
         },
         verify_yourself: ["git clone https://github.com/Shenhan01-sys/Fabius", "python -X utf8 tools/verify_signals.py", "python -X utf8 -m engine.cli ledger verify"],
         snapshot_utc: s.generated_utc,
@@ -236,5 +238,20 @@ export function registerFabiusTools(server: McpServer, s: Snapshot) {
         return fail(e);
       }
     },
+  );
+
+  server.registerTool(
+    "fabius_status",
+    {
+      title: "Operations health today (live)",
+      description:
+        "Is the machine alive today? For the last closed daily bar and each bot with a forward clock: ledger tick (GitHub chain), on-chain commit and reveal (Railway worker), venue-rules paper (kertas), demo execution (private). Plus committer gas, chain head and the GitHub chain heartbeat. Lamps: ok / wait (with reason) / alarm / unreadable (a failed read, never a verdict) / private / na. Health, not performance.",
+      inputSchema: z.object({}),
+    },
+    guard(async () => {
+      const r = await getStatus(s);
+      const lines = r.bots.map((b) => `${b.bot} bar ${b.bar}: ${b.stations.map((x) => `${x.k} ${x.lamp}`).join(", ")}`);
+      return ok(`Overall ${r.overall.toUpperCase()} at ${r.checked_utc}. ${lines.join(" | ")}.`, r);
+    }),
   );
 }

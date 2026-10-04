@@ -34,6 +34,7 @@ berbahaya dari alat yang gagal keras.
 - [[TL20 - server MCP]] — pintu agen tingkat 0: route `/mcp` di app `web/`, 8 alat hanya baca (sinyal live, periksa leaf/id vs ledger, rekam jejak, kunci); tanpa kunci, tingkat 1 tetap terkunci (P114)
 - [[TL22 - eksekutor dan kertas-venue]] — epik 10: inti eksekutor (rencana, pagar, idempoten, rekonsiliasi), adaptor Binance (belum mengirim order), kertas-venue (akurasi di atas kertas sebelum uang nyata, F-D92)
 - [[TL23 - Sistem Visual FE]] — pedoman visual SEMUA halaman web/: prompt asal builder + 3 referensi, token, tipe, kaca, keadaan kubus, gerak, daftar periksa halaman baru
+- [[TL26 - halaman status]] — /status: kesehatan operasi hari ini (dial 24 jam UTC, stasiun per bot, gas committer, detak rantai GitHub); kode sama dengan MCP `fabius_status`
 - [[TL25 - halaman bot]] — /bot/[id]: satu bot = satu mesin terkunci; aturan asli + kunci, buku paper live (kubus universe), hari demi hari -> /verify, F-D16, pembunuh terkunci
 - [[TL24 - halaman verify]] — /verify: pemeriksaan publik satu (bot, bar) di peramban, empat stasiun tick -> komit -> dibuka -> dihitung ulang; kode sama dengan MCP
 - [[TL21 - waitlist]] — penampung daftar tunggu tingkat 1: bot Telegram dibaca rantai GitHub tiap 5 menit, pendaftar dikabarkan ke chat builder; log publik hanya hitungan (P115)

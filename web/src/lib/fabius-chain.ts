@@ -88,6 +88,16 @@ export async function windows() {
   return { maxLag: Number(lag), revealWindow: Number(win) };
 }
 
+/** Saldo (tBNB) dan kepala chain 97 - untuk /status: gas committer + kesegaran. */
+export async function balanceOf(addr: Hex) {
+  return Number(await read("getBalance", () => client.getBalance({ address: addr }))) / 1e18;
+}
+
+export async function head() {
+  const b = await read("getBlock", () => client.getBlock());
+  return { block: Number(b.number), ts: Number(b.timestamp) };
+}
+
 export async function commitCount() {
   return Number(await read("commitCount", () => client.readContract({ address: SIGNAL_ANCHOR, abi: ANCHOR_ABI, functionName: "commitCount" })));
 }

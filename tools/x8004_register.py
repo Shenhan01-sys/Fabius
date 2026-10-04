@@ -152,7 +152,7 @@ def build_card(token_hint=None):
             # P114 (3 Okt): pintu agen tingkat 0, ter-host publik di Vercel. Tingkat 1 (x402 per sinyal) tidak ada di sini: terkunci (F-D72).
             {"url": "https://fabius-one.vercel.app/mcp", "protocol": "mcp", "transport": "streamable-http", "paywall": None,
              "status": "HIDUP tingkat 0 (gratis, hanya baca); tingkat 1 TERKUNCI sampai F-D16 + telaah hukum",
-             "description": "server MCP: 8 alat (mulai fabius_overview; fabius_latest_signals live dari chain 97; fabius_verify menghitung ulang leaf + id dan mencocokkannya dengan ledger)"},
+             "description": "server MCP: 9 alat (mulai fabius_overview; fabius_latest_signals live dari chain 97; fabius_verify menghitung ulang leaf + id dan mencocokkannya dengan ledger; fabius_status = kesehatan operasi hari ini)"},
             {"url": "https://fabius-one.vercel.app", "protocol": "http", "method": "GET", "paywall": None,
              "description": "landing tingkat 0: umpan bukti untuk manusia (kristal komitmen, kalender bukti, buku slot)"},
             {"url": "http://127.0.0.1:8046/vault/latest", "protocol": "http",

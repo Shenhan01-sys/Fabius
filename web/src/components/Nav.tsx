@@ -12,6 +12,7 @@ export default function Nav() {
     ["/#proof", t.nav.proof],
     ["/#book", t.nav.book],
     ["/verify", t.nav.verify],
+    ["/status", t.nav.status],
     ["/#access", t.nav.access],
   ];
   return (

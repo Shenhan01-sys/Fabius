@@ -68,6 +68,6 @@ Tingkat 0 bukti = terbuka, gratis; tingkat 1 = TERKUNCI sampai F-D16 maju + tela
 5. `npm run build` + `npm run lint` bersih; untuk deploy: build dari clone bersih.
 
 **Halaman:** landing `/` ([[TL19 - web landing]]) · MCP `/mcp` ([[TL20 - server MCP]]) · `/verify` ([[TL24 - halaman verify]], `docs/design/verify.md`) ·
-`/bot/[id]` ([[TL25 - halaman bot]], `docs/design/bot.md`)
+`/bot/[id]` ([[TL25 - halaman bot]], `docs/design/bot.md`) · `/status` ([[TL26 - halaman status]], `docs/design/status.md`)
 
 **Terkait:** [[TL19 - web landing]] · [[TL20 - server MCP]] · [[08-Backlog/01 - Backlog]] P113 / P124

@@ -56,6 +56,8 @@ Claude Code: `claude mcp add --transport http fabius https://fabius-one.vercel.a
 
 **Sejak 4 Okt:** logika `fabius_verify` + `fabius_signals` dipindah ke `web/src/lib/verify.ts`, dipakai bersama halaman /verify ([[TL24 - halaman verify]]): satu kode untuk agen dan manusia. Bentuk keluaran MCP dipertahankan; `fabius_verify` kini juga memuat salt, leaf, dan blok tiap sinyal.
 
+**Sejak 4 Okt (alat ke-9):** `fabius_status` - kesehatan operasi hari ini (tick, komit, ungkap, kertas, gas, detak rantai GitHub), kode sama dengan halaman /status (`web/src/lib/status.ts`, [[TL26 - halaman status]]); `fabius_overview` ikut mendaftarkannya. Lokal: `tools/list` -> 9 alat.
+
 **Belum:** tingkat 1 x402 (terkunci); snapshot otomatis (P113).
 
 **Terkait:** [[TL19 - web landing]] · [[TL14 - verify_signals]] · [[02-Contracts/C7 - SignalAnchor]] · [[07-Testing/T8 - Semantik Kegagalan Operator]] ·
