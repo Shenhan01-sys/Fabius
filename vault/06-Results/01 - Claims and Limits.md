@@ -57,6 +57,9 @@ tidak bisa ditunjuk artefaknya.
   x402 Foundation (26 jaringan, tanpa `eip155:56`/`97`) dan dari `constants.ts` (23 nama, tanpa
   `bsc`). Framing yang benar: **kami menyambungkan dua ekosistem yang belum tersambung**, dan itu
   justru kerjanya.
+- **(5 Okt, P136) Boleh:** "tiap komit Fabius dimintakan validasi di ValidationRegistry ERC-8004 resmi (agen 2494) dan dijawab oleh pemeriksa
+  publik yang dijalankan di CI publik" - SETELAH jawaban pertama terbaca di chain. **Tetap tidak boleh:** "trustless validation" / "divalidasi
+  pihak ketiga": validatornya kunci kami sendiri di infrastruktur lain ([[04-Tools/TL30 - validasi ERC-8004]]).
 - **"agen kami punya reputasi on-chain"**. Yang ada: identitas terdaftar + jejak keputusan
   ter-anchor. Permukaan baca `ReputationRegistry` bahkan tidak bisa kita temukan (`name()`/
   `symbol()`/`totalSupply()` revert).

@@ -14,6 +14,15 @@
   "SignalAnchor": "0x9B78200beFbbBe836585d31bd5b6dB32587064f3",
   "x402ExactPermit2Proxy": "0x402085c248EeA27D92E8b30b2C58ed07f9E20001"
  },
+ "erc8004": {
+  "agent_id": 2494,
+  "identity": "0x8004A818BFB912233c491871b3d84c89A494BD9e",
+  "reputation": "0x8004B663056A597Dffe9eCcC1965A193B7388713",
+  "tag": "fabius-komit-ungkap-v1",
+  "validation": "0x8004Cb1BF31DAf7788923b405b754f57acEB4272",
+  "validator": "0x2d9A2f165D6d5B96717a0d95B5C59D7872d0a423",
+  "why": "P136 (F-D98): registri ERC-8004 resmi v2.0.0 di chain 97 (dibaca 5 Okt: getVersion 2.0.0, getIdentityRegistry = identity). Committer meminta validasi per komit (requestHash = commitId); validator (kunci terpisah, workflow validasi.yml) menjawab dari pemeriksa publik P106."
+ },
  "execution_state": {
   "daily_cap_quote_atomic": 5000000,
   "max_position_quote_atomic": 1000000

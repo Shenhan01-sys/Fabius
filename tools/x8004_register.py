@@ -141,7 +141,11 @@ def build_card(token_hint=None):
         "protocol": "x402/1 + erc-8004/1",
         "name": "Fabius",
         # P105e (3 Okt): deskripsi lama ("agen riset ...") basi sejak arah operator (F-D70); kartu lama 27 Sep tetap di riwayat git.
-        "description": ('Operator sinyal PAPER yang bisa diperiksa (sejak 2 Okt 2026): bot berspesifikasi terkunci (B1-TREND, B3-CARRY), ledger maju berantai hash, sinyal dikomit ke SignalAnchor chain 97 sebelum hasilnya ada, pemeriksa publik tanpa kunci. Asal-usul: agen riset BNB Chain yang keputusannya di-anchor.'),
+        # P136 (5 Okt, F-D98): enam bot berjam maju (F-D95), isi eksekusi di ExecutionAnchor, validasi per komit di ValidationRegistry ERC-8004.
+        "description": ('Operator sinyal PAPER yang bisa diperiksa: enam bot berspesifikasi terkunci di LockRegistry (B1-TREND = INTI; B2-B6 = SEMENTARA), '
+                        'ledger maju berantai hash, tiap sinyal dikomit ke SignalAnchor chain 97 SEBELUM hasilnya ada, isi order venue dicatat di '
+                        'ExecutionAnchor, dan tiap komit dimintakan validasi di ValidationRegistry ERC-8004 (agen ini) lalu dijawab dari pemeriksa publik '
+                        'yang dijalankan di GitHub Actions. Asal-usul: agen riset BNB Chain yang keputusannya di-anchor.'),
         "image": None,
         "registry": {"chainId": vd.CHAIN, "identityRegistry": REGISTRY,
                      # dibaca dari rekor kalau ada: kartu tidak boleh menyebut tokenId yang tidak
@@ -175,6 +179,11 @@ def build_card(token_hint=None):
             "signal_anchor": "0x9B78200beFbbBe836585d31bd5b6dB32587064f3",
             "lock_registry": "0xcF6fBF95fc04DEd8d670512CEc0723a2246Fbb0C",
             "check_signals_yourself": "python -X utf8 tools/verify_signals.py   # komit + ungkap vs ledger, tanpa kunci",
+            "execution_anchor": "0x8bfd03b73749ab2cf91129155127404fbbac4c9b",
+            "validation_registry": "0x8004Cb1BF31DAf7788923b405b754f57acEB4272",
+            "validation_tag": "fabius-komit-ungkap-v1",
+            "validator": "0x2d9A2f165D6d5B96717a0d95B5C59D7872d0a423",
+            "check_validations_yourself": "python -X utf8 tools/erc8004_validasi.py ringkas   # getSummary + status per komit, tanpa kunci",
             "registered_tx": (read_record() or {}).get("tx"),
         },
         "limits_stated_honestly": [
@@ -182,6 +191,7 @@ def build_card(token_hint=None):
             "token pembayaran adalah koin demo milik kami sendiri",
             "strategi arah agen lama kalah setelah ongkos (20 bps, lalu 59 bps terukur; vault/06-Results/04 - Negative Results.md)",
             "operator sinyal: PAPER penuh, belum ada uang nyata, belum ada penjualan; jendela maju baru mulai 1 Okt 2026 - BUKAN klaim edge (F-D16 belum terpenuhi)",
+            "validator ERC-8004 = kunci Fabius sendiri di infrastruktur lain (GitHub Actions, bukan worker Railway): pemeriksaan dihitung ulang oleh CI publik dan bisa dijalankan siapa pun - BUKAN validasi tanpa kepercayaan",
         ],
         "generated_utc": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
     }

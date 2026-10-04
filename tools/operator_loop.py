@@ -136,6 +136,8 @@ class Worker:
         self.canary = None
         self.canary_fails = 0
         self.last_canary = None
+        self.validasi_fails = 0
+        self.last_validasi = None
         import alert as alertmod
         self.alert = alertmod.Alerter(log=lambda m: log(m))
 
@@ -232,6 +234,32 @@ class Worker:
                 self.alert.send("canary-gagal", f"canary uang nyata: {self.canary_fails} putaran gagal berturut-turut; terakhir {type(e).__name__}: {str(e)[:160]}")
             return "gagal"
 
+    def validation_step(self, ev, cv, committer: str, pk: Optional[str]) -> str:
+        """P136 (F-D98): minta validasi ERC-8004 (agen 2494) untuk komit Fabius yang sudah ada, DIBUNGKUS SENDIRI - galatnya tidak pernah
+        menggagalkan komit/ungkap. Tanpa kunci, tanpa validator di deployments/97.json, atau committer belum disetujui pemilik 2494 = diam."""
+        try:
+            import erc8004_validasi as v8
+            cfg = v8.load_cfg(os.path.join(self.workdir, "deployments", "97.json"))
+            if not pk or not (cfg and cfg.get("validator")):
+                return "mati"
+            if ev.has_pending(committer):
+                return "tunda: ada tx committer yang belum masuk blok"
+            st = v8.request_round(v8.RegistryView(ev, cfg), lambda to, data: ev.send(pk, to, data), committer, cfg,
+                                  v8.candidates(BOTS, os.path.join(self.workdir, "ledger", "paper"), cv, committer), log=lambda m: log(m))
+            line = ("menunggu approve(committer, 2494) dari pemilik agen" if st["belum_setuju"]
+                    else f"{st['diminta']} diminta, {st['sudah']} sudah, {st['gagal']} gagal")
+            if line != self.last_validasi:
+                log(f"validasi ERC-8004: {line}")
+                self.last_validasi = line
+            self.validasi_fails = 0
+            return line
+        except Exception as e:  # noqa: BLE001 - validasi tidak boleh mematikan worker komit
+            self.validasi_fails += 1
+            log(f"validasi ERC-8004 GAGAL (komit/ungkap tidak terpengaruh): {type(e).__name__}: {str(e)[:200]}")
+            if self.validasi_fails >= FAILS_BEFORE_ALERT:
+                self.alert.send("validasi-gagal", f"validasi ERC-8004: {self.validasi_fails} putaran gagal berturut-turut; terakhir {type(e).__name__}: {str(e)[:160]}")
+            return "gagal"
+
     def alerts_for(self, acts, sent: dict = None, missing=()) -> None:
         """P101: aksi yang butuh mata manusia -> alert (dedupe per kunci di `tools/alert.py`)."""
         for a in acts:
@@ -287,6 +315,7 @@ class Worker:
             self.alert.send(f"pin-buku:{pin}", f"pin book_sha {pin.upper()}: {self.last_book}")
         self.exec_step(cv, committer)
         self.canary_step(cv, committer, ev, pk)
+        self.validation_step(ev, cv, committer, pk)
         if time.time() - self.last_summary >= SUMMARY_EVERY_S:
             kinds = {k: sum(1 for a in acts if a.kind == k) for k in ("commit", "reveal", "ok", "skip", "alarm")}
             bal = ev.balance(committer) / 1e18

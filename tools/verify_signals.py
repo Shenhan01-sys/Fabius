@@ -177,6 +177,28 @@ def verify(bots: Sequence[str], ledger_dir: str, views, cv, commits: Sequence[Tu
     return rows, stats
 
 
+def run(bots: Sequence[str], ledger_dir: str, bars_dir: str, deployments: str = sc.DEPLOYMENTS, ev=None):
+    """Satu pemeriksaan penuh dari chain 97 (dipakai `main` dan validator ERC-8004 P136). -> (baris, ringkas, info)."""
+    import evm as evmmod
+    from paper_tick import Views
+    with open(deployments, encoding="utf-8") as f:
+        d = json.load(f)
+    cs, m3 = d.get("contracts", {}), d.get("m3", {})
+    anchor, registry, official = cs.get("SignalAnchor"), cs.get("LockRegistry"), m3.get("committer")
+    if not (anchor and registry and official):
+        raise LookupError("deployments/97.json belum memuat SignalAnchor/LockRegistry/m3.committer")
+    if ev is None:
+        ev = evmmod.Evm(sc.rpc_urls(), sc.CHAIN_ID)
+        ev.chain_check()
+    cv = sc.AnchorView(ev, anchor, registry)
+    head = int(ev.rpc("eth_blockNumber", []), 16)
+    now_s = ev.block_timestamp()
+    commits = all_commits(cv)
+    events = revealed_events(ev, anchor, int((m3.get("deploy_block") or {}).get("SignalAnchor") or 0), head)
+    rows, st = verify(list(bots), ledger_dir, Views(bars_dir), cv, commits, events, official, now_s)
+    return rows, st, {"anchor": anchor, "committer": official, "blok": head, "waktu_blok_s": now_s, "cv": cv, "ev": ev}
+
+
 def main() -> int:
     ap = argparse.ArgumentParser(description="Pemeriksa publik komit sinyal Fabius vs ledger + bar (tanpa kunci, tanpa gas).")
     ap.add_argument("--bots", default=",".join(sc.BOTS_DEFAULT))
@@ -185,23 +207,13 @@ def main() -> int:
     ap.add_argument("--deployments", default=sc.DEPLOYMENTS)
     ap.add_argument("--json", action="store_true")
     a = ap.parse_args()
-    import evm as evmmod
-    from paper_tick import Views
-    with open(a.deployments, encoding="utf-8") as f:
-        d = json.load(f)
-    cs, m3 = d.get("contracts", {}), d.get("m3", {})
-    anchor, registry, official = cs.get("SignalAnchor"), cs.get("LockRegistry"), m3.get("committer")
-    if not (anchor and registry and official):
-        print("deployments/97.json belum memuat SignalAnchor/LockRegistry/m3.committer")
+    try:
+        rows, st, info = run([b.strip() for b in a.bots.split(",") if b.strip()], a.ledger, a.bars, a.deployments)
+    except LookupError as e:
+        print(e)
         return 2
-    ev = evmmod.Evm(sc.rpc_urls(), sc.CHAIN_ID)
-    ev.chain_check()
-    cv = sc.AnchorView(ev, anchor, registry)
-    head = int(ev.rpc("eth_blockNumber", []), 16)
-    now_s = ev.block_timestamp()
-    commits = all_commits(cv)
-    events = revealed_events(ev, anchor, int((m3.get("deploy_block") or {}).get("SignalAnchor") or 0), head)
-    rows, st = verify([b.strip() for b in a.bots.split(",") if b.strip()], a.ledger, Views(a.bars), cv, commits, events, official, now_s)
+    anchor, official, head, now_s = info["anchor"], info["committer"], info["blok"], info["waktu_blok_s"]
+    cv = info["cv"]
     if a.json:
         print(json.dumps({"chain": sc.CHAIN_ID, "SignalAnchor": anchor, "committer": official, "blok": head, "waktu_blok": ledger.utc_iso(now_s * 1000),
                           "ringkas": st, "baris": [asdict(r) for r in rows]}, indent=2, ensure_ascii=False))

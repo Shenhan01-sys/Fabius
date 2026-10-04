@@ -1,0 +1,52 @@
+name: validasi
+
+# Validator ERC-8004 Fabius (P136, F-D98): menjawab permintaan validasi agen 2494 di ValidationRegistry resmi chain 97.
+#
+# Committer (worker Railway) meminta validasi untuk tiap komit sinyal (requestHash = commitId). Di sini, di infrastruktur LAIN (GitHub Actions publik,
+# bukan Railway yang memegang kunci committer), pemeriksa publik P106 `tools/verify_signals.py` menghitung ulang kunci -> komit -> ungkap -> daun ->
+# isi ledger dari chain + repo, lalu kunci validator (secret VALIDATOR_PK, terpisah dari committer) menjawab: SAH = 100, ALARM / TIDAK DIUNGKAP = 0,
+# vonis belum final = tunggu. responseHash = sha256 laporan JSON yang dicetak di log run ini; responseURI = URL run ini.
+# Jujur: validator tetap kunci kami sendiri - "dihitung ulang oleh CI publik, siapa pun bisa menjalankan pemeriksa yang sama", bukan validasi tanpa
+# kepercayaan.
+#
+# Pemicu: rantai `paper-ledger` (workflow_dispatch) begitu penjaga luar selesai menilai tick hari itu, bersama web-snapshot. Tanpa `schedule:` (F-D78).
+# Tanpa secret: hanya rencana (estimasi), tidak ada tx. ALARM dari pemeriksa = job merah.
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: validasi
+  cancel-in-progress: false
+
+jobs:
+  jawab:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: eth-account + eth-abi (pembaca chain sama dengan verify_signals)
+        run: pip install -r railway/requirements.txt
+
+      - name: pemeriksa P106 -> jawab permintaan validasi ERC-8004
+        env:
+          VALIDATOR_PRIVATE_KEY: ${{ secrets.VALIDATOR_PK }}
+        run: |
+          if [ -z "$VALIDATOR_PRIVATE_KEY" ]; then
+            echo "::warning::secret VALIDATOR_PK belum ada - hanya rencana, tidak ada tx"
+            python -u -X utf8 tools/erc8004_validasi.py jawab
+          else
+            python -u -X utf8 tools/erc8004_validasi.py jawab --send
+          fi
+
+      - name: ringkas (baca ulang dari chain)
+        if: always()
+        run: python -u -X utf8 tools/erc8004_validasi.py ringkas || true

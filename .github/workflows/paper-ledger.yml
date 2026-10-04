@@ -23,6 +23,7 @@ name: paper-ledger
 #   5. P111 penjaga LUAR worker Railway: `tools/worker_watch.py --alert` tiap putaran sampai tick hari itu terbukti dikomit + diungkap di SignalAnchor
 #      (worker yang mati tidak bisa melapor dirinya sendiri). ALARM = ::error:: + Telegram bila secrets ALERT_TELEGRAM_* ada; rantai ledger TETAP jalan.
 #   6. sesudah penjaga luar menilai tick hari itu: picu `web-snapshot.yml` (data landing; butuh pip, jadi workflow sendiri). Gagal = peringatan saja.
+#      P136: pada saat yang sama picu `validasi.yml` (validator ERC-8004; butuh pip + secret VALIDATOR_PK). Gagal = peringatan saja.
 #   7. P115 tiap putaran (5 menit, sepanjang hari): `tools/waitlist.py --poll` - daftar tunggu lewat bot Telegram, pendaftar dikabarkan ke chat builder.
 #      Log hanya hitungan (log Actions publik). Gagal = peringatan saja; update Telegram tersimpan 24 jam dan diulang putaran berikut.
 #   8. P119 tiap putaran (5 menit, sepanjang hari): `tools/eksekusi_ledger.py run` - laporan eksekutor dari Gist publik (runner diblokir Binance, 451,
@@ -182,6 +183,12 @@ jobs:
                   echo "snapshot web dipicu"
                 else
                   echo "::warning::gagal memicu web-snapshot - landing tertinggal; rantai ledger tetap jalan"
+                fi
+                # P136 (F-D98): validator ERC-8004 menjawab permintaan validasi komit yang sudah final (workflow sendiri: butuh pip + secret)
+                if printf '{"ref":"%s"}' "$GITHUB_REF_NAME" | gh api -X POST "repos/$GITHUB_REPOSITORY/actions/workflows/validasi.yml/dispatches" --input -; then
+                  echo "validasi ERC-8004 dipicu"
+                else
+                  echo "::warning::gagal memicu validasi - jawaban validasi tertunda; rantai ledger tetap jalan"
                 fi
               fi
             fi

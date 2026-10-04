@@ -46,3 +46,6 @@ data/
 # Dune key, GMGN key, Jev key. Repo ini publik. Baris ini ada supaya satu `git add -A` yang tidak
 # sengaja tidak pernah mengubah berkas itu menjadi commit yang tidak bisa ditarik kembali.
 qwen-code-export-*.md
+
+# kunci validator ERC-8004 (P136)
+.validator.env
