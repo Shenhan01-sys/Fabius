@@ -43,16 +43,23 @@ async function readLive(id: string): Promise<Live> {
 
 const RAW = process.env.FABIUS_RAW_BASE || "https://raw.githubusercontent.com/Shenhan01-sys/Fabius/master"; // override hanya untuk uji lokal
 
-/** Ledger eksekusi demo (P119; ditulis rantai GitHub dari umpan Gist eksekutor). 404 = bot ini belum dieksekusi -> section tidak tampil. */
+/** Satu ledger eksekusi (P119; ditulis rantai GitHub dari umpan Gist). null = berkas belum ada. */
+async function readVenue(id: string, venue: string): Promise<ExecRow[] | null> {
+  const res = await fetch(`${RAW}/ledger/eksekusi/${venue}/${id}.jsonl`, { next: { revalidate: 120 } });
+  if (res.status === 404) return null;
+  if (!res.ok) throw new Error(`ledger eksekusi ${venue}: HTTP ${res.status} dari GitHub - bukan berarti tidak ada eksekusi`);
+  return (await res.text())
+    .split("\n")
+    .filter((l) => l.trim())
+    .map((l) => JSON.parse(l) as ExecRow);
+}
+
+/** Demo (`binance-demo`) + uang NYATA (`binance-live`, canary P133). Keduanya tidak ada = section tidak tampil. */
 async function readExec(id: string): Promise<Exec> {
   try {
-    const res = await fetch(`${RAW}/ledger/eksekusi/binance-demo/${id}.jsonl`, { next: { revalidate: 120 } });
-    if (res.status === 404) return null;
-    if (!res.ok) return { ok: false, error: `ledger eksekusi: HTTP ${res.status} dari GitHub - bukan berarti tidak ada eksekusi` };
-    const rows = (await res.text())
-      .split("\n")
-      .filter((l) => l.trim())
-      .map((l) => JSON.parse(l) as ExecRow);
+    const [demo, real] = await Promise.all([readVenue(id, "binance-demo"), readVenue(id, "binance-live")]);
+    if (demo === null && real === null) return null;
+    const rows = [...(demo ?? []), ...(real ?? [])].sort((a, b) => a.bar.localeCompare(b.bar) || a.mode.localeCompare(b.mode));
     return { ok: true, rows };
   } catch (e) {
     return { ok: false, error: e instanceof Error ? e.message : String(e) };

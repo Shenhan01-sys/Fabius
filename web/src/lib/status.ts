@@ -62,8 +62,8 @@ async function kertasLast(venue: string, bot: string, modal: string, jadwal: str
 }
 
 /** Ledger eksekusi publik satu bot; null = berkas belum ada (umpan belum menyala) - bukan galat. */
-async function execLedger(bot: string): Promise<{ bar: string; n_order: number; pelanggaran?: string[] }[] | null> {
-  const res = await fetch(`${RAW}/ledger/eksekusi/${EXEC_VENUE}/${bot}.jsonl`, { next: { revalidate: 120 } });
+async function execLedger(bot: string, venue: string = EXEC_VENUE): Promise<{ bar: string; n_order: number; pelanggaran?: string[] }[] | null> {
+  const res = await fetch(`${RAW}/ledger/eksekusi/${venue}/${bot}.jsonl`, { next: { revalidate: 120 } });
   if (res.status === 404) return null;
   if (!res.ok) throw new Error(`ledger eksekusi: HTTP ${res.status} dari GitHub`);
   return (await res.text()).split("\n").filter((l) => l.trim()).map((l) => JSON.parse(l));
@@ -83,6 +83,7 @@ async function botStatus(s: Snapshot, bot: string, bar: string, now: number): Pr
   const close = closeOf(bar);
   const st: Station[] = [{ k: "close", lamp: "ok", code: "CLOSED", at: iso(close) }];
   const execP = EXEC_BOTS.includes(bot) ? settle(() => execLedger(bot)) : null;
+  const realP = EXEC_BOTS.includes(bot) ? settle(() => execLedger(bot, "binance-live")) : null;          // canary uang nyata (P133)
   const kertasP = KERTAS_BOTS.includes(bot) ? settle(() => Promise.all(KERTAS.map((k) => kertasLast(k.venue, bot, k.modal, k.jadwal)))) : null;
 
   // 02 tick
@@ -154,7 +155,12 @@ async function botStatus(s: Snapshot, bot: string, bar: string, now: number): Pr
       const rec = x.v.find((r) => r.bar === bar);
       const cAt = commit?.lamp === "ok" && commit.at ? Math.floor(Date.parse(commit.at) / 1000) : null;
       if (rec && rec.pelanggaran?.length) st.push({ k: "exec", lamp: "alarm", code: "EXEC_VIOLATION", at: null, detail: `${rec.pelanggaran.length}` });
-      else if (rec) st.push({ k: "exec", lamp: "ok", code: "EXEC_OK", at: null, detail: `${rec.n_order}` });
+      else if (rec) {
+        const real = realP ? await realP : null;
+        const rr = real && real.ok && real.v ? real.v.find((r) => r.bar === bar) : undefined;
+        st.push(rr ? { k: "exec", lamp: rr.pelanggaran?.length ? "alarm" : "ok", code: "EXEC_OK_REAL", at: null, detail: `${rec.n_order} demo · ${rr.n_order} REAL` }
+                   : { k: "exec", lamp: "ok", code: "EXEC_OK", at: null, detail: `${rec.n_order}` });
+      }
       else if (cAt == null) st.push({ k: "exec", lamp: "later", code: "NEEDS_COMMIT", at: null });
       else if (now - cAt >= EXEC_GRACE_S) st.push({ k: "exec", lamp: "alarm", code: "EXEC_MISSING", at: null, detail: `${Math.round((now - cAt) / 60)}` });
       else st.push({ k: "exec", lamp: "wait", code: "EXEC_WAIT", at: iso(cAt + EXEC_GRACE_S) });

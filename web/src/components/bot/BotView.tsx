@@ -366,10 +366,12 @@ function Executed({ n, exec }: { n: number; exec: NonNullable<Exec> }) {
       </div>,
     );
   const rows = exec.rows;
-  const filled = rows.flatMap((r) => r.orders.filter((o) => o.qty > 0));
+  const demoRows = rows.filter((r) => r.mode !== "live");                     // ringkasan mekanisme dari akun demo; uang NYATA ditampilkan terpisah
+  const realFilled = rows.filter((r) => r.mode === "live").flatMap((r) => r.orders.filter((o) => o.qty > 0));
+  const filled = demoRows.flatMap((r) => r.orders.filter((o) => o.qty > 0));
   const fee = median(filled.flatMap((o) => (o.fee_bps == null ? [] : [o.fee_bps])));
   const vsK = median(filled.flatMap((o) => (o.selisih_kertas_bps == null ? [] : [o.selisih_kertas_bps])));
-  const lat = median(rows.flatMap((r) => (r.latensi_s == null ? [] : [r.latensi_s])));
+  const lat = median(demoRows.flatMap((r) => (r.latensi_s == null ? [] : [r.latensi_s])));
   const viol = rows.reduce((k, r) => k + (r.pelanggaran?.length ?? 0), 0);
   const chips: [string, string, string, boolean][] = [
     [v.fee, ubps(fee), "≤ 7 bps", fee == null || fee <= 7],
@@ -377,9 +379,13 @@ function Executed({ n, exec }: { n: number; exec: NonNullable<Exec> }) {
     [v.latency, dur(lat), "p95 ≤ 10 min", lat == null || lat <= 600],
     [v.violations, String(viol), "0", viol === 0],
   ];
+  if (realFilled.length) {
+    const rf = median(realFilled.flatMap((o) => (o.fee_bps == null ? [] : [o.fee_bps])));
+    chips.push([v.realFills, `${realFilled.length} · ${ubps(rf)}`, v.realNote, true]);
+  }
   return wrap(
     <>
-      <div className="mt-10 grid grid-cols-2 gap-3 lg:grid-cols-4">
+      <div className={`mt-10 grid grid-cols-2 gap-3 ${chips.length > 4 ? "lg:grid-cols-5" : "lg:grid-cols-4"}`}>
         {chips.map(([k, val, target, ok]) => (
           <div key={k} className={`glass rounded-[22px] border p-4 ${ok ? "border-white/70" : "border-gap/50"}`}>
             <div className="tag text-ink/45">{k}</div>
@@ -395,15 +401,18 @@ function Executed({ n, exec }: { n: number; exec: NonNullable<Exec> }) {
             const kGeser = median(fo.flatMap((o) => (o.kertas_px && o.ref_tutup ? [worseBps(o.sisi, o.kertas_px, o.ref_tutup)] : [])));
             const rGeser = median(fo.flatMap((o) => (o.geser_bps == null ? [] : [o.geser_bps])));
             return (
-              <motion.div key={r.bar} initial={{ opacity: 0, y: 14 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
+              <motion.div key={`${r.bar}-${r.mode}`} initial={{ opacity: 0, y: 14 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
                 transition={{ delay: i * 0.08, type: "spring", stiffness: 150, damping: 16 }}
-                className={`w-[300px] shrink-0 rounded-[22px] border bg-white/70 p-4 ${r.pelanggaran?.length ? "border-gap/60" : "border-white/80"}`}>
+                className={`w-[300px] shrink-0 rounded-[22px] border bg-white/70 p-4 ${r.pelanggaran?.length ? "border-gap/60" : r.mode === "live" ? "border-violet ring-1 ring-violet/40" : "border-white/80"}`}>
                 <div className="flex items-start justify-between gap-2">
                   <div>
                     <div className="font-mono text-sm font-semibold text-ink">{r.bar}</div>
                     <div className="font-mono text-[0.62rem] text-ink/45">{r.mode} · {v.latency} {dur(r.latensi_s)}</div>
                   </div>
                   <div className="flex items-center gap-2">
+                    <span className={`rounded-full px-2 py-0.5 font-mono text-[0.55rem] font-bold uppercase ${r.mode === "live" ? "bg-violet text-white" : "border border-ink/20 text-ink/55"}`}>
+                      {r.mode === "live" ? v.badgeReal : v.badgeDemo}
+                    </span>
                     {r.susulan && <span className="rounded-full border border-ink/20 px-2 py-0.5 font-mono text-[0.55rem] uppercase text-ink/55">{v.backfill}</span>}
                     <span className="grid h-6 min-w-6 place-items-center rounded-full bg-violet px-1.5 font-mono text-[0.68rem] font-bold text-white">{r.n_order}</span>
                   </div>

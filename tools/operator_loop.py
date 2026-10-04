@@ -113,6 +113,9 @@ class Worker:
         self.executor = None
         self.exec_fails = 0
         self.last_exec = None
+        self.canary = None
+        self.canary_fails = 0
+        self.last_canary = None
         import alert as alertmod
         self.alert = alertmod.Alerter(log=lambda m: log(m))
 
@@ -186,6 +189,29 @@ class Worker:
                 self.alert.send("eksekutor-gagal", f"eksekutor: {self.exec_fails} putaran gagal berturut-turut; terakhir {type(e).__name__}: {str(e)[:160]}")
             return "gagal"
 
+    def canary_step(self, cv, committer: str, ev=None, pk=None) -> str:
+        """P133 (F-D96): canary uang NYATA, DIBUNGKUS SENDIRI seperti eksekutor - galatnya tidak pernah menggagalkan komit/ungkap (T8 SK-E26).
+        Pencatat on-chain (ExecutionAnchor) dipasang tiap putaran dari kunci committer; tanpa kunci/alamat: catatan tertunda, order tetap jalan."""
+        try:
+            import canary as canmod
+            if self.canary is None:
+                self.canary = canmod.Canary(log=lambda m: log(m), alert=self.alert)
+            anchor = canmod.anchor_address(os.path.join(self.workdir, "deployments", "97.json"))
+            if ev is not None and pk and anchor:
+                self.canary.recorder = canmod.chain_recorder(ev, pk, anchor)
+            st = self.canary.round(os.path.join(self.workdir, "ledger", "paper"), cv, committer)
+            if st != "off" and st != self.last_canary:
+                log(f"canary: {st}")
+                self.last_canary = st
+            self.canary_fails = 0
+            return st
+        except Exception as e:  # noqa: BLE001 - canary tidak boleh mematikan worker komit
+            self.canary_fails += 1
+            log(f"canary GAGAL (komit/ungkap tidak terpengaruh): {type(e).__name__}: {str(e)[:200]}")
+            if self.canary_fails >= FAILS_BEFORE_ALERT:
+                self.alert.send("canary-gagal", f"canary uang nyata: {self.canary_fails} putaran gagal berturut-turut; terakhir {type(e).__name__}: {str(e)[:160]}")
+            return "gagal"
+
     def alerts_for(self, acts, sent: dict = None, missing=()) -> None:
         """P101: aksi yang butuh mata manusia -> alert (dedupe per kunci di `tools/alert.py`)."""
         for a in acts:
@@ -240,6 +266,7 @@ class Worker:
         if pin in ("tolak", "gagal"):
             self.alert.send(f"pin-buku:{pin}", f"pin book_sha {pin.upper()}: {self.last_book}")
         self.exec_step(cv, committer)
+        self.canary_step(cv, committer, ev, pk)
         if time.time() - self.last_summary >= SUMMARY_EVERY_S:
             kinds = {k: sum(1 for a in acts if a.kind == k) for k in ("commit", "reveal", "ok", "skip", "alarm")}
             bal = ev.balance(committer) / 1e18
@@ -294,7 +321,8 @@ def main() -> int:
     log(f"worker mulai | repo {REPO}@{BRANCH} | bot {specs} | poll {POLL_S}s | ungkap +{REVEAL_DELAY_S}s | "
         f"region {os.environ.get('RAILWAY_REPLICA_REGION', '?')} | build {os.environ.get('RAILWAY_GIT_COMMIT_SHA', 'lokal')[:10]} | "
         f"kunci {'ADA' if sc.committer_key() else 'TIDAK ADA (mode rencana)'} | eksekutor {os.environ.get('EXEC_MODE', 'off')} | "
-        f"umpan eksekusi {'nyala' if os.environ.get('EXEC_FEED_TOKEN') else 'mati (EXEC_FEED_TOKEN tidak ada, F-D94 H7)'}")
+        f"umpan eksekusi {'nyala' if os.environ.get('EXEC_FEED_TOKEN') else 'mati (EXEC_FEED_TOKEN tidak ada, F-D94 H7)'} | "
+        f"canary uang nyata {os.environ.get('EXEC_REAL', 'off')}")
     for name, url in PROBES:
         log(f"probe {name}: {probe(url)}")
     w = Worker()

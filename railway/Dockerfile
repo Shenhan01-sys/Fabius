@@ -11,7 +11,7 @@ COPY railway/requirements.txt railway/requirements.txt
 RUN pip install --no-cache-dir -r railway/requirements.txt
 
 COPY engine engine
-COPY tools/evm.py tools/signal_commit.py tools/operator_loop.py tools/paper_tick.py tools/rest_vs_vision.py tools/rest_latency.py tools/shadow_tick.py tools/feed_bars.py tools/pin_book.py tools/alert.py tools/eksekutor.py tools/venue_binance.py tools/exec_feed.py tools/
+COPY tools/evm.py tools/signal_commit.py tools/operator_loop.py tools/paper_tick.py tools/rest_vs_vision.py tools/rest_latency.py tools/shadow_tick.py tools/feed_bars.py tools/pin_book.py tools/alert.py tools/eksekutor.py tools/venue_binance.py tools/exec_feed.py tools/canary.py tools/
 
 ENV PYTHONUTF8=1 PYTHONUNBUFFERED=1 WORKDIR=/tmp/fabius-ledger
 # FABIUS_JOB memilih skrip di tools/ (bawaan: worker `operator_loop`). Service lain di proyek yang sama memakai image ini dengan variabelnya sendiri,
