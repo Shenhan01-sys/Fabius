@@ -29,4 +29,9 @@ validatornya kunci kami sendiri di infrastruktur lain.
 **Bukti 5 Okt (lokal):** 6 tes lulus; mode rencana dengan data asli = 4 komit Fabius siap diminta (B1/B3 10-02 dan 10-03), estimasi ±224k gas
 per permintaan; sensus 459/0; T8 105 baris, 0 masalah.
 
+**Bukti on-chain 5 Okt (19:39-19:42Z):** worker `2f7d3f43` meminta 4 validasi (B1/B3 bar 10-02, 10-03; tx `0x81aa9cc9…`, `0x7ae3b7a5…`,
+`0x21e74f9f…`, `0x1818bf51…`); `validasi.yml` run 37229206657 menjawab keempatnya 100 (SAH; tx `0x283e7b2f…`, `0x8d12d9f3…`, `0x19ca3617…`,
+`0x69ae6a87…`), laporan JSON + sha256 tercetak di log run itu; dibaca ulang lokal: `getSummary` = 4 jawaban, rata-rata 100. Deploy pertama
+gagal memuat modul (`ModuleNotFoundError`: Dockerfile meng-COPY daftar sendiri) - diperbaiki + `engine/tests/test_deploy_files.py` (SK-I6).
+
 **Terkait:** [[05-Ecosystem/01 - ERC-8004 Identity]] · [[TL29 - canary uang nyata]] · [[08-Backlog/06 - Epik Gerbang Sinyal]]
