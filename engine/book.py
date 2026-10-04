@@ -22,6 +22,16 @@ CRYPTO_INSTRUMENTS = frozenset(PERP_UNIVERSE)             # perp kripto mayor; e
 # Daftar ini sengaja statis dan terlihat; kunci baru (v2) yang mengubah vonis = keputusan builder + baris baru di sini.
 SHADOW_ELIGIBLE = (IDENTITY_BOT_ID, "B3-CARRY")
 
+# F-D95 (4 Okt 2026, kata builder): SEMUA bot boleh punya jam maju paper, demi transparansi hackathon. Penantang buku (SHADOW_ELIGIBLE, di atas)
+# TIDAK berubah - bot tanpa gerbang tetap tidak bisa masuk buku tanpa lolos gerbang -> bayangan. Label ada di luar spesifikasi (mengubah spesifikasi =
+# bot baru): INTI = penghuni buku (bot identitas PILIHAN builder, F-D73; bukan bukti terbaik), SEMENTARA = berjalan, bisa diganti bot yang memenuhi
+# kriteria. Semua bot berjam maju satu keluarga F-D16 (BH lintas semuanya; pilihan builder di F-D95).
+FORWARD_BOTS = tuple(SPECS)
+STATUS = {b: ("INTI" if b == IDENTITY_BOT_ID else "SEMENTARA") for b in SPECS}
+# Vonis gerbang v1 yang TERCATAT (epik 07 §7, dicetak ulang 2 Okt; kunci review v1). Ditampilkan apa adanya di samping label; bukan dihitung ulang di sini.
+GATE_V1 = {"B1-TREND": "TOLAK", "B2-RS": "TOLAK", "B3-CARRY": "LOLOS_SHADOW", "B4-LISTING-FADE": "TIDAK_TERUKUR", "B5-CORE-RWA": "TOLAK",
+           "B6-BOUNCE": "TOLAK"}
+
 
 def trades_crypto_only(spec: BotSpec) -> bool:
     """Bot identitas harus memperdagangkan instrumen kripto SAJA (syarat builder), bukan RWA atau campuran."""

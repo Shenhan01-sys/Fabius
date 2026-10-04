@@ -12,6 +12,8 @@ export type Bot = {
   killer: string;
   universe?: string[];
   kill_rules?: { id: string; rule: string }[];
+  status?: "INTI" | "SEMENTARA"; // F-D95: label di luar spesifikasi
+  gate_v1?: string; // vonis gerbang v1 tercatat (LOLOS_SHADOW / TOLAK / TIDAK_TERUKUR)
 };
 
 export type Tick = { date: string; signals: number; held: number; lag_s: number | null; emitted_utc: string | null };

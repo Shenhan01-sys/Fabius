@@ -70,9 +70,9 @@ def init_bot(bot: str, ledger_dir: str, now_ms: int, dry: bool) -> int:
     if bot not in SPECS:
         print(f"{bot}: bot tidak dikenal")
         return 3
-    if bot not in bookmod.SHADOW_ELIGIBLE:
-        print(f"{bot}: DITOLAK - bukan bot yang boleh punya jam maju (boleh: {', '.join(bookmod.SHADOW_ELIGIBLE)}). "
-              "Bot lain lewat gerbang -> shadow -> slot seperti penerbit luar (engine/book.py).")
+    if bot not in bookmod.FORWARD_BOTS:                     # F-D95: semua bot Fabius; bot luar (penerbit) tetap lewat gerbang -> bayangan -> slot
+        print(f"{bot}: DITOLAK - bukan bot yang boleh punya jam maju (boleh: {', '.join(bookmod.FORWARD_BOTS)}). "
+              "Bot luar lewat gerbang -> shadow -> slot seperti penerbit (engine/book.py).")
         return 3
     path = os.path.join(ledger_dir, f"{bot}.jsonl")
     if os.path.exists(path):

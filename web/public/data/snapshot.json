@@ -1,7 +1,7 @@
 {
  "v": 1,
- "generated_utc": "2026-10-04T08:50:01Z",
- "repo_head": "aa418d66b17fe8a30c7dff33c26efeabe9e06737",
+ "generated_utc": "2026-10-04T15:34:44Z",
+ "repo_head": "b1efc1db351e413c9a720cffda808df8c52aa209",
  "bots": [
   {
    "id": "B1-TREND",
@@ -40,7 +40,9 @@
      "id": "B1-K2",
      "rule": "terpicu bila net bot <= median net placebo geser-melingkar"
     }
-   ]
+   ],
+   "status": "INTI",
+   "gate_v1": "TOLAK"
   },
   {
    "id": "B2-RS",
@@ -70,7 +72,9 @@
     "ATOMUSDT",
     "NEARUSDT"
    ],
-   "kill_rules": []
+   "kill_rules": [],
+   "status": "SEMENTARA",
+   "gate_v1": "TOLAK"
   },
   {
    "id": "B3-CARRY",
@@ -109,7 +113,9 @@
      "id": "B3-K2",
      "rule": "terpicu pada kejadian pertama; paper = tidak berlaku"
     }
-   ]
+   ],
+   "status": "SEMENTARA",
+   "gate_v1": "LOLOS_SHADOW"
   },
   {
    "id": "B4-LISTING-FADE",
@@ -124,7 +130,9 @@
    "universe": [
     "event: perp baru di venue"
    ],
-   "kill_rules": []
+   "kill_rules": [],
+   "status": "SEMENTARA",
+   "gate_v1": "TIDAK_TERUKUR"
   },
   {
    "id": "B5-CORE-RWA",
@@ -140,7 +148,9 @@
     "BTCUSDT",
     "XAUUSDT"
    ],
-   "kill_rules": []
+   "kill_rules": [],
+   "status": "SEMENTARA",
+   "gate_v1": "TOLAK"
   },
   {
    "id": "B6-BOUNCE",
@@ -170,7 +180,9 @@
     "ATOMUSDT",
     "NEARUSDT"
    ],
-   "kill_rules": []
+   "kill_rules": [],
+   "status": "SEMENTARA",
+   "gate_v1": "TOLAK"
   }
  ],
  "ledger": {
@@ -359,8 +371,8 @@
  },
  "chain": {
   "id": 97,
-  "block": 134792981,
-  "block_utc": "2026-10-04T08:50:01Z",
+  "block": 134846942,
+  "block_utc": "2026-10-04T15:34:44Z",
   "signal_anchor": "0x9B78200beFbbBe836585d31bd5b6dB32587064f3",
   "lock_registry": "0xcF6fBF95fc04DEd8d670512CEc0723a2246Fbb0C",
   "decision_anchor": "0xDD162AFB5F5f92d5092f845A93660e3B38259330",

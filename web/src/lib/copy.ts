@@ -85,6 +85,16 @@ export const copy = {
         waitlist: "Join the waitlist",
       },
     },
+    label: {
+      INTI: "Core",
+      SEMENTARA: "Provisional",
+      note: {
+        INTI: "Holds the book's identity slot (builder's choice). Not proof of being the best: no bot has passed the forward test yet.",
+        SEMENTARA: "Runs in public, and can be replaced by any bot that meets the criteria.",
+      } as Record<string, string>,
+      gate: "gate v1",
+      verdict: { LOLOS_SHADOW: "passed", TOLAK: "rejected", TIDAK_TERUKUR: "not measurable" } as Record<string, string>,
+    },
     claims: "PAPER ONLY · NO EDGE CLAIMED · FORWARD TEST NOT YET MET · VERIFY, DON'T TRUST · EVERY RULE LOCKED BEFORE THE DATA · ",
     verify: {
       tag: "Verify — no key, no gas",
@@ -360,6 +370,16 @@ export const copy = {
         rings: ["Uji maju", "Telaah hukum", "Mulai"],
         waitlist: "Masuk daftar tunggu",
       },
+    },
+    label: {
+      INTI: "Inti",
+      SEMENTARA: "Sementara",
+      note: {
+        INTI: "Menempati slot identitas buku (pilihan builder). Bukan bukti terbaik: belum ada bot yang lolos uji maju.",
+        SEMENTARA: "Berjalan terbuka, dan bisa digantikan bot mana pun yang memenuhi kriteria.",
+      } as Record<string, string>,
+      gate: "gerbang v1",
+      verdict: { LOLOS_SHADOW: "lolos", TOLAK: "ditolak", TIDAK_TERUKUR: "tak terukur" } as Record<string, string>,
     },
     claims: "PAPER SAJA · TANPA KLAIM EDGE · UJI MAJU BELUM TERPENUHI · PERIKSA, JANGAN PERCAYA · SEMUA ATURAN DIKUNCI SEBELUM DATA · ",
     verify: {

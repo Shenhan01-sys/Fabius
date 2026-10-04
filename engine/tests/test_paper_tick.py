@@ -38,13 +38,22 @@ class EligibilityTests(unittest.TestCase):
             self.assertNotIn(b, book.SHADOW_ELIGIBLE)
         self.assertTrue(set(book.SHADOW_ELIGIBLE) <= set(SPECS))
 
-    def test_init_refuses_ineligible_bots_and_never_overwrites_an_existing_ledger(self):
+    def test_all_fabius_bots_may_run_forward_labelled_core_or_provisional_but_the_book_challengers_are_unchanged(self):
+        self.assertEqual(set(book.FORWARD_BOTS), set(SPECS))                                   # F-D95
+        self.assertEqual(book.STATUS["B1-TREND"], "INTI")
+        self.assertTrue(all(book.STATUS[b] == "SEMENTARA" for b in SPECS if b != book.IDENTITY_BOT_ID))
+        self.assertEqual(book.GATE_V1["B1-TREND"], "TOLAK")                                    # INTI = pilihan builder, bukan lolos gerbang
+        self.assertEqual([b for b, v in book.GATE_V1.items() if v == "LOLOS_SHADOW"], ["B3-CARRY"])
+
+    def test_init_refuses_unknown_bots_and_never_overwrites_an_existing_ledger(self):
         now = now_after(100, 5.0)
         with tempfile.TemporaryDirectory() as d:
-            rc, out = quiet(pt.init_bot, "B2-RS", d, now, False)
+            rc, out = quiet(pt.init_bot, "B9-UNKNOWN", d, now, False)
             self.assertEqual(rc, 3)
-            self.assertIn("DITOLAK", out)
-            self.assertFalse(os.path.exists(os.path.join(d, "B2-RS.jsonl")))
+            self.assertFalse(os.path.exists(os.path.join(d, "B9-UNKNOWN.jsonl")))
+            rc, _ = quiet(pt.init_bot, "B2-RS", d, now, False)                                 # F-D95: B2 kini boleh punya jam maju
+            self.assertEqual(rc, 0)
+            self.assertEqual(ledger.load(os.path.join(d, "B2-RS.jsonl"))[0]["spec_sha"], SPECS["B2-RS"].sha())
             rc, _ = quiet(pt.init_bot, "B1-TREND", d, now, False)
             self.assertEqual(rc, 0)
             recs = ledger.load(os.path.join(d, "B1-TREND.jsonl"))

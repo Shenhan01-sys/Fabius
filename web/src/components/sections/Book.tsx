@@ -7,6 +7,7 @@ import Link from "next/link";
 import { motion } from "motion/react";
 import { useLang } from "../lang";
 import IsoCube from "../ui/IsoCube";
+import StatusBadge from "../ui/StatusBadge";
 import { LINKS } from "@/lib/copy";
 import { short, type Snapshot } from "@/lib/snapshot";
 
@@ -77,6 +78,7 @@ export default function Book({ s }: { s: Snapshot }) {
                   <IsoCube kind="core" size={56} glow />
                   <Link href={`/bot/${o.id}`} className="mt-2 text-center font-display text-[0.78rem] font-[700] leading-tight underline-offset-4 hover:text-violet-2 hover:underline">{o.id}</Link>
                   {o.identity && <div className="mt-1 rounded-full bg-violet/30 px-2 py-0.5 text-[0.6rem] text-violet-2">{t.book.identity}</div>}
+                  {s.bots.find((x) => x.id === o.id) && <div className="mt-1"><StatusBadge b={s.bots.find((x) => x.id === o.id)!} dark gate={false} /></div>}
                 </>
               ) : (
                 <div className="h-8 w-8 rounded-lg border border-dashed border-white/15" />
@@ -97,6 +99,7 @@ export default function Book({ s }: { s: Snapshot }) {
               </div>
               <div>
                 <Link href={`/bot/${c.id}`} className="font-display text-lg font-[700] underline-offset-4 hover:text-violet-2 hover:underline">{c.id}</Link>
+                {s.bots.find((x) => x.id === c.id) && <div className="mt-1"><StatusBadge b={s.bots.find((x) => x.id === c.id)!} dark /></div>}
                 <div className="font-mono text-sm text-violet-2">
                   {t.book.shadow} {c.live}/{SHADOW_NEED} d
                 </div>
@@ -114,6 +117,7 @@ export default function Book({ s }: { s: Snapshot }) {
             <IsoCube kind="empty" size={26} />
             <div>
               <div className="font-display text-sm font-[700]">{b.id}</div>
+              <StatusBadge b={b} dark />
               <div className="font-mono text-[0.62rem] text-white/45">
                 {short(b.spec_sha, 6)} · {t.book.locked}
               </div>

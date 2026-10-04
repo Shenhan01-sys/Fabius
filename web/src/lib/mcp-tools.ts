@@ -103,7 +103,7 @@ export function registerFabiusTools(server: McpServer, s: Snapshot) {
     },
     guard(async () =>
       ok(`${s.bots.length} specifications; forward clock: ${forward.join(", ")}.`, {
-        bots: s.bots.map((b) => ({ id: b.id, method: b.method, parameter: b.param, assets: b.assets, tier: b.tier, spec_sha: b.spec_sha, forward_clock: b.forward, kill_rule_text: b.killer })),
+        bots: s.bots.map((b) => ({ id: b.id, method: b.method, parameter: b.param, assets: b.assets, tier: b.tier, spec_sha: b.spec_sha, forward_clock: b.forward, kill_rule_text: b.killer, status: b.status ?? null, gate_v1: b.gate_v1 ?? null })),
         book: s.book,
         snapshot_utc: s.generated_utc,
       }),

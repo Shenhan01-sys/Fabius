@@ -11,6 +11,7 @@ import type { ReactNode } from "react";
 import { LangProvider, useLang } from "../lang";
 import Nav from "../Nav";
 import IsoCube from "../ui/IsoCube";
+import StatusBadge from "../ui/StatusBadge";
 import { Claims, Footer } from "../sections/Closing";
 import { Tank } from "../sections/ProofFeed";
 import { GLOSS, LINKS } from "@/lib/copy";
@@ -132,6 +133,9 @@ function Head({ s, b, fwd }: { s: Snapshot; b: Bot; fwd: boolean }) {
           <div className="mt-6 inline-flex items-center gap-2 rounded-full bg-ink px-4 py-2 text-sm font-semibold text-white">
             <IsoCube kind={kind} size={18} glow={kind === "core"} />
             {slot >= 0 ? `${v.role.identity} ${String(slot + 1).padStart(2, "0")}` : ch ? `${v.role.challenger} ${shadow}/${SHADOW_NEED} d · gate ${ch.gate}` : v.role.idle}
+          </div>
+          <div className="mt-3 max-w-xl">
+            <StatusBadge b={b} note />
           </div>
         </div>
         <motion.div initial={{ opacity: 0, scale: 0.85, rotate: -6 }} animate={{ opacity: 1, scale: 1, rotate: 0 }} transition={{ type: "spring", stiffness: 70, damping: 12 }}

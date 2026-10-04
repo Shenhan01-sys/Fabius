@@ -28,7 +28,7 @@ ROOT = os.path.dirname(HERE)
 sys.path.insert(0, ROOT)
 sys.path.insert(0, HERE)
 
-from engine import anggaran, fd16, ledger, locks, pembunuh      # noqa: E402
+from engine import anggaran, book as bookmod, fd16, ledger, locks, pembunuh      # noqa: E402
 from engine.spec import SPECS                                    # noqa: E402
 
 OUT = os.path.join(ROOT, "web", "public", "data", "snapshot.json")
@@ -57,7 +57,8 @@ def bots_block() -> list:
         out.append({"id": bid, "method": s.metode, "param": f"{s.param_nama} = {s.param}", "assets": len(s.universe), "tier": s.tier,
                     "spec_sha": s.sha(), "fingerprint": s.fingerprint(), "forward": os.path.exists(p), "killer": s.pembunuh,
                     "universe": list(s.universe),                         # /bot/[id]: universe = deret kubus buku paper
-                    "kill_rules": [{"id": k["id"], "rule": k["aturan"]} for k in kill.get(bid, {}).get("syarat", [])]})
+                    "kill_rules": [{"id": k["id"], "rule": k["aturan"]} for k in kill.get(bid, {}).get("syarat", [])],
+                    "status": bookmod.STATUS.get(bid), "gate_v1": bookmod.GATE_V1.get(bid)})     # F-D95: INTI / SEMENTARA + vonis gerbang v1
     return out
 
 

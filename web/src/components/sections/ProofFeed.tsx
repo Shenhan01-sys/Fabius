@@ -7,6 +7,7 @@ import Link from "next/link";
 import { motion } from "motion/react";
 import { useLang } from "../lang";
 import IsoCube from "../ui/IsoCube";
+import StatusBadge from "../ui/StatusBadge";
 import { addDays, cellState, type CellState, type Snapshot } from "@/lib/snapshot";
 
 const DAYS = 28;
@@ -120,6 +121,7 @@ function Row({ b, s, days, lastClosed }: { b: string; s: Snapshot; days: string[
       <div className="py-3 pr-3">
         <Link href={`/bot/${b}`} className="font-display text-[0.98rem] font-[700] text-ink underline-offset-4 hover:text-violet hover:underline">{b}</Link>
         <div className="font-mono text-[0.66rem] text-ink/45">{bot?.param}</div>
+        {bot && <StatusBadge b={bot} gate={false} />}
       </div>
       {days.map((d, i) => {
         const raw = d > lastClosed ? "future" : cellState(s, b, d);
