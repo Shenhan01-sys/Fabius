@@ -2850,3 +2850,30 @@ Builder: *"Gabisa cuy, saya mau tambah empty project gabisa karena free plan, ja
    memutuskan lain secara eksplisit.
 
 **Terkait:** F-D91 · F-D92 · [[08-Backlog/10 - Epik Eksekusi Venue]] · [[09-Inbox/Session-2026-10-02]] §53
+
+## F-D94 — Runner GitHub TIDAK bisa membaca Binance (451, terukur): ledger eksekusi Binance dibawa dari Railway lewat Gist publik; Aster tetap dibaca langsung · 4 Okt 2026 (WIB)
+
+Builder: *"gas"* (lanjut P119 sesudah /status) + *"vault jgn sampai ketinggalan"*.
+
+1. **Terukur** (run `egress-probe` 37190705904, 4 Okt ±09:00Z, `tools/probe_egress.py`, tanpa kunci): dari runner GitHub `demo-fapi.binance.com`
+   `/fapi/v1/time` dan `/fapi/v1/userTrades` -> **451** "Service unavailable from a restricted location"; `fapi.binance.com` 451 (kontrol, sama dengan 24 Sep);
+   `testnet.binancefuture.com` 200 (tetapi kunci kita = Demo Trading, bukan testnet lama); Aster `fapi.asterdex.com` 200 dan `userTrades` tanpa kunci 401
+   `-2014` (= lapisan otentikasi terjangkau).
+2. **Akibat untuk PRD (epik 10 §3/§4, R-E10):** "penulis ledger eksekusi = rantai GitHub dengan kunci READ-ONLY yang membaca venue" MUSTAHIL untuk
+   Binance (demo maupun prod) dan TETAP BISA untuk Aster (P121). Untuk Binance, pembacaan riwayat order harus terjadi di Railway (IP Singapura).
+3. **Jalur yang dipilih (usulan asisten, menunggu satu langkah builder H7):** eksekutor di Railway menyusun ULANG laporan eksekusi dari venue (order dicari
+   lewat `clientOrderId` deterministik, jadi laporan tidak bergantung memori proses) + tanda ekuitas harian, lalu menambahkannya ke **Gist publik** milik
+   builder (token hanya-Gist: tidak bisa menyentuh repo). Rantai GitHub membaca Gist itu, MEMERIKSA (id order = hash yang dihitung ulang, aset di universe,
+   order sesudah komit di chain, long-only), lalu menulis `ledger/eksekusi/` berantai hash - rantai GitHub tetap PENULIS TUNGGAL ledger. Riwayat revisi
+   Gist (bercap waktu GitHub) jadi jejak kedua.
+   - Ditolak: domain publik Railway (endpoint masuk + disk Railway tidak tetap); token tulis-repo di Railway (memecah penulis tunggal); data ke chain
+     (jalur tx baru, tanpa kebutuhan); kunci di Vercel (Vercel tanpa rahasia).
+   - Batas jujur: untuk mode DEMO, laporan dibaca dengan kunci eksekutor sendiri (kunci terpisah read-only = syarat sebelum S3 bersama service terpisah,
+     F-D93 #3). Isi balasan Binance tidak bertanda tangan, jadi publik tetap memercayai pembaca; yang bisa diperiksa publik: urutan waktu terhadap komit,
+     id deterministik, konsistensi posisi, dan selisih terhadap kertas.
+4. **Langkah builder H7:** buat fine-grained personal access token GitHub dengan HANYA izin akun "Gists: Read and write" (tanpa akses repo), masa berlaku
+   pendek; pasang di variabel Railway `fabius-engine` bernama `EXEC_FEED_TOKEN` lewat dashboard (JANGAN lewat chat). Tanpa token: umpan mati, eksekutor
+   tetap jalan seperti sekarang.
+
+**Terkait:** F-D25 (matriks egress kedaluwarsa) · F-D91..F-D93 · [[08-Backlog/10 - Epik Eksekusi Venue]] · [[09-Inbox/Session-2026-10-02]] §61
+

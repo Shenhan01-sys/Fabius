@@ -76,6 +76,8 @@ Bot lain (B2, B4, B5, B6) tidak di epik ini.
 - **Builder:** pemilik akun dan kunci; satu-satunya yang menyalakan `live` dan menaikkan batas modal.
 - **Eksekutor** (service Railway baru `fabius-exec`, terpisah dari worker komit): memegang kunci TRADE tanpa izin tarik; tidak menulis repo. **Revisi 4 Okt (F-D93):** paket gratis menolak service ketiga -> mode DEMO menumpang `fabius-engine` sebagai langkah terjaga; kunci demo terpasang + terverifikasi di sana. Kunci PROD tetap wajib service terpisah sebelum S3.
 - **Penulis ledger eksekusi** (rantai GitHub, penulis tunggal `ledger/eksekusi/`): memegang kunci READ-ONLY; membaca riwayat trade dari venue.
+  **Revisi 4 Okt (F-D94, terukur):** runner GitHub mendapat 451 dari `demo-fapi`/`fapi.binance.com` -> untuk Binance laporan disusun eksekutor di Railway
+  dan dibawa lewat Gist publik (token hanya-Gist, langkah builder H7); rantai GitHub memeriksa lalu menulis. Aster terjangkau langsung dari runner.
 - **Publik:** memeriksa urutan komit -> order dan selisih eksekusi vs paper.
 
 ## 4. Alur kerja harian (workflow target)
@@ -163,6 +165,7 @@ Aturan naik modal: sesudah 20 hari bursa `live` di dalam semua ambang, builder B
 | H4 | tetapkan modal canary per venue | E4, E5 |
 | H5 | kata "live <venue>" | E4, E5, E6 |
 | H6 | Aster: dompet + agent wallet (`canPerpTrade` saja) | E5 |
+| H7 | **(4 Okt, F-D94)** fine-grained PAT GitHub dengan HANYA "Gists: Read and write" -> variabel Railway `fabius-engine` `EXEC_FEED_TOKEN` (dashboard, bukan chat) | E3 (P119) |
 
 ## 10. Risiko dan pertanyaan terbuka
 
