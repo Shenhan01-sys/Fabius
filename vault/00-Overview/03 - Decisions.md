@@ -2877,3 +2877,37 @@ Builder: *"gas"* (lanjut P119 sesudah /status) + *"vault jgn sampai ketinggalan"
 
 **Terkait:** F-D25 (matriks egress kedaluwarsa) · F-D91..F-D93 · [[08-Backlog/10 - Epik Eksekusi Venue]] · [[09-Inbox/Session-2026-10-02]] §61
 
+## F-D95 — Semua bot dinyalakan: B1 = INTI, B2-B6 = SEMENTARA (bisa diganti), satu keluarga F-D16, empat bot baru menyala bersamaan · 4 Okt 2026 (WIB)
+
+Builder: *"nyalain semua bot aja tapi kasih label yg mendeskripsikan sementara/available untuk diganti jika memenuhi kriteria untuk bot selain bot yg
+menurutmu paling OP"* + jawaban AskUserQuestion: hitungan = **"Ya, satu hitungan"**; urutan = **"Keempatnya sekaligus"**; tx chain = **"Ya, rencana dulu
+lalu jalankan"**.
+
+1. **Label:** B1-TREND = **INTI** (bot identitas; satu-satunya bot instrumen-kripto yang lolos gerbang dan dipilih builder, F-D73). B2-RS, B3-CARRY,
+   B4-LISTING-FADE, B5-CORE-RWA, B6-BOUNCE = **SEMENTARA** ("berjalan untuk transparansi; bisa digantikan bot yang memenuhi kriteria"). B3 tetap dicatat
+   sebagai satu-satunya yang LOLOS gerbang v1 (bayangan n/60). B2/B5/B6 TOLAK di gerbang v1, B4 tak terukur - status itu tetap tampil, tidak dihapus.
+2. **Membalik pagar jam maju:** `engine/book.py::SHADOW_ELIGIBLE` (B1, B3 saja) diganti daftar bot berjam maju = keenamnya. Keputusan lama (bot tanpa
+   gerbang tidak diberi jam maju gratis) DICABUT untuk tujuan transparansi hackathon; menjalankan semua bot dan memamerkan yang kebetulan menang tetap
+   dicegah oleh: label SEMENTARA, semua bot tampil termasuk yang kalah, dan F-D16 BH lintas SEMUA bot berjam maju.
+3. **Satu keluarga F-D16** (pilihan builder, bukan rekomendasi asisten): BH alpha 0,10 kini lintas 6 bot, bukan 2 -> B1/B3 butuh p lebih kecil untuk
+   lolos uji jual. Parameter F-D16 v1 yang terkunci TIDAK berubah; yang berubah hanya jumlah bot di keluarga.
+4. **Urutan:** spesifikasi B2/B4/B5/B6 dikunci di LockRegistry oleh committer DULU (rencana tx -> kata builder), lalu jam maju keempatnya dimulai
+   BERSAMAAN sesudah data B4 (kejadian listing) dan B5 (spot emas PAXG) siap.
+
+**Terkait:** F-D16 · F-D73 · F-D84 · F-D85 · [[09-Inbox/Session-2026-10-02]] §69
+
+## F-D96 — Kunci API uang asli boleh di `fabius-engine` (paket gratis), dengan mitigasi; F-D93 #3 dicabut · 4 Okt 2026 (WIB)
+
+Builder: *"YG gratis dulu, kalau emg ga kuat baru upgrade, tp usahakan semaksimal mungkin yg free yak"* (jawaban atas "kunci API Binance ASLI disimpan
+di mana?", sesudah risikonya ditulis: satu container memegang kunci committer + kunci uang asli; satu bocor = dua-duanya).
+
+1. F-D93 #3 ("kunci PROD tidak boleh serumah dengan kunci committer") DICABUT untuk tahap canary. Upgrade Railway hanya bila paket gratis tidak kuat.
+2. **Mitigasi wajib di kode (sebelum kunci asli dipasang):** (a) kunci asli memakai variabel TERPISAH dari kunci demo; demo tetap mengukur B1 penuh;
+   (b) cek izin saat start: tarik HARUS mati, futures HARUS hidup (R-E6, `apiRestrictions`), gagal = tidak start; (c) batas keras notional uang asli
+   (bawaan 10 USDT, F-D92) yang tidak bisa dilewati rencana; (d) izin builder bertanggal kedaluwarsa (bukan harian); (e) uang asli hanya membuka posisi
+   bila saldo cukup untuk order terkecil - selain itu dicatat `dilewati`; (f) setiap isi order uang asli diberi label NYATA dan dicatat on-chain dengan
+   metadata rinci (kontrak baru, deploy atas kata builder).
+3. Label: catatan eksekusi `uang: NYATA` vs `DEMO`; halaman /bot dan /status memisahkan keduanya.
+
+**Terkait:** F-D92 · F-D93 · F-D94 · [[08-Backlog/10 - Epik Eksekusi Venue]] · [[09-Inbox/Session-2026-10-02]] §69
+
