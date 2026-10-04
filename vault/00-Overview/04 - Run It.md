@@ -77,6 +77,7 @@ python -X utf8 tools/kertas_eksekusi.py ringkas        # tracking error vs paper
 # P119 umpan laporan (F-D94): variabel Railway EXEC_FEED_TOKEN = token GitHub HANYA "Gists: Read and write" (dashboard, bukan chat); log start: 'umpan eksekusi nyala'
 # P133 canary uang NYATA (F-D96): variabel Railway fabius-engine BINANCE_REAL_API_KEY/SECRET (Futures ON, Withdraw OFF), EXEC_REAL=canary,
 #   EXEC_LIVE_OK=binance:sampai:YYYY-MM-DD, EXEC_REAL_ASSET (XRPUSDT), EXEC_REAL_MAX_USDT (<= 10). Log start: 'canary uang nyata canary'; tiap isi -> ExecutionAnchor
+# F-D97 sakelar publik: config/uang_nyata.json {"aktif": true} (edit di GitHub; berlaku bar BERIKUTNYA). false = tanpa order baru, posisi ditutup bar berikutnya
 python -X utf8 tools/eksekusi_ledger.py run        # rantai GitHub menjalankannya tiap 5 menit: Gist -> diperiksa -> ledger/eksekusi/ (exit 1 ALARM, 3 tak terbaca)
 python -X utf8 tools/eksekusi_ledger.py periksa    # penjaga luar: tick dikomit >= 60 menit tanpa laporan = ALARM
 python -X utf8 tools/eksekusi_ledger.py ringkas    # fee / slip / geser / selisih vs kertas / latensi / tracking vs ambang PRD §6

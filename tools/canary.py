@@ -12,8 +12,18 @@ Lingkungan (variabel Railway `fabius-engine`, dipasang builder lewat dashboard -
   EXEC_REAL_ASSET          aset B1 yang diikuti (bawaan XRPUSDT: order terkecil ±5,1 USDT, likuid)
   EXEC_REAL_MAX_USDT       plafon notional (bawaan 10); batas keras kode HARD_MAX_USDT = 10 (F-D92) tidak bisa dilewati env
 
-Aturan (T8 SK-E22..SK-E26):
+SAKELAR PUBLIK (F-D97, permintaan builder "bikin toggle aja yg bisa dynamic nyalain real trade dan paper trade"): berkas repo
+`config/uang_nyata.json` `{"aktif": true|false}` - dibalik builder lewat edit berkas di GitHub (tanpa Railway, tanpa redeploy), riwayatnya publik.
+Uang nyata hanya bila KEDUANYA: variabel Railway di atas (bersenjata) DAN sakelar `aktif: true`. Sakelar dibaca SEKALI per bar, saat bar baru
+dieksekusi (berlaku mulai bar BERIKUTNYA, bukan di tengah bar): satu bar = satu laporan, id order (venue, bot, bar, aset, sisi) dan kunci
+ExecutionAnchor tidak pernah bertabrakan. Sakelar mati / tak terbaca + posisi datar = tidak ada order, tidak ada laporan; sakelar mati + posisi masih
+terbuka = bar itu dieksekusi dengan target datar (tutup reduce-only) dan dilaporkan. Laporan membawa `sakelar: nyala|mati`. Paper (ledger resmi)
+dan akun demo berjalan terus apa pun posisi sakelar. Keluar darurat di tengah bar = tutup manual di aplikasi Binance; canary membaca posisi nyata
+di bar berikutnya (isi manual itu tidak masuk umpan).
+
+Aturan (T8 SK-E22..SK-E27):
   - bukti dulu: tidak ada order sebelum komit bar itu ada di SignalAnchor (R-E1); tick lebih tua dari kunci = tidak dieksekusi;
+  - bar yang sudah ada di ledger publik `ledger/eksekusi/binance-live/B1-TREND.jsonl` tidak dieksekusi ulang (worker restart / redeploy);
   - B1 memegang aset -> canary memegang anggaran = min(plafon, ekuitas akun) x (1 - 0,2 %) di aset itu; B1 flat -> tutup (reduce-only);
   - anggaran < order terkecil venue -> `dilewati` (dicatat), bukan dipaksa; posisi yang dimaksud > plafon = BERHENTI;
   - leverage dipaksa 1x; akun mode hedge = BERHENTI; kunci dengan izin tarik / tanpa futures = tidak start;
@@ -46,6 +56,19 @@ VENUE = "binance-live"
 HARD_MAX_USDT = 10.0
 CADANGAN = 0.002
 CONSENT_RE = re.compile(r"^binance:sampai:(\d{4}-\d{2}-\d{2})$")
+TOGGLE_REL = os.path.join("config", "uang_nyata.json")
+
+
+def toggle_on(ledger_dir: str) -> bool:
+    """Sakelar publik (F-D97) di klon repo yang memuat `ledger_dir` (= <repo>/ledger/paper). Tidak ada / tak terbaca / bukan true = MATI."""
+    p = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(ledger_dir))), TOGGLE_REL)
+    try:
+        with open(p, encoding="utf-8") as f:
+            return json.load(f).get("aktif") is True
+    except (OSError, ValueError, AttributeError):
+        return False
+
+
 FILL_TUPLE = "(bytes32,bytes32,bytes32,bytes32,uint64,uint8,bool,uint64,uint64,uint128,uint128,uint128,bytes32,bytes32)"
 SIG_RECORD_BATCH = f"recordBatch({FILL_TUPLE}[])"
 E8 = 10 ** 8
@@ -75,14 +98,14 @@ class Canary:
                  venue_factory: Optional[Callable[[dict], object]] = None, today: Callable[[], str] = _today,
                  now_ms: Callable[[], int] = lambda: int(time.time() * 1000), sleep: Callable[[float], None] = time.sleep,
                  feed_factory: Callable[[str], object] = lambda token: xf.GistFeed(token),
-                 recorder: Optional[Callable[[list], str]] = None):
+                 recorder: Optional[Callable[[list], str]] = None, toggle: Callable[[str], bool] = toggle_on):
         self.envvars = os.environ if env is None else env
         self.log, self.alert, self.today, self.now_ms, self.sleep = log, alert, today, now_ms, sleep
         self.venue_factory = venue_factory or (lambda e: vb.BinanceFutures("prod", key=e.get("BINANCE_REAL_API_KEY", ""),
                                                                            secret=e.get("BINANCE_REAL_SECRET_KEY", "")))
-        self.feed_factory, self.feed, self.recorder = feed_factory, None, recorder
+        self.feed_factory, self.feed, self.recorder, self.toggle = feed_factory, None, recorder, toggle
         self.venue = None
-        self.done: Optional[str] = None
+        self.done: Optional[str] = None                    # bar terakhir yang diproses (sakelar dibaca sekali per bar)
         self.halted: Optional[str] = None
         self.leverage_ok = False
         self.pending_feed: Dict[str, dict] = {}
@@ -160,17 +183,23 @@ class Canary:
         tk = max(ticks, key=lambda r: r["asof"])
         bar = tk["asof_date"]
         if self.done == bar:
-            return f"bar {bar} sudah dieksekusi"
-        asof_s = sc.asof_s_of(tk)
+            return f"bar {bar} sudah diproses"
+        if bar in self.public_bars(ledger_dir):
+            self.done = bar
+            return f"bar {bar} sudah ada di ledger publik {VENUE}: tidak dieksekusi ulang"
+        on = self.toggle(ledger_dir)
+        if not on and abs(float(v.positions().get(a, 0.0))) == 0:
+            self.done = bar
+            return f"bar {bar}: sakelar uang nyata MATI ({TOGGLE_REL}), posisi datar - tidak ada order, tidak ada laporan"
         locked = cv.locked_at(committer, BOT, spec.sha())
-        if locked == 0 or locked > asof_s:
+        if locked == 0 or locked > sc.asof_s_of(tk):
             self.done = bar
             return f"bar {bar} lebih tua dari kunci: tidak dieksekusi"
-        cid = sc.commit_id(committer, BOT, spec.sha(), asof_s)
+        cid = sc.commit_id(committer, BOT, spec.sha(), sc.asof_s_of(tk))
         cm = cv.get_commit(cid)
         if int(str(cm["committer"]), 16) == 0:
             return f"bar {bar} TUNDA: komit belum ada di SignalAnchor (bukti dulu, uang kemudian)"
-        hold = abs(float(tk.get("targets", {}).get(a, 0.0))) > 1e-12
+        hold = on and abs(float(tk.get("targets", {}).get(a, 0.0))) > 1e-12
         filt = v.filters([a])
         bid, ask = v.book([a]).get(a, (0.0, 0.0))
         px = (bid + ask) / 2
@@ -182,7 +211,7 @@ class Canary:
         problems = ex.guard(p, modal=c["max"], universe=[a], price={a: px}, long_only=True)
         if problems:
             return self.stop(f"pagar menolak rencana canary {bar}: {problems[:3]}")
-        self.log(f"canary NYATA {a} bar {bar}: B1 {'memegang' if hold else 'flat'}, anggaran {budget:.4f} USDT, {len(p.orders)} order, "
+        self.log(f"canary NYATA {a} bar {bar}: sakelar {'NYALA' if on else 'MATI -> tutup'}, B1 {'memegang' if hold else 'flat'}, anggaran {budget:.4f} USDT, {len(p.orders)} order, "
                  f"{len(p.dilewati)} dilewati")
         for x, why in p.dilewati:
             self.log(f"  dilewati {x}: {why}")
@@ -202,11 +231,17 @@ class Canary:
             return self.stop(f"posisi canary {bar} tidak cocok sesudah order: {diff}")
         self.done = bar
         # laporan untuk SETIAP bar yang diproses (juga 0 order): penjaga luar SK-E17 menuntut laporan tiap bar terkomit; on-chain hanya isi nyata
-        self.pending_feed[bar] = {"komit_s": int(cm.get("committedAt") or 0), "dilewati": list(p.dilewati), "px": {a: px}, "cid": cid}
+        self.pending_feed[bar] = {"komit_s": int(cm.get("committedAt") or 0), "dilewati": list(p.dilewati), "px": {a: px}, "cid": cid, "sakelar": on}
         if p.orders:
             if self.alert is not None:
                 self.alert.send(f"canary:{bar}", f"REAL TRADE canary {a} bar {bar}: {len(p.orders)} order uang nyata, posisi cocok", sekali=True)
         return f"bar {bar} canary: {len(p.orders)} order, {len(p.dilewati)} dilewati"
+
+    @staticmethod
+    def public_bars(ledger_dir: str) -> set:
+        """Bar yang sudah ditulis rantai GitHub ke ledger eksekusi publik venue ini (klon repo yang sama dengan `ledger_dir`)."""
+        p = os.path.join(os.path.dirname(os.path.abspath(ledger_dir)), "eksekusi", VENUE, f"{BOT}.jsonl")
+        return {r.get("bar") for r in ledger.load(p)} if os.path.exists(p) else set()
 
     # ---------------------------------------------------------------- publikasi: umpan Gist + catatan on-chain
     def flush(self, c: dict) -> None:
@@ -216,6 +251,7 @@ class Canary:
             try:
                 rec = xf.build_report(self.venue, VENUE, "live", BOT, bar, [c["asset"]], job["komit_s"], c["max"], job["dilewati"], self.now_ms(),
                                       job["px"])
+                rec["sakelar"] = "nyala" if job.get("sakelar") else "mati"         # F-D97: ikut di-hash (reportHash on-chain)
             except Exception as e:  # noqa: BLE001
                 self.note(f"canary: laporan {bar} TERTUNDA ({type(e).__name__}: {str(e)[:120]})")
                 continue

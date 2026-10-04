@@ -69,6 +69,14 @@ async function execLedger(bot: string, venue: string = EXEC_VENUE): Promise<{ ba
   return (await res.text()).split("\n").filter((l) => l.trim()).map((l) => JSON.parse(l));
 }
 
+/** Sakelar publik uang nyata (F-D97, config/uang_nyata.json, dibaca canary sekali per bar). Berkas tidak ada = MATI. */
+async function realSwitch(): Promise<boolean> {
+  const res = await fetch(`${RAW}/config/uang_nyata.json`, { next: { revalidate: 120 } });
+  if (res.status === 404) return false;
+  if (!res.ok) throw new Error(`sakelar uang nyata: HTTP ${res.status} dari GitHub`);
+  return ((await res.json()) as { aktif?: unknown }).aktif === true;
+}
+
 async function runs(workflow: string): Promise<Run[]> {
   const res = await fetch(`${API}/${workflow}/runs?per_page=10`, {
     headers: { accept: "application/vnd.github+json", "user-agent": "fabius-status" },
@@ -84,6 +92,7 @@ async function botStatus(s: Snapshot, bot: string, bar: string, now: number): Pr
   const st: Station[] = [{ k: "close", lamp: "ok", code: "CLOSED", at: iso(close) }];
   const execP = EXEC_BOTS.includes(bot) ? settle(() => execLedger(bot)) : null;
   const realP = EXEC_BOTS.includes(bot) ? settle(() => execLedger(bot, "binance-live")) : null;          // canary uang nyata (P133)
+  const switchP = EXEC_BOTS.includes(bot) ? settle(realSwitch) : null;                                    // sakelar publik (F-D97)
   const kertasP = KERTAS_BOTS.includes(bot) ? settle(() => Promise.all(KERTAS.map((k) => kertasLast(k.venue, bot, k.modal, k.jadwal)))) : null;
 
   // 02 tick
@@ -158,8 +167,10 @@ async function botStatus(s: Snapshot, bot: string, bar: string, now: number): Pr
       else if (rec) {
         const real = realP ? await realP : null;
         const rr = real && real.ok && real.v ? real.v.find((r) => r.bar === bar) : undefined;
+        const sw = switchP ? await switchP : null;
+        const on = sw && sw.ok ? sw.v : null; // tak terbaca = kode lama, tanpa klaim sakelar
         st.push(rr ? { k: "exec", lamp: rr.pelanggaran?.length ? "alarm" : "ok", code: "EXEC_OK_REAL", at: null, detail: `${rec.n_order} demo · ${rr.n_order} REAL` }
-                   : { k: "exec", lamp: "ok", code: "EXEC_OK", at: null, detail: `${rec.n_order}` });
+                   : { k: "exec", lamp: "ok", code: on === null ? "EXEC_OK" : on ? "EXEC_OK_SWITCH_ON" : "EXEC_OK_SWITCH_OFF", at: null, detail: `${rec.n_order}` });
       }
       else if (cAt == null) st.push({ k: "exec", lamp: "later", code: "NEEDS_COMMIT", at: null });
       else if (now - cAt >= EXEC_GRACE_S) st.push({ k: "exec", lamp: "alarm", code: "EXEC_MISSING", at: null, detail: `${Math.round((now - cAt) / 60)}` });

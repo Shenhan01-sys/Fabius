@@ -327,9 +327,14 @@ def run(lines: Sequence[str], cv, committer: str, close: Callable[[str, int], fl
 
 # ---------------------------------------------------------------- penjaga luar + ringkasan
 
-def periksa(cv, committer: str, now_s: int, out_dir: str = OUT, paper_dir: str = PAPER) -> Tuple[int, List[str]]:
+def periksa(cv, committer: str, now_s: int, out_dir: str = OUT, paper_dir: str = PAPER,
+            sakelar: Optional[Callable[[str], bool]] = None) -> Tuple[int, List[str]]:
     """Untuk tiap (venue, bot) yang SUDAH punya ledger eksekusi: tick resmi terakhir dikomit > 60 menit lalu tanpa laporan = ALARM (SK-E16).
+    Pengecualian F-D97: venue uang nyata (`binance-live`) dengan sakelar publik `config/uang_nyata.json` MATI dan baris terakhir berposisi datar
+    tidak menuntut laporan (canary memang diam). Sakelar mati tetapi posisi terakhir masih terbuka = tetap dituntut (penutupan harus terjadi).
     -> (0 OK / 1 ALARM / 2 MENUNGGU, baris)."""
+    from canary import VENUE as LIVE, toggle_on
+    sakelar = sakelar or toggle_on
     code, rows = 0, []
     if not os.path.isdir(out_dir):
         return 0, ["belum ada ledger eksekusi (umpan belum menyala)"]
@@ -338,7 +343,12 @@ def periksa(cv, committer: str, now_s: int, out_dir: str = OUT, paper_dir: str =
             bot = name[:-6]
             if not name.endswith(".jsonl") or bot not in SPECS:
                 continue
-            have = {r["bar"] for r in ledger.load(os.path.join(out_dir, venue, name))}
+            rows_v = ledger.load(os.path.join(out_dir, venue, name))
+            have = {r["bar"] for r in rows_v}
+            last_pos = rows_v[-1].get("posisi") if rows_v else {}                  # None (susulan) = tidak diketahui = tetap dituntut
+            if venue == LIVE and not sakelar(out_dir) and last_pos is not None and not any(abs(float(q)) > 0 for q in last_pos.values()):
+                rows.append(f"{venue} {bot}: sakelar uang nyata MATI, posisi terakhir datar - tidak ada laporan yang dituntut")
+                continue
             ticks = ticks_of(bot, paper_dir)
             if not ticks:
                 continue

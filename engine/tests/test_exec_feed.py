@@ -248,6 +248,26 @@ class LedgerTests(unittest.TestCase):
         self.assertEqual(code, 1)
         self.assertIn("tanpa laporan eksekusi", rows[0])
 
+    def test_the_outside_watch_spares_the_real_money_venue_only_when_the_switch_is_off_and_the_last_position_is_flat(self):
+        p = el.path_of("binance-live", "B1-TREND", self.out)
+        os.makedirs(os.path.dirname(p))
+
+        def last_row(posisi):
+            with open(p, "w", encoding="utf-8") as f:
+                print(json.dumps(ledger.seal({"type": "eksekusi", "venue": "binance-live", "bar": "2026-10-01", "posisi": posisi}, ledger.ZERO)), file=f)
+
+        def watch(on):
+            return el.periksa(LedgerChain(), COMMITTER, COMMIT_S + 3700, out_dir=self.out, paper_dir=self.paper, sakelar=lambda d: on)
+        last_row({"XRPUSDT": 0.0})
+        code, rows = watch(False)
+        self.assertEqual(code, 0)
+        self.assertIn("sakelar uang nyata MATI", rows[0])
+        self.assertEqual(watch(True)[0], 1)                                             # sakelar nyala: laporan tiap bar dituntut
+        last_row({"XRPUSDT": 0.099})
+        self.assertEqual(watch(False)[0], 1)                                            # mati tetapi posisi masih terbuka: penutupan dituntut
+        last_row(None)
+        self.assertEqual(watch(False)[0], 1)                                            # posisi tak diketahui = tetap dituntut
+
     def test_tracking_error_uses_midnight_marks_and_late_marks_are_kept_but_not_used(self):
         def mark(day, eq, minutes=3):
             t = ledger.iso_ms(f"{day}T00:00:00Z") + minutes * 60_000

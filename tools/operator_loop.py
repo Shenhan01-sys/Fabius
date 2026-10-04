@@ -79,14 +79,19 @@ def git(*args: str, cwd: str = None, timeout: int = 300) -> str:
     return r.stdout.strip()
 
 
+SPARSE = ("ledger", "deployments", "config")       # config/ = sakelar uang nyata publik (F-D97, tools/canary.py)
+
+
 def sync(workdir: str = WORKDIR) -> str:
-    """Clone dangkal + sparse (hanya ledger/ dan deployments/; repo penuh ~145 MB) sekali, lalu fetch + reset tiap putaran. -> sha HEAD."""
+    """Clone dangkal + sparse (hanya ledger/, deployments/, config/; repo penuh ~145 MB) sekali, lalu fetch + reset tiap putaran. -> sha HEAD."""
     if not os.path.isdir(os.path.join(workdir, ".git")):
         if os.path.exists(workdir):
             shutil.rmtree(workdir)
         git("clone", "--depth", "1", "--filter=blob:none", "--sparse", "--branch", BRANCH, REPO, workdir)
-        git("sparse-checkout", "set", "ledger", "deployments", cwd=workdir)
+        git("sparse-checkout", "set", *SPARSE, cwd=workdir)
     else:
+        if set(git("sparse-checkout", "list", cwd=workdir).split()) != set(SPARSE):   # klon lama (sebelum F-D97) tanpa config/
+            git("sparse-checkout", "set", *SPARSE, cwd=workdir)
         git("fetch", "--depth", "1", "origin", BRANCH, cwd=workdir)
         git("reset", "--hard", "FETCH_HEAD", cwd=workdir)
     return git("rev-parse", "HEAD", cwd=workdir)

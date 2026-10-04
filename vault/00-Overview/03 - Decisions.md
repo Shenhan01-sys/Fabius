@@ -2913,3 +2913,22 @@ di mana?", sesudah risikonya ditulis: satu container memegang kunci committer + 
 
 **Terkait:** F-D92 · F-D93 · F-D94 · [[08-Backlog/10 - Epik Eksekusi Venue]] · [[09-Inbox/Session-2026-10-02]] §69
 
+## F-D97 — Sakelar publik uang nyata `config/uang_nyata.json`, dibaca sekali per bar; repo dikirim MATI · 5 Okt 2026 (WIB)
+
+Builder: *"Palingan kita bikin toggle aja yg bisa dynamic nyalain real trade dan paper trade gitu kah? Soalnya saya belum brati kehilangan duit 10
+usdt saya."*
+
+1. Uang nyata butuh KEDUANYA: variabel Railway `fabius-engine` bersenjata (F-D96: `EXEC_REAL=canary`, kunci asli, `EXEC_LIVE_OK` bertanggal) DAN
+   sakelar repo `config/uang_nyata.json` `{"aktif": true}`. Repo dikirim `false`. Selain `true` persis (tidak ada, tak terbaca, `"true"`, `1`) = MATI.
+2. Dibalik lewat edit berkas di GitHub (tanpa Railway, tanpa redeploy). Riwayat git berkas itu = catatan publik kapan uang nyata dinyalakan/dimatikan.
+3. Sakelar dibaca SEKALI per bar, saat bar baru dieksekusi; dibalik di tengah bar = berlaku bar BERIKUTNYA. Alasan: id order = hash (venue, bot, bar,
+   aset, sisi), kunci ExecutionAnchor = (pelapor, venue, id order), dan ledger eksekusi menerima satu laporan per bar dengan bar naik ketat; membalik di
+   tengah bar akan menabrak ketiganya. Keluar darurat di tengah bar = tutup manual di aplikasi Binance (isi manual itu tidak masuk umpan).
+4. MATI + posisi datar = tidak ada order, tidak ada laporan; MATI + posisi terbuka = bar berikutnya dieksekusi dengan target datar (tutup reduce-only),
+   dilaporkan `sakelar: mati` dan dicatat on-chain. Laporan membawa `sakelar: nyala|mati` (ikut di-hash ke `reportHash`).
+5. Penjaga luar `periksa` tidak menuntut laporan `binance-live` hanya bila sakelar MATI DAN posisi baris terakhir datar.
+6. Paper (ledger resmi), kertas-venue, dan akun demo berjalan terus apa pun nilai sakelar. Worker yang restart tidak mengeksekusi ulang bar yang sudah
+   ada di ledger publik `binance-live`.
+
+**Terkait:** F-D92 · F-D96 · [[04-Tools/TL29 - canary uang nyata]] · [[07-Testing/T8 - Semantik Kegagalan Operator]] SK-E27..SK-E29 ·
+[[09-Inbox/Session-2026-10-02]] §73

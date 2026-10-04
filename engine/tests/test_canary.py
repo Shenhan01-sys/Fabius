@@ -1,4 +1,5 @@
-"""P133 (F-D92 S3, F-D96): canary uang NYATA (tools/canary.py) - satu aset, <= 10 USDT, mengikuti B1. Venue, chain, Gist, pencatat on-chain dipalsukan."""
+"""P133 (F-D92 S3, F-D96, F-D97): canary uang NYATA (tools/canary.py) - satu aset, <= 10 USDT, mengikuti B1, sakelar publik per bar.
+Venue, chain, Gist, pencatat on-chain dipalsukan."""
 import json
 import os
 import shutil
@@ -40,14 +41,16 @@ class BadKeyVenue(FeedVenue):
 class CanaryTests(unittest.TestCase):
     def setUp(self):
         self.tmp = tempfile.mkdtemp()
+        self.paper = os.path.join(self.tmp, "ledger", "paper")                 # tata letak klon repo worker: <repo>/ledger/paper
+        os.makedirs(self.paper)
         self.write_tick(BAR, "2026-10-02", {"XRPUSDT": 0.0625, "BTCUSDT": 0.0625})
-        self.logs, self.alert, self.recorded = [], FakeAlert(), []
+        self.logs, self.alert, self.recorded, self.switch = [], FakeAlert(), [], [True]
 
     def tearDown(self):
         shutil.rmtree(self.tmp, ignore_errors=True)
 
     def write_tick(self, asof, date, targets, mode="w"):
-        with open(os.path.join(self.tmp, "B1-TREND.jsonl"), mode, encoding="utf-8") as f:
+        with open(os.path.join(self.paper, "B1-TREND.jsonl"), mode, encoding="utf-8") as f:
             f.write(json.dumps({"type": "tick", "asof": asof, "asof_date": date, "targets": targets}) + "\n")
 
     def canary(self, venue, env=None, gist=None, recorder="ok"):
@@ -58,62 +61,110 @@ class CanaryTests(unittest.TestCase):
             return "0xtx"
         return cn.Canary(env=env or ENV, log=self.logs.append, alert=self.alert, venue_factory=lambda e: venue, today=lambda: "2026-10-04",
                          now_ms=lambda: (COMMIT_S + 200) * 1000, sleep=lambda s: None,
-                         feed_factory=lambda tok: cn.xf.GistFeed(tok, http=gist or FakeGist(), log=lambda s: None), recorder=rec)
+                         feed_factory=lambda tok: cn.xf.GistFeed(tok, http=gist or FakeGist(), log=lambda s: None), recorder=rec,
+                         toggle=lambda d: self.switch[0])
 
     def test_off_by_default_and_refuses_without_keys_consent_or_with_an_outside_asset(self):
-        self.assertEqual(cn.Canary(env={}, venue_factory=lambda e: 1 / 0).round(self.tmp, Chain(), COMMITTER), "off")
+        self.assertEqual(cn.Canary(env={}, venue_factory=lambda e: 1 / 0).round(self.paper, Chain(), COMMITTER), "off")
         for bad in ({"BINANCE_REAL_API_KEY": ""}, {"EXEC_LIVE_OK": ""}, {"EXEC_LIVE_OK": "binance:2026-10-04"},
                     {"EXEC_LIVE_OK": "binance:sampai:2026-10-03"}, {"EXEC_REAL_ASSET": "PEPEUSDT"}):
             v = FeedVenue()
-            self.assertEqual(self.canary(v, env=dict(ENV, **bad)).round(self.tmp, Chain(), COMMITTER), "tolak")
+            self.assertEqual(self.canary(v, env=dict(ENV, **bad)).round(self.paper, Chain(), COMMITTER), "tolak")
             self.assertEqual(v.posts, 0)
 
     def test_follows_b1_on_one_asset_publishes_the_report_and_records_real_fills_on_chain(self):
         v, g = FeedVenue(), FakeGist()
         c = self.canary(v, gist=g)
-        self.assertIn("TUNDA", c.round(self.tmp, Chain(committed=False), COMMITTER))           # bukti dulu
+        self.assertIn("TUNDA", c.round(self.paper, Chain(committed=False), COMMITTER))           # bukti dulu
         self.assertEqual(v.posts, 0)
-        self.assertIn("canary: 1 order", c.round(self.tmp, Chain(), COMMITTER))
+        self.assertIn("canary: 1 order", c.round(self.paper, Chain(), COMMITTER))
         self.assertEqual(v.pos, {"XRPUSDT": 0.099})                                             # 10 x 0,998 / 100, dibulatkan ke lot 0,001
         self.assertEqual(v.lev, [("XRPUSDT", 1)])
         rec = json.loads(g.lines()[0])
-        self.assertEqual((rec["venue"], rec["mode"], rec["bar"], len(rec["orders"])), ("binance-live", "live", "2026-10-02", 1))
+        self.assertEqual((rec["venue"], rec["mode"], rec["bar"], len(rec["orders"]), rec["sakelar"]), ("binance-live", "live", "2026-10-02", 1, "nyala"))
         fill = self.recorded[0][0]
         self.assertEqual(fill[0], sc.commit_id(COMMITTER, "B1-TREND", SPECS["B1-TREND"].sha(), sc.asof_s_of({"asof": BAR})))
         self.assertTrue(fill[6])                                                                 # real = true
         self.assertEqual((fill[5], fill[9]), (1, 9_900_000))                                     # BUY, qty 0,099 x 1e8
         self.assertTrue(any(k.startswith("canary:2026-10-02") for k, _ in self.alert.sent))
-        self.assertIn("sudah dieksekusi", c.round(self.tmp, Chain(), COMMITTER))
+        self.assertIn("sudah diproses", c.round(self.paper, Chain(), COMMITTER))
         self.assertEqual((v.posts, len(self.recorded)), (1, 1))
         self.write_tick(BAR + 86_400_000, "2026-10-03", {"BTCUSDT": 0.0625}, mode="a")         # B1 flat di XRP -> canary menutup
-        self.assertIn("canary: 1 order", c.round(self.tmp, Chain(), COMMITTER))
+        self.assertIn("canary: 1 order", c.round(self.paper, Chain(), COMMITTER))
         self.assertEqual(v.pos.get("XRPUSDT", 0), 0)
         self.assertEqual(self.recorded[1][0][5], 2)                                              # SELL
 
     def test_too_little_money_is_skipped_and_the_env_cap_cannot_exceed_ten_usdt(self):
         poor = FeedVenue(equity=4.0)
         g = FakeGist()
-        self.assertIn("0 order, 1 dilewati", self.canary(poor, gist=g).round(self.tmp, Chain(), COMMITTER))
+        self.assertIn("0 order, 1 dilewati", self.canary(poor, gist=g).round(self.paper, Chain(), COMMITTER))
         self.assertEqual(poor.posts, 0)
         self.assertEqual([json.loads(x)["orders"] for x in g.lines()], [[]])                    # laporan tetap ada (0 order) untuk penjaga luar
         self.assertEqual(self.recorded, [])                                                      # tidak ada isi = tidak ada catatan on-chain
         rich = FeedVenue(equity=5000.0)
-        self.canary(rich, env=dict(ENV, EXEC_REAL_MAX_USDT="50")).round(self.tmp, Chain(), COMMITTER)
+        self.canary(rich, env=dict(ENV, EXEC_REAL_MAX_USDT="50")).round(self.paper, Chain(), COMMITTER)
         self.assertEqual(rich.pos, {"XRPUSDT": 0.099})                                           # tetap <= 10 USDT
 
     def test_an_unsafe_key_stops_the_canary_and_a_failed_chain_record_stays_pending(self):
         c = self.canary(BadKeyVenue())
-        self.assertEqual(c.round(self.tmp, Chain(), COMMITTER), "berhenti")
+        self.assertEqual(c.round(self.paper, Chain(), COMMITTER), "berhenti")
         self.assertIn("izin tarik", c.halted)
         self.assertTrue(any(k.startswith("canary-berhenti") for k, _ in self.alert.sent))
         v = FeedVenue()
         c2 = self.canary(v, recorder="fail")
-        c2.round(self.tmp, Chain(), COMMITTER)
+        c2.round(self.paper, Chain(), COMMITTER)
         self.assertEqual(list(c2.pending_chain), ["2026-10-02"])
         self.assertTrue(any("catatan on-chain 2026-10-02 TERTUNDA" in x for x in self.logs))
         c2.recorder = lambda fills: "0xok"
-        c2.round(self.tmp, Chain(), COMMITTER)
+        c2.round(self.paper, Chain(), COMMITTER)
         self.assertEqual((c2.pending_chain, v.posts), ({}, 1))                                  # dicatat, order tidak digandakan
+
+    def test_the_public_switch_is_read_once_per_bar_off_means_no_orders_and_closes_an_open_position_at_the_next_bar(self):
+        v, g = FeedVenue(), FakeGist()
+        c = self.canary(v, gist=g)
+        self.switch[0] = False
+        self.assertIn("sakelar uang nyata MATI", c.round(self.paper, Chain(), COMMITTER))
+        self.assertEqual((v.posts, g.lines(), self.recorded), (0, [], []))                     # mati + datar: tidak ada order, tidak ada laporan
+        self.switch[0] = True
+        self.assertIn("sudah diproses", c.round(self.paper, Chain(), COMMITTER))               # dinyalakan di tengah bar: berlaku bar BERIKUTNYA
+        self.assertEqual(v.posts, 0)
+        self.write_tick(BAR + 86_400_000, "2026-10-03", {"XRPUSDT": 0.0625}, mode="a")
+        self.assertIn("canary: 1 order", c.round(self.paper, Chain(), COMMITTER))
+        self.assertEqual(v.pos, {"XRPUSDT": 0.099})
+        self.switch[0] = False
+        self.assertIn("sudah diproses", c.round(self.paper, Chain(), COMMITTER))               # dimatikan di tengah bar: tidak ada order di bar ini
+        self.assertEqual(v.posts, 1)
+        self.write_tick(BAR + 2 * 86_400_000, "2026-10-04", {"XRPUSDT": 0.0625}, mode="a")     # B1 MASIH memegang XRP, tetapi sakelar mati
+        self.assertIn("canary: 1 order", c.round(self.paper, Chain(), COMMITTER))
+        self.assertEqual(v.pos.get("XRPUSDT", 0), 0)                                             # ditutup
+        self.assertEqual(self.recorded[-1][0][5], 2)                                             # SELL tercatat on-chain
+        last = json.loads(g.lines()[-1])
+        self.assertEqual((last["bar"], last["sakelar"], last["posisi"].get("XRPUSDT", 0)), ("2026-10-04", "mati", 0))
+        self.write_tick(BAR + 3 * 86_400_000, "2026-10-05", {"XRPUSDT": 0.0625}, mode="a")
+        n = len(g.lines())
+        self.assertIn("sakelar uang nyata MATI", c.round(self.paper, Chain(), COMMITTER))
+        self.assertEqual((v.posts, len(g.lines())), (2, n))                                     # datar lagi: tidak ada order, tidak ada laporan
+
+    def test_a_bar_already_in_the_public_ledger_is_not_executed_again_after_a_restart(self):
+        d = os.path.join(self.tmp, "ledger", "eksekusi", "binance-live")
+        os.makedirs(d)
+        with open(os.path.join(d, "B1-TREND.jsonl"), "w", encoding="utf-8") as f:
+            print(json.dumps({"bar": "2026-10-02", "venue": "binance-live"}), file=f)
+        v = FeedVenue()
+        self.assertIn("sudah ada di ledger publik", self.canary(v).round(self.paper, Chain(), COMMITTER))
+        self.assertEqual(v.posts, 0)
+
+    def test_the_switch_file_must_say_true_exactly(self):
+        cfg = os.path.join(self.tmp, "config")
+        self.assertFalse(cn.toggle_on(self.paper))                                                # tidak ada berkas = MATI
+        os.makedirs(cfg)
+        for body, want in (('{"aktif": true}', True), ('{"aktif": false}', False), ('{"aktif": "true"}', False), ('{"aktif": 1}', False),
+                           ("[true]", False), ("bukan json", False)):
+            with open(os.path.join(cfg, "uang_nyata.json"), "w", encoding="utf-8") as f:
+                f.write(body)
+            self.assertIs(cn.toggle_on(self.paper), want, body)
+        with open(os.path.join(ROOT, "config", "uang_nyata.json"), encoding="utf-8") as f:
+            self.assertIs(json.load(f)["aktif"], False)                                          # repo dikirim MATI (F-D97)
 
 
 if __name__ == "__main__":

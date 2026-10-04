@@ -1,0 +1,4 @@
+{
+  "aktif": false,
+  "catatan": "Sakelar publik uang nyata (F-D97, tools/canary.py). true = canary B1 boleh membuka posisi uang nyata (<= 10 USDT, satu aset, Binance USDS-M PROD) MULAI BAR BERIKUTNYA, hanya bila variabel Railway fabius-engine juga bersenjata (EXEC_REAL=canary + kunci asli + EXEC_LIVE_OK bertanggal). false = tidak ada order uang nyata baru; posisi canary yang masih terbuka ditutup di bar berikutnya. Paper dan akun demo berjalan terus apa pun nilainya. Riwayat berkas ini = riwayat publik kapan uang nyata dinyalakan."
+}
