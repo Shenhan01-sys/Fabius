@@ -27,6 +27,15 @@ tags: [perkakas, "TL25", fe]
 - **05 Kapan ia dimatikan:** teks pembunuh asli besar + glos + syarat mesin terkunci (B1-K1/K2, B3-K1/K2) + tautan kunci FABIUS-PEMBUNUH-v1.
 - Bot tanpa jam maju (B2, B4, B5, B6): kepala + kunci + pembunuh; nomor section dihitung (01, 02), tidak bolong.
 
+**Sejak 4 Okt siang (P119): section "Dieksekusi di akun demo"** (sesudah "hari demi hari", hanya bila `ledger/eksekusi/binance-demo/<bot>.jsonl`
+ada; dibaca live di server). Keputusan yang sama tiga kali: paper (isi di penutupan), kertas aturan venue (isi 2 menit sesudah komit), akun demo (isi
+nyata). Kepala: fee nyata, nyata vs kertas, latensi komit -> isi, pelanggaran, masing-masing dengan target PRD §6. Per bar satu kartu dengan **sumbu bps**:
+garis tegak = penutupan (paper), kubus indigo = isi kertas, kubus putih = isi nyata; kanan = lebih buruk bagi kita. Kartu susulan ditandai; bar tanpa
+order menampilkan bobot terpenuhi. Saldo virtual: tanpa angka untung. Uji lokal memakai `FABIUS_RAW_BASE` (override sumber raw, hanya untuk uji) +
+ledger pratinjau dari Gist nyata: bar 10-02 kertas -0,6 bps vs nyata +77,3 bps (eksekusi nyata 10,9 jam sesudah komit), fee 4,0 bps, 0 pelanggaran;
+bar 10-03 0 order, bobot terpenuhi 99,2 %. Poles dari cek visual: label di tepi kartu disejajarkan ke dalam, label "paper = penutupan" dipindah ke
+legenda, fee tanpa tanda +.
+
 **Kejujuran yang dipaksa oleh data (4 Okt):**
 - Garis waktu memperlihatkan tick maju pertama (B3: 2 Okt 10:00Z) SEBELUM kunci spesifikasi (15:49Z) - sebab bar 1 Okt "sebelum kunci". Ditampilkan, tidak
   disembunyikan.

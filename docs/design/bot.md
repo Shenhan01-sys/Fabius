@@ -24,6 +24,10 @@ dipegang hari ini (paper), apa jejaknya hari demi hari, dan kapan ia dimatikan.
   `engine/locks/pembunuh.lock.json` (B1-K1/K2, B3-K1/K2; snapshot `bots[].kill_rules`). Judul: "ditetapkan sebelum sinyal pertama" (genesis ledger memuat
   `spec_sha` sebelum tick pertama), BUKAN "sebelum transaksi pertama" (paper tidak bertransaksi).
 
+- **Eksekusi demo (P119, bot yang dieksekusi: B1):** satu kartu per bar dari `ledger/eksekusi/binance-demo/<bot>.jsonl` (dibaca live): jumlah order, fee
+  nyata bps, geser vs penutupan, **selisih vs isi kertas** (akurasi uji kertas, F-D92), latensi komit -> isi, pelanggaran. Kartu susulan ditandai.
+  Kepala: median tiap metrik vs ambang usulan PRD §6. Akun DEMO (saldo virtual): tidak ada angka untung/rugi. Ledger belum ada = section tidak tampil.
+
 Bot tanpa jam maju (B2, B4, B5, B6): kepala + kunci + pembunuh saja, dengan pernyataan terang "spesifikasi di-hash, tidak berjalan". Nomor section
 dihitung (bot tanpa jam maju: 01 kunci, 02 pembunuh), jadi tidak ada nomor bolong. `/bot/b3-carry` -> 307 ke `/bot/B3-CARRY`; bot asing -> 404.
 

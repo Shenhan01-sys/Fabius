@@ -27,6 +27,33 @@ export type Live =
     }
   | { ok: false; error: string };
 
+export type ExecOrder = {
+  aset: string;
+  sisi: string;
+  qty: number;
+  px: number;
+  ref_tutup: number | null;
+  kertas_px: number | null;
+  fee_bps: number | null;
+  geser_bps: number | null;
+  slip_bps: number | null;
+  selisih_kertas_bps: number | null;
+};
+export type ExecRow = {
+  bar: string;
+  susulan?: boolean;
+  mode: string;
+  n_order: number;
+  komit_utc: string | null;
+  latensi_s: number | null;
+  fee: number;
+  notional: number;
+  bobot_terpenuhi: number | null;
+  pelanggaran: string[];
+  orders: ExecOrder[];
+};
+export type Exec = { ok: true; rows: ExecRow[] } | { ok: false; error: string } | null;
+
 const SHADOW_NEED = 60;
 const EPS = 1e-12;
 const tag = (n: number, label: string) => `${String(n).padStart(2, "0")} — ${label}`;
@@ -41,7 +68,7 @@ function Lock({ className = "" }: { className?: string }) {
   );
 }
 
-export default function BotView({ s, id, live }: { s: Snapshot; id: string; live: Live | null }) {
+export default function BotView({ s, id, live, exec = null }: { s: Snapshot; id: string; live: Live | null; exec?: Exec }) {
   const b = s.bots.find((x) => x.id === id)!;
   const fwd = b.forward && !!s.ledger[b.id];
   let n = 0;
@@ -52,6 +79,7 @@ export default function BotView({ s, id, live }: { s: Snapshot; id: string; live
         <Head s={s} b={b} fwd={fwd} />
         {fwd && <Paper n={++n} b={b} live={live} />}
         {fwd && <Days n={++n} s={s} b={b} live={live} />}
+        {fwd && exec && <Executed n={++n} exec={exec} />}
         <Locks n={++n} s={s} b={b} fwd={fwd} />
         {fwd && <Fd16 n={++n} s={s} b={b} />}
         <Kill n={++n} s={s} b={b} />
@@ -270,6 +298,132 @@ function Days({ n, s, b, live }: { n: number; s: Snapshot; b: Bot; live: Live | 
         </div>
       </div>
     </section>
+  );
+}
+
+// ---------------------------------------------------------------- eksekusi demo: keputusan yang sama tiga kali - paper, kertas, isi nyata (P119)
+const median = (xs: number[]) => {
+  if (!xs.length) return null;
+  const a = [...xs].sort((p, q) => p - q);
+  const m = Math.floor(a.length / 2);
+  return a.length % 2 ? a[m] : (a[m - 1] + a[m]) / 2;
+};
+const worseBps = (side: string, px: number, ref: number) => (px / ref - 1) * 1e4 * (side === "BUY" ? 1 : -1); // + = lebih buruk bagi kita
+const dur = (s: number | null) => (s == null ? "—" : s < 3600 ? `${Math.round(s / 60)} min` : `${(s / 3600).toFixed(1)} h`);
+const sbps = (x: number | null) => (x == null ? "—" : `${x > 0 ? "+" : ""}${x.toFixed(1)} bps`);
+const ubps = (x: number | null) => (x == null ? "—" : `${x.toFixed(1)} bps`); // tanpa tanda: fee selalu biaya
+
+/** Sumbu bps: 0 = penutupan bar (isi paper), lalu posisi isi kertas dan isi nyata. Kanan = lebih buruk bagi kita. */
+function Axis({ kertas, real }: { kertas: number | null; real: number | null }) {
+  const { t } = useLang();
+  const v = t.bot.exec;
+  const r = Math.max(20, Math.ceil(Math.max(Math.abs(kertas ?? 0), Math.abs(real ?? 0)) / 10) * 10);
+  const pos = (b: number) => 50 + (b / r) * 46;
+  // label di dekat tepi kartu disejajarkan ke dalam supaya tidak terpotong
+  const align = (p: number) => (p > 72 ? "-translate-x-full text-right" : p < 28 ? "text-left" : "-translate-x-1/2 text-center");
+  const mark = (b: number | null, kind: "sealed" | "verified", label: string, top: boolean) =>
+    b == null ? null : (
+      <div className={`absolute ${align(pos(b))}`} style={{ left: `${pos(b)}%`, top: top ? 0 : 34 }}>
+        {!top && <div className={`inline-block ${pos(b) > 72 ? "translate-x-1/2" : pos(b) < 28 ? "-translate-x-1/2" : ""}`}><IsoCube kind={kind} size={18} glow={kind === "verified"} /></div>}
+        <div className="whitespace-nowrap font-mono text-[0.6rem] text-ink/60">{label} {sbps(b)}</div>
+        {top && <div className={`inline-block ${pos(b) > 72 ? "translate-x-1/2" : pos(b) < 28 ? "-translate-x-1/2" : ""}`}><IsoCube kind={kind} size={18} /></div>}
+      </div>
+    );
+  return (
+    <div className="mt-4">
+      <div className="relative h-[72px]">
+        <div className="absolute inset-x-[4%] top-[33px] h-px bg-violet/25" />
+        <div className="absolute top-[24px] h-[18px] w-px -translate-x-1/2 bg-ink/50" style={{ left: "50%" }} title={v.paper} />
+        {mark(kertas, "sealed", v.kertas, true)}
+        {mark(real, "verified", v.real, false)}
+      </div>
+      <div className="mt-1 flex items-center gap-1.5 font-mono text-[0.58rem] text-ink/40">
+        <span className="inline-block h-2.5 w-px bg-ink/50" /> {v.paper}
+      </div>
+    </div>
+  );
+}
+
+function Executed({ n, exec }: { n: number; exec: NonNullable<Exec> }) {
+  const { t } = useLang();
+  const v = t.bot.exec;
+  const head = <Title label={tag(n, v.tag)} title={v.title} sub={v.sub} />;
+  const wrap = (body: ReactNode) => (
+    <section id="executed" className="relative mt-3 overflow-hidden rounded-[30px] bg-gradient-to-b from-white to-lav px-6 py-20 sm:px-12 lg:px-16">
+      {head}
+      {body}
+    </section>
+  );
+  if (!exec.ok)
+    return wrap(
+      <div className="mt-10 rounded-[26px] border border-gap/50 bg-white/80 p-6">
+        <div className="flex items-center gap-3 font-semibold text-ink"><IsoCube kind="gap" size={26} />{v.error}</div>
+        <pre className="mt-3 whitespace-pre-wrap break-all font-mono text-xs text-ink/55">{exec.error}</pre>
+      </div>,
+    );
+  const rows = exec.rows;
+  const filled = rows.flatMap((r) => r.orders.filter((o) => o.qty > 0));
+  const fee = median(filled.flatMap((o) => (o.fee_bps == null ? [] : [o.fee_bps])));
+  const vsK = median(filled.flatMap((o) => (o.selisih_kertas_bps == null ? [] : [o.selisih_kertas_bps])));
+  const lat = median(rows.flatMap((r) => (r.latensi_s == null ? [] : [r.latensi_s])));
+  const viol = rows.reduce((k, r) => k + (r.pelanggaran?.length ?? 0), 0);
+  const chips: [string, string, string, boolean][] = [
+    [v.fee, ubps(fee), "≤ 7 bps", fee == null || fee <= 7],
+    [v.vsKertas, sbps(vsK), v.info, true],
+    [v.latency, dur(lat), "p95 ≤ 10 min", lat == null || lat <= 600],
+    [v.violations, String(viol), "0", viol === 0],
+  ];
+  return wrap(
+    <>
+      <div className="mt-10 grid grid-cols-2 gap-3 lg:grid-cols-4">
+        {chips.map(([k, val, target, ok]) => (
+          <div key={k} className={`glass rounded-[22px] border p-4 ${ok ? "border-white/70" : "border-gap/50"}`}>
+            <div className="tag text-ink/45">{k}</div>
+            <div className={`mt-2 font-mono text-2xl font-semibold tabular-nums ${ok ? "text-ink" : "text-gap"}`}>{val}</div>
+            <div className="mt-1 font-mono text-[0.62rem] text-ink/40">{v.target} {target}</div>
+          </div>
+        ))}
+      </div>
+      <div className="glass mt-4 overflow-x-auto rounded-[26px] p-5 sm:p-7">
+        <div className="flex w-max min-w-full gap-4">
+          {rows.map((r, i) => {
+            const fo = r.orders.filter((o) => o.qty > 0);
+            const kGeser = median(fo.flatMap((o) => (o.kertas_px && o.ref_tutup ? [worseBps(o.sisi, o.kertas_px, o.ref_tutup)] : [])));
+            const rGeser = median(fo.flatMap((o) => (o.geser_bps == null ? [] : [o.geser_bps])));
+            return (
+              <motion.div key={r.bar} initial={{ opacity: 0, y: 14 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
+                transition={{ delay: i * 0.08, type: "spring", stiffness: 150, damping: 16 }}
+                className={`w-[300px] shrink-0 rounded-[22px] border bg-white/70 p-4 ${r.pelanggaran?.length ? "border-gap/60" : "border-white/80"}`}>
+                <div className="flex items-start justify-between gap-2">
+                  <div>
+                    <div className="font-mono text-sm font-semibold text-ink">{r.bar}</div>
+                    <div className="font-mono text-[0.62rem] text-ink/45">{r.mode} · {v.latency} {dur(r.latensi_s)}</div>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    {r.susulan && <span className="rounded-full border border-ink/20 px-2 py-0.5 font-mono text-[0.55rem] uppercase text-ink/55">{v.backfill}</span>}
+                    <span className="grid h-6 min-w-6 place-items-center rounded-full bg-violet px-1.5 font-mono text-[0.68rem] font-bold text-white">{r.n_order}</span>
+                  </div>
+                </div>
+                {fo.length ? (
+                  <Axis kertas={kGeser} real={rGeser} />
+                ) : (
+                  <div className="mt-4 flex h-[72px] items-center gap-3 text-[0.78rem] text-ink/60">
+                    <IsoCube kind="core" size={26} glow />
+                    <span>{v.none}{r.bobot_terpenuhi != null ? ` · ${v.filled} ${(r.bobot_terpenuhi * 100).toFixed(1)} %` : ""}</span>
+                  </div>
+                )}
+                <div className="mt-2 flex flex-wrap gap-x-3 gap-y-1 font-mono text-[0.62rem] text-ink/55">
+                  {fo.length > 0 && <span>{v.fee} {ubps(median(fo.flatMap((o) => (o.fee_bps == null ? [] : [o.fee_bps]))))}</span>}
+                  {fo.length > 0 && <span>{v.notional} {r.notional.toFixed(0)}</span>}
+                  <span className={r.pelanggaran?.length ? "font-semibold text-gap" : ""}>{v.violations} {r.pelanggaran?.length ?? 0}</span>
+                </div>
+              </motion.div>
+            );
+          })}
+        </div>
+      </div>
+      <p className="mt-4 max-w-3xl text-[0.8rem] text-ink/50">{v.note}</p>
+    </>,
   );
 }
 

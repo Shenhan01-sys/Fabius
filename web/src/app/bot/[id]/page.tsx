@@ -3,7 +3,7 @@
 import type { Metadata } from "next";
 import { notFound, redirect } from "next/navigation";
 import snapshot from "../../../../public/data/snapshot.json";
-import BotView, { type Live } from "@/components/bot/BotView";
+import BotView, { type Exec, type ExecRow, type Live } from "@/components/bot/BotView";
 import { ledger } from "@/lib/fabius-chain";
 import type { Snapshot } from "@/lib/snapshot";
 
@@ -41,11 +41,29 @@ async function readLive(id: string): Promise<Live> {
   }
 }
 
+const RAW = process.env.FABIUS_RAW_BASE || "https://raw.githubusercontent.com/Shenhan01-sys/Fabius/master"; // override hanya untuk uji lokal
+
+/** Ledger eksekusi demo (P119; ditulis rantai GitHub dari umpan Gist eksekutor). 404 = bot ini belum dieksekusi -> section tidak tampil. */
+async function readExec(id: string): Promise<Exec> {
+  try {
+    const res = await fetch(`${RAW}/ledger/eksekusi/binance-demo/${id}.jsonl`, { next: { revalidate: 120 } });
+    if (res.status === 404) return null;
+    if (!res.ok) return { ok: false, error: `ledger eksekusi: HTTP ${res.status} dari GitHub - bukan berarti tidak ada eksekusi` };
+    const rows = (await res.text())
+      .split("\n")
+      .filter((l) => l.trim())
+      .map((l) => JSON.parse(l) as ExecRow);
+    return { ok: true, rows };
+  } catch (e) {
+    return { ok: false, error: e instanceof Error ? e.message : String(e) };
+  }
+}
+
 export default async function Page({ params }: { params: Promise<{ id: string }> }) {
   const raw = decodeURIComponent((await params).id);
   const b = find(raw);
   if (!b) notFound();
   if (b.id !== raw) redirect(`/bot/${b.id}`);
-  const live = b.forward ? await readLive(b.id) : null;
-  return <BotView s={s} id={b.id} live={live} />;
+  const [live, exec] = b.forward ? await Promise.all([readLive(b.id), readExec(b.id)]) : [null, null];
+  return <BotView s={s} id={b.id} live={live} exec={exec} />;
 }
