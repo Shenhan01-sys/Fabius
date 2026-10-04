@@ -77,6 +77,8 @@ python -X utf8 tools/kertas_eksekusi.py ringkas        # tracking error vs paper
 # P119 umpan laporan (F-D94): variabel Railway EXEC_FEED_TOKEN = token GitHub HANYA "Gists: Read and write" (dashboard, bukan chat); log start: 'umpan eksekusi nyala'
 # P133 canary uang NYATA (F-D96): variabel Railway fabius-engine BINANCE_REAL_API_KEY/SECRET (Futures ON, Withdraw OFF), EXEC_REAL=canary,
 #   EXEC_LIVE_OK=binance:sampai:YYYY-MM-DD, EXEC_REAL_ASSET (XRPUSDT), EXEC_REAL_MAX_USDT (<= 10). Log start: 'canary uang nyata canary'; tiap isi -> ExecutionAnchor
+# Whitelist IP Binance (izin Futures wajib IP): tiap DEPLOY baru = IP keluar baru (restart = IP tetap). Baca log 'IP keluar: ...' -> perbarui
+#   whitelist kunci di Binance -> railway restart --service fabius-engine. Kunci ditolak = canary BERHENTI + alert (gagal-aman).
 # F-D97 sakelar publik: config/uang_nyata.json {"aktif": true} (edit di GitHub; berlaku bar BERIKUTNYA). false = tanpa order baru, posisi ditutup bar berikutnya
 python -X utf8 tools/eksekusi_ledger.py run        # rantai GitHub menjalankannya tiap 5 menit: Gist -> diperiksa -> ledger/eksekusi/ (exit 1 ALARM, 3 tak terbaca)
 python -X utf8 tools/eksekusi_ledger.py periksa    # penjaga luar: tick dikomit >= 60 menit tanpa laporan = ALARM
