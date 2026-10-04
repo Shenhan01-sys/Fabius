@@ -56,6 +56,8 @@ Tingkat 0 bukti = terbuka, gratis; tingkat 1 = TERKUNCI sampai F-D16 maju + tela
 - `.gitignore` akar repo pernah menelan berkas FE (`data/`, `lib/`) -> build dari clone bersih sebelum menyatakan siap deploy.
 - Deploy: hanya lewat push GitHub (Vercel), tidak pernah `vercel deploy` dari akar repo (F-D89).
 - Cek visual: Chrome headless dengan `--virtual-time-budget` TIDAK menjalankan animasi `motion` (elemen tetap `opacity: 0`; 4 Okt) - pakai peramban waktu-nyata (stealth-browser / CDP) untuk tangkapan layar; item grid berisi `pre` panjang butuh `min-w-0` agar tidak melebar di ponsel.
+- Kubus putih (`core`/`verified`) di latar terang hampir sama dengan kubus bening: data "menyala" (posisi dipegang) taruh di panel malam (4 Okt, TL25);
+  chip berisi hash + waktu boleh membungkus (`max-w-full flex-wrap`), jangan `rounded-full` satu baris di ponsel.
 
 ## Daftar periksa halaman baru
 
@@ -65,6 +67,7 @@ Tingkat 0 bukti = terbuka, gratis; tingkat 1 = TERKUNCI sampai F-D16 maju + tela
 4. Lebar ponsel tanpa gulir horizontal halaman (tabel lebar di dalam panel bergulir sendiri).
 5. `npm run build` + `npm run lint` bersih; untuk deploy: build dari clone bersih.
 
-**Halaman:** landing `/` ([[TL19 - web landing]]) · MCP `/mcp` ([[TL20 - server MCP]]) · `/verify` (4 Okt, `docs/design/verify.md`)
+**Halaman:** landing `/` ([[TL19 - web landing]]) · MCP `/mcp` ([[TL20 - server MCP]]) · `/verify` ([[TL24 - halaman verify]], `docs/design/verify.md`) ·
+`/bot/[id]` ([[TL25 - halaman bot]], `docs/design/bot.md`)
 
 **Terkait:** [[TL19 - web landing]] · [[TL20 - server MCP]] · [[08-Backlog/01 - Backlog]] P113 / P124

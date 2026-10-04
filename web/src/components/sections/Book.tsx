@@ -3,6 +3,7 @@
 // 03 — Buku slot (docs/design/landing.md §4): rak 10 slot = kapasitas nyata. B1 menghuni (identitas), B3 mengorbit dengan cincin bayangan
 // hari-hidup/60, spesifikasi lain redup di luar. Di bawahnya rantai kunci on-chain menyala berurutan sesuai waktu kuncinya.
 
+import Link from "next/link";
 import { motion } from "motion/react";
 import { useLang } from "../lang";
 import IsoCube from "../ui/IsoCube";
@@ -74,7 +75,7 @@ export default function Book({ s }: { s: Snapshot }) {
               {o ? (
                 <>
                   <IsoCube kind="core" size={56} glow />
-                  <div className="mt-2 text-center font-display text-[0.78rem] font-[700] leading-tight">{o.id}</div>
+                  <Link href={`/bot/${o.id}`} className="mt-2 text-center font-display text-[0.78rem] font-[700] leading-tight underline-offset-4 hover:text-violet-2 hover:underline">{o.id}</Link>
                   {o.identity && <div className="mt-1 rounded-full bg-violet/30 px-2 py-0.5 text-[0.6rem] text-violet-2">{t.book.identity}</div>}
                 </>
               ) : (
@@ -95,7 +96,7 @@ export default function Book({ s }: { s: Snapshot }) {
                 </div>
               </div>
               <div>
-                <div className="font-display text-lg font-[700]">{c.id}</div>
+                <Link href={`/bot/${c.id}`} className="font-display text-lg font-[700] underline-offset-4 hover:text-violet-2 hover:underline">{c.id}</Link>
                 <div className="font-mono text-sm text-violet-2">
                   {t.book.shadow} {c.live}/{SHADOW_NEED} d
                 </div>
@@ -109,7 +110,7 @@ export default function Book({ s }: { s: Snapshot }) {
       {/* spesifikasi lain: redup */}
       <div className="mt-12 flex flex-wrap gap-3">
         {others.map((b) => (
-          <div key={b.id} className="glass-dark flex items-center gap-3 rounded-2xl py-2 pl-2 pr-4 opacity-60">
+          <Link key={b.id} href={`/bot/${b.id}`} className="glass-dark flex items-center gap-3 rounded-2xl py-2 pl-2 pr-4 opacity-60 transition hover:opacity-100">
             <IsoCube kind="empty" size={26} />
             <div>
               <div className="font-display text-sm font-[700]">{b.id}</div>
@@ -117,7 +118,7 @@ export default function Book({ s }: { s: Snapshot }) {
                 {short(b.spec_sha, 6)} · {t.book.locked}
               </div>
             </div>
-          </div>
+          </Link>
         ))}
       </div>
 

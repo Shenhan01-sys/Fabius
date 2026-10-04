@@ -4,6 +4,7 @@
 // Tiap stasiun menyala saat pemeriksaannya selesai; tiap sinyal = satu blok yang berubah keadaan (tersegel -> terbuka -> SAH). Vonis = kubus besar.
 // Data live dari /api/verify (kode sama dengan MCP `fabius_verify`); gagal baca = pesan galat, bukan vonis (T8).
 
+import Link from "next/link";
 import { useEffect, useState, type FormEvent } from "react";
 import { motion } from "motion/react";
 import { LangProvider, useLang } from "../lang";
@@ -256,7 +257,10 @@ function Result({ r }: { r: VerifyResult }) {
               <ul className="mt-2 space-y-1 font-mono text-xs text-white/80">{r.problems.map((p) => <li key={p}>· {p}</li>)}</ul>
             </div>
           )}
-          <a href={share} className="mt-5 inline-block font-mono text-xs text-violet-2 underline-offset-4 hover:underline">{v.share} ↗</a>
+          <div className="mt-5 flex flex-wrap gap-x-6 gap-y-2 font-mono text-xs text-violet-2">
+            <a href={share} className="underline-offset-4 hover:underline">{v.share} ↗</a>
+            <Link href={`/bot/${r.bot}`} className="underline-offset-4 hover:underline">{t.bot.about}: {r.bot} →</Link>
+          </div>
         </div>
       </motion.div>
 

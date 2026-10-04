@@ -46,11 +46,18 @@ def git_head() -> str:
 
 
 def bots_block() -> list:
+    try:                                                                  # syarat pembunuh TERKUNCI (P107), bukan usulan di kode
+        with open(pembunuh.LOCK_FILE, encoding="utf-8") as f:
+            kill = json.load(f)["params"]["bot"]
+    except (OSError, ValueError, KeyError):
+        kill = {}
     out = []
     for bid, s in SPECS.items():
         p = os.path.join(LEDGER_DIR, f"{bid}.jsonl")
         out.append({"id": bid, "method": s.metode, "param": f"{s.param_nama} = {s.param}", "assets": len(s.universe), "tier": s.tier,
-                    "spec_sha": s.sha(), "fingerprint": s.fingerprint(), "forward": os.path.exists(p), "killer": s.pembunuh})
+                    "spec_sha": s.sha(), "fingerprint": s.fingerprint(), "forward": os.path.exists(p), "killer": s.pembunuh,
+                    "universe": list(s.universe),                         # /bot/[id]: universe = deret kubus buku paper
+                    "kill_rules": [{"id": k["id"], "rule": k["aturan"]} for k in kill.get(bid, {}).get("syarat", [])]})
     return out
 
 

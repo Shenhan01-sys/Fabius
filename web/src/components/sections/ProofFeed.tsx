@@ -11,7 +11,7 @@ import { addDays, cellState, type CellState, type Snapshot } from "@/lib/snapsho
 
 const DAYS = 28;
 
-function Tank({ value, need, label }: { value: number; need: number; label: string }) {
+export function Tank({ value, need, label }: { value: number; need: number; label: string }) {
   const f = Math.min(value / need, 1);
   return (
     <div className="flex flex-col items-center gap-2">
@@ -118,7 +118,7 @@ function Row({ b, s, days, lastClosed }: { b: string; s: Snapshot; days: string[
   return (
     <>
       <div className="py-3 pr-3">
-        <div className="font-display text-[0.98rem] font-[700] text-ink">{b}</div>
+        <Link href={`/bot/${b}`} className="font-display text-[0.98rem] font-[700] text-ink underline-offset-4 hover:text-violet hover:underline">{b}</Link>
         <div className="font-mono text-[0.66rem] text-ink/45">{bot?.param}</div>
       </div>
       {days.map((d, i) => {

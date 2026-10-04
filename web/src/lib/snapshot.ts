@@ -10,6 +10,8 @@ export type Bot = {
   fingerprint: string;
   forward: boolean;
   killer: string;
+  universe?: string[];
+  kill_rules?: { id: string; rule: string }[];
 };
 
 export type Tick = { date: string; signals: number; held: number; lag_s: number | null; emitted_utc: string | null };
