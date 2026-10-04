@@ -63,6 +63,17 @@ F-D94 H7)`, komit B1/B3 bar 10-02 + 10-03 OK, `eksekutor demo B1-TREND bar 2026-
 TERTUNDA (2: susulan 10-02 + bar 10-03), eksekusi tetap jalan (SK-E14 terbukti di produksi). Pesan galat hanya memuat kode HTTP; ditambah pesan GitHub
 (`_why`, tanpa token, tes `test_a_refused_gist_write_says_why_without_leaking_the_token`) supaya sebab 403 terbaca.
 
+**UMPAN HIDUP 4 Okt 13:11Z** (builder mengubah izin token ke Gists "Read and write"): Gist publik `292d495fe83abbfa6f12d0282edf151c`
+(`fabius-exec feed v1`, berkas `fabius-exec-2026-10.jsonl`), dua baris: **susulan bar 10-02** = 16 order demo `FILLED` (fee nyata 0,7912 USDT atas
+notional 1.977,98), posisi/ekuitas kosong sesuai aturan susulan; **bar 10-03** = 0 order (B1 tidak berubah), ekuitas demo 5.015,16.
+
+**Pratinjau penulis pada data nyata** (folder sementara, BUKAN `ledger/` repo - penulisnya tetap rantai GitHub): 2 catatan, 0 alarm, `verify` bersih.
+Bar 10-02: komit 3 Okt 08:43:51Z (dibaca dari chain), 16 order semua SESUDAH komit (R-E1, 0 pelanggaran), latensi 39.126 s (10,9 jam: eksekusi demo
+pertama dinyalakan 19:35Z), fee median **4,0 bps** (<= 7), geser vs penutupan median +77 bps, **selisih vs isi kertas median +59 bps** (kertas
+mengandaikan isi 2 menit sesudah komit; yang nyata 10,9 jam kemudian - selisih itu harga bergerak, bukan galat model). Bar 10-03: 0 order, bobot
+terpenuhi 99,2 %. `ringkas`: BELUM CUKUP HARI (tracking butuh tanda 00:00Z dua hari berturut). Slippage vs rencana kosong untuk susulan (harga rencana
+tidak diingat sesudah restart) - akan terisi pada eksekusi berikut.
+
 **Menunggu (riwayat):** langkah builder **H7** (token hanya-Gist -> variabel Railway `EXEC_FEED_TOKEN`), lalu deploy `fabius-engine` (`tools/railway_up.py`; arsip +
 Dockerfile kini memuat `exec_feed.py`). Sesudah itu: log worker `umpan eksekusi nyala`, Gist baru tercetak id-nya, rantai GitHub menulis
 `ledger/eksekusi/binance-demo/B1-TREND.jsonl`, stasiun 06 `/status` berubah dari "tidak publik" ke "di ledger publik: n order".
