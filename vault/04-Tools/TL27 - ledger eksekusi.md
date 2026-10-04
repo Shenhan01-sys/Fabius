@@ -74,6 +74,17 @@ mengandaikan isi 2 menit sesudah komit; yang nyata 10,9 jam kemudian - selisih i
 terpenuhi 99,2 %. `ringkas`: BELUM CUKUP HARI (tracking butuh tanda 00:00Z dua hari berturut). Slippage vs rencana kosong untuk susulan (harga rencana
 tidak diingat sesudah restart) - akan terisi pada eksekusi berikut.
 
+**LEDGER RESMI PERTAMA 4 Okt 13:53:49Z** (komit rantai GitHub `f2920810`): `ledger/eksekusi/binance-demo/B1-TREND.jsonl`, 2 catatan (susulan 10-02: 16
+order; 10-03: 0 order), `verify` OK, `ringkas`: fee median 4,0 bps, selisih vs kertas +58,9 bps, latensi p95 39.126 s, 0 pelanggaran, BELUM CUKUP
+HARI. Produksi: `/status` stasiun 06 B1 `ok EXEC_OK` ("di ledger publik: 0 order" untuk bar 10-03); `/bot/B1-TREND` menampilkan section eksekusi.
+
+**Temuan di jalan ke sana (diperbaiki):** mata rantai 13:40Z mencetak `TAK TERBACA: daftar gist Shenhan01-sys: HTTP 403` tiap putaran - `GITHUB_TOKEN`
+(token instalasi GitHub App) ditolak API Gist. Alat berperilaku sesuai SK-E18 (TUNDA, peringatan, bukan alarm). Perbaikan `52af1b5c`: id Gist DIPATOK
+(`GIST_ID`, env `EXEC_FEED_GIST` menimpa) dan isi dibaca dari URL raw publik `gist.githubusercontent.com/<pemilik>/<id>/raw/fabius-exec-YYYY-MM.jsonl`
+per bulan (tanpa token, tanpa batas API; bulan tanpa berkas = 404 dilewati; cache CDN 5 menit); jalur API tinggal cadangan bila id tidak diketahui.
+Karena mata rantai hanya `git pull` di jendela tick, mata rantai 13:40Z (run 37206431782) DIBATALKAN dan rantai baru dinyalakan manual (run
+37207233417, 13:53:25Z, HEAD `52af1b5c`); putaran pertamanya langsung menulis ledger.
+
 **Menunggu (riwayat):** langkah builder **H7** (token hanya-Gist -> variabel Railway `EXEC_FEED_TOKEN`), lalu deploy `fabius-engine` (`tools/railway_up.py`; arsip +
 Dockerfile kini memuat `exec_feed.py`). Sesudah itu: log worker `umpan eksekusi nyala`, Gist baru tercetak id-nya, rantai GitHub menulis
 `ledger/eksekusi/binance-demo/B1-TREND.jsonl`, stasiun 06 `/status` berubah dari "tidak publik" ke "di ledger publik: n order".
