@@ -63,6 +63,16 @@ TARGETS = [
      "kontrol: hidup"),
     ("CryptoPanic public", "GET", "https://cryptopanic.com/api/v1/posts/?public=true", None, None,
      "dulu 403"),
+    # P119 (4 Okt): bisakah rantai GitHub membaca riwayat trade venue sendiri (kunci read-only)? Tanpa kunci: /time = jalur publik;
+    # userTrades tanpa tanda tangan -> 400/401 kode -2014/-1102 = lapisan otentikasi TERJANGKAU; 451/403 = diblokir wilayah.
+    ("Binance demo-fapi time", "GET", "https://demo-fapi.binance.com/fapi/v1/time", None, None, "eksekusi demo (P119)"),
+    ("Binance demo-fapi userTrades (no key)", "GET", "https://demo-fapi.binance.com/fapi/v1/userTrades?symbol=BTCUSDT", None, None,
+     "401/400 -2014 = terjangkau; 451 = blokir"),
+    ("Binance testnet fapi time", "GET", "https://testnet.binancefuture.com/fapi/v1/time", None, None, "testnet lama"),
+    ("Binance prod fapi time", "GET", "https://fapi.binance.com/fapi/v1/time", None, None, "kontrol: dulu 451 dari runner"),
+    ("Aster fapi time", "GET", "https://fapi.asterdex.com/fapi/v1/time", None, None, "venue 2 (P121)"),
+    ("Aster userTrades (no key)", "GET", "https://fapi.asterdex.com/fapi/v1/userTrades?symbol=BTCUSDT", None, None,
+     "401/400 = terjangkau"),
 ]
 
 
