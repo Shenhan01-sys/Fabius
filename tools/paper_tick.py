@@ -160,6 +160,11 @@ def main() -> int:
         today = feed_bars.day_start(now_ms)
         need_spot = a.spot or any(SPECS[b].method in ("B3-CARRY", "B5-CORE-RWA") for b in bots if b in SPECS)    # B3 = long spot + short perp
         reps = feed_bars.update_all(a.bars, list(PERP_UNIVERSE), today, spot=need_spot, funding=True, dry_run=a.dry_run)
+        # P128 (F-D95): emas spot untuk B5-CORE-RWA (kandidat yang berkasnya sudah ditanam `tools/seed_bars.py`; perpanjang saja, tidak menanam)
+        if any(SPECS[b].method == "B5-CORE-RWA" for b in bots if b in SPECS):
+            for g in SPECS["B5-CORE-RWA"].konstanta["emas_kandidat"]:
+                if os.path.exists(os.path.join(a.bars, f"spot_{g}_1d.csv")):
+                    reps.append(feed_bars.update_klines(a.bars, "spot", g, today, dry_run=a.dry_run))
         stuck = [r for r in reps if r["stop"]]
         print(f"feed: +{sum(r['added'] for r in reps)} baris; {len(stuck)} deret berhenti sebelum hari ini")
         for r in stuck[:6]:
