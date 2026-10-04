@@ -55,6 +55,10 @@ error dari tanda; Gist belum ada = bukan galat). Sensus `--wajib-semua` 433 lulu
 jangkar lulus (sebelum SK-E21). Pada repo nyata: `eksekusi_ledger.py run` -> "umpan eksekusi belum ada (... langkah builder H7)" exit 0; `periksa`,
 `ringkas`, `verify` -> belum ada ledger, exit 0.
 
+**Ter-deploy 4 Okt 09:21Z** (komit `1c05e7f9`, `tools/railway_up.py`): worker start `... | eksekutor demo | umpan eksekusi mati (EXEC_FEED_TOKEN tidak ada,
+F-D94 H7)`, komit B1/B3 bar 10-02 + 10-03 OK, `eksekutor demo B1-TREND bar 2026-10-03: 0 order, 11 dilewati, modal 2000`. CI `tests` hijau; Vercel READY;
+`/api/status` produksi: stasiun 06 B1 `private EXEC_PRIVATE`. Rantai `paper-ledger` memakai langkah baru mulai mata rantai berikutnya (±13:38Z).
+
 **Menunggu:** langkah builder **H7** (token hanya-Gist -> variabel Railway `EXEC_FEED_TOKEN`), lalu deploy `fabius-engine` (`tools/railway_up.py`; arsip +
 Dockerfile kini memuat `exec_feed.py`). Sesudah itu: log worker `umpan eksekusi nyala`, Gist baru tercetak id-nya, rantai GitHub menulis
 `ledger/eksekusi/binance-demo/B1-TREND.jsonl`, stasiun 06 `/status` berubah dari "tidak publik" ke "di ledger publik: n order".
