@@ -119,6 +119,13 @@ def tick_bot(bot: str, ledger_dir: str, views: "Views", now_ms: int, dry: bool) 
     if spec is None or records[0].get("spec_sha") != spec.sha():
         print(f"{bot}: spesifikasi di kode tidak sama dengan genesis (pivot = ledger baru). Tidak menulis apa pun.")
         return 3
+    if spec.method == "B4-LISTING-FADE":
+        # T8: kejadian listing tak terbaca hari ini != "tidak ada listing". Tanpa pemindaian sukses HARI INI, B4 TUNDA (lewat 12 jam -> gap oleh step)
+        stamp = os.path.join(views.bars_dir, "events_um_listing.checked")
+        seen = open(stamp, encoding="utf-8").read().strip() if os.path.exists(stamp) else ""
+        if seen != ledger.date_of(now_ms):
+            print(f"{bot}: TUNDA - kejadian listing belum dipindai hari ini (terakhir: {seen or 'belum pernah'})")
+            return 4
     md_tick = views.get("targets" if spec.method == "B3-CARRY" else "actual")      # B3: target memakai funding -> estimasi beku bila aktual belum terbit
     new, notes = ledger.step(spec, md_tick, now_ms, records, views.get("actual"))         # settle FINAL selalu dari funding aktual
     for n in notes:
@@ -160,6 +167,13 @@ def main() -> int:
         today = feed_bars.day_start(now_ms)
         need_spot = a.spot or any(SPECS[b].method in ("B3-CARRY", "B5-CORE-RWA") for b in bots if b in SPECS)    # B3 = long spot + short perp
         reps = feed_bars.update_all(a.bars, list(PERP_UNIVERSE), today, spot=need_spot, funding=True, dry_run=a.dry_run)
+        # P129 (F-D95): kejadian listing perp baru untuk B4 (+ deret perp koin barunya). Gagal = TUNDA untuk B4 saja (lihat tick_bot).
+        if any(SPECS[b].method == "B4-LISTING-FADE" for b in bots if b in SPECS) and not a.dry_run:
+            import listing_events
+            try:
+                listing_events.update(a.bars, today)
+            except feed_bars.FeedError as e:
+                print(f"  ! listing: {e} (B4 TUNDA sampai pemindaian sukses hari ini)")
         # P128 (F-D95): emas spot untuk B5-CORE-RWA (kandidat yang berkasnya sudah ditanam `tools/seed_bars.py`; perpanjang saja, tidak menanam)
         if any(SPECS[b].method == "B5-CORE-RWA" for b in bots if b in SPECS):
             for g in SPECS["B5-CORE-RWA"].konstanta["emas_kandidat"]:

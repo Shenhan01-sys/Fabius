@@ -21,10 +21,14 @@ def targets(spec: BotSpec, data: MarketData) -> List[Target]:
     size = float(spec.konstanta["ukuran_per_trade"])
     min_vol = float(spec.konstanta["min_volume_kuotasi_hari1_usd"])
     evs = [e for e in data.events if e.day1_quote_volume_usd >= min_vol]
-    if not evs:
+    # P129 (F-D95, jam maju): target juga ada di bar TANPA kejadian aktif (flat), sampai bar terakhir data perp - tanpa ini tick hari biasa jatuh
+    # sebagai "data basi" (gap). Sumbu waktu = deret perp mana pun yang ada (B4 memakai perp + events, `TARGET_INPUTS`).
+    ends = [s.t[-1] for s in data.perp.values() if len(s)]
+    starts = [s.t[0] for s in data.perp.values() if len(s)]
+    if not evs and not ends:
         return []
-    t0 = min(e.day1_open_t for e in evs)
-    t1 = max(e.day1_open_t for e in evs) + h * DAY_MS
+    t0 = min([e.day1_open_t for e in evs] + starts)
+    t1 = max(ends) if ends else max(e.day1_open_t for e in evs) + h * DAY_MS     # ada perp: berhenti di bar data terakhir (tanpa target masa depan)
     out: List[Target] = []
     t = t0
     while t <= t1:

@@ -32,6 +32,7 @@ berbahaya dari alat yang gagal keras.
 - [[TL18 - worker_watch]] — penjaga LUAR worker Railway di rantai GitHub: tick tanpa komit >= 30 menit = WORKER DIAM (stdlib, tanpa kunci, P111)
 - [[TL19 - web landing]] — landing page tingkat 0: kristal komitmen 3D, perjalanan satu sinyal, kalender bukti, buku slot, dua pintu; data dari `tools/web_snapshot.py` (P113)
 - [[TL20 - server MCP]] — pintu agen tingkat 0: route `/mcp` di app `web/`, 8 alat hanya baca (sinyal live, periksa leaf/id vs ledger, rekam jejak, kunci); tanpa kunci, tingkat 1 tetap terkunci (P114)
+- [[TL28 - bot sementara dan data B4 B5]] — F-D95: label INTI/SEMENTARA + vonis gerbang v1; data emas PAXG (B5) dan pipa kejadian listing perp baru (B4) dari Binance Vision
 - [[TL27 - ledger eksekusi]] — P119: eksekutor menyusun laporan dari venue -> Gist publik -> rantai GitHub memeriksa + menulis `ledger/eksekusi/` (runner diblokir Binance 451, F-D94); metrik vs kertas; penjaga luar
 - [[TL22 - eksekutor dan kertas-venue]] — epik 10: inti eksekutor (rencana, pagar, idempoten, rekonsiliasi), adaptor Binance (belum mengirim order), kertas-venue (akurasi di atas kertas sebelum uang nyata, F-D92)
 - [[TL23 - Sistem Visual FE]] — pedoman visual SEMUA halaman web/: prompt asal builder + 3 referensi, token, tipe, kaca, keadaan kubus, gerak, daftar periksa halaman baru

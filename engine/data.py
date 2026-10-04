@@ -114,4 +114,26 @@ def load_csv_dir(dirpath: str, symbols: List[str], funding_view: str = "actual")
             per_day.update(est)
         if os.path.exists(fp) or per_day:
             md.funding[s] = per_day
+    # P129 (F-D95): kejadian listing untuk B4 + deret perp tiap koin barunya (ditulis `tools/listing_events.py`). Dimuat untuk SEMUA pemanggil;
+    # bot lain tidak terpengaruh: target dan `data_fingerprint` hanya memakai aset universe-nya sendiri, dan `target_view` mengosongkan kejadian.
+    md.events = load_events(dirpath)
+    for e in md.events:
+        if e.asset not in md.perp:
+            fut = _read_kline_csv(os.path.join(dirpath, f"fut_{e.asset}_1d.csv"))
+            if fut is not None:
+                md.perp[e.asset] = fut
     return md
+
+
+EVENTS_FILE = "events_um_listing.csv"
+
+
+def load_events(dirpath: str) -> List[ListingEvent]:
+    """`events_um_listing.csv` (asset, day1_open_t, day1_close, day1_quote_volume_usd), terurut hari-1; berkas tidak ada = tidak ada kejadian."""
+    p = os.path.join(dirpath, EVENTS_FILE)
+    if not os.path.exists(p):
+        return []
+    with open(p, newline="", encoding="utf-8") as f:
+        rows = [r for r in csv.DictReader(f)]
+    return sorted((ListingEvent(r["asset"], int(r["day1_open_t"]), float(r["day1_close"]), float(r["day1_quote_volume_usd"])) for r in rows),
+                  key=lambda e: (e.day1_open_t, e.asset))
