@@ -107,6 +107,21 @@ def probe(url: str) -> str:
         return f"{type(e).__name__}: {str(e)[:80]}"
 
 
+IP_ECHO = ("https://api.ipify.org", "https://checkip.amazonaws.com")
+
+
+def egress_ip() -> str:
+    """IP keluar worker menurut dua layanan gema (whitelist IP kunci Binance Futures, F-D96). Berbeda antar layanan / antar start = IP tidak tetap."""
+    out = []
+    for url in IP_ECHO:
+        try:
+            with urllib.request.urlopen(urllib.request.Request(url, headers=UA), timeout=10) as r:
+                out.append(r.read().decode().strip()[:45])
+        except Exception as e:  # noqa: BLE001
+            out.append(f"{type(e).__name__}")
+    return " / ".join(out)
+
+
 class Worker:
     def __init__(self, workdir: str = WORKDIR):
         self.workdir = workdir
@@ -330,6 +345,7 @@ def main() -> int:
         f"canary uang nyata {os.environ.get('EXEC_REAL', 'off')}")
     for name, url in PROBES:
         log(f"probe {name}: {probe(url)}")
+    log(f"IP keluar: {egress_ip()}")
     w = Worker()
     if w.alert.enabled:                                 # uji kanal tiap start: memasang variabel alert memicu redeploy, jadi pesan ini = bukti kanal hidup
         w.alert.send("mulai", f"worker mulai (region {os.environ.get('RAILWAY_REPLICA_REGION', '?')}, kunci {'ADA' if sc.committer_key() else 'TIDAK ADA'}); "
