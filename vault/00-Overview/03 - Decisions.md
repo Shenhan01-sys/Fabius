@@ -2883,7 +2883,9 @@ Builder: *"nyalain semua bot aja tapi kasih label yg mendeskripsikan sementara/a
 menurutmu paling OP"* + jawaban AskUserQuestion: hitungan = **"Ya, satu hitungan"**; urutan = **"Keempatnya sekaligus"**; tx chain = **"Ya, rencana dulu
 lalu jalankan"**.
 
-1. **Label:** B1-TREND = **INTI** (bot identitas; satu-satunya bot instrumen-kripto yang lolos gerbang dan dipilih builder, F-D73). B2-RS, B3-CARRY,
+1. **Label:** B1-TREND = **INTI** (penghuni buku = bot identitas PILIHAN builder, F-D73. **Koreksi tulisan awal paragraf ini:** B1 TIDAK lolos
+   gerbang - vonis v1 TOLAK di G8 dan G10 (epik 07 §7); satu-satunya yang LOLOS_SHADOW di v1 adalah B3 (dorman). INTI = peran di buku, bukan bukti
+   bot terbaik; tidak ada bot yang sudah lolos uji maju F-D16). B2-RS, B3-CARRY,
    B4-LISTING-FADE, B5-CORE-RWA, B6-BOUNCE = **SEMENTARA** ("berjalan untuk transparansi; bisa digantikan bot yang memenuhi kriteria"). B3 tetap dicatat
    sebagai satu-satunya yang LOLOS gerbang v1 (bayangan n/60). B2/B5/B6 TOLAK di gerbang v1, B4 tak terukur - status itu tetap tampil, tidak dihapus.
 2. **Membalik pagar jam maju:** `engine/book.py::SHADOW_ELIGIBLE` (B1, B3 saja) diganti daftar bot berjam maju = keenamnya. Keputusan lama (bot tanpa
