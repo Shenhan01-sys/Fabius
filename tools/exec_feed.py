@@ -40,6 +40,12 @@ class FeedError(Exception):
     """Gist tak terjangkau / ditolak / terlalu besar: baris tetap tertunda (SK-E14)."""
 
 
+def _why(code: int, body: object) -> str:
+    """HTTP + pesan GitHub (mis. 403 "Resource not accessible by personal access token" = izin Gists bukan Read and write). Tidak memuat token."""
+    msg = body.get("message") if isinstance(body, dict) else None
+    return f"HTTP {code}" + (f" {str(msg)[:120]!r}" if msg else "")
+
+
 def feed_file(day: str) -> str:
     """Satu berkas per bulan: isi API Gist terpotong di atas 1 MB, satu bulan B1 ±100 KB."""
     return f"fabius-exec-{day[:7]}.jsonl"
@@ -131,14 +137,14 @@ class GistFeed:
             return self.gist_id
         code, body = self._req("GET", "/gists?per_page=100")
         if code != 200 or not isinstance(body, list):
-            raise FeedError(f"daftar gist: HTTP {code}")
+            raise FeedError(f"daftar gist: {_why(code, body)}")
         for g in body:
             if g.get("description") == FEED_DESC:
                 self.gist_id = str(g["id"])
                 return self.gist_id
         code, body = self._req("POST", "/gists", {"description": FEED_DESC, "public": True, "files": {"README.md": {"content": README}}})
         if code != 201 or not isinstance(body, dict) or "id" not in body:
-            raise FeedError(f"buat gist: HTTP {code}")
+            raise FeedError(f"buat gist: {_why(code, body)}")
         self.gist_id = str(body["id"])
         self.log(f"umpan eksekusi: gist BARU {self.gist_id} ({body.get('html_url', '')})")
         return self.gist_id
@@ -149,14 +155,14 @@ class GistFeed:
         name = feed_file(day_of(rec))
         code, g = self._req("GET", f"/gists/{gid}")
         if code != 200 or not isinstance(g, dict):
-            raise FeedError(f"baca gist {gid}: HTTP {code}")
+            raise FeedError(f"baca gist {gid}: {_why(code, g)}")
         f = (g.get("files") or {}).get(name) or {}
         if f.get("truncated"):
             raise FeedError(f"{name} terpotong (> 1 MB): butuh berkas baru")
         content = f.get("content") or ""
         if key_of(rec) in {key_of(json.loads(x)) for x in content.splitlines() if x.strip()}:
             return False
-        code, _ = self._req("PATCH", f"/gists/{gid}", {"files": {name: {"content": content + line_of(rec) + "\n"}}})
+        code, body = self._req("PATCH", f"/gists/{gid}", {"files": {name: {"content": content + line_of(rec) + "\n"}}})
         if code != 200:
-            raise FeedError(f"tulis gist {gid}: HTTP {code}")
+            raise FeedError(f"tulis gist {gid}: {_why(code, body)}")
         return True

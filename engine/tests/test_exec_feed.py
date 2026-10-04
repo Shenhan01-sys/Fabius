@@ -129,6 +129,21 @@ class FeedTests(unittest.TestCase):
         self.assertEqual(e.pending, {})
         self.assertEqual(len(g.lines()), 1)
 
+    def test_a_refused_gist_write_says_why_without_leaking_the_token(self):
+        g = FakeGist()
+        real = g.__call__
+
+        def refuse_create(method, url, headers, body=None):
+            if method == "POST":
+                return 403, {"message": "Resource not accessible by personal access token"}
+            return real(method, url, headers, body)
+        e = self.executor(FeedVenue(), refuse_create)
+        e.round(self.tmp, FakeChain(), COMMITTER)
+        msg = next(x for x in self.logs if "TERTUNDA" in x)
+        self.assertIn("HTTP 403 'Resource not accessible by personal access token'", msg)
+        self.assertNotIn("ghp_rahasia", " ".join(self.logs))
+        self.assertIn("eksekusi|B1-TREND|2026-10-02", e.pending)
+
     def test_backfill_reports_only_old_bars_whose_orders_exist_and_blanks_their_positions(self):
         v = FeedVenue()
         ek.Executor(env=DEMO, log=lambda s: None, venue_factory=lambda env: v, today=lambda: "2026-10-03", sleep=lambda s: None).round(
