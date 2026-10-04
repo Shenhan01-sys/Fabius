@@ -1,7 +1,7 @@
 {
  "v": 1,
- "generated_utc": "2026-10-04T08:12:35Z",
- "repo_head": "d24a242d58cece6d6c5a23d3e99d25eab6e804ca",
+ "generated_utc": "2026-10-04T08:50:01Z",
+ "repo_head": "aa418d66b17fe8a30c7dff33c26efeabe9e06737",
  "bots": [
   {
    "id": "B1-TREND",
@@ -191,6 +191,13 @@
      "held": 16,
      "lag_s": 31208,
      "emitted_utc": "2026-10-03T08:40:08Z"
+    },
+    {
+     "date": "2026-10-03",
+     "signals": 0,
+     "held": 16,
+     "lag_s": 31450,
+     "emitted_utc": "2026-10-04T08:44:10Z"
     }
    ],
    "settles": [],
@@ -198,7 +205,7 @@
    "n_signals": 0,
    "n_settled_days": 0,
    "n_months": 0,
-   "head": "0x00969604109c62e179d92fb8083811441ff6e05badfba78a7b855c4ae9fc00ff",
+   "head": "0x18302bbf0abd370e515a67a4d5555a8229ce77b155b4a1e0e813357ad4b33185",
    "days_live": 3,
    "last_closed": "2026-10-03"
   },
@@ -219,21 +226,34 @@
      "held": 1,
      "lag_s": 31208,
      "emitted_utc": "2026-10-03T08:40:08Z"
+    },
+    {
+     "date": "2026-10-03",
+     "signals": 1,
+     "held": 0,
+     "lag_s": 31450,
+     "emitted_utc": "2026-10-04T08:44:10Z"
     }
    ],
-   "settles": [],
+   "settles": [
+    {
+     "date": "2026-10-04",
+     "net_bps": -0.88,
+     "held": 0
+    }
+   ],
    "gaps": [],
-   "n_signals": 3,
-   "n_settled_days": 0,
-   "n_months": 0,
-   "head": "0xb2f703cbc6245958269ca1fac8143dbb0fa2df94978aed9c71f7de69031cddd5",
+   "n_signals": 4,
+   "n_settled_days": 1,
+   "n_months": 1,
+   "head": "0x8d2df0cba929cd79cc30cda7e6564715202e527c91ee78fe6e7766f82f34616b",
    "days_live": 3,
    "last_closed": "2026-10-03"
   }
  },
  "book": {
-  "epoch": 690,
-  "recorded_utc": "2026-10-02T17:22:43Z",
+  "epoch": 691,
+  "recorded_utc": "2026-10-04T08:44:19Z",
   "capacity": 10,
   "book_sha": "0xfe37d7595644fd7e23fc5cd2c9aa659db1b66e316069c7414dd478e231f6e05c",
   "occupants": [
@@ -246,18 +266,18 @@
    {
     "id": "B3-CARRY",
     "gate": "LOLOS_SHADOW",
-    "shadow_days": 0
+    "shadow_days": 3
    }
   ],
   "decisions": [
    {
     "id": "B3-CARRY",
     "action": "REJECT",
-    "reason": "shadow maju baru 0 hari < 60"
+    "reason": "shadow maju baru 3 hari < 60"
    }
   ],
   "killers": {
-   "B1-TREND": "TEKS"
+   "B1-TREND": "BELUM"
   }
  },
  "locks": [
@@ -324,9 +344,9 @@
     "months": 0
    },
    "B3-CARRY": {
-    "signals": 3,
-    "days": 0,
-    "months": 0
+    "signals": 4,
+    "days": 1,
+    "months": 1
    }
   },
   "lock": "TERKUNCI"
@@ -339,14 +359,14 @@
  },
  "chain": {
   "id": 97,
-  "block": 134787992,
-  "block_utc": "2026-10-04T08:12:36Z",
+  "block": 134792981,
+  "block_utc": "2026-10-04T08:50:01Z",
   "signal_anchor": "0x9B78200beFbbBe836585d31bd5b6dB32587064f3",
   "lock_registry": "0xcF6fBF95fc04DEd8d670512CEc0723a2246Fbb0C",
   "decision_anchor": "0xDD162AFB5F5f92d5092f845A93660e3B38259330",
   "committer": "0xCA9c7322210E9a7F7d0953c862d4Ef60cC0D64A4",
-  "commit_count": 2,
-  "lock_count": 8,
+  "commit_count": 4,
+  "lock_count": 9,
   "verdicts": [
    {
     "bot": "B1-TREND",
@@ -365,6 +385,14 @@
     "lag_s": 31431
    },
    {
+    "bot": "B1-TREND",
+    "bar": "2026-10-03",
+    "verdict": "SAH",
+    "n": 0,
+    "revealed": 0,
+    "lag_s": 31546
+   },
+   {
     "bot": "B3-CARRY",
     "bar": "2026-10-01",
     "verdict": "SEBELUM KUNCI",
@@ -379,19 +407,27 @@
     "n": 1,
     "revealed": 1,
     "lag_s": 31434
+   },
+   {
+    "bot": "B3-CARRY",
+    "bar": "2026-10-03",
+    "verdict": "SAH",
+    "n": 1,
+    "revealed": 1,
+    "lag_s": 31550
    }
   ],
   "totals": {
-   "SAH": 2,
+   "SAH": 4,
    "BELUM DIUNGKAP": 0,
    "TIDAK DIUNGKAP": 0,
    "MENUNGGU KOMIT": 0,
    "TIDAK DIKOMIT": 0,
    "SEBELUM KUNCI": 2,
    "ALARM": 0,
-   "komit_resmi": 2,
+   "komit_resmi": 4,
    "komit_alamat_lain_untuk_bot_kita": 0,
-   "komit_total": 2
+   "komit_total": 4
   }
  }
 }
