@@ -95,6 +95,23 @@ class PureTests(unittest.TestCase):
         self.assertIsNone(xs.tg_parse(s, t, NOW + xs.TG_TTL_S + 1))
 
 
+class ClientTests(unittest.TestCase):
+    @unittest.skipUnless(HAVE_ETH, "eth-account tidak terpasang")
+    def test_the_client_reads_payment_headers_case_insensitively(self):
+        """5 Okt: edge Railway menulis `payment-required` huruf kecil; klien dengan dict biasa tidak melihat tagihan sama sekali."""
+        import email.message
+        import urllib.error
+        from unittest import mock
+        import x402_client as xc
+        h = email.message.Message()
+        h["payment-required"] = "abc"
+        err = urllib.error.HTTPError("https://x/sinyal/B1", 402, "Payment Required", h, None)
+        err.read = lambda: b"{}"
+        with mock.patch("urllib.request.urlopen", side_effect=err):
+            code, hdr, _ = xc.http("https://x/sinyal/B1")
+        self.assertEqual((code, hdr.get("PAYMENT-REQUIRED")), (402, "abc"))
+
+
 class PriceTests(unittest.TestCase):
     def test_the_locked_table_matches_the_code_and_early_numbers_never_raise_the_price(self):
         self.assertEqual(harga.status()["state"], "TERKUNCI")

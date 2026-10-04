@@ -90,11 +90,13 @@ def digest_2612(token_addr, owner, value, nonce_, deadline):
 def http(url, headers=None):
     req = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0 (compatible; fabius-client/1.0)",
                                                **(headers or {})})
+    # Header dikembalikan sebagai `HTTPMessage` (TIDAK peka huruf besar/kecil), bukan dict: edge Railway menulis `payment-required` huruf kecil
+    # (sah menurut HTTP) dan dict biasa membuat klien buta terhadap tagihan - ketahuan 5 Okt saat pertama kali membayar gerbang publik (P138a).
     try:
         with urllib.request.urlopen(req, timeout=90) as r:
-            return r.status, dict(r.headers), r.read().decode("utf-8", "replace")
+            return r.status, r.headers, r.read().decode("utf-8", "replace")
     except urllib.error.HTTPError as e:
-        return e.code, dict(e.headers), e.read().decode("utf-8", "replace")
+        return e.code, e.headers, e.read().decode("utf-8", "replace")
 
 
 def _sig_65(signed):

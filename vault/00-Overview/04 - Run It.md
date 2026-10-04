@@ -79,6 +79,9 @@ python -X utf8 tools/kertas_eksekusi.py ringkas        # tracking error vs paper
 #   EXEC_LIVE_OK=binance:sampai:YYYY-MM-DD, EXEC_REAL_ASSET (XRPUSDT), EXEC_REAL_MAX_USDT (<= 10). Log start: 'canary uang nyata canary'; tiap isi -> ExecutionAnchor
 # Whitelist IP Binance (izin Futures wajib IP): tiap DEPLOY baru = IP keluar baru (restart = IP tetap). Baca log 'IP keluar: ...' -> perbarui
 #   whitelist kunci di Binance -> railway restart --service fabius-engine. Kunci ditolak = canary BERHENTI + alert (gagal-aman).
+# P138a gerbang x402 per sinyal: https://fabius-x402-production.up.railway.app (GET / , /teaser/<bot>, /sinyal/<bot>, POST /faucet)
+#   lokal: python -X utf8 tools/x402_sinyal.py --local --port 8050 ; beli: MSYS_NO_PATHCONV=1 python -X utf8 tools/x402_client.py --base <url> --path /sinyal/B1-TREND
+#   deploy: python -X utf8 tools/railway_up.py --service fabius-x402 (satu region: railway service scale --service fabius-x402 southeast-asia=1 sfo=0)
 # P136 validasi ERC-8004 (agen 2494): tanpa kunci -> python -X utf8 tools/erc8004_validasi.py ringkas ; worker meminta tiap putaran;
 #   jawab = workflow validasi.yml (dipicu paper-ledger; manual: gh workflow run validasi.yml). Rencana lokal: ... minta / ... jawab (tanpa --send)
 # F-D97 sakelar publik: config/uang_nyata.json {"aktif": true} (edit di GitHub; berlaku bar BERIKUTNYA). false = tanpa order baru, posisi ditutup bar berikutnya

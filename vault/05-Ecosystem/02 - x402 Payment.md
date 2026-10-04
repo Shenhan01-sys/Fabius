@@ -22,4 +22,7 @@ kita punya adalah transaksi, bukan screenshot.
 - Perbandingan dengan proyek lain kami tidak dilakukan: Lencana memakai x402 untuk hal yang
   berbeda; keduanya sah, dan tidak saling meminjam klaim.
 
+- **5 Okt (P138a):** jalur HTTP kini PUBLIK: gerbang `fabius-x402` di Railway menjual paket sinyal per (bot, bar) dengan token Fabius Credit (FAB),
+  dibayar sungguhan lewat URL publik (tx `0x2c1097f1…`). Pembeli tetap klien kami sendiri - belum ada pembeli eksternal. [[04-Tools/TL32 - gerbang x402 per sinyal]]
+
 **Terkait:** [[04-Tools/TL6 - x402 gate and client]] · [[08-Backlog/01 - Backlog]] P2

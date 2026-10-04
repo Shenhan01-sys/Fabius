@@ -17,6 +17,14 @@
    "url": "https://fabius-one.vercel.app"
   },
   {
+   "description": "paket sinyal siap pakai satu (bot, bar): niat posisi + bukti komit + validasi ERC-8004. Gratis: /teaser/{bot}; FAB: POST /faucet",
+   "method": "GET",
+   "paywall": "x402 v2 exact eip155:97 FAB (0xc7b6d5cdbdc881daae0dbcc095d4f184b70ec881), permit2 + eip2612GasSponsoring - pembeli nol gas",
+   "protocol": "http",
+   "status": "HIDUP (testnet, token tanpa nilai); harga per (bot, bar) dari confidence, tabel terkunci (engine/harga.py)",
+   "url": "https://fabius-x402-production.up.railway.app/sinyal/{bot}"
+  },
+  {
    "description": "ringkasan vault + statistik (dibayar per permintaan)",
    "method": "GET",
    "paywall": "x402 exact eip155:97",
@@ -52,7 +60,7 @@
   "validation_tag": "fabius-komit-ungkap-v1",
   "validator": "0x2d9A2f165D6d5B96717a0d95B5C59D7872d0a423"
  },
- "generated_utc": "2026-10-04T19:30:00Z",
+ "generated_utc": "2026-10-04T20:40:39Z",
  "image": null,
  "limits_stated_honestly": [
   "semua settlement di BNB Chain TESTNET (97); tidak ada dana nyata",

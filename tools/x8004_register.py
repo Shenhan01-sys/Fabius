@@ -159,6 +159,11 @@ def build_card(token_hint=None):
              "description": "server MCP: 9 alat (mulai fabius_overview; fabius_latest_signals live dari chain 97; fabius_verify menghitung ulang leaf + id dan mencocokkannya dengan ledger; fabius_status = kesehatan operasi hari ini)"},
             {"url": "https://fabius-one.vercel.app", "protocol": "http", "method": "GET", "paywall": None,
              "description": "landing tingkat 0: umpan bukti untuk manusia (kristal komitmen, kalender bukti, buku slot)"},
+            # P138a (5 Okt, F-D100): gerbang x402 PUBLIK per sinyal; dibayar sungguhan lewat URL ini (tx 0x2c1097f1...). Token FAB testnet, tanpa nilai.
+            {"url": "https://fabius-x402-production.up.railway.app/sinyal/{bot}", "protocol": "http", "method": "GET",
+             "paywall": "x402 v2 exact eip155:97 FAB (0xc7b6d5cdbdc881daae0dbcc095d4f184b70ec881), permit2 + eip2612GasSponsoring - pembeli nol gas",
+             "status": "HIDUP (testnet, token tanpa nilai); harga per (bot, bar) dari confidence, tabel terkunci (engine/harga.py)",
+             "description": "paket sinyal siap pakai satu (bot, bar): niat posisi + bukti komit + validasi ERC-8004. Gratis: /teaser/{bot}; FAB: POST /faucet"},
             {"url": "http://127.0.0.1:8046/vault/latest", "protocol": "http",
              "method": "GET", "paywall": "x402 exact eip155:97",
              # Ditulis apa adanya, bukan dibuat terlihat siap produksi: endpoint ini terbukti

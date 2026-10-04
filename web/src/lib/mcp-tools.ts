@@ -11,6 +11,8 @@ import { getStatus } from "./status";
 
 type Result = { content: { type: "text"; text: string }[]; isError?: boolean };
 
+const X402_GATE = "https://fabius-x402-production.up.railway.app"; // P138a: gerbang x402 per sinyal (Railway fabius-x402)
+const X402_FAB = "0xc7b6d5cdbdc881daae0dbcc095d4f184b70ec881"; // Fabius Credit (FAB), deployments/97.json x402_sinyal.token
 const ok = (summary: string, data: unknown): Result => ({ content: [{ type: "text", text: `${summary}\n\n${JSON.stringify(data, null, 2)}` }] });
 const fail = (e: unknown): Result => ({
   isError: true,
@@ -88,11 +90,39 @@ export function registerFabiusTools(server: McpServer, s: Snapshot) {
           fabius_locks: "rules locked on-chain before the data, in order",
           fabius_status: "operations health today: tick, commit, reveal, venue-rules paper, gas, GitHub chain heartbeat (health, not performance)",
           fabius_confidence: "free teaser per bot: confidence from the forward record (1 - p of the locked F-D16 bootstrap) and why - never assets, direction or size",
+          fabius_signal_offer: "buy one bot's latest signal package with x402 (testnet 97, FAB token, zero gas for the buyer): live price, teaser, pay URL and how to pay",
         },
         verify_yourself: ["git clone https://github.com/Shenhan01-sys/Fabius", "python -X utf8 tools/verify_signals.py", "python -X utf8 -m engine.cli ledger verify"],
         snapshot_utc: s.generated_utc,
       }),
     ),
+  );
+
+  server.registerTool(
+    "fabius_signal_offer",
+    {
+      title: "Offer: buy one bot's latest signal package (x402, testnet)",
+      description:
+        "Live from the x402 gate: the price of the latest (bot, bar) signal package in FAB (Fabius Credit, BNB testnet 97, no value), the free teaser, and the paid URL. Pay with x402 v2 `exact` (Permit2 + EIP-2612 gas sponsoring: the buyer signs two messages and pays no gas). Price comes from the locked table in engine/harga.py (from forward confidence). What you buy is delivery + proof (intents, commit, ERC-8004 validation), not a secret: the bots are deterministic and open.",
+      inputSchema: z.object({ bot: BOT }),
+    },
+    async ({ bot }) => {
+      try {
+        const res = await fetch(`${X402_GATE}/teaser/${bot}`, { next: { revalidate: 60 } });
+        if (!res.ok) return fail(`x402 gate answered HTTP ${res.status} for ${bot}`);
+        const t = (await res.json()) as { teaser: unknown; harga: { bar: string; atomic: number; fab: number; alasan: string } };
+        return ok(`${bot} bar ${t.harga.bar}: ${t.harga.fab} FAB via x402 at ${X402_GATE}/sinyal/${bot}`, {
+          price: t.harga,
+          teaser: t.teaser,
+          pay_url: `${X402_GATE}/sinyal/${bot}/${t.harga.bar}`,
+          how_to_pay: "GET pay_url -> 402 with PAYMENT-REQUIRED (x402 v2, scheme exact, asset FAB, extra.name 'Fabius Credit') -> sign Permit2 witness + EIP-2612 permit for exactly that amount -> repeat GET with PAYMENT-SIGNATURE. Reference client: tools/x402_client.py",
+          get_test_tokens: `POST ${X402_GATE}/faucet {"address": "0x..."} (FAB sent to you; you need no tBNB)`,
+          token: { symbol: "FAB", address: X402_FAB, decimals: 6, network: "eip155:97" },
+        });
+      } catch (e) {
+        return fail(e);
+      }
+    },
   );
 
   server.registerTool(
