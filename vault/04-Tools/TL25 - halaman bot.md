@@ -40,6 +40,10 @@ paper 1/16 dipegang (ETC 6,25 %, DOT "keluar"), B1 16/16 (6,25 % tiap aset, bobo
 terbukti (1 sinyal, 8,7 j), 10-03 "tutup, tick menunggu"; B2 dalam bahasa ID: 01 kunci (ambang, uji maju, anggaran), 02 pembunuh teks saja. Tanpa
 gulir horizontal di ponsel.
 
+**HIDUP 4 Okt (komit `81f3d504`, Vercel dari push):** `https://fabius-one.vercel.app/bot/B3-CARRY`. Produksi: `/bot/B1..B6` 200, `/bot/b3-carry` -> 307,
+`/bot/XX` -> 404; HTML B3 memuat `ledger/paper/B3-CARRY.jsonl · 2026-10-04T08:29:23Z` (dibaca live di server Vercel), ETC 6,25 %, DOT keluar, tanpa
+pesan galat; landing memuat 6 tautan `/bot/`; MCP `fabius_verify` B3 2026-10-02 tetap SAH.
+
 **Temuan cek visual (diperbaiki):** kubus putih "dipegang" tak terbedakan dari flat di latar terang -> buku paper pindah ke panel malam; chip kunci
 spesifikasi terpotong di ponsel -> chip boleh membungkus.
 
