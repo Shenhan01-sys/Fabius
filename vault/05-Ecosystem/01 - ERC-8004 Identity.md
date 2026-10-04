@@ -26,4 +26,6 @@ tabel internal kami. Ini jawaban teknis untuk pertanyaan "bagaimana agen lain ta
   **benar-benar ditulis alatnya** (pernah menunjuk ke path yang tidak ada — kelas bug yang sama
   dengan pointer `docs/upstream-x402`).
 
+- **Koreksi 5 Okt 2026 (dibaca ulang dari chain 97 hari itu):** `ReputationRegistry` `0x8004B663056A597Dffe9eCcC1965A193B7388713` dan `ValidationRegistry` `0x8004Cb1BF31DAf7788923b405b754f57acEB4272` ADA di chain 97 - proxy 130 B, `getVersion()` = "2.0.0", `getIdentityRegistry()` = IdentityRegistry kami `0x8004A818…`, implementasi 10.491 B / 5.876 B; agen 2494: `getClients` = [], `getAgentValidations` = []. Kalimat "tidak ada di chain mana pun" di bawah = keadaan saat ditulis, BASI. Rencana pakai: [[08-Backlog/01 - Backlog]] P136 (F-D98).
+
 **Terkait:** [[05-Ecosystem/03 - Discovery Gap]] · [[04-Tools/TL6 - x402 gate and client]]

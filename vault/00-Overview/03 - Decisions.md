@@ -2932,3 +2932,22 @@ usdt saya."*
 
 **Terkait:** F-D92 · F-D96 · [[04-Tools/TL29 - canary uang nyata]] · [[07-Testing/T8 - Semantik Kegagalan Operator]] SK-E27..SK-E29 ·
 [[09-Inbox/Session-2026-10-02]] §73
+
+## F-D98 — x402 per sinyal di testnet 97 dengan token uji; isi sinyal publik ditunda satu bar; confidence = rekam jejak maju · 5 Okt 2026 (WIB)
+
+Builder: *"keputusan yg emg bener 3 dulu tp kita harus usahakan no1 juga sempet"* + usulan bot x402 per sinyal di tiga kanal (MCP untuk agen, bot
+Telegram, web): belum bayar = hanya persentase confidence + alasannya, tanpa membocorkan detail. Jawaban AskUserQuestion: pembayaran = **"Testnet 97,
+token uji"**; jeda buka publik = **"Sampai bar berikutnya (~24 jam)"**; confidence = **"Rekam jejak maju bot"**.
+
+1. **Urutan:** (3) bukti Fabius ke registri ERC-8004 (identitas 2494; Reputation + Validation ternyata ADA di chain 97, lihat koreksi 5 Okt) ->
+   tunda pembukaan publik + confidence -> backend hak akses x402 (MCP + web + Telegram) di testnet -> (1) LLM analis (berita/pengumuman -> fitur
+   terkomit) bila sempat. Dicatat sebagai P136-P139.
+2. **Pembayaran:** mekanisme penuh di chain 97 dengan token uji, berlabel demo. Ini BUKAN penjualan sinyal: F-D72 (tingkat 1 = bot lolos F-D16 maju +
+   telaah hukum P80) tetap utuh; mainnet hanya lewat keputusan baru.
+3. **Jeda buka:** komit tetap langsung on-chain; isi sinyal (target) dibuka publik sesudah bar berikutnya (~24 jam). Pembayar melihat isi lebih dulu.
+   Konsekuensi: ledger paper publik dan web tidak boleh memuat target bar terakhir sebelum jedanya lewat (`ungkap +0s` hari ini harus berubah).
+4. **Confidence:** dihitung dari rekam jejak maju ter-anchor (n, PnL net, CI, vonis gerbang) - bukan dikarang, bukan kekuatan sinyal hari itu.
+   Teaser tanpa bayar tidak boleh membocorkan aset, arah, atau ukuran.
+
+**Terkait:** F-D11 · F-D16 · F-D70 · F-D72 · [[08-Backlog/06 - Epik Gerbang Sinyal]] · [[05-Ecosystem/01 - ERC-8004 Identity]] ·
+[[09-Inbox/Session-2026-10-02]] §75-§76
