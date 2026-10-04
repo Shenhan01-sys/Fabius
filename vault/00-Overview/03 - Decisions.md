@@ -2825,7 +2825,7 @@ Tokocrypto, gas buat planningnya di vault, workflownya sesuaikan di vault juga a
 Builder: *"Terkait dana awalan pastinya sangat terbatas maksimal hanya ada di 10 usdt, eksekusi aja prdnya sebagian yg paling posible tapi minimal mencakup
 50% dari PRD. Pastikan konsep paper sebagai awalan test akurasi tetap ada sebelum open posisi uang asli ya"*.
 
-1. **Batas modal nyata: 10 USDT.** B1 penuh tidak bisa dibuka dengan modal itu di venue mana pun (Aster >= ±80, Binance >= ±800 USDT; snapshot filter
+1. **Batas modal nyata: 10 USDT.** [**KOREKSI 4 Okt sore (terukur):** angka "Aster >= ±80 USDT" hanya menghitung min notional (5 USDT) dan MENGABAIKAN ukuran lot. Lot BTC = 0,001 BTC ≈ 85 USDT (harga Aster 85.124), jadi BTC pada 6,25 % baru terbuka di modal >= ±1.362 USDT - di Aster DAN di Binance (lot sama). Order terkecil nyata di Aster (live 4 Okt): ATOM/LTC/TRX/ETC/DOGE/LINK/BCH/XRP/DOT/ADA ±5,0-5,1; ETH 5,4; SOL 6,1; BNB 7,9; NEAR 9,7; AVAX 11; BTC 85 USDT. Dengan 10 USDT (1x): tepat SATU posisi canary ±5 USDT di venue mana pun.] B1 penuh tidak bisa dibuka dengan modal itu di venue mana pun (Aster >= ±80, Binance >= ±800 USDT; snapshot filter
    4 Okt). Tidak ada pemotongan universe diam-diam: aset yang tidak bisa dibuka tercatat `dilewati`.
 2. **Kertas wajib sebelum uang nyata:** tahap S1 kertas-venue (keputusan resmi dieksekusi di atas kertas dengan harga, lot, min notional, dan fee venue;
    modal virtual 2.000 dan 10 USDT) harus lulus sebelum testnet (S2) dan canary (S3). PRD v1.1: [[08-Backlog/10 - Epik Eksekusi Venue]] §0a.

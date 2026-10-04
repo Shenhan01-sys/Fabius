@@ -33,7 +33,7 @@ start dengan kunci yang bisa menarik dana; membuka posisi di bawah min notional 
 
 **Hasil pertama (4 Okt ±01:2x WIB):** 8 ledger kertas (2 venue x 2 modal x 2 jadwal): bar 2026-10-01 = SEBELUM_KUNCI (tick lebih tua dari kunci, tidak
 dieksekusi); bar 2026-10-02 = TUNDA (`kline 1m ... 2026-10-03 belum terbit`). Catatan eksekusi pertama menyusul sesudah Vision menerbitkan 1m 3 Okt.
-Snapshot filter (4 Okt): Binance USDⓈ-M TESTNET min notional maks 50 USDT -> B1 penuh >= 800 USDT; Aster prod 5 USDT -> >= 80 USDT.
+Snapshot filter (4 Okt): Binance USDⓈ-M TESTNET min notional maks 50 USDT -> B1 penuh >= 800 USDT; Aster prod 5 USDT -> >= 80 USDT. **Koreksi 4 Okt sore:** min notional bukan satu-satunya batas - lot BTC 0,001 ≈ 85 USDT, jadi B1 penuh >= ±1.362 USDT di kedua venue (rencana kertas sudah benar karena `ex.plan` membulatkan ke lot; yang keliru hanya angka ringkas di catatan ini).
 
 **Cara menjalankan:**
 `python -X utf8 tools/kertas_eksekusi.py filters` (perbarui snapshot filter) · `... run` (tambah catatan) · `... ringkas` (metrik vs ambang PRD §6).

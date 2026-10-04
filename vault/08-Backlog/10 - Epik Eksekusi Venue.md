@@ -19,7 +19,9 @@ baru kalau sempet itu Tokocrypto, gas buat planningnya di vault, workflownya ses
 Builder: *"Terkait dana awalan pastinya sangat terbatas maksimal hanya ada di 10 usdt, eksekusi aja prdnya sebagian yg paling posible tapi minimal mencakup
 50% dari PRD. Pastikan konsep paper sebagai awalan test akurasi tetap ada sebelum open posisi uang asli ya"*.
 
-**Akibat yang terukur:** B1 penuh (16 aset x 6,25 %) butuh >= ±80 USDT di Aster dan >= ±800 USDT di Binance (min notional per aset, snapshot
+**KOREKSI 4 Okt sore (terukur):** angka "Aster >= ±80 USDT" hanya menghitung min notional (5 USDT) dan MENGABAIKAN ukuran lot. Lot BTC = 0,001 BTC ≈ 85 USDT (harga Aster 85.124), jadi BTC pada 6,25 % baru terbuka di modal >= ±1.362 USDT - di Aster DAN di Binance (lot sama). Order terkecil nyata di Aster (live 4 Okt): ATOM/LTC/TRX/ETC/DOGE/LINK/BCH/XRP/DOT/ADA ±5,0-5,1; ETH 5,4; SOL 6,1; BNB 7,9; NEAR 9,7; AVAX 11; BTC 85 USDT. Dengan 10 USDT (1x): tepat SATU posisi canary ±5 USDT di venue mana pun.
+
+**Akibat yang terukur (versi awal, lihat koreksi di atas):** B1 penuh (16 aset x 6,25 %) butuh >= ±80 USDT di Aster dan >= ±800 USDT di Binance (min notional per aset, snapshot
 `ledger/kertas/filter/`). Dengan 10 USDT tiap aset hanya 0,625 USDT, jadi **tidak satu pun posisi B1 bisa dibuka**. Itu tercatat sebagai `dilewati`, bukan
 dipotong diam-diam. Maka tahapnya menjadi:
 
@@ -173,7 +175,7 @@ Aturan naik modal: sesudah 20 hari bursa `live` di dalam semua ambang, builder B
 - **Akses Binance dari Indonesia** dan ketersediaan Agent OS untuk akun builder: tidak diketahui (H1). Bila tertutup: Aster naik ke prioritas 1 (keputusan builder).
 - **IP Railway (Singapura)** untuk endpoint trading Binance prod: ~~belum diuji~~ **TERUKUR 4 Okt ±01:3x WIB** dari dalam container `fabius-probe` (IP keluar SG, AS400940 Railway): testnet `/fapi/v1/time` 200, `/fapi/v1/order` tanpa kunci 401 `-2014 API-key format invalid`; prod `fapi.binance.com` `/fapi/v1/time` 200, `/fapi/v1/order` 401 `-2014`; `api.binance.com/sapi/v1/account/apiRestrictions` 400 `-2014`; Aster `/fapi/v1/time` 200. Artinya endpoint trading terjangkau (balasan dari lapisan otentikasi, bukan blokir wilayah 451/403). Dari perangkat builder testnet butuh Cloudflare WARP; dari Railway tidak. Min notional PROD belum dibaca (E2).
 - **Agent OS: konfirmasi "ya" per order** - catatan 2 Okt vs berita: belum pasti (epik 05 §6). Kalau benar wajib, eksekusi otomatis penuh tidak mungkin lewat jalur itu.
-- **Modal minimum:** B1 penuh di Binance >= ±800 USDT (testnet; prod mungkin lebih tinggi), di Aster >= ±80 USDT. Canary di bawahnya = sebagian aset tidak bisa
+- **Modal minimum:** ~~B1 penuh di Binance >= ±800 USDT (testnet; prod mungkin lebih tinggi), di Aster >= ±80 USDT~~ -> **>= ±1.362 USDT di kedua venue** (lot BTC 0,001 ≈ 85 USDT; koreksi 4 Okt sore). Canary di bawahnya = sebagian aset tidak bisa
   dibuka = bukan B1 lagi (jangan diam-diam memotong universe).
 - **Perubahan bobot kecil** (B1 sama rata 1/n) memicu order kecil di bawah min notional: dilewati (R-E4) dan dihitung sebagai tracking error.
 - **Biaya Railway gratis** (restart ON_FAILURE x10) untuk service ketiga; upgrade sebelum ±1 Nov sudah direncanakan.
