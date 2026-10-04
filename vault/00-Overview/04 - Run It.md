@@ -74,6 +74,11 @@ python -X utf8 tools/kertas_eksekusi.py ringkas        # tracking error vs paper
 
 # eksekutor (P118) di worker fabius-engine: variabel Railway (dashboard) EXEC_MODE=off|dry|demo (bawaan off), EXEC_MODAL_USDT (2000), EXEC_MAX_LOSS (0.05);
 # live DITOLAK di fabius-engine (F-D93). Baca hasil: railway logs --service fabius-engine --lines 80  (cari 'eksekutor')
+# P119 umpan laporan (F-D94): variabel Railway EXEC_FEED_TOKEN = token GitHub HANYA "Gists: Read and write" (dashboard, bukan chat); log start: 'umpan eksekusi nyala'
+python -X utf8 tools/eksekusi_ledger.py run        # rantai GitHub menjalankannya tiap 5 menit: Gist -> diperiksa -> ledger/eksekusi/ (exit 1 ALARM, 3 tak terbaca)
+python -X utf8 tools/eksekusi_ledger.py periksa    # penjaga luar: tick dikomit >= 60 menit tanpa laporan = ALARM
+python -X utf8 tools/eksekusi_ledger.py ringkas    # fee / slip / geser / selisih vs kertas / latensi / tracking vs ambang PRD §6
+python -X utf8 tools/eksekusi_ledger.py verify     # rantai hash ledger eksekusi
 
 # peninjau pengajuan penerbit (P83): k keluarga dari registri ledger/pengajuan/registri.jsonl; pratinjau tidak mengikat
 python -X utf8 -m engine.cli review --file engine/examples/submission.example.json --data ledger/bars            # pratinjau (alpha A1/k)

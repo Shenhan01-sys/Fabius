@@ -293,7 +293,8 @@ def main() -> int:
     specs = " ".join(f"{b}={SPECS[b].sha()[:12]}" for b in BOTS if b in SPECS)
     log(f"worker mulai | repo {REPO}@{BRANCH} | bot {specs} | poll {POLL_S}s | ungkap +{REVEAL_DELAY_S}s | "
         f"region {os.environ.get('RAILWAY_REPLICA_REGION', '?')} | build {os.environ.get('RAILWAY_GIT_COMMIT_SHA', 'lokal')[:10]} | "
-        f"kunci {'ADA' if sc.committer_key() else 'TIDAK ADA (mode rencana)'} | eksekutor {os.environ.get('EXEC_MODE', 'off')}")
+        f"kunci {'ADA' if sc.committer_key() else 'TIDAK ADA (mode rencana)'} | eksekutor {os.environ.get('EXEC_MODE', 'off')} | "
+        f"umpan eksekusi {'nyala' if os.environ.get('EXEC_FEED_TOKEN') else 'mati (EXEC_FEED_TOKEN tidak ada, F-D94 H7)'}")
     for name, url in PROBES:
         log(f"probe {name}: {probe(url)}")
     w = Worker()

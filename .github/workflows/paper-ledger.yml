@@ -25,6 +25,8 @@ name: paper-ledger
 #   6. sesudah penjaga luar menilai tick hari itu: picu `web-snapshot.yml` (data landing; butuh pip, jadi workflow sendiri). Gagal = peringatan saja.
 #   7. P115 tiap putaran (5 menit, sepanjang hari): `tools/waitlist.py --poll` - daftar tunggu lewat bot Telegram, pendaftar dikabarkan ke chat builder.
 #      Log hanya hitungan (log Actions publik). Gagal = peringatan saja; update Telegram tersimpan 24 jam dan diulang putaran berikut.
+#   8. P119 tiap putaran (5 menit, sepanjang hari): `tools/eksekusi_ledger.py run` - laporan eksekutor dari Gist publik (runner diblokir Binance, 451,
+#      F-D94) DIPERIKSA lalu ditulis ke ledger/eksekusi/; `verify`; `periksa` = penjaga luar (komit >= 60 menit tanpa laporan = ALARM). Gagal = peringatan.
 #
 # Batas yang jujur: (a) funding REST tertutup dari runner (HTTP 451); `settle` final menunggu zip bulanan, laporan PROVISIONAL memakai estimasi (F-D76).
 # (b) Tidak ada kunci, tidak ada transaksi chain, tidak ada rahasia di sini. (c) Paper penuh; angka maju bukan klaim edge (F-D16).
@@ -183,6 +185,33 @@ jobs:
                 fi
               fi
             fi
+            # P119 (F-D94): ledger eksekusi. Runner tidak bisa membaca Binance (451), jadi eksekutor Railway menaruh laporannya di Gist publik;
+            # di sini laporan DIPERIKSA (id dihitung ulang, order sesudah komit di chain, universe, long-only) lalu ditulis berantai hash.
+            # Penjaga luar SK-E17: tick dikomit >= 60 menit tanpa laporan = ALARM. Gagal apa pun = peringatan saja; rantai ledger tetap jalan.
+            python -u -X utf8 tools/eksekusi_ledger.py run --alert --state "$RUNNER_TEMP/eksekusi-alert.json"
+            XRC=$?
+            if [ "$XRC" = "1" ]; then echo "::error::ledger eksekusi: ALARM (baris di atas) - rantai ledger tetap jalan"; fi
+            if [ "$XRC" = "3" ]; then echo "::warning::umpan eksekusi / chain tak terbaca - diulang 5 menit lagi"; fi
+            if python -u -X utf8 tools/eksekusi_ledger.py verify > /dev/null; then
+              if [ -d ledger/eksekusi ]; then git add ledger/eksekusi; fi
+              if ! git diff --cached --quiet; then
+                git commit -q -m "ledger eksekusi $(date -u +%Y-%m-%dT%H:%M:%SZ) [skip ci]"
+                XP=0
+                for t in 1 2 3 4 5; do
+                  if git pull --rebase -q origin "$GITHUB_REF_NAME" && git push -q; then echo "push eksekusi OK (percobaan $t)"; XP=1; break; fi
+                  git rebase --abort 2>/dev/null || true
+                  sleep 12
+                done
+                if [ "$XP" = "0" ]; then echo "::warning::push eksekusi gagal 5x - diulang putaran berikut"; git reset -q --hard "origin/$GITHUB_REF_NAME"; fi
+              fi
+            else
+              echo "::error::ledger eksekusi verify GAGAL - tidak di-commit"
+              git checkout -q -- ledger/eksekusi 2>/dev/null || true
+              git clean -fdq ledger/eksekusi 2>/dev/null || true
+            fi
+            python -u -X utf8 tools/eksekusi_ledger.py periksa --alert --state "$RUNNER_TEMP/eksekusi-alert.json" > "$RUNNER_TEMP/eksekusi-periksa.txt"
+            PRC=$?
+            if [ "$PRC" = "1" ]; then cat "$RUNNER_TEMP/eksekusi-periksa.txt"; echo "::error::penjaga luar eksekusi: ALARM - tick dikomit tanpa laporan eksekusi"; fi
             python -u -X utf8 tools/waitlist.py --poll
             LRC=$?
             if [ "$LRC" != "0" ]; then echo "::warning::daftar tunggu rc=$LRC (diulang 5 menit lagi; update Telegram tersimpan 24 jam)"; fi

@@ -38,6 +38,8 @@ const KERTAS = [
   { venue: "aster", modal: "10", jadwal: "komit" },
 ]; // modal 10 USDT = plafon uang asli (F-D92), jadwal komit = kenyataan hari ini
 const EXEC_BOTS = ["B1-TREND"]; // EXEC_BOTS tools/eksekutor.py (bawaan)
+const EXEC_VENUE = "binance-demo"; // ledger/eksekusi/<venue>/ (P119, F-D94): ditulis rantai GitHub dari umpan Gist eksekutor
+const EXEC_GRACE_S = 3600; // TENGGANG_S tools/eksekusi_ledger.py: komit + 60 menit tanpa laporan = ALARM (SK-E17)
 
 const iso = (s: number) => new Date(s * 1000).toISOString().replace(/\.\d+Z$/, "Z");
 const day = (s: number) => iso(s).slice(0, 10);
@@ -59,6 +61,14 @@ async function kertasLast(venue: string, bot: string, modal: string, jadwal: str
   return { venue, last };
 }
 
+/** Ledger eksekusi publik satu bot; null = berkas belum ada (umpan belum menyala) - bukan galat. */
+async function execLedger(bot: string): Promise<{ bar: string; n_order: number; pelanggaran?: string[] }[] | null> {
+  const res = await fetch(`${RAW}/ledger/eksekusi/${EXEC_VENUE}/${bot}.jsonl`, { next: { revalidate: 120 } });
+  if (res.status === 404) return null;
+  if (!res.ok) throw new Error(`ledger eksekusi: HTTP ${res.status} dari GitHub`);
+  return (await res.text()).split("\n").filter((l) => l.trim()).map((l) => JSON.parse(l));
+}
+
 async function runs(workflow: string): Promise<Run[]> {
   const res = await fetch(`${API}/${workflow}/runs?per_page=10`, {
     headers: { accept: "application/vnd.github+json", "user-agent": "fabius-status" },
@@ -72,9 +82,7 @@ async function runs(workflow: string): Promise<Run[]> {
 async function botStatus(s: Snapshot, bot: string, bar: string, now: number): Promise<BotStatus> {
   const close = closeOf(bar);
   const st: Station[] = [{ k: "close", lamp: "ok", code: "CLOSED", at: iso(close) }];
-  const exec: Station = EXEC_BOTS.includes(bot)
-    ? { k: "exec", lamp: "private", code: "EXEC_PRIVATE", at: null }
-    : { k: "exec", lamp: "na", code: "EXEC_NA", at: null };
+  const execP = EXEC_BOTS.includes(bot) ? settle(() => execLedger(bot)) : null;
   const kertasP = KERTAS_BOTS.includes(bot) ? settle(() => Promise.all(KERTAS.map((k) => kertasLast(k.venue, bot, k.modal, k.jadwal)))) : null;
 
   // 02 tick
@@ -135,7 +143,23 @@ async function botStatus(s: Snapshot, bot: string, bar: string, now: number): Pr
       st.push({ k: "kertas", lamp: oldest && oldest >= prev ? "ok" : "wait", code: oldest && oldest >= prev ? "KERTAS_OK" : "KERTAS_BEHIND", at: null, detail });
     }
   }
-  st.push(exec);
+  // 06 eksekusi demo: ledger publik dari umpan Gist (P119). Belum ada berkas = umpan belum menyala -> tetap "tidak publik".
+  if (!execP) st.push({ k: "exec", lamp: "na", code: "EXEC_NA", at: null });
+  else {
+    const x = await execP;
+    const commit = st.find((y) => y.k === "commit");
+    if (!x.ok) st.push({ k: "exec", lamp: "unreadable", code: "UNREADABLE", at: null, detail: x.error });
+    else if (x.v === null) st.push({ k: "exec", lamp: "private", code: "EXEC_PRIVATE", at: null });
+    else {
+      const rec = x.v.find((r) => r.bar === bar);
+      const cAt = commit?.lamp === "ok" && commit.at ? Math.floor(Date.parse(commit.at) / 1000) : null;
+      if (rec && rec.pelanggaran?.length) st.push({ k: "exec", lamp: "alarm", code: "EXEC_VIOLATION", at: null, detail: `${rec.pelanggaran.length}` });
+      else if (rec) st.push({ k: "exec", lamp: "ok", code: "EXEC_OK", at: null, detail: `${rec.n_order}` });
+      else if (cAt == null) st.push({ k: "exec", lamp: "later", code: "NEEDS_COMMIT", at: null });
+      else if (now - cAt >= EXEC_GRACE_S) st.push({ k: "exec", lamp: "alarm", code: "EXEC_MISSING", at: null, detail: `${Math.round((now - cAt) / 60)}` });
+      else st.push({ k: "exec", lamp: "wait", code: "EXEC_WAIT", at: iso(cAt + EXEC_GRACE_S) });
+    }
+  }
   return { bot, bar, stations: st };
 }
 

@@ -44,7 +44,7 @@ dipotong diam-diam. Maka tahapnya menjadi:
 | R-E7 saklar | ✅ 4 Okt: `EXEC_MODE` off/dry/demo/testnet/live; live butuh `EXEC_LIVE_OK` hari ini dan ditolak di fabius-engine |
 | R-E8 semantik kegagalan | ✅ T8 SK-E1..SK-E9 berjangkar kode + tes |
 | R-E9 rahasia | ✅ env, disamarkan di galat (diuji) |
-| R-E10 ledger eksekusi | 🟡 ledger kertas berantai hash + verify; ledger dari riwayat trade venue menunggu order sungguhan |
+| R-E10 ledger eksekusi | 🟡 **4 Okt: kode + tes** (TL27; jalur Gist karena runner 451, F-D94; menunggu H7 + deploy) · sebelumnya: ledger kertas berantai hash + verify; ledger dari riwayat trade venue menunggu order sungguhan |
 
 Tonggak: E0 ✅ · E1 ✅ kode (keluar "5 tick sungguhan" = 5 catatan kertas berturut, menyusul otomatis) · E2 🟡 adaptor tanpa testnet · E3 🟡 kertas + metrik ·
 E4-E6 ⬜. Hitungan: 7 dari 10 kebutuhan ✅, 2 🟡, 1 ⬜. **Sesudah P118 (4 Okt malam): 9 ✅, 1 🟡 (R-E10 ledger dari riwayat trade venue); E2 = mode demo siap di worker, menunggu builder menyalakan `EXEC_MODE`.**

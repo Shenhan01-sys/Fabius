@@ -174,6 +174,13 @@ class BinanceFutures:
             return None
         raise VenueError(f"query order {cid}: HTTP {code} {self._clean(str(body)[:120])}")
 
+    def user_trades(self, symbol: str, order_id: int) -> list:
+        """Isi (fill) satu order: harga, qty, fee nyata (`commission`, `commissionAsset`) - bahan laporan eksekusi P119."""
+        code, body = self._signed("GET", BASE[self.env]["fapi"], "/fapi/v1/userTrades", {"symbol": symbol, "orderId": int(order_id)})
+        if code != 200 or not isinstance(body, list):
+            raise VenueError(f"userTrades {symbol} {order_id}: HTTP {code} {self._clean(str(body)[:120])}")
+        return body
+
     def place(self, o: Order) -> dict:
         """Order pasar idempoten: id yang sama sudah ada = kembalikan yang lama, TIDAK mengirim lagi (T8 SK-E6)."""
         old = self.order_by_client_id(o.asset, o.client_id)

@@ -10,6 +10,8 @@ Lingkungan:
   EXEC_MAX_LOSS      batas rugi harian ekuitas akun, pecahan (bawaan 0.05)
   EXEC_LIVE_OK       wajib untuk live: "binance:<YYYY-MM-DD>" hari ini (kata builder per hari, F-D92)
   BINANCE_API_ENV    harus cocok dengan mode (demo -> demo, testnet -> testnet, live -> prod)
+  EXEC_FEED_TOKEN    token GitHub hanya-Gist (F-D94, langkah builder H7): laporan eksekusi + tanda ekuitas harian ke Gist publik -> rantai GitHub
+                     menulis `ledger/eksekusi/` (P119). Tidak ada = umpan mati; eksekusi tetap jalan.
 
 Aturan (PRD R-E1..R-E7, T8 SK-E*):
   - satu eksekusi per bar per bot; tick tanpa komit = TUNDA (tidak ada order), tick lebih tua dari kunci = dilewati selamanya;
@@ -32,6 +34,7 @@ sys.path.insert(0, HERE)
 
 from engine import eksekusi as ex, ledger                                   # noqa: E402
 from engine.spec import SPECS                                               # noqa: E402
+import exec_feed as xf                                                      # noqa: E402
 import signal_commit as sc                                                  # noqa: E402
 import venue_binance as vb                                                  # noqa: E402
 
@@ -47,9 +50,14 @@ def _today() -> str:
 class Executor:
     def __init__(self, env: Optional[dict] = None, log: Callable[[str], None] = print, alert=None,
                  venue_factory: Callable[[str], object] = lambda e: vb.BinanceFutures(e), today: Callable[[], str] = _today,
-                 sleep: Callable[[float], None] = time.sleep):
+                 sleep: Callable[[float], None] = time.sleep, feed_factory: Callable[[str], object] = lambda token: xf.GistFeed(token),
+                 now_ms: Callable[[], int] = lambda: int(time.time() * 1000)):
         self.envvars = os.environ if env is None else env
         self.log, self.alert, self.venue_factory, self.today, self.sleep = log, alert, venue_factory, today, sleep
+        self.feed_factory, self.now_ms, self.feed = feed_factory, now_ms, None
+        self.pending: Dict[str, dict] = {}          # laporan umpan yang belum terkirim (P119); kunci = jenis|bot|bar atau tanda|tanggal
+        self.marked: Optional[str] = None
+        self.backfilled = False
         self.done: Dict[str, str] = {}              # bot -> bar terakhir yang selesai dieksekusi (memori; id deterministik melindungi sesudah restart)
         self.halted: Optional[str] = None
         self.leverage_ok: set = set()
@@ -67,6 +75,7 @@ class Executor:
                 "max_loss": float(e.get("EXEC_MAX_LOSS") or 0.05),
                 "live_ok": (e.get("EXEC_LIVE_OK") or "").strip(),
                 "api_env": (e.get("BINANCE_API_ENV") or "testnet").strip().lower(),
+                "feed_token": (e.get("EXEC_FEED_TOKEN") or "").strip(),
                 "service": (e.get("RAILWAY_SERVICE_NAME") or "").strip()}
 
     def refuse(self, c: dict) -> Optional[str]:
@@ -104,6 +113,7 @@ class Executor:
             self.note(f"eksekutor TIDAK jalan: {why}")
             return "tolak"
         if self.halted:
+            self.flush(c)                          # laporan bar yang sudah dieksekusi tetap dipublikasikan sesudah berhenti
             return "berhenti"
         try:
             return self._round(c, ledger_dir, cv, committer)
@@ -120,6 +130,8 @@ class Executor:
         eq = v.equity()
         if self.day != self.today():
             self.day, self.day_equity = self.today(), eq
+        self.queue_mark(c)
+        self.queue_backfill(c, ledger_dir, cv, committer)
         if ex.loss_breached(self.day_equity, eq, c["max_loss"]):
             return self.stop(f"rugi harian {100 * (self.day_equity - eq) / self.day_equity:.2f} % > {100 * c['max_loss']:.1f} %")
         out = []
@@ -127,7 +139,68 @@ class Executor:
             out.append(f"{bot}: {self.bot_round(bot, c, ledger_dir, cv, committer)}")
             if self.halted:
                 break
+        self.flush(c)
         return "; ".join(out)
+
+    # ---------------------------------------------------------------- umpan laporan (P119, F-D94)
+    def queue_mark(self, c: dict) -> None:
+        """Tanda ekuitas sekali per hari, hanya dalam 30 menit pertama sesudah 00:00Z (bahan tracking error harian)."""
+        today = self.today()
+        if not c["feed_token"] or c["mode"] == "dry" or self.marked == today:
+            return
+        self.marked = today
+        if (self.now_ms() // 1000) % 86_400 <= xf.MARK_WINDOW_S:
+            self.pending[f"tanda|{today}"] = {"kind": "tanda", "tanggal": today}
+
+    def queue_backfill(self, c: dict, ledger_dir: str, cv, committer: str, days: int = 7) -> None:
+        """Sekali per proses: bar terkomit lama (<= 7, tanpa bar terakhir yang diurus `bot_round`) diantre sebagai SUSULAN. Hanya bar yang order-nya
+        benar-benar ditemukan di venue yang dilaporkan (lihat `flush`): bar tanpa order tidak diklaim "dieksekusi 0 order"."""
+        if self.backfilled or not c["feed_token"] or c["mode"] == "dry":
+            return
+        self.backfilled = True
+        for bot in c["bots"]:
+            spec = SPECS[bot]
+            ticks = sorted((r for r in ledger.load(os.path.join(ledger_dir, f"{bot}.jsonl")) if r.get("type") == "tick"), key=lambda r: r["asof"])
+            for tk in ticks[-days - 1:-1]:
+                asof_s = sc.asof_s_of(tk)
+                locked = cv.locked_at(committer, bot, spec.sha())
+                if locked == 0 or locked > asof_s:
+                    continue
+                cm = cv.get_commit(sc.commit_id(committer, bot, spec.sha(), asof_s))
+                if int(str(cm["committer"]), 16) == 0:
+                    continue
+                self.pending.setdefault(f"eksekusi|{bot}|{tk['asof_date']}", {"kind": "eksekusi", "bot": bot, "bar": tk["asof_date"],
+                                                                              "komit_s": int(cm.get("committedAt") or 0), "modal": c["modal"],
+                                                                              "dilewati": [], "px": None, "susulan": True})
+
+    def queue_report(self, c: dict, bot: str, bar: str, komit_s: int, p) -> None:
+        if c["feed_token"] and c["mode"] != "dry":
+            self.pending[f"eksekusi|{bot}|{bar}"] = {"kind": "eksekusi", "bot": bot, "bar": bar, "komit_s": komit_s, "modal": c["modal"],
+                                                     "dilewati": list(p.dilewati), "px": {o.asset: o.ref_price for o in p.orders}}
+
+    def flush(self, c: dict) -> None:
+        """Kirim laporan tertunda. Gagal apa pun = tetap tertunda, dicoba putaran berikut; eksekusi TIDAK terganggu (T8 SK-E14)."""
+        if not self.pending or self.venue is None:
+            return
+        venue = f"binance-{c['mode']}"
+        try:
+            if self.feed is None:
+                self.feed = self.feed_factory(c["feed_token"])
+            for k, job in sorted(self.pending.items()):
+                if job["kind"] == "tanda":
+                    rec = xf.build_mark(self.venue, venue, c["mode"], job["tanggal"], self.now_ms())
+                else:
+                    rec = xf.build_report(self.venue, venue, c["mode"], job["bot"], job["bar"], SPECS[job["bot"]].universe, job["komit_s"],
+                                          job["modal"], job["dilewati"], self.now_ms(), job.get("px"), susulan=bool(job.get("susulan")))
+                    if job.get("susulan") and not rec["orders"]:
+                        del self.pending[k]
+                        self.log(f"umpan eksekusi {k}: susulan tanpa order di venue - tidak dilaporkan")
+                        continue
+                added = self.feed.append(rec)
+                del self.pending[k]
+                self.log(f"umpan eksekusi {k}: {'ditambahkan' if added else 'sudah ada (idempoten)'}")
+        except Exception as e:  # noqa: BLE001 - umpan tidak boleh menghentikan eksekutor
+            self.note(f"umpan eksekusi TERTUNDA ({len(self.pending)}): {type(e).__name__}: {str(e)[:160]} - dicoba putaran berikut")
 
     def bot_round(self, bot: str, c: dict, ledger_dir: str, cv, committer: str) -> str:
         spec = SPECS[bot]
@@ -146,6 +219,7 @@ class Executor:
         cm = cv.get_commit(sc.commit_id(committer, bot, spec.sha(), asof_s))
         if int(str(cm["committer"]), 16) == 0:
             return f"bar {bar} TUNDA: komit belum ada di SignalAnchor (bukti dulu, order kemudian)"
+        komit_s = int(cm.get("committedAt") or 0)
         v, uni = self.venue, list(spec.universe)
         targets = {a: float(w) for a, w in tk.get("targets", {}).items() if abs(float(w)) > 1e-12}
         outside = sorted(set(targets) - set(uni))
@@ -190,6 +264,7 @@ class Executor:
         if diff:
             return self.stop(f"posisi {bot} bar {bar} tidak cocok sesudah order: {diff[:3]}")
         self.done[bot] = bar
+        self.queue_report(c, bot, bar, komit_s, p)
         if self.alert is not None:
             self.alert.send(f"eksekusi:{c['mode']}:{bot}:{bar}", f"eksekusi {c['mode'].upper()} {bot} bar {bar}: {len(p.orders)} order, "
                                                                f"{len(p.dilewati)} dilewati, posisi cocok", sekali=True)

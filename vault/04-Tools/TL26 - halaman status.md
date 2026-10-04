@@ -31,6 +31,10 @@ menit (`TENGGANG_S`) = menunggu, >= 30 menit = alarm "worker diam"; ungkap kuran
 **Yang ia TOLAK lakukan:** menebak eksekusi demo dan mode bayangan. Keduanya berjalan di Railway dengan kunci dan dilaporkan ke Telegram builder, jadi
 stasiun 06 tertulis "tidak publik; ledger eksekusi publik belum dibangun (P119)". Tidak memegang kunci apa pun.
 
+**Sejak 4 Okt siang (P119):** stasiun 06 membaca `ledger/eksekusi/binance-demo/<bot>.jsonl` publik: berkas belum ada = "tidak publik" (umpan belum
+menyala); catatan bar ada = selesai ("di ledger publik: n order"); `pelanggaran` = alarm; belum ada laporan < 60 menit sesudah komit = menunggu,
+>= 60 menit = alarm (sama dengan penjaga luar SK-E17). [[TL27 - ledger eksekusi]].
+
 **Alat MCP ke-9:** `fabius_status` - hasil yang sama untuk agen ("Overall WAIT at ... B1-TREND bar 2026-10-03: close ok, tick wait, commit later, ...").
 
 **Bukti 4 Okt (lokal, `next start -p 3008`):** 08:33Z `/api/status` -> bar 2026-10-03, `wait`, tick `TICK_BEFORE_WINDOW` (jendela buka 08:40Z), komit/ungkap
