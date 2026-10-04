@@ -9,6 +9,7 @@
   "ERC8004IdentityRegistry": "0x8004A818BFB912233c491871b3d84c89A494BD9e",
   "ExecutionAnchor": "0x8bfd03b73749ab2cf91129155127404fbbac4c9b",
   "ExecutionVault": "0x2743cD33C8790437594E119289838F35c0d1d290",
+  "FabiusCredit": "0xc7b6d5cdbdc881daae0dbcc095d4f184b70ec881",
   "LockRegistry": "0xcF6fBF95fc04DEd8d670512CEc0723a2246Fbb0C",
   "Permit2": "0x000000000022D473030F116dDEE9F6B43aC78BA3",
   "SignalAnchor": "0x9B78200beFbbBe836585d31bd5b6dB32587064f3",
@@ -161,5 +162,17 @@
   "x402ExactPermit2Proxy": "bytecode 2913 B"
  },
  "why": "dibutuhkan agar `tools/anchor.py --verify` dan `tools/execute_live.py --status` bisa dijalankan dari clone bersih; alamat ini juga terbaca publik di explorer",
- "written_utc": "2026-09-27T05:24:05Z"
+ "written_utc": "2026-09-27T05:24:05Z",
+ "x402_sinyal": {
+  "decimals": 6,
+  "deploy_block": 134886695,
+  "deploy_tx": "0xee1cf8f5791f105947a9c290101cd8d9ffd60ce4fc81f3af78e24f9f829b6344",
+  "facilitator": "0x10c41a996Bab4042867c2dD388937A1e2743f1b1",
+  "name": "Fabius Credit",
+  "network": "eip155:97",
+  "proxy": "0x402085c248EeA27D92E8b30b2C58ed07f9E20001",
+  "symbol": "FAB",
+  "token": "0xc7b6d5cdbdc881daae0dbcc095d4f184b70ec881",
+  "why": "P138a (F-D100): token pembayaran testnet Fabius Credit (FAB), kode X402DemoToken; deployer = fasilitator gerbang x402_sinyal (kunci baru, .x402.env / Railway fabius-x402); suplai awal 1.000.000 FAB untuk faucet relay."
+ }
 }

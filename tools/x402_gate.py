@@ -197,6 +197,8 @@ def _rs_v(sig):
 # Sejarah bugnya (26 Sep, terukur): ABI proxy berbunyi `settleWithPermit(tuple,tuple,address,
 # tuple,bytes)` = LIMA parameter, sedangkan string kami membungkus kelimanya jadi satu tuple
 # bersarang. Efek berantai: eth_abi menolak ("value has 5 items when 1 were expected"), lalu
+# [KOREKSI 5 Okt: dua angka di kalimat berikut TERBALIK - input tx sukses 0xb6093e59 dibaca dari chain = 0xfa340378 = selector lima
+#  parameter di bawah; 0x914533e2 tidak dikenal 4byte. Kalimat asli dibiarkan:]
 # setelah "dibuat lolos" selector-nya 0xfa340378 - bukan 0x914533e2 yang asli - dan setiap
 # kegagalan berikutnya tampak seperti tanda tangan klien yang salah, padahal calldata kitalah
 # yang cacat. Itu sebabnya selector tidak boleh ditulis tangan: ia harus DITURUNKAN.
@@ -222,6 +224,7 @@ def _settle_calldata(permit2612, permitted, auth, witness, signature):
     `_research/diag_x402_selector.py` membandingkan ABI proxy dengan string kami dan menulis
     verdiknya. Versi yang gagal membungkus LIMA parameter jadi satu tuple bersarang, sehingga
     selector yang lahir 0xfa340378 - bukan 0x914533e2 yang asli.
+    KOREKSI 5 Okt: terbalik. Selector BENAR (input tx sukses 0xb6093e59, dibaca dari chain) = 0xfa340378.
     """
     from eth_abi import encode as enc
     from eth_utils import keccak, to_checksum_address as cs

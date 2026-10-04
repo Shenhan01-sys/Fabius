@@ -26,7 +26,7 @@ verbosity = 2
 # Kenapa tidak proyek bersarang: sudah dicoba dan mati di `allow_paths` (butuh pola, bukan boolean;
 # dan tetap menolak resolve lintas root) - satu proyek + `skip` justru tidak perlu mengajari
 # Foundry cara membaca direktori orang.
-skip = ["X402DemoToken", "X402SettleOnBsc"]
+skip = ["X402DemoToken", "X402SettleOnBsc", "FabiusCredit"]   # FabiusCredit (P138a) = kode X402DemoToken, alasan sama
 # Uji SignalAnchor (M3) membaca vektor lintas bahasa yang dihasilkan engine (`tools/gen_signal_vectors.py`) - baca saja, hanya folder fixture.
 fs_permissions = [{ access = "read", path = "./test/fixtures" }]
 

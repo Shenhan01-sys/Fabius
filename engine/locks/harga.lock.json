@@ -1,0 +1,25 @@
+{
+  "catatan": "Builder 5 Okt 2026: \"gas\" atas usulan tabel harga per sinyal dari confidence (F-D100), ditulis SEBELUM ada bot berstatus terukur (keenam bot belum terukur hari itu). Mengubah satu angka = keputusan baru + kunci v2, bukan timpa.",
+  "dikunci": "2026-10-04T20:27:48Z",
+  "params": {
+    "desimal": 6,
+    "harga_sinyal": {
+      "dasar": 10000,
+      "puncak": 1000000,
+      "puncak_min": 90,
+      "tingkat": [
+        [
+          60,
+          50000
+        ],
+        [
+          75,
+          250000
+        ]
+      ]
+    },
+    "v": 1
+  },
+  "sha": "0x4db311ff03cfc5c9999cf257c5c6ba34eb270fafe54d86a00e27364655d8d7be",
+  "v": 1
+}

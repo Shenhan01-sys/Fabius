@@ -2969,3 +2969,23 @@ menyusul".
    komit tetap seketika, pembukaan isi boleh ditunda untuk tingkat itu (keputusan rinci saat P139).
 
 **Terkait:** F-D16 · F-D72 · F-D98 · [[04-Tools/TL31 - teaser confidence]] · [[09-Inbox/Session-2026-10-02]] §80
+
+## F-D100 — P138: token Fabius Credit (FAB), harga per sinyal dari confidence (tabel dikunci), gerbang di service Railway baru, bot Telegram baru · 5 Okt 2026 (WIB)
+
+Jawaban builder: Telegram = **"Bot baru via @BotFather"**; hosting = **"Service baru Railway"**; token = *"Jgn x402usd dong, pakai nama yg cocok untuk
+nama Fabius"*; harga = *"EH untuk harga bisa ga ya ditentukan dari confidence levelsnya?"*; atas usulan tabel + nama: **"gas"** (opsi pertama: Fabius
+Credit · FAB).
+
+1. **Token:** kontrak baru `FabiusCredit` (nama "Fabius Credit", simbol FAB, 6 desimal, `faucet()` publik berbatas per alamat, EIP-2612) - kode sama
+   dengan X402DemoToken, hanya nama/simbol (nama = domain EIP-712, jadi tidak bisa diganti tanpa deploy). Testnet 97, tanpa nilai (F-D98 #2).
+2. **Harga per (bot, bar) dari teaser confidence (P137), tabel DIKUNCI sebelum data maju ada:** belum terukur / awal = 0,01 FAB; terukur < 60 % =
+   0,01; 60-75 % = 0,05; 75-90 % = 0,25; >= 90 % DAN F-D16 LOLOS = 1,00. Harga dihitung dari ledger sampai tick bar itu saja -> beku per (bot, bar)
+   dan bisa dihitung ulang siapa pun. Angka "awal" tidak pernah menaikkan harga.
+3. **Gerbang:** service Railway `fabius-x402` (image yang sama, `FABIUS_JOB=x402_sinyal`), kunci fasilitator BARU (bukan committer/agen/validator),
+   tBNB dari committer. Memverifikasi otorisasi yang DITANDATANGANI (token, jumlah, `witness.to`, spender), bukan hanya `accepted` dari klien, dan
+   membaca ulang saldo sesudah settle (celah gate lama `x402_gate.py`).
+4. **Tiga pintu:** MCP (`fabius_signal_offer` -> URL x402), web `/beli/<bot>` (dompet menandatangani 2 pesan, nol gas), bot Telegram baru (builder
+   membuat lewat @BotFather; token ditempel builder di variabel Railway, bukan chat) - link bayar web bertanda HMAC, isi dikirim ke chat sesudah settle.
+5. **Faucet relay:** gerbang mengirim FAB ke alamat pembeli (berbatas), jadi pembeli tidak butuh tBNB sama sekali.
+
+**Terkait:** F-D72 · F-D98 · F-D99 · [[04-Tools/TL6 - x402 gate and client]] · [[09-Inbox/Session-2026-10-02]] §81

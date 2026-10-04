@@ -49,3 +49,5 @@ qwen-code-export-*.md
 
 # kunci validator ERC-8004 (P136)
 .validator.env
+# kunci fasilitator x402 per sinyal (P138a)
+.x402.env
