@@ -39,8 +39,17 @@ belum, kertas B1 `KERTAS_BEHIND` (binance + aster 2026-10-01 SEBELUM_KUNCI), eks
 terbaca". 08:40:58Z: tick berganti `TICK_IN_WINDOW`. MCP `tools/list` 9 alat; `fabius_status` -> "Overall WAIT". Peramban waktu-nyata desktop + ponsel:
 dial, stasiun, tangki, detak; tanpa gulir horizontal.
 
+**HIDUP 4 Okt (komit `4d653266`):** `https://fabius-one.vercel.app/status`. Push jatuh tepat saat tick hari itu masuk (komit bot 08:44Z), jadi produksi
+merekam satu putaran utuh: 08:46:49Z `wait` (tick masih "di dalam jendela" - salinan ledger di cache data Next 120 dtk / CDN raw GitHub), 08:47:16Z
+`ok`: B1 tick 08:44Z (0 sinyal) -> komit 08:45Z -> hari diam; B3 tick 08:44Z (1 sinyal) -> komit 08:45Z -> dibuka 1/1; kertas B1 bar 10-02 DIEKSEKUSI di
+Binance + Aster (rekor kertas DIEKSEKUSI PERTAMA); gas 0,12 -> 0,119485 tBNB (biaya komit + ungkap hari itu); Actions GitHub TERBACA dari Vercel (run
+berjalan 08:38:41Z + dua sukses). MCP produksi: `tools/list` 9 alat, `fabius_status` -> "Overall OK".
+
+**Batas yang diketahui:** ledger dibaca dengan cache 120 detik (plus CDN raw GitHub), jadi tick baru bisa tampil "menunggu" sampai ±2-5 menit sesudah
+komit bot; gas dan komit dibaca langsung dari chain sehingga bisa lebih dulu berubah.
+
 **Temuan cek visual (diperbaiki):** label tengah dial menabrak angka 12 dan legenda membuat kaca lonjong -> info bar + legenda dipindah ke bawah lingkaran;
 stasiun yang menunggu stasiun sebelumnya berlabel "tidak berlaku" -> lampu baru `later` ("belum"); rotasi SVG `motion` untuk jarum berisiko titik putar
-salah -> jarum digambar langsung dari sudut jam.
+salah -> jarum digambar langsung dari sudut jam; "1 signals written" (produksi) -> format "signals written: 1".
 
 **Terkait:** [[TL24 - halaman verify]] · [[TL25 - halaman bot]] · [[TL20 - server MCP]] · [[TL23 - Sistem Visual FE]] · [[07-Testing/T8 - Semantik Kegagalan Operator]]
