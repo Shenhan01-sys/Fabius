@@ -2951,3 +2951,21 @@ token uji"**; jeda buka publik = **"Sampai bar berikutnya (~24 jam)"**; confiden
 
 **Terkait:** F-D11 · F-D16 · F-D70 · F-D72 · [[08-Backlog/06 - Epik Gerbang Sinyal]] · [[05-Ecosystem/01 - ERC-8004 Identity]] ·
 [[09-Inbox/Session-2026-10-02]] §75-§76
+
+## F-D99 — x402 menjual pengiriman sinyal terverifikasi, bukan rahasia; pembukaan publik TIDAK ditunda; rahasia hanya untuk sinyal LLM (P139) · 5 Okt 2026 (WIB)
+
+Saat menjelaskan P137, ditemukan: B1-B6 deterministik, kode + spesifikasi terbuka di repo publik, data publik (Binance Vision), dan tick dihitung di
+GitHub Actions repo publik - siapa pun bisa menghitung sendiri sinyal hari itu. Menunda pembukaan publik (F-D98 #3) TIDAK menciptakan kerahasiaan.
+Pilihan yang diajukan: A (jual kemudahan + kecepatan + bukti terverifikasi; P137 = teaser confidence saja), B (rahasia sungguhan hanya untuk sinyal
+LLM P139), C (spesifikasi disembunyikan + tick dipindah ke server privat; tidak disarankan). Builder: **"Gas"** atas rekomendasi "A sekarang, B
+menyusul".
+
+1. **F-D98 #3 dicabut:** pembukaan publik tetap seketika (`ungkap +0s`), ledger paper + web tetap memuat target bar terakhir.
+2. **Nilai x402 (P138) untuk B1-B6:** sinyal siap pakai lewat MCP/web/Telegram tanpa menjalankan engine sendiri, segera sesudah komit, beserta bukti
+   (komit, validasi ERC-8004). Teks penjualan tidak boleh menyiratkan rahasia untuk bot deterministik.
+3. **P137 dipersempit:** teaser confidence = 1 - p bootstrap F-D16 yang terkunci atas settle maju (`engine/confidence.py`), kematangan menuju ambang
+   F-D16, status, vonis gerbang; tanpa aset/arah/ukuran/id.
+4. **Rahasia sungguhan (tingkat premium) hanya untuk sinyal berbasis LLM (P139):** output LLM tidak bisa dihitung ulang orang lain sebelum dibuka;
+   komit tetap seketika, pembukaan isi boleh ditunda untuk tingkat itu (keputusan rinci saat P139).
+
+**Terkait:** F-D16 · F-D72 · F-D98 · [[04-Tools/TL31 - teaser confidence]] · [[09-Inbox/Session-2026-10-02]] §80

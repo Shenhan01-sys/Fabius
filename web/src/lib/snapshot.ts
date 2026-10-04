@@ -36,6 +36,19 @@ export type BotLedger = {
 
 export type Verdict = { bot: string; bar: string; verdict: string; n: number | null; revealed: number | null; lag_s: number | null };
 
+export type Teaser = {
+  bot: string;
+  confidence_pct: number | null; // null = < 2 hari settle maju: tidak ada angka sama sekali
+  label: string; // "belum terukur" | "awal - belum bermakna" | "terukur"
+  dasar: string;
+  status: string | null;
+  gerbang_v1: string | null;
+  fd16: string;
+  rekam: { mean_bps: number | null; ci_lo_bps: number | null; ci_hi_bps: number | null; p: number | null };
+  kematangan: { sinyal: [number, number]; hari: [number, number]; bulan: [number, number] };
+  alasan: string[];
+};
+
 export type Snapshot = {
   v: number;
   generated_utc: string;
@@ -54,6 +67,7 @@ export type Snapshot = {
   };
   locks: { label: string; what: string; at_utc: string | null; tx: string | null; where: string }[];
   fd16: { required: { signals: number; days: number; months: number }; bots: Record<string, { signals: number; days: number; months: number }>; lock: string };
+  confidence?: Record<string, Teaser>; // P137 (F-D99): 1 - p bootstrap F-D16 atas settle maju; tanpa detail sinyal (engine/confidence.py)
   lock_states: Record<string, string>;
   chain: null | {
     id: number;

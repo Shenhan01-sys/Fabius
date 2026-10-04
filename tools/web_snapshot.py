@@ -28,7 +28,7 @@ ROOT = os.path.dirname(HERE)
 sys.path.insert(0, ROOT)
 sys.path.insert(0, HERE)
 
-from engine import anggaran, book as bookmod, fd16, ledger, locks, pembunuh      # noqa: E402
+from engine import anggaran, book as bookmod, confidence, fd16, ledger, locks, pembunuh      # noqa: E402
 from engine.spec import SPECS                                    # noqa: E402
 
 OUT = os.path.join(ROOT, "web", "public", "data", "snapshot.json")
@@ -115,6 +115,13 @@ def fd16_block(led: dict) -> dict:
             "lock": fd16.status()["state"]}
 
 
+def confidence_block() -> dict:
+    """P137 (F-D99): teaser confidence per bot berjam maju = 1 - p bootstrap F-D16 atas settle maju (`engine/confidence.py`); tanpa detail sinyal."""
+    led = {b: ledger.load(os.path.join(LEDGER_DIR, f"{b}.jsonl")) for b in bookmod.FORWARD_BOTS
+           if os.path.exists(os.path.join(LEDGER_DIR, f"{b}.jsonl"))}
+    return confidence.teasers(led, bookmod.STATUS, bookmod.GATE_V1)
+
+
 def chain_block() -> dict:
     import evm as evmmod
     import signal_commit as sc
@@ -141,7 +148,7 @@ def chain_block() -> dict:
 def build(with_chain: bool = True) -> dict:
     led = ledger_block()
     snap = {"v": 1, "generated_utc": dt.datetime.now(dt.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"), "repo_head": git_head(),
-            "bots": bots_block(), "ledger": led, "book": book_block(), "locks": locks_block(), "fd16": fd16_block(led),
+            "bots": bots_block(), "ledger": led, "book": book_block(), "locks": locks_block(), "fd16": fd16_block(led), "confidence": confidence_block(),
             "lock_states": {"thresholds": locks.status()["state"], "fd16": fd16.status()["state"], "killers": pembunuh.status()["state"],
                             "gate_budget": anggaran.status()["state"]},
             "chain": None}

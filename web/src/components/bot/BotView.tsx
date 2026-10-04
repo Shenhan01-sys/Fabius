@@ -502,6 +502,7 @@ function Fd16({ n, s, b }: { n: number; s: Snapshot; b: Bot }) {
   const v = t.bot.fd16;
   const q = s.fd16.required;
   const x = s.fd16.bots[b.id] ?? { signals: 0, days: 0, months: 0 };
+  const c = s.confidence?.[b.id];
   return (
     <section id="fd16" className="relative mt-3 overflow-hidden rounded-[30px] bg-gradient-to-b from-white to-lav px-6 py-20 sm:px-12 lg:px-16">
       <Title label={tag(n, v.tag)} title={v.title} sub={v.sub} />
@@ -510,6 +511,19 @@ function Fd16({ n, s, b }: { n: number; s: Snapshot; b: Bot }) {
         <Tank value={x.days} need={q.days} label={t.proof.days} />
         <Tank value={x.months} need={q.months} label={t.proof.months} />
       </div>
+      {c && (
+        <div className="mt-14 max-w-3xl">
+          <span className="tag text-violet">{v.conf}</span>
+          <p className="mt-3 font-display text-[clamp(2.6rem,6vw,4.6rem)] font-[300] leading-none tracking-[-0.03em] text-ink" style={{ fontStretch: "112%" }}>
+            {c.confidence_pct == null ? "—" : `${c.confidence_pct}%`}
+          </p>
+          <p className="mt-3 text-ink">
+            {c.confidence_pct == null ? v.confNone : c.fd16 === "BELUM CUKUP DATA" ? v.confEarly : v.confOk}
+            {c.rekam.mean_bps != null && ` · ${c.rekam.mean_bps >= 0 ? "+" : ""}${c.rekam.mean_bps.toFixed(2)} bps/${v.day} · CI [${c.rekam.ci_lo_bps?.toFixed(2)}, ${c.rekam.ci_hi_bps?.toFixed(2)}]`}
+          </p>
+          <p className="mt-2 max-w-2xl text-sm text-ink/60">{v.confBasis}</p>
+        </div>
+      )}
     </section>
   );
 }

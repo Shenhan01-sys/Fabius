@@ -87,11 +87,28 @@ export function registerFabiusTools(server: McpServer, s: Snapshot) {
           fabius_list_bots: "the six bot specifications and the slot book",
           fabius_locks: "rules locked on-chain before the data, in order",
           fabius_status: "operations health today: tick, commit, reveal, venue-rules paper, gas, GitHub chain heartbeat (health, not performance)",
+          fabius_confidence: "free teaser per bot: confidence from the forward record (1 - p of the locked F-D16 bootstrap) and why - never assets, direction or size",
         },
         verify_yourself: ["git clone https://github.com/Shenhan01-sys/Fabius", "python -X utf8 tools/verify_signals.py", "python -X utf8 -m engine.cli ledger verify"],
         snapshot_utc: s.generated_utc,
       }),
     ),
+  );
+
+  server.registerTool(
+    "fabius_confidence",
+    {
+      title: "Confidence teaser of one bot (free)",
+      description:
+        "What a buyer may see before paying for a signal: confidence = 1 - p of the locked F-D16 block bootstrap on the bot's forward settles (how sure the forward record is that the mean net daily return is above zero - NOT the chance today's signal is right), its maturity toward the F-D16 thresholds, status and gate verdict. Never contains assets, direction, size or signal ids.",
+      inputSchema: z.object({ bot: BOT }),
+    },
+    async ({ bot }) => {
+      const c = s.confidence?.[bot];
+      if (!c) return fail(`no confidence teaser for ${bot} in the build snapshot (bot without a forward clock, or snapshot older than P137)`);
+      const head = c.confidence_pct == null ? `${bot}: not measured yet (${c.kematangan.hari[0]} settled forward days; needs >= 2 for any number)` : `${bot}: ${c.confidence_pct}% (${c.label})`;
+      return ok(head, { ...c, snapshot_utc: s.generated_utc });
+    },
   );
 
   server.registerTool(
