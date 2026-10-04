@@ -36,12 +36,40 @@
     "tx": "0xae9e7132fe5c4691098b3d30fe95521378bc9480fa489029eb88b7ba6e965c35",
     "uri": "https://github.com/Shenhan01-sys/Fabius/blob/f457ae2d840717789799ca2c076090c191cf72d7/engine/spec.py#B1-TREND"
    },
+   "B2-RS": {
+    "lockedAt": 1791131845,
+    "lockedAt_utc": "2026-10-04T16:37:25Z",
+    "specSha": "0x2dd6ccf261abaa27e4c05110b05d471f211bc60a36975c3797788ba85b87fcb7",
+    "tx": "0x357d2b1b2a66b279324ecf1ff13445979e440e89cf07247971023aff9dcb994a",
+    "uri": "https://github.com/Shenhan01-sys/Fabius/blob/290ab0e98abb2bf0caa0dce087d9588febd3f209/engine/spec.py#B2-RS"
+   },
    "B3-CARRY": {
     "lockedAt": 1790956165,
     "lockedAt_utc": "2026-10-02T15:49:25Z",
     "specSha": "0xc528abf51585f401399ddb3279bced5adc4fd7f6dbde0aed0653e715352ef100",
     "tx": "0x03f42b78b3aa0e42cc635e7e5a1c723940754546ed5d8e580220fb9fe0355b1f",
     "uri": "https://github.com/Shenhan01-sys/Fabius/blob/f457ae2d840717789799ca2c076090c191cf72d7/engine/spec.py#B3-CARRY"
+   },
+   "B4-LISTING-FADE": {
+    "lockedAt": 1791131849,
+    "lockedAt_utc": "2026-10-04T16:37:29Z",
+    "specSha": "0x78bb0e32b4e4f406120767ac0e6529f7708a26124000f0de53ab4135f3067386",
+    "tx": "0x5075088f2cd8e123334b68caaaadd8cc225434300b8d0df2d060c1952914922c",
+    "uri": "https://github.com/Shenhan01-sys/Fabius/blob/290ab0e98abb2bf0caa0dce087d9588febd3f209/engine/spec.py#B4-LISTING-FADE"
+   },
+   "B5-CORE-RWA": {
+    "lockedAt": 1791131854,
+    "lockedAt_utc": "2026-10-04T16:37:34Z",
+    "specSha": "0x2dfb0fa4ae71a357aae4900944ad9a07d56eddd2904b861cc194a5d6755cd619",
+    "tx": "0x913c94b2602f4e8c4620825a510565ca795223b75756df764f67c5efa70c1683",
+    "uri": "https://github.com/Shenhan01-sys/Fabius/blob/290ab0e98abb2bf0caa0dce087d9588febd3f209/engine/spec.py#B5-CORE-RWA"
+   },
+   "B6-BOUNCE": {
+    "lockedAt": 1791131858,
+    "lockedAt_utc": "2026-10-04T16:37:38Z",
+    "specSha": "0x4a6d180d93ea34e7c1dcffbe2cd6abab9ffe7d648aa6b235096e9f85064a8370",
+    "tx": "0xce4328c36b4a52c64af426ecf1e6c13b99c3dfdd29d718c05426ad5736ee2789",
+    "uri": "https://github.com/Shenhan01-sys/Fabius/blob/290ab0e98abb2bf0caa0dce087d9588febd3f209/engine/spec.py#B6-BOUNCE"
    }
   },
   "maxLag_s": 43200,

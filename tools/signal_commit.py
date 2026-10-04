@@ -48,7 +48,7 @@ from engine.series import DAY_MS                       # noqa: E402
 from engine.sinyal import Batch, Entry, Signal, build_batch, signals_at     # noqa: E402
 from engine.spec import SPECS                          # noqa: E402
 
-BOTS_DEFAULT = ("B1-TREND", "B3-CARRY")
+BOTS_DEFAULT = ("B1-TREND", "B2-RS", "B3-CARRY", "B4-LISTING-FADE", "B5-CORE-RWA", "B6-BOUNCE")     # F-D95: keenamnya (spesifikasi B2/B4/B5/B6 dikunci 4 Okt 16:37Z)
 CHAIN_ID = 97
 DEPLOYMENTS = os.path.join(ROOT, "deployments", f"{CHAIN_ID}.json")
 COMMITTER_ENV = os.path.join(ROOT, ".committer.env")

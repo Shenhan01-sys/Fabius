@@ -1,7 +1,7 @@
 {
  "v": 1,
- "generated_utc": "2026-10-04T15:34:44Z",
- "repo_head": "b1efc1db351e413c9a720cffda808df8c52aa209",
+ "generated_utc": "2026-10-04T16:38:47Z",
+ "repo_head": "290ab0e98abb2bf0caa0dce087d9588febd3f209",
  "bots": [
   {
    "id": "B1-TREND",
@@ -52,7 +52,7 @@
    "tier": "B",
    "spec_sha": "0x2dd6ccf261abaa27e4c05110b05d471f211bc60a36975c3797788ba85b87fcb7",
    "fingerprint": "0x6d74c6342734642cb5de9f5a2b1c87c4eee8c6b3d1b16f46f2153088752c3c8c",
-   "forward": false,
+   "forward": true,
    "killer": "net Sharpe < 0 dua kuartal beruntun, atau tidak mengalahkan placebo peringkat-acak",
    "universe": [
     "BTCUSDT",
@@ -125,7 +125,7 @@
    "tier": "B-",
    "spec_sha": "0x78bb0e32b4e4f406120767ac0e6529f7708a26124000f0de53ab4135f3067386",
    "fingerprint": "0x8cd5990b2250dbab2312095ad3e80404bb88ec7a80436d3cb8e8ba05ffc56100",
-   "forward": false,
+   "forward": true,
    "killer": "20 listing maju dengan rata-rata PnL short <= 0, atau satu trade lebih buruk dari -100% notional",
    "universe": [
     "event: perp baru di venue"
@@ -142,7 +142,7 @@
    "tier": "B",
    "spec_sha": "0x2dfb0fa4ae71a357aae4900944ad9a07d56eddd2904b861cc194a5d6755cd619",
    "fingerprint": "0xc6d365b72f6aae7f6ed95d3efd9901dd85d6e61c62da85bff9b4f1a0894d7d71",
-   "forward": false,
+   "forward": true,
    "killer": "Sharpe < BTC buy&hold DAN MDD tidak lebih baik dari -50% dalam 12 bulan maju",
    "universe": [
     "BTCUSDT",
@@ -160,7 +160,7 @@
    "tier": "C",
    "spec_sha": "0x4a6d180d93ea34e7c1dcffbe2cd6abab9ffe7d648aa6b235096e9f85064a8370",
    "fingerprint": "0x6695d8c46bc6593b16f4306bba2a9a81d2316413e7e92559a1f7f27a9b6bb5c9",
-   "forward": false,
+   "forward": true,
    "killer": "sinyal maju tidak menaikkan Sharpe EW, atau n >= 20 sinyal dengan rata-rata net <= 0",
    "universe": [
     "BTCUSDT",
@@ -221,6 +221,19 @@
    "days_live": 3,
    "last_closed": "2026-10-03"
   },
+  "B2-RS": {
+   "genesis": "2026-10-04",
+   "chain_ok": true,
+   "ticks": [],
+   "settles": [],
+   "gaps": [],
+   "n_signals": 0,
+   "n_settled_days": 0,
+   "n_months": 0,
+   "head": "0x8cee1370761a8735abf32aa731cd14757b6a14d8bec81290eb38d871afb8c04a",
+   "days_live": 0,
+   "last_closed": "2026-10-03"
+  },
   "B3-CARRY": {
    "genesis": "2026-10-01",
    "chain_ok": true,
@@ -260,6 +273,45 @@
    "n_months": 1,
    "head": "0x8d2df0cba929cd79cc30cda7e6564715202e527c91ee78fe6e7766f82f34616b",
    "days_live": 3,
+   "last_closed": "2026-10-03"
+  },
+  "B4-LISTING-FADE": {
+   "genesis": "2026-10-04",
+   "chain_ok": true,
+   "ticks": [],
+   "settles": [],
+   "gaps": [],
+   "n_signals": 0,
+   "n_settled_days": 0,
+   "n_months": 0,
+   "head": "0xcd636f063f92cc34a187461fb1873d8647ecea9e55734fe2a9a082bce490fd9b",
+   "days_live": 0,
+   "last_closed": "2026-10-03"
+  },
+  "B5-CORE-RWA": {
+   "genesis": "2026-10-04",
+   "chain_ok": true,
+   "ticks": [],
+   "settles": [],
+   "gaps": [],
+   "n_signals": 0,
+   "n_settled_days": 0,
+   "n_months": 0,
+   "head": "0xffaa0192e3f336083d0f720a50015e3dac0ad636c8ca0b6340796f321a97f092",
+   "days_live": 0,
+   "last_closed": "2026-10-03"
+  },
+  "B6-BOUNCE": {
+   "genesis": "2026-10-04",
+   "chain_ok": true,
+   "ticks": [],
+   "settles": [],
+   "gaps": [],
+   "n_signals": 0,
+   "n_settled_days": 0,
+   "n_months": 0,
+   "head": "0x11826c8f5014e123a77834cd61644745801b095638f6bfbb6653627649bc27e7",
+   "days_live": 0,
    "last_closed": "2026-10-03"
   }
  },
@@ -341,6 +393,34 @@
    "at_utc": "2026-10-03T07:55:41Z",
    "tx": "0x3254212fb06a705465857f61d31e79f76abf697f389852ac6a6a1c9728253165",
    "where": "LockRegistry"
+  },
+  {
+   "label": "SPEC B2-RS",
+   "what": "bot specification",
+   "at_utc": "2026-10-04T16:37:25Z",
+   "tx": "0x357d2b1b2a66b279324ecf1ff13445979e440e89cf07247971023aff9dcb994a",
+   "where": "LockRegistry"
+  },
+  {
+   "label": "SPEC B4-LISTING-FADE",
+   "what": "bot specification",
+   "at_utc": "2026-10-04T16:37:29Z",
+   "tx": "0x5075088f2cd8e123334b68caaaadd8cc225434300b8d0df2d060c1952914922c",
+   "where": "LockRegistry"
+  },
+  {
+   "label": "SPEC B5-CORE-RWA",
+   "what": "bot specification",
+   "at_utc": "2026-10-04T16:37:34Z",
+   "tx": "0x913c94b2602f4e8c4620825a510565ca795223b75756df764f67c5efa70c1683",
+   "where": "LockRegistry"
+  },
+  {
+   "label": "SPEC B6-BOUNCE",
+   "what": "bot specification",
+   "at_utc": "2026-10-04T16:37:38Z",
+   "tx": "0xce4328c36b4a52c64af426ecf1e6c13b99c3dfdd29d718c05426ad5736ee2789",
+   "where": "LockRegistry"
   }
  ],
  "fd16": {
@@ -355,10 +435,30 @@
     "days": 0,
     "months": 0
    },
+   "B2-RS": {
+    "signals": 0,
+    "days": 0,
+    "months": 0
+   },
    "B3-CARRY": {
     "signals": 4,
     "days": 1,
     "months": 1
+   },
+   "B4-LISTING-FADE": {
+    "signals": 0,
+    "days": 0,
+    "months": 0
+   },
+   "B5-CORE-RWA": {
+    "signals": 0,
+    "days": 0,
+    "months": 0
+   },
+   "B6-BOUNCE": {
+    "signals": 0,
+    "days": 0,
+    "months": 0
    }
   },
   "lock": "TERKUNCI"
@@ -371,14 +471,14 @@
  },
  "chain": {
   "id": 97,
-  "block": 134846942,
-  "block_utc": "2026-10-04T15:34:44Z",
+  "block": 134855482,
+  "block_utc": "2026-10-04T16:38:47Z",
   "signal_anchor": "0x9B78200beFbbBe836585d31bd5b6dB32587064f3",
   "lock_registry": "0xcF6fBF95fc04DEd8d670512CEc0723a2246Fbb0C",
   "decision_anchor": "0xDD162AFB5F5f92d5092f845A93660e3B38259330",
   "committer": "0xCA9c7322210E9a7F7d0953c862d4Ef60cC0D64A4",
   "commit_count": 4,
-  "lock_count": 9,
+  "lock_count": 13,
   "verdicts": [
    {
     "bot": "B1-TREND",
