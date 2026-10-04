@@ -7,6 +7,7 @@
   "DemoPair": "0x6f93d787bBE99A6842CCa511ccB3b8D6d976696E",
   "DemoPayToken": "0xB11D90214089684081F57A03d3300E20725297f8",
   "ERC8004IdentityRegistry": "0x8004A818BFB912233c491871b3d84c89A494BD9e",
+  "ExecutionAnchor": "0x8bfd03b73749ab2cf91129155127404fbbac4c9b",
   "ExecutionVault": "0x2743cD33C8790437594E119289838F35c0d1d290",
   "LockRegistry": "0xcF6fBF95fc04DEd8d670512CEc0723a2246Fbb0C",
   "Permit2": "0x000000000022D473030F116dDEE9F6B43aC78BA3",
@@ -28,6 +29,14 @@
    "SignalAnchor": "0x90192c3811ac810ee812ae6166ed4719c2b26d21b20b9621f6569113e86959c9"
   },
   "deployer": "0xAEc63F6cEbBfacdC3516992b6ec396147c9c8361",
+  "execution_anchor": {
+   "address": "0x8bfd03b73749ab2cf91129155127404fbbac4c9b",
+   "anchor": "0x9B78200beFbbBe836585d31bd5b6dB32587064f3",
+   "block": 134856983,
+   "deployed_utc": "2026-10-04T16:50:05Z",
+   "deployer": "0xCA9c7322210E9a7F7d0953c862d4Ef60cC0D64A4",
+   "tx": "0xbe895287a9a989dd2b50e97d91a7fb6e82bb2ba7fd5ae89a97907f79cd8c904d"
+  },
   "locks": {
    "B1-TREND": {
     "lockedAt": 1790956160,

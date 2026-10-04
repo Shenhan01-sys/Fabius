@@ -26,7 +26,9 @@ real/demo, waktu kirim + isi (ms), qty, harga rata-rata, fee (x 1e8) + aset fee,
 dijamin hanya keterikatan ke komit, urutan, dan keunikan. Tanpa pemilik, tanpa hak istimewa, tanpa dana.
 
 **Bukti 4 Okt:** `forge test --match-contract ExecutionAnchorTest` 4 lulus; seluruh suite 67/67; runtime 2.903 B. Rencana deploy (tanpa tx):
-penanda tangan = committer `0xCA9c…64A4` (bukan deployer Lencana), konstruktor = SignalAnchor `0x9B78…64f3`, perkiraan 689.653 gas (~0,00069 tBNB);
-⏳ kata builder.
+penanda tangan = committer `0xCA9c…64A4` (bukan deployer Lencana), konstruktor = SignalAnchor `0x9B78…64f3`, perkiraan 689.653 gas (~0,00069 tBNB).
+**TER-DEPLOY 4 Okt atas kata builder ("Gas"):** `0x8bfd03b73749ab2cf91129155127404fbbac4c9b`, tx `0xbe895287a9a989dd2b50e97d91a7fb6e82bb2ba7fd5ae89a97907f79cd8c904d`,
+blok 134.856.983, gas 683.065; baca ulang: panjang kode = artefak, `anchor()` = SignalAnchor. Dicatat di `deployments/97.json`
+(`contracts.ExecutionAnchor`, `m3.execution_anchor`).
 
 **Terkait:** [[C7 - SignalAnchor]] · [[C6 - LockRegistry]] · [[04-Tools/TL27 - ledger eksekusi]] · [[08-Backlog/10 - Epik Eksekusi Venue]]

@@ -195,3 +195,6 @@ disebutkan (`06-Results/03 - Not Yet Proven.md`). Deploy ini tidak mengubah satu
 
 Satu kalimat di atas perlu dibaca dengan tanggalnya: "Burner Fabius **tidak** memakai wallet Lencana" tetap benar untuk DecisionAnchor/ExecutionVault; M3 sengaja
 di-deploy DARI tower atas permintaan builder, dan alamatnya tercatat di `deployments/97.json` (`m3`).
+
+**ExecutionAnchor (4 Okt 2026, P132):** `0x8bfd03b73749ab2cf91129155127404fbbac4c9b` - deployer = committer M3 `0xCA9c…64A4`, tx
+`0xbe895287a9a989dd2b50e97d91a7fb6e82bb2ba7fd5ae89a97907f79cd8c904d`, blok 134.856.983. [[C8 - ExecutionAnchor]].
