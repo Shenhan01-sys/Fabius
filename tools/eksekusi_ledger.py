@@ -54,6 +54,9 @@ OUT = os.path.join(ROOT, "ledger", "eksekusi")
 PAPER = os.path.join(ROOT, "ledger", "paper")
 KERTAS = os.path.join(ROOT, "ledger", "kertas")
 OWNER = "Shenhan01-sys"                       # pemilik repo = pemilik Gist umpan (token builder)
+GIST_ID = "292d495fe83abbfa6f12d0282edf151c"  # Gist umpan, dibuat eksekutor 4 Okt 13:11Z (F-D94); env EXEC_FEED_GIST menimpa
+RAW_GIST = "https://gist.githubusercontent.com"
+FEED_START = "2026-10"                        # berkas umpan pertama: fabius-exec-2026-10.jsonl
 API = "https://api.github.com"
 VENUE_RE = re.compile(r"^binance-(demo|testnet|live)$")
 TENGGANG_S = 3600                             # eksekutor jalan tiap 5 menit sesudah komit; 60 menit tanpa laporan = ALARM (PRD §4 penjaga luar)
@@ -81,9 +84,42 @@ def _get(url: str, token: Optional[str]) -> Tuple[int, object]:
         raise Unreadable(f"{url.split('?')[0]}: tak terjangkau ({type(e).__name__})") from None
 
 
+def _get_text(url: str) -> Tuple[int, str]:
+    try:
+        with urllib.request.urlopen(urllib.request.Request(url, headers={"User-Agent": "fabius-eksekusi-ledger/1.0"}), timeout=30) as r:
+            return r.status, r.read().decode("utf-8")
+    except urllib.error.HTTPError as e:
+        return e.code, ""
+    except Exception as e:  # noqa: BLE001
+        raise Unreadable(f"{url}: tak terjangkau ({type(e).__name__})") from None
+
+
+def months(start: str, now_ms: int) -> List[str]:
+    """'YYYY-MM' dari `start` sampai bulan berjalan (UTC) - satu berkas umpan per bulan."""
+    y, m = map(int, start.split("-"))
+    end = ledger.date_of(now_ms)[:7]
+    out = []
+    while f"{y:04d}-{m:02d}" <= end:
+        out.append(f"{y:04d}-{m:02d}")
+        y, m = (y + 1, 1) if m == 12 else (y, m + 1)
+    return out
+
+
 def read_feed(get: Callable[[str, Optional[str]], Tuple[int, object]] = _get, token: Optional[str] = None,
-              gist_id: Optional[str] = None) -> Tuple[Optional[str], List[str]]:
-    """(gist id, baris JSON). Gist belum ada = (None, []) - umpan belum dinyalakan builder (H7), bukan galat."""
+              gist_id: Optional[str] = GIST_ID, get_text: Callable[[str], Tuple[int, str]] = _get_text,
+              now_ms: Optional[int] = None) -> Tuple[Optional[str], List[str]]:
+    """(gist id, baris JSON). Id diketahui -> isi dibaca dari URL RAW publik per bulan (tanpa token, tanpa batas API; GITHUB_TOKEN rantai tidak
+    dipakai untuk Gist). Id tidak diketahui -> dicari lewat API; Gist belum ada = (None, []) - umpan belum dinyalakan builder (H7), bukan galat."""
+    if gist_id:
+        lines: List[str] = []
+        for mo in months(FEED_START, now_ms if now_ms is not None else int(time.time() * 1000)):
+            code, text = get_text(f"{RAW_GIST}/{OWNER}/{gist_id}/raw/fabius-exec-{mo}.jsonl")
+            if code == 404:
+                continue
+            if code != 200:
+                raise Unreadable(f"umpan {mo}: HTTP {code}")
+            lines += [x for x in text.splitlines() if x.strip()]
+        return gist_id, lines
     if not gist_id:
         code, body = get(f"{API}/users/{OWNER}/gists?per_page=100", token)
         if code != 200 or not isinstance(body, list):
@@ -419,7 +455,7 @@ def main() -> int:
     cv = ww.ChainView(ww.Reader(), addrs["anchor"], addrs["registry"])
     alarms: List[str] = []
     if a.cmd == "run":
-        gid, lines = read_feed(token=os.environ.get("GH_TOKEN") or os.environ.get("GITHUB_TOKEN"), gist_id=os.environ.get("EXEC_FEED_GIST"))
+        gid, lines = read_feed(token=os.environ.get("GH_TOKEN") or os.environ.get("GITHUB_TOKEN"), gist_id=os.environ.get("EXEC_FEED_GIST") or GIST_ID)
         if gid is None:
             print("umpan eksekusi belum ada (gist 'fabius-exec feed v1' belum dibuat; langkah builder H7) - tidak ada yang ditulis")
             return 0

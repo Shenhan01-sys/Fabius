@@ -264,11 +264,22 @@ class LedgerTests(unittest.TestCase):
         self.assertFalse(late["dipakai"])
 
     def test_missing_feed_is_not_an_error_and_unreachable_feed_is_unreadable(self):
-        self.assertEqual(el.read_feed(get=lambda u, t: (200, [])), (None, []))
+        self.assertEqual(el.read_feed(get=lambda u, t: (200, []), gist_id=None), (None, []))       # id tak diketahui + gist belum ada
         def boom(u, t):
             raise el.Unreadable("tak terjangkau")
         with self.assertRaises(el.Unreadable):
-            el.read_feed(get=boom)
+            el.read_feed(get=boom, gist_id=None)
+        # id dipatok: isi dibaca dari URL raw per bulan, tanpa token; bulan yang belum punya berkas (404) dilewati, galat lain = tak terbaca
+        seen = []
+        def raw(url):
+            seen.append(url)
+            return (200, '{"a":1}\n\n{"b":2}\n') if url.endswith("fabius-exec-2026-10.jsonl") else (404, "")
+        gid, lines = el.read_feed(gist_id="g1", get_text=raw, now_ms=MIDNIGHT_10_04 + 40 * 86_400_000, get=lambda u, t: 1 / 0)
+        self.assertEqual((gid, lines), ("g1", ['{"a":1}', '{"b":2}']))
+        self.assertEqual([u[-13:-6] for u in seen], ["2026-10", "2026-11"])
+        self.assertTrue(seen[0].startswith("https://gist.githubusercontent.com/Shenhan01-sys/g1/raw/"))
+        with self.assertRaises(el.Unreadable):
+            el.read_feed(gist_id="g1", get_text=lambda u: (500, ""), now_ms=MIDNIGHT_10_04)
 
 
 if __name__ == "__main__":
