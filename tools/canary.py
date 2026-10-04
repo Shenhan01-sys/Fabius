@@ -25,7 +25,8 @@ Aturan (T8 SK-E22..SK-E27):
   - bukti dulu: tidak ada order sebelum komit bar itu ada di SignalAnchor (R-E1); tick lebih tua dari kunci = tidak dieksekusi;
   - bar yang sudah ada di ledger publik `ledger/eksekusi/binance-live/B1-TREND.jsonl` tidak dieksekusi ulang (worker restart / redeploy);
   - B1 memegang aset -> canary memegang anggaran = min(plafon, ekuitas akun) x (1 - 0,2 %) di aset itu; B1 flat -> tutup (reduce-only);
-  - anggaran < order terkecil venue -> `dilewati` (dicatat), bukan dipaksa; posisi yang dimaksud > plafon = BERHENTI;
+  - anggaran < order terkecil venue -> `dilewati` (dicatat), bukan dipaksa; posisi yang dimaksud > plafon = BERHENTI (posisi tanpa order dinilai
+    x 0,9: hanyut harga di dalam pita tanpa-transaksi bukan pelanggaran, T8 SK-E30);
   - leverage dipaksa 1x; akun mode hedge = BERHENTI; kunci dengan izin tarik / tanpa futures = tidak start;
   - setiap bar yang dieksekusi: laporan ke umpan Gist (venue `binance-live`, `exec_feed`) DAN catatan isi on-chain di ExecutionAnchor
     (`recordBatch`, real = true). Gagal mencatat = TERTUNDA, diulang tiap putaran; order tidak pernah digandakan (id deterministik, `place` idempoten).

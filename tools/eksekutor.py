@@ -47,6 +47,11 @@ def _today() -> str:
     return dt.datetime.now(dt.timezone.utc).strftime("%Y-%m-%d")
 
 
+def public_bars(ledger_dir: str, venue: str, bot: str) -> set:
+    """Bar yang sudah ditulis rantai GitHub ke ledger eksekusi publik (klon repo yang sama dengan `ledger_dir` = <repo>/ledger/paper)."""
+    return {r.get("bar") for r in ledger.load(os.path.join(os.path.dirname(os.path.abspath(ledger_dir)), "eksekusi", venue, f"{bot}.jsonl"))}
+
+
 class Executor:
     def __init__(self, env: Optional[dict] = None, log: Callable[[str], None] = print, alert=None,
                  venue_factory: Callable[[str], object] = lambda e: vb.BinanceFutures(e), today: Callable[[], str] = _today,
@@ -211,6 +216,9 @@ class Executor:
         bar = tk["asof_date"]
         if self.done.get(bot) == bar:
             return f"bar {bar} sudah dieksekusi"
+        if bar in public_bars(ledger_dir, f"binance-{c['mode']}", bot):
+            self.done[bot] = bar                    # restart / redeploy: bar ini sudah dieksekusi + dilaporkan; mengulangnya = order telat tanpa laporan
+            return f"bar {bar} sudah ada di ledger publik: tidak dieksekusi ulang"
         asof_s = sc.asof_s_of(tk)
         locked = cv.locked_at(committer, bot, spec.sha())
         if locked == 0 or locked > asof_s:

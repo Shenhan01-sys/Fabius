@@ -67,6 +67,21 @@ class PlanTests(unittest.TestCase):
         big = ex.plan("binance", "B1-TREND", "b", EQUAL, 4000.0, {}, PX, FILT)
         self.assertTrue(any("notional total" in x for x in ex.guard(big, modal=2000.0, universe=UNI, price=PX, long_only=True)))
 
+    def test_held_positions_drifting_up_inside_the_band_are_not_a_violation_but_overspending_orders_still_are(self):
+        budget = 2000.0 * (1 - 0.002)
+        pos = {a: ex.floor_step(budget / 16 / PX[a], FILT[a].step) for a in UNI}
+        up5 = {a: x * 1.08 for a, x in PX.items()}                                  # harga naik 8 %: di dalam pita 10 %, 14 aset ditahan (BTC/ETH lot kasar)
+        p = ex.plan("binance", "B1-TREND", "b", EQUAL, budget, pos, up5, FILT)
+        self.assertEqual(sorted(o.asset for o in p.orders), ["BTCUSDT", "ETHUSDT"])
+        self.assertGreater(sum(abs(q) * up5[a] for a, q in p.intended.items()), 2000.0)
+        self.assertTrue(any("notional total" in x for x in ex.guard(p, modal=2000.0, universe=UNI, price=up5, long_only=True, drift=0.0)))  # bug 5 Okt
+        self.assertEqual(ex.guard(p, modal=2000.0, universe=UNI, price=up5, long_only=True), [])
+        up20 = {a: x * 1.20 for a, x in PX.items()}                                 # di luar pita: rencana menjual kembali ke target
+        p = ex.plan("binance", "B1-TREND", "b", EQUAL, budget, pos, up20, FILT)
+        self.assertTrue(p.orders and all(o.side == "SELL" for o in p.orders))
+        self.assertEqual(ex.guard(p, modal=2000.0, universe=UNI, price=up20, long_only=True), [])
+        self.assertLessEqual(sum(abs(p.intended[o.asset]) * up20[o.asset] for o in p.orders), 2000.0)
+
     def test_reconcile_fills_and_loss_stop(self):
         self.assertEqual(ex.reconcile({"BTCUSDT": 0.002}, {"BTCUSDT": 0.002}, FILT), [])
         self.assertEqual(ex.reconcile({"BTCUSDT": 0.002}, {"BTCUSDT": 0.001}, FILT), [("BTCUSDT", 0.002, 0.001)])

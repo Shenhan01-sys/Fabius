@@ -154,6 +154,18 @@ class CanaryTests(unittest.TestCase):
         self.assertIn("sudah ada di ledger publik", self.canary(v).round(self.paper, Chain(), COMMITTER))
         self.assertEqual(v.posts, 0)
 
+    def test_a_held_position_that_drifted_up_with_price_does_not_stop_the_canary(self):
+        v, g = FeedVenue(), FakeGist()
+        c = self.canary(v, gist=g)
+        c.round(self.paper, Chain(), COMMITTER)
+        self.assertEqual(v.pos, {"XRPUSDT": 0.099})                                  # 9,9 USDT @100
+        v.book = lambda uni: {a: (104.9, 105.1) for a in uni}                       # +5 %: 10,395 USDT > plafon 10, tetapi hanyut harga, bukan order
+        self.write_tick(BAR + 86_400_000, "2026-10-03", {"XRPUSDT": 0.0625}, mode="a")
+        st = c.round(self.paper, Chain(), COMMITTER)
+        self.assertIn("canary: 0 order", st)
+        self.assertIsNone(c.halted)
+        self.assertEqual((v.posts, json.loads(g.lines()[-1])["bar"]), (1, "2026-10-03"))   # laporan bar tetap ada (0 order)
+
     def test_the_switch_file_must_say_true_exactly(self):
         cfg = os.path.join(self.tmp, "config")
         self.assertFalse(cn.toggle_on(self.paper))                                                # tidak ada berkas = MATI

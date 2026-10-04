@@ -9,6 +9,9 @@ Aturan (PRD R-E2..R-E5, T8 SK-E*):
   - ubah kecil (< max(min notional, 10 % target)) dilewati dan dicatat; menutup posisi (target 0) selalu dikirim, `reduce_only`;
   - `client_id` deterministik dari (venue, bot, bar, aset, sisi): tick yang sama diproses dua kali = id yang sama = venue menolak order ganda;
   - pagar: aset harus di universe bot, bot long-only tidak boleh short, notional total <= modal x leverage maks (1x), batas per order.
+    Posisi yang TIDAK disentuh order rencana ini dinilai pada batas bawah pita tanpa-transaksi (x (1 - `MIN_CHANGE_FRAC`)): rencana sengaja
+    membiarkan posisi yang hanyut naik karena harga selama hanyutnya < pita, jadi hanyut itu bukan pelanggaran. Yang disentuh order dinilai penuh.
+    (5 Okt 2026: tanpa ini, kenaikan harga ±0,2 % atas posisi yang ditahan menghentikan eksekutor demo - `notional total 2002 > modal 2000`.)
 """
 from __future__ import annotations
 
@@ -103,8 +106,9 @@ def plan(venue: str, bot: str, bar: str, targets: Dict[str, float], modal: float
 
 
 def guard(p: Plan, *, modal: float, universe: Iterable[str], price: Dict[str, float], long_only: bool,
-          max_leverage: float = 1.0, max_order_notional: Optional[float] = None) -> List[str]:
-    """Pelanggaran pagar (kosong = boleh dikirim). Satu pelanggaran = tidak ada order yang dikirim (PRD R-E5)."""
+          max_leverage: float = 1.0, max_order_notional: Optional[float] = None, drift: float = MIN_CHANGE_FRAC) -> List[str]:
+    """Pelanggaran pagar (kosong = boleh dikirim). Satu pelanggaran = tidak ada order yang dikirim (PRD R-E5).
+    `drift` = pita tanpa-transaksi rencana (`plan(min_change_frac=...)`): posisi tanpa order dinilai x (1 - drift)."""
     out: List[str] = []
     uni = set(universe)
     for o in p.orders:
@@ -115,9 +119,10 @@ def guard(p: Plan, *, modal: float, universe: Iterable[str], price: Dict[str, fl
     for a, q in p.intended.items():
         if long_only and q < -1e-12:
             out.append(f"{a}: posisi short pada bot long-only")
-    gross = sum(abs(q) * price.get(a, 0.0) for a, q in p.intended.items())
+    touched = {o.asset for o in p.orders}
+    gross = sum(abs(q) * price.get(a, 0.0) * (1.0 if a in touched else 1.0 - drift) for a, q in p.intended.items())
     if gross > modal * max_leverage * (1 + 1e-9):
-        out.append(f"notional total {gross:.4f} > modal {modal:g} x leverage {max_leverage:g}")
+        out.append(f"notional total {gross:.4f} > modal {modal:g} x leverage {max_leverage:g} (posisi tanpa order dinilai x {1 - drift:g})")
     return out
 
 

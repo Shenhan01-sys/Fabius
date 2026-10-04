@@ -15,7 +15,7 @@ B1 memegang aset itu -> canary memegang anggaran = min(plafon, ekuitas akun) x (
 
 **Pagar (dari F-D96):** bawaan `EXEC_REAL=off`; kunci asli di variabel TERPISAH dari kunci demo; izin builder BERTANGGAL `EXEC_LIVE_OK=binance:sampai:YYYY-MM-DD`
 (lewat tanggal = tidak ada order); kunci dicek di PROD saat start (`apiRestrictions`: tarik mati, futures hidup) dan mode hedge = berhenti; batas
-keras kode 10 USDT (env lebih besar dipotong); posisi yang dimaksud > plafon = berhenti; saldo < order terkecil = `dilewati`; tidak ada order sebelum
+keras kode 10 USDT (env lebih besar dipotong); posisi yang dimaksud > plafon = berhenti (posisi tanpa order dinilai x 0,9 - hanyut harga di dalam pita bukan pelanggaran, P135); saldo < order terkecil = `dilewati`; tidak ada order sebelum
 komit bar itu di SignalAnchor; leverage 1x; id order deterministik (venue `binance-live`, beda dari demo) + `place` idempoten.
 
 **Sakelar publik (F-D97):** `config/uang_nyata.json` `{"aktif": true|false}` (repo dikirim `false`). Uang nyata butuh variabel Railway bersenjata

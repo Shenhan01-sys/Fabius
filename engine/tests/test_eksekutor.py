@@ -161,6 +161,42 @@ class ExecutorTests(unittest.TestCase):
         self.assertTrue(any("RENCANA BUY" in x for x in self.logs))
 
 
+class RestartTests(unittest.TestCase):
+    """5 Okt 2026: redeploy worker membuat eksekutor demo merencanakan ULANG bar yang sudah dilaporkan; harga sudah naik, pagar menolak
+    (`notional total 2002 > modal 2000`) dan eksekutor BERHENTI."""
+
+    def setUp(self):
+        self.repo = tempfile.mkdtemp()
+        self.paper = os.path.join(self.repo, "ledger", "paper")                     # tata letak klon repo worker
+        os.makedirs(self.paper)
+        with open(os.path.join(self.paper, "B1-TREND.jsonl"), "w", encoding="utf-8") as f:
+            print(json.dumps({"type": "tick", "asof": BAR, "asof_date": "2026-10-02", "targets": {"BTCUSDT": 0.5, "ETHUSDT": 0.5}}), file=f)
+
+    def tearDown(self):
+        shutil.rmtree(self.repo, ignore_errors=True)
+
+    def ex(self, v):
+        return ek.Executor(env=DEMO, log=lambda s: None, alert=FakeAlert(), venue_factory=lambda e: v, today=lambda: "2026-10-03", sleep=lambda s: None)
+
+    def test_a_bar_already_in_the_public_ledger_is_not_executed_again(self):
+        d = os.path.join(self.repo, "ledger", "eksekusi", "binance-demo")
+        os.makedirs(d)
+        with open(os.path.join(d, "B1-TREND.jsonl"), "w", encoding="utf-8") as f:
+            print(json.dumps({"bar": "2026-10-02"}), file=f)
+        v = FakeVenue()
+        self.assertIn("sudah ada di ledger publik", self.ex(v).round(self.paper, FakeChain(), COMMITTER))
+        self.assertEqual(v.posts, 0)
+
+    def test_held_positions_that_drifted_up_with_price_do_not_stop_the_executor(self):
+        v = FakeVenue()
+        self.ex(v).round(self.paper, FakeChain(), COMMITTER)
+        self.assertEqual(v.pos, {"BTCUSDT": 4.99, "ETHUSDT": 4.99})
+        v.book = lambda uni: {a: (102.9, 103.1) for a in uni}                       # +3 %: 9,98 x 103 = 1027,9 > modal 1000, tetapi di dalam pita
+        st = self.ex(v).round(self.paper, FakeChain(), COMMITTER)                   # proses baru (restart), ledger publik belum memuat bar itu
+        self.assertNotIn("berhenti", st)
+        self.assertEqual(v.posts, 2)                                                 # tidak ada order baru
+
+
 class WorkerWrapTests(unittest.TestCase):
     def test_executor_errors_never_fail_the_commit_round(self):
         import operator_loop as ol
