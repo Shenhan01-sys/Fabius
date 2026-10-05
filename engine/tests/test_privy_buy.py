@@ -60,6 +60,7 @@ class PrivyClientTests(unittest.TestCase):
         self.assertEqual((method, url), ("POST", "https://api.privy.io/v1/wallets/wal1/rpc"))
         self.assertEqual(body["params"]["typed_data"]["primary_type"], "X")
         self.assertEqual(h["Authorization"], "Basic " + base64.b64encode(b"app:secret").decode())
+        self.assertTrue(h["User-Agent"].startswith("fabius-x402/"))                   # tanpa ini: Cloudflare 403 "error code: 1010"
         payload = pv.canonical({"version": 1, "method": "POST", "url": url, "body": body, "headers": {"privy-app-id": "app"}})
         self.assertTrue(verify(pub, h["privy-authorization-signature"], payload))
         self.assertFalse(verify(pub, h["privy-authorization-signature"], payload + b" "))

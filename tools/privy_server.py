@@ -61,7 +61,9 @@ class Privy:
 
     def _headers(self) -> dict:
         basic = base64.b64encode(f"{self.app_id}:{self.app_secret}".encode()).decode("ascii")
-        return {"Authorization": f"Basic {basic}", "privy-app-id": self.app_id, "Content-Type": "application/json"}
+        # User-Agent WAJIB: tanpa itu Cloudflare di depan api.privy.io menjawab 403 "error code: 1010" (UA Python-urllib diblokir) - diukur 5 Okt.
+        return {"Authorization": f"Basic {basic}", "privy-app-id": self.app_id, "Content-Type": "application/json",
+                "User-Agent": "fabius-x402/1.0 (+https://fabius-one.vercel.app)"}
 
     def user_by_telegram(self, telegram_user_id: int) -> Optional[dict]:
         st, body = self.http("POST", f"{self.base}/v1/users/telegram/telegram_user_id", self._headers(), {"telegram_user_id": str(telegram_user_id)})
