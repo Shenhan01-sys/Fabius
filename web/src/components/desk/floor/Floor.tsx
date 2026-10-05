@@ -77,7 +77,8 @@ export default function Floor({ d }: { d: Desk }) {
   const nOk = cyc12.filter((c) => c.status === "dikomit").length;
   // label = tombol DOM biasa; posisinya digeser tiap frame oleh LabelSync di dalam kanvas (mulai tersembunyi sampai frame pertama)
   const tagCls = "invisible absolute left-0 top-0 z-20 whitespace-nowrap";
-  const compact = size.w < 640; // HP: label = nama pendek + glyph; rincian tetap di aria-label + modal
+  // HP, atau banyak agent di layar sedang: label = nama pendek + glyph; rincian tetap di aria-label + modal
+  const compact = size.w < 640 || (seatList.length > 4 && size.w < 1000) || seatList.length > 6;
   const onOpen = useCallback((name: string, origin: Rect) => setOpen({ name, origin }), []);
   const close = useCallback(() => setOpen(null), []);
 
@@ -125,7 +126,7 @@ export default function Floor({ d }: { d: Desk }) {
             >
               {compact ? (
                 <span className={`block font-mono text-[10px] leading-tight ${s.pose === "fail" ? "text-gap" : s.pose === "trade" ? "text-violet" : "text-ink/70"}`}>
-                  {glyph[s.pose]} {s.look.short ?? s.nama}
+                  {glyph[s.pose]} {s.look.short}
                 </span>
               ) : (
                 <>

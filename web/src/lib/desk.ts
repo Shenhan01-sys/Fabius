@@ -33,6 +33,8 @@ export type Buku = {
   keputusan_terakhir: Keputusan | null;
   siklus_terakhir?: number | null;
   isi_terakhir?: number;
+  // P159: penampilan pekerja 3D dari config/agents.json (opsional)
+  npc?: { shirt?: string; hair?: string; skin?: string; extra?: "headset" | "cap" | "glasses" | "beanie" | "hood" | "none"; prop?: "mug" | "paper" | "plant" | "books"; short?: string } | null;
 };
 export type Isi = { aset: string; dari: number; ke: number; harga: number; fee: number };
 export type Siklus = { siklus: number; root: string; tx: string | null; status: string; n: number };

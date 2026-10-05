@@ -151,6 +151,7 @@ function Npc({ look, pose, reduced }: { look: Look; pose: Pose; reduced: boolean
       skin,
       hair,
       acc: mat(C.ink, { roughness: 0.5 }),
+      knit: mat(look.shirt === C.lav3 ? C.violet : C.lav3),
       mic: mat(C.violet, { emissive: C.violet, emissiveIntensity: 0.6 }),
       // urutan sisi BoxGeometry: +x, -x, +y, -y, +z (wajah), -z (belakang kepala)
       head: [skin, skin, hair, skin, new THREE.MeshStandardMaterial({ map: face, roughness: 0.85 }), hair],
@@ -224,6 +225,35 @@ function Npc({ look, pose, reduced }: { look: Look; pose: Pose; reduced: boolean
               </mesh>
             </>
           )}
+          {look.extra === "glasses" && (
+            <>
+              {[-0.09, 0.09].map((x) => (
+                <mesh key={x} material={m.acc} position={[x, 0.22, 0.205]}>
+                  <boxGeometry args={[0.12, 0.07, 0.02]} />
+                </mesh>
+              ))}
+              {[-0.205, 0.205].map((x) => (
+                <mesh key={x} material={m.acc} position={[x, 0.23, 0.1]}>
+                  <boxGeometry args={[0.02, 0.025, 0.22]} />
+                </mesh>
+              ))}
+            </>
+          )}
+          {look.extra === "beanie" && (
+            <>
+              <mesh material={m.knit} position={[0, 0.44, -0.01]}>
+                <boxGeometry args={[0.44, 0.16, 0.44]} />
+              </mesh>
+              <mesh material={m.knit} position={[0, 0.55, -0.01]}>
+                <boxGeometry args={[0.1, 0.06, 0.1]} />
+              </mesh>
+            </>
+          )}
+          {look.extra === "hood" && (
+            <mesh material={m.shirt} position={[0, 0.12, -0.24]} castShadow>
+              <boxGeometry args={[0.46, 0.3, 0.1]} />
+            </mesh>
+          )}
         </group>
         {[
           [armL, -0.29],
@@ -251,7 +281,7 @@ function Desk({ seat, bridge, onOpen, reduced }: { seat: Seat; bridge: Bridge; o
   const { camera, size } = useThree();
   const [hover, setHover] = useState(false);
   const m = useMemo(
-    () => ({ base: mat(C.lav), top: mat(C.clay), leg: mat(C.lav2), ink: mat(C.ink, { roughness: 0.45 }), key: mat(C.lav), chair: mat(C.lav3), paper: mat("#ffffff"), mug: mat(C.violet) }),
+    () => ({ base: mat(C.lav), top: mat(C.clay), leg: mat(C.lav2), ink: mat(C.ink, { roughness: 0.45 }), key: mat(C.lav), chair: mat(C.lav3), paper: mat("#ffffff"), mug: mat(C.violet), leaf: mat(C.violet2) }),
     [],
   );
   const open = () => onOpen(seat.main.agent, projectRect(screen.current, 0.39, 0.23, camera, size));
@@ -266,7 +296,7 @@ function Desk({ seat, bridge, onOpen, reduced }: { seat: Seat; bridge: Bridge; o
     glow.current.intensity = base * k * 1.6;
   });
   return (
-    <group position={seat.pos} rotation-y={seat.rotY} scale={hover ? 1.04 : 1}>
+    <group position={seat.pos} rotation-y={seat.rotY} scale={seat.scale * (hover ? 1.04 : 1)}>
       <group
         onClick={(e) => {
           e.stopPropagation();
@@ -310,7 +340,7 @@ function Desk({ seat, bridge, onOpen, reduced }: { seat: Seat; bridge: Bridge; o
         <mesh material={m.key} position={[0.42, 0.785, 0.44]}>
           <boxGeometry args={[0.07, 0.03, 0.11]} />
         </mesh>
-        {seat.look.extra === "paper" ? (
+        {seat.look.prop === "paper" && (
           <group position={[-0.5, 0.776, 0.55]} rotation-y={0.35}>
             <mesh material={m.paper}>
               <boxGeometry args={[0.34, 0.012, 0.26]} />
@@ -321,10 +351,36 @@ function Desk({ seat, bridge, onOpen, reduced }: { seat: Seat; bridge: Bridge; o
               </mesh>
             ))}
           </group>
-        ) : (
+        )}
+        {seat.look.prop === "mug" && (
           <mesh material={m.mug} position={[-0.55, 0.83, 0.62]} castShadow>
             <cylinderGeometry args={[0.045, 0.045, 0.11, 16]} />
           </mesh>
+        )}
+        {seat.look.prop === "plant" && (
+          <group position={[-0.58, 0.77, 0.66]}>
+            <mesh material={m.top} position={[0, 0.05, 0]} castShadow>
+              <cylinderGeometry args={[0.06, 0.05, 0.1, 12]} />
+            </mesh>
+            {[
+              [0, 0.16, 0, 0.09],
+              [0.05, 0.22, 0.02, 0.07],
+              [-0.04, 0.24, -0.02, 0.06],
+            ].map(([x, y, z, r]) => (
+              <mesh key={`${x}${y}`} material={m.leaf} position={[x, y, z]} castShadow>
+                <boxGeometry args={[r, r, r]} />
+              </mesh>
+            ))}
+          </group>
+        )}
+        {seat.look.prop === "books" && (
+          <group position={[-0.55, 0.77, 0.62]} rotation-y={0.2}>
+            {[C.violet, C.lav3, C.ink].map((c, i) => (
+              <mesh key={c} material={i === 0 ? m.mug : i === 1 ? m.chair : m.ink} position={[0, 0.02 + i * 0.04, 0]} castShadow>
+                <boxGeometry args={[0.24 - i * 0.02, 0.035, 0.17]} />
+              </mesh>
+            ))}
+          </group>
         )}
         {/* kursi */}
         <RoundedBox args={[0.52, 0.07, 0.5]} radius={0.025} position={[0, 0.46, -0.05]} material={m.chair} castShadow />
