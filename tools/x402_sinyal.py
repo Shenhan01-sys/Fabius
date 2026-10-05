@@ -45,7 +45,7 @@ ROOT = os.path.dirname(HERE)
 sys.path.insert(0, ROOT)
 sys.path.insert(0, HERE)
 
-from engine import book as bookmod, chain, harga, ledger                     # noqa: E402
+from engine import book as bookmod, chain, data as datamod, harga, ledger, rincian   # noqa: E402
 from engine.spec import SPECS                                                 # noqa: E402
 import signal_commit as sc                                                    # noqa: E402
 
@@ -200,6 +200,14 @@ class Data:
         d = os.path.join(self.workdir, "ledger", "paper")
         return {b: ledger.load(os.path.join(d, f"{b}.jsonl")) for b in bookmod.FORWARD_BOTS if os.path.exists(os.path.join(d, f"{b}.jsonl"))}
 
+    def series(self, bot: str) -> Dict[str, tuple]:
+        """Bar harian publik universe bot (`ledger/bars/fut_<SYM>_1d.csv`) -> {aset: (t, c)} untuk rincian paket."""
+        uni = [a for a in SPECS[bot].universe if os.path.exists(os.path.join(self.workdir, "ledger", "bars", f"fut_{a}_1d.csv"))]
+        if not uni:
+            return {}
+        md = datamod.load_csv_dir(os.path.join(self.workdir, "ledger", "bars"), uni)
+        return {a: (md.perp[a].t, md.perp[a].c) for a in md.perp}
+
     def cfg(self) -> dict:
         return load_cfg(os.path.join(self.workdir, "deployments", "97.json"))
 
@@ -218,13 +226,20 @@ def quote(led: Dict[str, list], bot: str, bar: Optional[str] = None) -> dict:
     return harga.harga_bar(bot, bar, led, bookmod.STATUS, bookmod.GATE_V1)
 
 
-def package(led: Dict[str, list], bot: str, bar: str, cfg: dict, cv=None, reg=None) -> dict:
+def package(led: Dict[str, list], bot: str, bar: str, cfg: dict, cv=None, reg=None, series: Optional[Dict[str, tuple]] = None) -> dict:
     """Paket sinyal yang dibeli: niat posisi tick + bukti. `cv`/`reg` = pembaca chain (None = tanpa bagian chain)."""
-    tk = next(r for r in led[bot] if r.get("type") == "tick" and r.get("asof_date") == bar)
+    ticks = [r for r in led[bot] if r.get("type") == "tick"]
+    k = next(j for j, r in enumerate(ticks) if r.get("asof_date") == bar)
+    tk = ticks[k]
     cid = sc.commit_id(cfg["committer"], bot, SPECS[bot].sha(), sc.asof_s_of(tk))
     out = {"bot": bot, "bar": bar, "status": bookmod.STATUS.get(bot), "targets": tk.get("targets", {}), "signal_ids": tk.get("signal_ids", []),
            "emitted_utc": tk.get("emitted_utc"), "close_utc": tk.get("close_utc"), "ledger_h": tk.get("h"), "commitId": chain.hex0x(cid),
            "signal_anchor": cfg["anchor"], "catatan": "paper: niat posisi, bukan order; bot deterministik + terbuka (F-D99) - bisa dihitung ulang dari repo"}
+    if series is not None:
+        g = next((r for r in led[bot] if r.get("type") == "genesis"), {})
+        out["rincian"] = rincian.rincian(bot, SPECS[bot].metode, SPECS[bot].param, tk.get("targets", {}), ticks[k - 1].get("targets", {}) if k > 0 else None,
+                                         int(tk["asof"]), series, g.get("first_asof"))
+        out["rincian"]["aturan_en"] = RULE_EN.get(bot)
     if cv is not None:
         c = cv.get_commit(cid)
         on = int(str(c["committer"]), 16) != 0
@@ -341,7 +356,12 @@ class Gate:
         if not res.get("ok"):
             return 402, {"error": "settlement gagal", "detail": res}, {}
         cv, reg = self.views(cfg)
-        body = package(led, q["bot"], q["bar"], cfg, cv, reg)
+        try:
+            ser = self.data.series(q["bot"])
+        except Exception as e:  # noqa: BLE001 - rincian gagal dibaca tidak boleh membatalkan paket yang sudah DIBAYAR
+            self.log(f"rincian {q['bot']} tak terbaca: {type(e).__name__}: {str(e)[:120]}")
+            ser = None
+        body = package(led, q["bot"], q["bar"], cfg, cv, reg, ser)
         body["pembayaran"] = {"tx": res["tx"], "payer": res["payer"], "atomic": q["atomic"], "token": cfg["token"]}
         self.log(f"TERJUAL {q['bot']} {q['bar']} {q['fab']:g} FAB pembeli {res['payer']} tx {res['tx']}")
         if tg:
@@ -353,17 +373,47 @@ class Gate:
         return 200, body, {"PAYMENT-RESPONSE": b64, "X-PAYMENT-RESPONSE": b64}
 
 
+RULE_EN = {   # terjemahan TAMPILAN; teks yang dikunci (spec `metode`, Indonesia) tetap ikut di paket sebagai `rincian.aturan`
+    "B1-TREND": "long when the daily close is above the close N days earlier, otherwise flat (time-series momentum, long/flat)",
+    "B2-RS": "long the top k and short the bottom k by L-day return (relative-strength rotation, dollar-neutral); 7 sub-books rotated weekly on different UTC days",
+    "B3-CARRY": "long spot + short perp while the 7-day average funding (annualised) is above theta, otherwise flat",
+    "B4-LISTING-FADE": "short newly listed perps at the close of day 1; close after H days; small size, isolated margin",
+    "B5-CORE-RWA": "BTC and gold weighted by 1/sigma (std of daily returns over L days); rebalanced monthly",
+    "B6-BOUNCE": "buy when the price z-score (N-day mean and std) is below -z_entry; exit when z >= 0 (long/flat)",
+}
+
+
+def _px(x: float) -> str:
+    return f"{x:,.2f}" if x >= 100 else (f"{x:.4f}" if x >= 1 else f"{x:.6f}")
+
+
 def fmt_package(p: dict) -> str:
-    tg = sorted(p.get("targets", {}).items(), key=lambda kv: -abs(float(kv[1])))
-    lines = [f"Fabius {p['bot']} · bar {p['bar']} (paper position intents, not orders)"] + [f"  {a}: {float(w):+.4f}" for a, w in tg[:16]]
-    if not tg:
-        lines.append("  flat (no positions)")
+    r = p.get("rincian") or {}
+    lines = [f"Fabius {p['bot']} · bar {p['bar']} (paper position intents, not orders)"]
+    if r:
+        lines.append(f"Rule: {RULE_EN.get(p['bot'], r['aturan'])} (param {r['param']}). No TP/SL outside the rule; judged on the daily close.")
+        ch = r.get("perubahan") or {}
+        lines.append(f"Changes vs previous bar: enter {', '.join(ch.get('masuk') or []) or '-'} · exit {', '.join(ch.get('keluar') or []) or '-'}")
+    aset = (r.get("aset") or {}) if r else {}
+    if aset and any("keluar_berikut" in d for d in aset.values()):
+        lines.append("asset · side · weight · entry (date @ price, PnL) · exit next bar if close <= level (distance)")
+        for a, d in sorted(aset.items(), key=lambda kv: kv[1].get("keluar_berikut", {}).get("jarak", -9), reverse=True):
+            e = d.get("masuk")
+            ent = f"{e['bar']} @ {_px(e['harga'])} ({e['pnl'] * 100:+.1f}%)" if e else f"enters if close > {_px(d['masuk_bila']['di_atas'])}"
+            k = d["keluar_berikut"]
+            lines.append(f"  {a} · {d['sisi']} · {d['bobot'] * 100:.2f}% · {ent} · {_px(k['level'])} ({k['jarak'] * 100:+.1f}%)")
+        if r.get("terdekat_keluar"):
+            lines.append(f"Closest to exit: {r['terdekat_keluar']}. Exit levels move every day (60-day window) = a trailing stop on the daily close.")
+    else:
+        tg = sorted(p.get("targets", {}).items(), key=lambda kv: -abs(float(kv[1])))
+        lines += [f"  {a}: {float(w):+.4f}" for a, w in tg[:16]] or ["  flat (no positions)"]
     k = p.get("komit") or {}
     v = p.get("validasi_erc8004")
     lines.append(f"commitId {p['commitId'][:18]}… · committed on-chain: {'yes' if k.get('ada') else 'not yet'}"
                  + (f" · ERC-8004 validation: {v['skor']}" if v and v.get("dijawab") else ""))
     if p.get("pembayaran"):
         lines.append(f"paid {p['pembayaran']['atomic'] / 1e6:g} FAB · tx {p['pembayaran']['tx']}")
+    lines.append("Paper position intents at 1x; not investment advice. Testnet only.")
     return "\n".join(lines)
 
 

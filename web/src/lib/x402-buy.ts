@@ -30,7 +30,18 @@ export type Package = {
   komit?: { ada: boolean; committedAt: number | null; n: number | null; terungkap: number | null };
   validasi_erc8004?: { skor: number; dijawab: boolean } | null;
   pembayaran: { tx: string; payer: string; atomic: number };
+  rincian?: Rincian;
 };
+export type RincianAset = {
+  sisi: string;
+  bobot: number;
+  tutup?: number;
+  momentum?: number;
+  masuk?: { bar: string; harga: number; pnl: number; hari: number };
+  masuk_bila?: { bar: string; di_atas: number };
+  keluar_berikut?: { bar: string; level: number; jarak: number };
+};
+export type Rincian = { aturan: string; aturan_en?: string | null; param: number; perubahan: { masuk: string[]; keluar: string[]; tetap: string[] }; aset: Record<string, RincianAset>; terdekat_keluar?: string | null };
 
 export async function teaser(bot: string): Promise<Teaser> {
   const r = await fetch(`${GATE}/teaser/${bot}`, { cache: "no-store" });

@@ -181,6 +181,16 @@ class GateTests(unittest.TestCase):
         self.assertIn("XRPUSDT", self.tg[0][1])
 
     @unittest.skipUnless(HAVE_ETH, "eth-abi tidak terpasang")
+    def test_a_paid_package_is_still_delivered_when_the_details_cannot_be_read(self):
+        g = self.gate(FakeEv())
+        g.data.series = lambda bot: (_ for _ in ()).throw(OSError("bar hilang"))
+        code, body, _ = g.handle_signal("B1-TREND", None, base64.b64encode(json.dumps(payment()).encode()).decode(), None)
+        self.assertEqual(code, 200)
+        self.assertNotIn("rincian", body)
+        self.assertEqual(body["targets"], {"XRPUSDT": 0.0625, "BTCUSDT": 0.0625})
+        self.assertTrue(any("tak terbaca" in x for x in self.logs))
+
+    @unittest.skipUnless(HAVE_ETH, "eth-abi tidak terpasang")
     def test_bad_payments_and_receipts_without_the_transfer_deliver_nothing(self):
         b64 = base64.b64encode(json.dumps(payment(a__witness={"to": PAYER, "validAfter": str(NOW)})).encode()).decode()
         ev = FakeEv()

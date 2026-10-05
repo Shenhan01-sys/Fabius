@@ -11,7 +11,10 @@ import { bscTestnet } from "viem/chains";
 import type { Hex } from "viem";
 import Nav from "@/components/Nav";
 import { LangProvider, useLang } from "@/components/lang";
-import { PRIVY_APP_ID, buy, fabBalance, faucet, teaser, type Package, type Teaser } from "@/lib/x402-buy";
+import { PRIVY_APP_ID, buy, fabBalance, faucet, teaser, type Package, type RincianAset, type Teaser } from "@/lib/x402-buy";
+
+const px = (x: number) => (x >= 100 ? x.toLocaleString("en-US", { maximumFractionDigits: 2 }) : x >= 1 ? x.toFixed(4) : x.toFixed(6));
+const pct = (x: number) => `${x >= 0 ? "+" : ""}${(x * 100).toFixed(1)}%`;
 
 export default function BeliView({ bot }: { bot: string }) {
   const [scriptDone, setScriptDone] = useState(false);
@@ -70,7 +73,7 @@ function Step({ n, title, children }: { n: number; title: string; children: Reac
 const btn = "rounded-full bg-ink px-5 py-2.5 text-sm text-white transition hover:bg-violet disabled:cursor-not-allowed disabled:opacity-40";
 
 function Buy({ bot }: { bot: string }) {
-  const { t } = useLang();
+  const { t, lang } = useLang();
   const v = t.beli;
   const { ready, authenticated, login, logout } = usePrivy();
   const { wallets } = useWallets();
@@ -170,6 +173,48 @@ function Buy({ bot }: { bot: string }) {
       </Step>
       {pkg && (
         <Step n={4} title={v.result}>
+          {pkg.rincian && (
+            <div className="mb-4 text-sm">
+              <p>
+                <span className="text-ink/50">{v.rule}:</span> {lang === "id" ? pkg.rincian.aturan : (pkg.rincian.aturan_en ?? pkg.rincian.aturan)} (param {pkg.rincian.param})
+              </p>
+              <p className="mt-1">
+                <span className="text-ink/50">{v.changes}:</span> {v.enter} {pkg.rincian.perubahan.masuk.join(", ") || "-"} · {v.exit} {pkg.rincian.perubahan.keluar.join(", ") || "-"}
+              </p>
+              <p className="mt-1 text-ink/60">{v.noTp}</p>
+            </div>
+          )}
+          {pkg.rincian && Object.values(pkg.rincian.aset).some((d) => d.keluar_berikut) ? (
+            <div className="overflow-x-auto">
+              <table className="w-full min-w-[560px] text-xs">
+                <thead className="text-left text-ink/50">
+                  <tr>
+                    <th className="py-1">{v.colAsset}</th>
+                    <th>{v.colSide}</th>
+                    <th className="text-right">{v.colWeight}</th>
+                    <th className="text-right">{v.colEntry}</th>
+                    <th className="text-right">PnL</th>
+                    <th className="text-right">{v.colExit}</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {Object.entries(pkg.rincian.aset)
+                    .sort((a, b) => (b[1].keluar_berikut?.jarak ?? -9) - (a[1].keluar_berikut?.jarak ?? -9))
+                    .map(([a, d]: [string, RincianAset]) => (
+                      <tr key={a} className="border-b border-ink/5 font-mono">
+                        <td className="py-1">{a}</td>
+                        <td>{d.sisi}</td>
+                        <td className="text-right">{(d.bobot * 100).toFixed(2)}%</td>
+                        <td className="text-right">{d.masuk ? `${d.masuk.bar} @ ${px(d.masuk.harga)}` : d.masuk_bila ? `> ${px(d.masuk_bila.di_atas)}` : "-"}</td>
+                        <td className="text-right">{d.masuk ? pct(d.masuk.pnl) : "-"}</td>
+                        <td className="text-right">{d.keluar_berikut ? `${px(d.keluar_berikut.level)} (${pct(d.keluar_berikut.jarak)})` : "-"}</td>
+                      </tr>
+                    ))}
+                </tbody>
+              </table>
+              <p className="mt-2 text-xs text-ink/50">{v.trailing}</p>
+            </div>
+          ) : (
           <table className="w-full text-sm">
             <tbody>
               {Object.entries(pkg.targets).length === 0 ? (
@@ -188,6 +233,7 @@ function Buy({ bot }: { bot: string }) {
               )}
             </tbody>
           </table>
+          )}
           <p className="mt-3 break-all text-xs text-ink/60">
             commitId {pkg.commitId} · {v.committed}: {pkg.komit?.ada ? "✓" : "…"}
             {pkg.validasi_erc8004?.dijawab ? ` · ERC-8004 ${pkg.validasi_erc8004.skor}` : ""}

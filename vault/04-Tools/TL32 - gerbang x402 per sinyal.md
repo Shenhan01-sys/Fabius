@@ -30,7 +30,13 @@ harga) harus ada di receipt. Kunci tx (satu nonce) dilindungi kunci thread.
 target, signal_ids, commitId, status komit/ungkap, validasi ERC-8004. Ditemukan saat uji publik: edge Railway menulis header huruf kecil;
 `x402_client.py` mencari header peka-huruf -> diperbaiki (SK-X6).
 
-**Yang belum:** halaman web `/beli/<bot>` (P138c), bot Telegram (P138d; kode polling + tautan bertanda sudah ada, menunggu token bot dari builder).
-Pembeli eksternal: nol - satu-satunya pembeli sejauh ini klien kami sendiri.
+**Rincian paket (P138f, 5 Okt):** `engine/rincian.py` - untuk B1: masuk = penutupan bar pertama run long yang berjalan (tanggal @ harga, PnL), keluar bar
+berikutnya bila penutupan <= penutupan N-1 bar lalu (angka sudah diketahui hari ini), jadwal keluar 5 bar (berperilaku seperti trailing stop pada
+penutupan harian), terdekat keluar; TP/SL = null (tidak ada menurut aturan, dinyatakan di paket). Bot lain: sisi, bobot, perubahan. Teks aturan
+terkunci (Indonesia) + terjemahan tampilan `RULE_EN`. Bar tak terbaca sesudah bayar = paket tetap dikirim tanpa rincian (SK-D2).
+
+**Tayang 5 Okt:** web `/beli/<bot>` dengan Privy (P138c) + bot Telegram Inggris dengan tombol Mini App (P138d); pembelian pertama lewat Mini App oleh
+builder: B1 tx `0x2b44d0b3…`. **Yang belum:** beli langsung dari chat + langganan (P138e, session signer Privy). Pembeli eksternal: nol - pembeli
+sejauh ini klien kami sendiri dan builder.
 
 **Terkait:** [[TL6 - x402 gate and client]] · [[TL31 - teaser confidence]] · [[05-Ecosystem/02 - x402 Payment]]
