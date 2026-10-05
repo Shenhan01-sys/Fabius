@@ -94,7 +94,7 @@ Rincian tiap item ada di rumahnya (kolom terakhir); angka di sini dicetak oleh p
 | P138e | Beli langsung dari chat + langganan otomatis lewat session signer Privy (izin sekali di Mini App, batas FAB/hari) | ⬜ | F-D101 |
 | P140 | Platform data agent (F-D102): alat MCP DexScreener + RugCheck (publik) dulu; Bubblemaps, GMGN, Fomo sesudah akses dicek | ⬜ | F-D102 |
 | P141 | Registry agent analis + komit pilihan per bar on-chain (agent ERC-8004 menandatangani; batas waktu sebelum hasil) | ⬜ | F-D102 |
-| P142 | Tiga analis rumah (Claude Sonnet 5.5 xhigh, GLM 5.3 medium, Qwen 3.8 Flash xhigh) di service `fabius-analis` | ⬜ menunggu ANTHROPIC_API_KEY | F-D102 |
+| P142 | Analis rumah: GLM 5.3 (medium) + Qwen 3.8 Flash (xhigh) lewat qwencloud; Claude Sonnet 5.5 disiapkan, aktif bila ada `ANTHROPIC_API_KEY` (builder: belum ada dana kredit API) | ⬜ | F-D102 |
 | P143 | Penilaian + ReputationRegistry + aturan bot aktif terkunci + papan peringkat | ⬜ | F-D102 |
 | P144 | Telegram: tabel paket sebagai gambar PNG (`tools/sinyal_gambar.py`, `sendPhoto` multipart) + `/buy` tanpa argumen = bot aktif | ✅ 5 Okt: di-push `4f964226`, gerbang `c3db6430` (image + Pillow 10.4.0); ⏳ uji builder di Telegram | F-D102 |
 | P139 | LLM analis: berita/pengumuman -> fitur berskema terkomit sebelum dipakai; model + prompt + skema dikunci; uji maju saja; satu-satunya tingkat dengan rahasia sungguhan (F-D99 #4) | ⬜ bila sempat | F-D98, F-D99, F-D11 |

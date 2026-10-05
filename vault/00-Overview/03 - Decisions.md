@@ -3028,4 +3028,9 @@ decision making bot maa yg dipakai"*. Jawaban AskUserQuestion: peran = **"Pemili
 5. **Platform data untuk agent:** alat MCP DexScreener, Fomo, GMGN, Bubblemaps, RugCheck. Dicatat jujur: alat-alat itu untuk memecoin/dompet DEX,
    relevansinya rendah untuk 16 perp mayor (paling relevan: B4 listing baru); catatan lama: Fomo API 8 trader, GMGN route privat butuh kunci bertanda.
 
+6. **Ralat 5 Okt (kata builder):** *"jgn pakai claude dulu, gaada duit saya untuk isi kreditnya"* - bonus $250 "cloud sessions" di langganan Claude
+   TIDAK berlaku untuk API key (dicek di support.claude.com: hanya cloud sessions Claude Code, klaim s.d. 7 Okt 23:59 PT); API = kredit prabayar
+   Console. Analis rumah dimulai DUA: GLM 5.3 (medium) + Qwen 3.8 Flash (xhigh) lewat qwencloud; analis Claude disiapkan di kode, aktif hanya bila
+   `ANTHROPIC_API_KEY` ada.
+
 **Terkait:** F-D11 · F-D70 · F-D71 · F-D98 · [[05-Ecosystem/01 - ERC-8004 Identity]] · [[09-Inbox/Session-2026-10-02]] §84
