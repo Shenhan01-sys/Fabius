@@ -324,6 +324,7 @@ class Gate:
         self._luar_coba: Dict[str, float] = {}
         self.meja_dir = os.path.join(os.path.dirname(self.analis_dir), "meja")                # P152: rekaman, siklus, buku meja AI 5 menit
         self.meja_lock = threading.Lock()
+        self.data_cv = threading.Condition()                                                 # P155: meja v2 menunggu snapshot siklus yang sama
         self._kabar: tuple = (0.0, None)
 
     def kabar_cache(self, umur_s: int = 900) -> Optional[List[dict]]:
@@ -379,26 +380,37 @@ class Gate:
             return st
         rek, sik = self._meja_baca("rekaman"), self._meja_baca("siklus")
         books, _ = self.meja_muat()
-        harga = (sik[-1].get("harga") if sik else None) or {}
+        harga1 = (sik[-1].get("harga") if sik else None) or {}
+        harga2 = {**harga1, **((sik[-1].get("harga_v2") if sik else None) or {})}
         cut = int(self.now()) - 86_400
         out_books = []
-        for name in [meja.KONSENSUS] + sorted(b for b in books if b != meja.KONSENSUS):
+        v2 = sorted(b for b in books if b.startswith("v2"))
+        for name in [meja.KONSENSUS] + sorted(b for b in books if b != meja.KONSENSUS and not b.startswith(("_", "v2"))) + v2:
             b = books.get(name)
             if not b:
                 continue
+            harga = harga2 if name.startswith("v2") else harga1
             e = meja.ekuitas(b, harga)
             mine = [r for r in rek if r["agent"] == name]
             last = next((r for r in reversed(mine) if r.get("status", "ok") == "ok"), None)
-            nama = "Fabius consensus" if name == meja.KONSENSUS else next((a["name"] for a in an.AGENTS if a["slug"] == name), name)
-            out_books.append({"agent": name, "nama": nama, "ekuitas": round(e, 2), "hasil_pct": round((e / meja.PARAMS["modal_awal"] - 1) * 100, 3),
+            slug = name.split(":", 1)[-1]
+            nama_ag = next((a["name"] for a in an.AGENTS if a["slug"] == slug), slug)
+            nama = {meja.KONSENSUS: "Fabius consensus", "v2": "Fabius v2 (bot + instruments)"}.get(name) or (f"v2 · {nama_ag}" if name.startswith("v2:") else nama_ag)
+            kons = name in (meja.KONSENSUS, "v2")
+            out_books.append({"agent": name, "nama": nama, "versi": 2 if name.startswith("v2") else 1,
+                              "ekuitas": round(e, 2), "hasil_pct": round((e / meja.PARAMS["modal_awal"] - 1) * 100, 3),
                               "biaya": round(b.get("biaya", 0), 2), "n_trade": b.get("n_trade", 0),
                               # posisi yang BENAR-BENAR terisi (qty x harga / ekuitas), bukan target: target < ambang 2 % tidak ditransaksikan
                               "posisi": {a: round(q["qty"] * harga.get(a, q["masuk"]) / e, 4) for a, q in sorted(b.get("posisi", {}).items()) if e},
                               "target": {a: round(t["w"], 4) for a, t in sorted((b.get("target") or {}).items()) if abs(t.get("w", 0)) > 1e-9},
                               "deret": [[r["siklus"], r["ekuitas"]] for r in mine if r["siklus"] >= cut],
                               "status_terakhir": mine[-1].get("status", "ok") if mine else None,
-                              "keputusan_terakhir": (last.get("keputusan") or {"ringkasan": last.get("dasar"), "target": last.get("target")}) if last else None})
-        out = {"t": time.time(), "params": meja.PARAMS, "params_sha": meja.params_sha(),
+                              "keputusan_terakhir": ((last.get("keputusan") if not kons else
+                                                      {k: last.get(k) for k in ("dasar", "target", "bot", "nilai_bot", "instrumen", "skor_instrumen", "eksposur", "veto",
+                                                                                "arah_alasan", "masuk", "data_t") if last.get(k) is not None}
+                                                      | {"ringkasan": last.get("dasar")}) if last else None)})
+        import meja2
+        out = {"t": time.time(), "params": meja.PARAMS, "params_sha": meja.params_sha(), "params_v2": meja2.PARAMS2, "params_v2_sha": meja.sha(meja2.PARAMS2),
                "anchor": self.data.cfg_raw().get("contracts", {}).get("DeskAnchor"), "buku": out_books, "rekaman": rek[-40:],
                "siklus_terakhir": ({k: sik[-1].get(k) for k in ("siklus", "root", "tx", "status", "n")} if sik else None),
                "siklus_24j": sum(1 for x in sik if x["siklus"] >= cut), "komit_24j": sum(1 for x in sik if x["siklus"] >= cut and x.get("status") == "dikomit")}
@@ -412,7 +424,19 @@ class Gate:
             os.makedirs(os.path.dirname(path), exist_ok=True)
             with open(path, "a", encoding="utf-8", newline="\n") as f:
                 f.write(json.dumps(snap, ensure_ascii=False, sort_keys=True) + "\n")
-        self._data_last, self._data_view = snap, None
+        with self.data_cv:
+            self._data_last, self._data_view = snap, None
+            self.data_cv.notify_all()
+
+    def data_tunggu(self, t0: int, sampai: float) -> Optional[dict]:
+        """P155: snapshot siklus t0 (ditunggu sampai `sampai`); belum ada -> snapshot terakhir (umurnya tercatat lewat `data_t` di rekaman v2)."""
+        with self.data_cv:
+            self.data_cv.wait_for(lambda: (getattr(self, "_data_last", None) or {}).get("t") == t0, timeout=max(0.0, sampai - time.time()))
+            last = getattr(self, "_data_last", None)
+        if last is None:
+            rows = self._meja_baca("fitur", 1)
+            last = rows[-1] if rows else None
+        return last
 
     def data_view(self, max_age_s: int = 60) -> dict:
         """Kesehatan data 24 jam (kriteria keluar F1, Epik 11 §8) + snapshot terakhir."""
@@ -1116,14 +1140,45 @@ def analis_loop(gate: "Gate", ev, stop: threading.Event, every_s: int = 600) -> 
             gate.log(f"analis gagal: {type(e).__name__}: {str(e)[:200]}")
 
 
+def gabung_v2(rek: List[dict], sik: dict, books: Dict[str, dict], ring: Dict[str, str], h2: dict) -> bool:
+    """P155: v1 + v2 = satu Merkle root per siklus (kontrak: satu komit per siklus). v2 yang belum selesai sebelum komit TIDAK digabung: rekamannya
+    tidak masuk root dan buku v2 tidak disentuh (v2 bekerja di salinan), v1 tetap dikomit."""
+    if "rek" not in h2:
+        return False
+    rek += h2["rek"]
+    sik["daun"] += [r["hash"] for r in h2["rek"]]
+    sik["harga_v2"] = h2["harga"]
+    books.update(h2["books"])
+    ring.update(h2["ring"])
+    return True
+
+
 def meja_loop(gate: "Gate", ev, stop: threading.Event) -> None:
     """P152 (F-D109): tiap batas 5 menit UTC (+8 s supaya candle tutup) satu siklus meja; Merkle root dikomit ke DeskAnchor SELAMA siklus berjalan.
     Komit gagal / terlambat dicatat di rekaman siklus (status), tidak pernah diulang sesudah siklus berakhir (kontrak menolak TooLate)."""
+    import copy
+    import meja2
     from evm import calldata, receipt_ok
     books, ring = gate.meja_muat()
+    pasar2 = meja2.Pasar2()
 
     def call(ag, system, user):
         return an.call_model({**ag, "effort": meja.PARAMS["effort"]}, system, user, timeout=meja.PARAMS["batas_jawab_s"] - 10)
+
+    def v2(t0, agents, hasil):
+        """P154/P155 (F-D112): meja v2 di salinan buku v2 sendiri; digabung hanya kalau selesai sebelum komit (yang terlambat tidak menyentuh buku)."""
+        try:
+            snap = gate.data_tunggu(t0, t0 + 75)
+            sampai = t0 + meja.PARAMS["siklus_s"] - 35                         # komit v1+v2 butuh ±10 s sebelum batas kontrak t0+300
+            b2 = copy.deepcopy({k: v for k, v in books.items() if k.startswith(("v2", "_v2"))})
+            r2 = {k: v for k, v in ring.items() if k.startswith("v2")}
+
+            def call2(ag, system, user):
+                return an.call_model({**ag, "effort": meja.PARAMS["effort"]}, system, user, timeout=max(20, int(sampai - time.time()) - 5))
+            rek, harga = meja2.siklus2(t0, agents, b2, r2, call2, snap, pasar2, log=gate.log, sampai=sampai)
+            hasil.update(rek=rek, harga=harga, books=b2, ring=r2)
+        except Exception as e:  # noqa: BLE001 - v2 gagal tidak boleh mengganggu v1 / komit
+            gate.log(f"meja v2 gagal: {type(e).__name__}: {str(e)[:200]}")
     while True:
         now = time.time()
         t0 = int(now // meja.PARAMS["siklus_s"] * meja.PARAMS["siklus_s"]) + meja.PARAMS["siklus_s"]
@@ -1137,7 +1192,13 @@ def meja_loop(gate: "Gate", ev, stop: threading.Event) -> None:
             if not (desk and agents and gate.pk):
                 continue
             judul = gate.kabar_cache() if any(a.get("berita") for a in agents) else None
+            h2: dict = {}
+            th = threading.Thread(target=v2, args=(t0, agents, h2), daemon=True)
+            th.start()
             rek, sik = meja.siklus(t0, agents, books, ring, call, judul=judul, log=gate.log)
+            th.join(timeout=max(0.0, t0 + meja.PARAMS["siklus_s"] - 25 - time.time()))
+            if not gabung_v2(rek, sik, books, ring, h2):
+                gate.log(f"meja v2 {time.strftime('%H:%M', time.gmtime(t0))}Z: tidak selesai sebelum komit - tidak masuk root siklus ini")
             sik.update(root=meja.root_of(sik["daun"]), n=len(sik["daun"]), status="tidak dikomit", tx=None)
             if time.time() < t0 + meja.PARAMS["siklus_s"] - 12:
                 data = calldata("commit(uint64,bytes32,uint16)", ("uint64", "bytes32", "uint16"), (t0, bytes.fromhex(sik["root"][2:]), sik["n"]))
