@@ -395,7 +395,7 @@ function Rules({ d }: { d: Desk }) {
             .replace("{up}", String(Math.round(d.params_kursi.naik_sah_min * 100)))
             .replace("{swap}", String(d.params_kursi.tukar_unggul_min * 100))
             .replace("{down}", String(Math.round(d.params_kursi.turun_sah_maks * 100)))
-            .replace("{status}", d.params_kursi.status)}
+            .replace("{status}", v.floor.seatStatus[d.params_kursi.status] ?? d.params_kursi.status)}
         </p>
       )}
       <p className="mt-2 font-mono text-[11px] text-ink/50">
