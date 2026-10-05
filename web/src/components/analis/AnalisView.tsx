@@ -183,7 +183,7 @@ function Slip({ r, open }: { r: AnalisRec; open: boolean }) {
   const v = t.analis;
   const p = r.alasan.pilihan;
   return (
-    <article className={panel}>
+    <article className={`${panel} min-w-0`}>
       <header className="flex flex-wrap items-baseline justify-between gap-x-3">
         <p className="font-display text-lg">{r.alasan.nama}</p>
         <p className="text-xs text-ink/50">
