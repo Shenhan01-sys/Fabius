@@ -27,6 +27,33 @@
     "uri": "https://raw.githubusercontent.com/Shenhan01-sys/Fabius/master/docs/analis/glm.json",
     "wallet": "0x8e0E6a1053FE14e7bb0ec37EFD21f2e44d88a8A8"
    },
+   "glmflash": {
+    "agent_id": 2569,
+    "effort": "high",
+    "model": "glm-5.3-flash-free",
+    "provider": "kiosapi",
+    "tx": "0xdbef10210eba8a87375fd53a322b7656b9b9874290648b82a65c3e7d5bca6804",
+    "uri": "https://raw.githubusercontent.com/Shenhan01-sys/Fabius/master/docs/analis/glmflash.json",
+    "wallet": "0x54c28f59f08403C071987f959347eea15F722961"
+   },
+   "grok": {
+    "agent_id": 2568,
+    "effort": "high",
+    "model": "grok-4.7-free",
+    "provider": "kiosapi",
+    "tx": "0x0ee22bd5e7d40fff54bab79332f0260fc401de192f9d3bd2bb17d03157ce64f4",
+    "uri": "https://raw.githubusercontent.com/Shenhan01-sys/Fabius/master/docs/analis/grok.json",
+    "wallet": "0xBa2E9CCA9Df1A88b78eA710b6c3FD1fABF514069"
+   },
+   "muse": {
+    "agent_id": 2566,
+    "effort": "high",
+    "model": "meta/muse-spark-1.3-contributor:free",
+    "provider": "xkiro",
+    "tx": "0x33d5fc1baf7438bcbcafceb1b1fd57e5a4314b379cd0af628427309af2ecd068",
+    "uri": "https://raw.githubusercontent.com/Shenhan01-sys/Fabius/master/docs/analis/muse.json",
+    "wallet": "0x20d8eb630DBF566fc6269991c846B27bA22749e0"
+   },
    "qwen": {
     "agent_id": 2559,
     "effort": "xhigh",
@@ -35,6 +62,24 @@
     "tx": "0x213b02d147a025e69656cdefaea778af5ee7757f9820ccb8d1d905edf629990c",
     "uri": "https://raw.githubusercontent.com/Shenhan01-sys/Fabius/master/docs/analis/qwen.json",
     "wallet": "0x8B1649138F4F7FA8a696B7E135DAe5c44e4F9FA2"
+   },
+   "qwen27b": {
+    "agent_id": 2570,
+    "effort": "high",
+    "model": "qwen/qwen3.8-27b",
+    "provider": "groq",
+    "tx": "0xe2800a7d77929f8b94e8fbb12751ef5ae7ae0eba8fb56a8330821319ccaeb656",
+    "uri": "https://raw.githubusercontent.com/Shenhan01-sys/Fabius/master/docs/analis/qwen27b.json",
+    "wallet": "0x6b9856d31cDFE1D08D9e0c0eC25acfC2bc3aF41C"
+   },
+   "qwenplus": {
+    "agent_id": 2567,
+    "effort": "high",
+    "model": "qwen/qwen3.7-plus:free",
+    "provider": "xkiro",
+    "tx": "0xb691edd8b90119ed634f62879be912bb39ced0dc3b228676cbabe14aa7087478",
+    "uri": "https://raw.githubusercontent.com/Shenhan01-sys/Fabius/master/docs/analis/qwenplus.json",
+    "wallet": "0x401Ed4360844F59e877646B4f92e15025e69580f"
    }
   }
  },
