@@ -798,7 +798,7 @@ def tg_reply(gate: "Gate", chat_id: int, text: str, private: bool = True, user_i
                 for r in recs if r["alasan"]["bar_close"] == last]
         ak = gate.aktif_now()
         board = gate.analis_view()["papan"]
-        lb = [f"{i + 1}. agent {b['agent_id']} ({b['agent']}): {b['terskor']}/{b['pilihan']} scored · excess vs B1 {b['jumlah_selisih_bps']:+.1f} bps"
+        lb = [f"{i + 1}. agent {b['agent_id']} ({b.get('nama') or b['agent']}): {b['terskor']}/{b['pilihan']} scored · excess vs B1 {b['jumlah_selisih_bps']:+.1f} bps"
               for i, b in enumerate(board)]
         return (f"Bot Fabius trades now (locked rule): {ak.get('bot')} — {ak.get('alasan_en') or ak.get('alasan')}\n\n"
                 f"Analyst agents' picks for the bar closing {day} (committed before the close, scored later from the public ledger):\n\n"

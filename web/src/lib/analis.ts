@@ -27,13 +27,13 @@ export type AnalisRec = {
     jawaban_mentah_sha256?: string;
   };
 };
-export type PapanRow = { agent: string; agent_id: number; pilihan: number; terskor: number; final: number; jumlah_selisih_bps: number; rata_selisih_bps: number | null };
+export type PapanRow = { agent: string; nama?: string; agent_id: number; pilihan: number; terskor: number; final: number; jumlah_selisih_bps: number; rata_selisih_bps: number | null };
 export type Aktif = { bot: string; alasan_en?: string; bar_close: number | null };
 export type Publik = { aktif: Aktif; barClose: number | null; pilihan: AnalisRec[]; papan: PapanRow[]; anchor?: string };
 export type Akses = { dompet: string; pembelian_terakhir: { t: number; bot: string; bar: string; tx: string }; berlaku_sampai: number };
 export type Lengkap =
   | { ok: true; pilihan: AnalisRec[]; papan: PapanRow[]; akses: Akses; anchor?: string }
-  | { ok: false; status: number; error: string; beli?: string };
+  | { ok: false; status: number; error: string; beli?: string; dompet?: string[] };
 
 const get = async (path: string) => {
   const r = await fetch(`${GATE}${path}`, { cache: "no-store" });
@@ -49,7 +49,7 @@ export async function publik(): Promise<Publik> {
 export async function lengkap(accessToken: string): Promise<Lengkap> {
   const r = await fetch(`${GATE}/analis/lengkap`, { headers: { Authorization: `Bearer ${accessToken}` }, cache: "no-store" });
   const b = await r.json().catch(() => ({}));
-  if (!r.ok) return { ok: false, status: r.status, error: String(b.error ?? `HTTP ${r.status}`), beli: b.beli };
+  if (!r.ok) return { ok: false, status: r.status, error: String(b.error ?? `HTTP ${r.status}`), beli: b.beli, dompet: b.dompet };
   return { ok: true, pilihan: b.pilihan ?? [], papan: b.papan ?? [], akses: b.akses, anchor: b.selection_anchor };
 }
 

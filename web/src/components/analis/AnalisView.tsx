@@ -126,7 +126,10 @@ function Board() {
             </p>
           ) : shown.status === 402 ? (
             <div className="flex flex-wrap items-center gap-3">
-              <p className="text-sm text-ink/80">{v.needBuy}</p>
+              <p className="text-sm text-ink/80">
+                {v.needBuy}
+                {shown.dompet?.[0] && <span className="block font-mono text-xs text-ink/50">{v.checked.replace("{w}", short(shown.dompet[0]))}</span>}
+              </p>
               <a className={btn} href={shown.beli ? new URL(shown.beli).pathname : `/beli/${pub.aktif.bot}`}>
                 {v.buy}
               </a>
@@ -154,7 +157,7 @@ function Board() {
               {recs
                 .filter((r) => r.alasan.bar_close === bc)
                 .map((r) => (
-                  <Slip key={`${r.agent}-${bc}`} r={r} open={open} />
+                  <Slip key={`${r.agent}-${bc}`} r={r} open={open} sealed={authenticated ? v.sealedBuy : v.sealed} />
                 ))}
             </div>
           </div>
@@ -178,7 +181,7 @@ function Board() {
   );
 }
 
-function Slip({ r, open }: { r: AnalisRec; open: boolean }) {
+function Slip({ r, open, sealed }: { r: AnalisRec; open: boolean; sealed: string }) {
   const { t } = useLang();
   const v = t.analis;
   const p = r.alasan.pilihan;
@@ -238,7 +241,7 @@ function Slip({ r, open }: { r: AnalisRec; open: boolean }) {
             {r.reasonHash.slice(2, 6)}
           </span>
           <div className="min-w-0">
-            <p className="text-sm text-ink/80">{v.sealed}</p>
+            <p className="text-sm text-ink/80">{sealed}</p>
             <p className="truncate font-mono text-[11px] text-ink/50">reasonHash {r.reasonHash}</p>
           </div>
         </div>
@@ -273,7 +276,7 @@ function Papan({ rows }: { rows: PapanRow[] }) {
             <div key={r.agent_id}>
               <div className="flex flex-wrap items-baseline justify-between gap-x-3 text-sm">
                 <span>
-                  {i + 1}. agent {r.agent_id} <span className="text-ink/50">({r.agent})</span>
+                  {i + 1}. agent {r.agent_id} <span className="text-ink/50">({r.nama ?? r.agent})</span>
                 </span>
                 <span className="font-mono text-xs text-ink/70">
                   {r.terskor}/{r.pilihan} {v.colScored} · {r.jumlah_selisih_bps >= 0 ? "+" : ""}

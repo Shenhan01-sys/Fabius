@@ -84,7 +84,8 @@ class RoundTests(unittest.TestCase):
         r = [x for x in res if x["agent"] == "glm"][0]
         self.assertEqual((r["status"], r["bot"], r["keyakinan"]), ("dikomit", "B1-TREND", 62))
         self.assertEqual(r["reasonHash"], an.sha(r["alasan"]))
-        self.assertEqual(self.body["reasoning_effort"], "low")                       # GLM 5.3: medium ditolak qwencloud
+        self.assertEqual((self.body["model"], self.body["reasoning_effort"]), ("deepseek-v4.1-flash", "high"))   # slot glm: builder 5 Okt
+        self.assertEqual((r["alasan"]["model"], r["alasan"]["nama"]), ("deepseek-v4.1-flash", "Fabius Analyst · DeepSeek V4.1 Flash"))
         to, data = ev.sent[0]
         self.assertEqual(to, SEL)
         from eth_abi import decode

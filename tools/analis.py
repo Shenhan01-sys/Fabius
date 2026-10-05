@@ -5,7 +5,7 @@ Masukan (deterministik, di-hash `masukan_sha256`): fitur rezim pasar dari bar pu
 vonis gerbang v1, teaser confidence maju (P137), eksposur tick terakhir dan perubahannya. Prompt di-hash (`prompt_sha256`), jawaban mentah di-hash.
 Alasan lengkap = JSON (`reasonHash` = sha256 kanonisnya, on-chain); JSON-nya diterbitkan gerbang (`/analis`) dan dicetak di log.
 
-Penyedia: qwencloud (OpenAI-compatible, `reasoning_effort`) untuk GLM 5.3 + Qwen 3.8 Flash; Anthropic (Claude Sonnet 5.5) disiapkan tetapi NONAKTIF
+Penyedia: qwencloud (OpenAI-compatible, `reasoning_effort`) untuk DeepSeek V4.1 Flash (slot `glm`, sebelumnya GLM 5.3) + Qwen 3.8 Flash; Anthropic (Claude Sonnet 5.5) disiapkan tetapi NONAKTIF
 sampai `ANTHROPIC_API_KEY` ada (builder 5 Okt: belum ada dana kredit API) - jalur Anthropic BELUM PERNAH diuji dengan kunci sungguhan.
 
     python -X utf8 tools/analis.py kunci                 # buat kunci dompet agent ke .analis.env (di-gitignore), cetak ALAMAT saja
@@ -49,9 +49,12 @@ PROVIDERS = {
     "qwencloud": {"base": "https://token-plan.ap-southeast-1.maas.aliyuncs.com/compatible-mode/v1", "key_var": "QWENCLOUD_API_KEY"},
     "anthropic": {"base": "https://api.anthropic.com/v1", "key_var": "ANTHROPIC_API_KEY"},
 }
-# GLM 5.3 di qwencloud: `reasoning_effort` hanya low|high|max (diukur 5 Okt: "medium" = HTTP 400 invalid_parameter_error); builder: "medium/low" -> low.
+# Slot `glm` (agent 2558): builder 5 Okt mengganti model ke deepseek-v4.1-flash effort high (diuji di qwencloud: HTTP 200). Identitas ERC-8004, dompet, dan
+# kartu (URI on-chain .../glm.json) TETAP; model tiap pilihan ikut di JSON alasan yang di-hash, riwayat model di kartu. GLM 5.3 dulu: effort hanya
+# low|high|max ("medium" = HTTP 400).
 AGENTS = [   # urutan tetap; `slug` = nama berkas kartu + variabel kunci
-    {"slug": "glm", "name": "Fabius Analyst · GLM 5.3", "provider": "qwencloud", "model": "glm-5.3", "effort": "low", "key_var": "ANALIS_GLM_PRIVATE_KEY"},
+    {"slug": "glm", "name": "Fabius Analyst · DeepSeek V4.1 Flash", "provider": "qwencloud", "model": "deepseek-v4.1-flash", "effort": "high",
+     "key_var": "ANALIS_GLM_PRIVATE_KEY", "riwayat": [{"model": "glm-5.3", "effort": "low", "sampai_bar_close": 1791244800}]},
     {"slug": "qwen", "name": "Fabius Analyst · Qwen 3.8 Flash", "provider": "qwencloud", "model": "qwen3.8-flash", "effort": "xhigh",
      "key_var": "ANALIS_QWEN_PRIVATE_KEY"},
     {"slug": "claude", "name": "Fabius Analyst · Claude Sonnet 5.5", "provider": "anthropic", "model": "claude-sonnet-5-5", "effort": "xhigh",
@@ -306,9 +309,11 @@ def skor(workdir: str, picks: List[dict], md_prov=None, identitas: Optional[str]
 
 
 def papan(scored: List[dict]) -> List[dict]:
+    nama = {a["slug"]: a["name"] for a in AGENTS}
     rows: Dict[int, dict] = {}
     for r in scored:
-        a = rows.setdefault(r["agent_id"], {"agent": r["agent"], "agent_id": r["agent_id"], "pilihan": 0, "terskor": 0, "final": 0,
+        a = rows.setdefault(r["agent_id"], {"agent": r["agent"], "nama": nama.get(r["agent"], r["agent"]), "agent_id": r["agent_id"], "pilihan": 0,
+                                             "terskor": 0, "final": 0,
                                              "jumlah_net_bps": 0.0, "jumlah_selisih_bps": 0.0})
         a["pilihan"] += 1
         if r["status_skor"] != "menunggu":
@@ -436,6 +441,8 @@ def card(ag: dict, sel: str) -> dict:
                             "locked Fabius bot for the next daily bar; the pick (bot, confidence, sha256 of the full reasoning) is committed to "
                             "SelectionAnchor before the bar closes and scored later from the public ledger. It never invents trades."),
             "model": {"provider": ag["provider"], "id": ag["model"], "effort": ag["effort"]},
+            **({"model_history": [{"id": h["model"], "effort": h["effort"], "until_bar_close": h["sampai_bar_close"]} for h in ag["riwayat"]]}
+               if ag.get("riwayat") else {}),
             "evidence": {"selection_anchor": sel, "chain_id": 97, "operator": "Fabius (agent 2494)",
                          "reasons": "https://fabius-x402-production.up.railway.app/analis", "code": "tools/analis.py"},
             "limits_stated_honestly": ["paper only, BNB testnet", "LLM output is not reproducible; what is verifiable is that the pick existed before the bar closed"]}

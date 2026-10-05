@@ -3076,3 +3076,17 @@ masa org awam disuruh akses file json dari BE?"*
    hari settle, bermakna dari 20) dan `/analysts` = *self-rated confidence* (keyakinan agent untuk satu bar, field `confidence` SelectionAnchor).
 
 **Terkait:** F-D99 · F-D102 · [[04-Tools/TL33 - agent analis]] · [[04-Tools/TL32 - gerbang x402 per sinyal]] · [[09-Inbox/Session-2026-10-02]] §88
+
+## F-D105 — Slot analis agent 2558 berganti model: GLM 5.3 -> DeepSeek V4.1 Flash (effort high), identitas tetap · 5 Okt 2026 (WIB)
+
+Builder: *"Coba untuk GLM 5.3 diganti model id ini "deepseek-v4.1-flash" lalu effortnya di set high."*
+
+1. Diuji dulu di qwencloud (`railway run`, kunci tidak dicetak): `deepseek-v4.1-flash` + `reasoning_effort: high` -> HTTP 200 dalam 3,8 detik.
+2. **Identitas TETAP**: agent ERC-8004 2558, dompet `0x8e0E…a8A8`, URI kartu on-chain `.../docs/analis/glm.json`, slug internal `glm` - tanpa transaksi.
+   Yang berganti: nama ("Fabius Analyst · DeepSeek V4.1 Flash"), model, effort (`tools/analis.py::AGENTS` + `deployments/97.json`, yang menimpa kode
+   di `active_agents`). Kartu memuat `model_history` (GLM 5.3 low sampai penutupan 2026-10-06 00:00Z).
+3. Dapat diperiksa per pilihan: JSON alasan yang di-hash ke reasonHash memuat `model` + `nama`, jadi setiap pilihan tetap terbukti dibuat model yang
+   mana. Konsekuensi: papan peringkat agent 2558 menggabungkan 1 pilihan GLM (penutupan 2026-10-06) dengan pilihan DeepSeek sesudahnya.
+4. Alternatif yang TIDAK diambil (butuh izin transaksi): identitas baru (dompet + register + tBNB) supaya rekam jejak tiap model terpisah.
+
+**Terkait:** F-D102 · [[04-Tools/TL33 - agent analis]] · [[09-Inbox/Session-2026-10-02]] §89

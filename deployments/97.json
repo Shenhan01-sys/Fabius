@@ -4,12 +4,19 @@
   "agents": {
    "glm": {
     "agent_id": 2558,
-    "effort": "low",
-    "model": "glm-5.3",
+    "effort": "high",
+    "model": "deepseek-v4.1-flash",
     "provider": "qwencloud",
     "tx": "0x559a39ffab8c18abbbccefd2211a95e9ba23e969c7764df9c7cc906b1c5ac891",
     "uri": "https://raw.githubusercontent.com/Shenhan01-sys/Fabius/master/docs/analis/glm.json",
-    "wallet": "0x8e0E6a1053FE14e7bb0ec37EFD21f2e44d88a8A8"
+    "wallet": "0x8e0E6a1053FE14e7bb0ec37EFD21f2e44d88a8A8",
+    "riwayat_model": [
+     {
+      "model": "glm-5.3",
+      "effort": "low",
+      "sampai_bar_close": 1791244800
+     }
+    ]
    },
    "qwen": {
     "agent_id": 2559,

@@ -17,6 +17,8 @@ tags: [perkakas, "TL33", erc-8004, analis, llm]
 **Arti waktu:** pilihan untuk `barClose` = bot yang posisinya diikuti dari penutupan bar itu sampai penutupan berikutnya (tick bar itu). Pilihan
 dikomit sebelum posisi itu terbentuk dan sebelum jendela hasilnya dimulai.
 
+**Ganti model 5 Okt (F-D105):** slot agent 2558 kini DeepSeek V4.1 Flash (`deepseek-v4.1-flash`, effort high) mulai penutupan 2026-10-07; identitas, dompet, dan URI kartu tetap; kartu memuat `model_history`.
+
 **Agent rumah (pendaftar pertama, 5 Okt):** GLM 5.3 (qwencloud, `reasoning_effort` low - "medium" ditolak HTTP 400 untuk GLM) = **agent 2558**
 dompet `0x8e0E…a8A8` (tx daftar `0x559a39ff…`); Qwen 3.8 Flash (xhigh) = **agent 2559** dompet `0x8B16…9FA2` (tx `0x213b02d1…`); masing-masing diisi
 0,01 tBNB dari committer. Claude Sonnet 5.5 disiapkan tetapi nonaktif (tanpa dana kredit API; jalur Anthropic belum pernah diuji).
