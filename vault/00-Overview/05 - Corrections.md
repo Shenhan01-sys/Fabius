@@ -73,3 +73,4 @@ di satu tempat supaya "sudah clear?" tidak pernah lagi dijawab dari ingatan.
 dihapus senyap — itu bedanya vault dengan brosur.
 
 **Terkait:** [[Conventions]] · [[Concepts/Stale Local Copy]] · [[06-Results/03 - Not Yet Proven]]
+| 5 Okt | rumus konsensus v2 (F-D112): "instrumen = skor berbobot keyakinan dari semua agent" | instrumen dari agent yang memilih bot LAIN tidak cocok dengan aturan bot akhir; saat bot ditahan hysteresis hasilnya tidak koheren (16:25Z: B2-RS pada BTC + PAXG pilihan B5 -> aturan B2 datar) - diganti: instrumen hanya dari pemilih bot akhir, tanpa pemilih = instrumen siklus lalu (PARAMS2 v2, tes `ConsensusTests`) | log gerbang produksi siklus v2 pertama sesudah deploy (`meja v2 16:25Z: hold B2-RS ... instrumen ['BTCUSDT', 'PAXGUSDT']`) |

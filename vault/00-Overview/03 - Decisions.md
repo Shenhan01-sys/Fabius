@@ -3233,3 +3233,22 @@ dengan aturan) dan memberikannya ke agent; uji kering kedua: ketiganya memilih B
 likuiditas DEX = 50.000 USD (`PARAMS2.likuiditas_min_usd`, dipilih sebelum data hidup; diubah hanya lewat versi params baru). (c) Rem rugi harian 3 %
 dari Epik 11 dipasang di buku v2. (d) Hysteresis "15 menit" dibaca sebagai >= 3 siklus dipegang. (e) v2 menunggu snapshot siklusnya sendiri sampai
 t0+75 s, model dibatasi sampai t0+265 s; v2 yang belum selesai tidak masuk root siklus itu. (f) Teks publik rekaman v2 berbahasa Inggris.
+
+## F-D113 — Kursi agent LLM di meja: 7 aktif + 3 uji; agent baru selalu lewat gerbang seleksi; pekerja 3D dibuat Fabius sendiri · 5 Okt 2026 (WIB)
+
+Builder: *"saya setuju 7 aktif + 3 uji"*, *"yg penting tiap ada agent baru masuk maka fabius akan otomatis membuatkan worker 3D UI tanpa km yg config"*,
+*"kita belum buat untuk gate seleksi bot dan agent"*. Usulan yang disetujui (Inbox §103):
+
+1. **10 kursi agent LLM di meja:** 7 **aktif** (suaranya masuk konsensus v2) + 3 **uji** (jalan tiap siklus, rekamannya di-hash + ikut Merkle root,
+   bukunya hidup, tetapi TIDAK dihitung di konsensus). 10 meja = batas tampilan lantai yang diuji (Test Commands #80).
+2. **Agent baru selalu masuk kursi uji dulu**, naik ke aktif hanya lewat gerbang seleksi (P160) dengan kriteria terukur yang dikunci SEBELUM data
+   agent pertama dinilai; kursi aktif terburuk bisa turun ke uji. Kriteria + rumus dirancang di P160 lalu dikunci atas kata builder.
+3. **Ambang konsensus v2 dibuat proporsional terhadap jumlah agent aktif** (sekarang instrumen/veto >= 2 agent dan kuorum 2, disetel untuk 3 agent);
+   berlaku sebagai versi `PARAMS2` baru, tidak menimpa diam-diam.
+4. **Pekerja 3D tanpa konfigurasi manual:** setiap agent yang punya buku meja otomatis mendapat meja + NPC dari template P159 (penampilan dari slug);
+   `npc` di `config/agents.json` hanya penimpa opsional.
+5. **Gerbang seleksi bot** (P161) dicatat sebagai pekerjaan terpisah: jalur kandidat bot baru sampai slot buku memakai bagian yang sudah ada.
+
+**Terkait:** F-D110 · F-D112 · [[08-Backlog/11 - Epik Meja AI v2]] · [[04-Tools/TL34 - meja AI 5 menit]] · [[04-Tools/TL36 - meja v2 bot + instrumen]]
+
+**Tambahan F-D113 (5 Okt malam, sebelum dikunci):** P160 dibangun dengan kriteria USULAN (`PARAMS_KURSI.status = "usulan"`); ambang proporsional masuk `PARAMS2` v2 bersama koreksi sumber instrumen (instrumen hanya dari pemilih bot akhir, lihat [[00-Overview/05 - Corrections]]). Kriteria kursi dikunci (`status` -> `terkunci` + sha di Decisions) atas kata builder, sebelum agent baru pertama masuk kursi uji.

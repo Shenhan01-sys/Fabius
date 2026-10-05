@@ -7,7 +7,7 @@ tags: [perkakas, "TL36", meja, llm, desk]
 **Bagian dari:** [[04-Tools/00 - Hub Tools]]
 **Sumber:** `tools/meja2.py` (`Pasar2`, `arah`, `fitur_aturan`, `nama_fitur`, `prompt2`, `parse2`, `konsensus2`, `posisi`, `siklus2`) · loop gerbang
 `meja_loop` + `gabung_v2` + `Gate.data_tunggu` + `Gate.meja_view` di `tools/x402_sinyal.py` · panel v2 di `/desk` (`web/src/components/desk/DeskView.tsx`)
-· tes `engine/tests/test_meja2.py` (7) · T8 SK-M6..SK-M10, SK-M14..SK-M17 · keputusan [[00-Overview/03 - Decisions]] F-D110 diubah F-D112 · epik
+· tes `engine/tests/test_meja2.py` (12) · T8 SK-M6..SK-M10, SK-M14..SK-M17, SK-M19..SK-M22 · keputusan [[00-Overview/03 - Decisions]] F-D110 diubah F-D112 · epik
 [[08-Backlog/11 - Epik Meja AI v2]] · backlog P154, P155 · data masukan [[04-Tools/TL35 - data meja v2]] · meja v1 [[04-Tools/TL34 - meja AI 5 menit]]
 
 ## Apa
@@ -45,6 +45,22 @@ yang datar menurut aturan dicatat di `arah_alasan` (contoh: "rule gives flat").
 v2 menunggu snapshot data siklusnya sendiri sampai t0+75 s (biasanya ±t0+30 s; kalau belum ada = snapshot terakhir, `data_t` tercatat, SK-M17), lalu
 model dibatasi sampai t0+265 s, dihitung SESUDAH data aturan + harga dibaca. v2 bekerja di salinan buku; hasilnya digabung ke rekaman v1 dan masuk
 SATU Merkle root yang dikomit ke DeskAnchor. v2 yang belum selesai sebelum komit tidak masuk root dan buku v2 tidak berubah (SK-M16).
+
+## Kursi aktif / uji (P160, F-D113)
+
+Maks 7 kursi **aktif** + 3 kursi **uji**; state di `_v2_kursi` buku meja (ikut `buku.json`). `kursi_daftar`: agent yang ada saat state kursi masih
+kosong = aktif (agent awal), agent baru = uji, kursi uji penuh = `antre` (tidak dijalankan, tanpa biaya model, SK-M19). Agent uji tetap menjawab, rekamannya
+di-hash + dikomit dan bukunya hidup, tetapi suaranya tidak masuk konsensus (SK-M20). `kursi_catat` menyimpan jendela 288 siklus (jawaban sah 1/0 +
+ekuitas buku v2). `kursi_evaluasi` hanya di siklus 00:00 UTC (SK-M21): turun bila sah < 80 % (SK-M22); naik bila >= 288 siklus di kursi uji, sah >= 95 %
+dan hasil jendela >= median aktif; bila 7 aktif penuh, tukar dengan aktif terburuk (yang sudah >= 288 siklus) hanya bila unggul >= 0,5 pp. Tiap
+perubahan = rekaman `kursi` (peristiwa + kursi sekarang + `params_kursi_sha`) di Merkle root siklus itu. `PARAMS_KURSI.status = "usulan"` sampai
+dikunci atas kata builder. Ambang konsensus `ambang(n_aktif)`: kuorum max(2, ceil(n/2)), instrumen + veto max(2, ceil(n/3)) agent, skor instrumen
+0,4 n - untuk n = 3 sama persis dengan nilai v1 (2 / 2 / 1,2). Lantai `/desk`: meja uji berlabel TRIAL / UJI, kursi lav-2, kabel ke hub redup tanpa
+denyut (suaranya belum mengalir); Rules menampilkan ambang untuk n aktif sekarang + aturan kursi.
+
+**Koreksi 5 Okt malam (PARAMS2 v2):** instrumen konsensus kini hanya dari agent yang memilih bot AKHIR; tanpa pemilih + bot ditahan = instrumen siklus
+lalu. Ditemukan di produksi 16:25Z dan 16:30Z: B2-RS ditahan hysteresis (B5 unggul 30,0 / 27,7 poin tetapi baru dipegang 1-2 siklus) sementara
+instrumennya BTC + PAXG pilihan agent B5 -> aturan B2 (butuh >= 8 aset) datar, buku v2 diam. Tercatat di [[00-Overview/05 - Corrections]].
 
 ## Batas yang dicatat jujur
 
