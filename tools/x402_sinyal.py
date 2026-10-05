@@ -7,7 +7,8 @@ Harga per (bot, bar) = `engine/harga.py` (tabel terkunci, dari confidence P137),
 Rute:
   GET  /                      info: token, proxy, payTo, harga tiap bot, cara bayar
   GET  /teaser/<bot>          gratis: teaser confidence + harga bar terakhir (tanpa aset/arah/ukuran)
-  GET  /sinyal/<bot>[/<bar>]  402 + PAYMENT-REQUIRED; dengan PAYMENT-SIGNATURE (x402 v2, exact, permit2 + eip2612GasSponsoring) -> settle -> paket
+  Rute publik berbahasa Inggris (P146): /signal, /analysts[/<close>|/full|/scores], /active; nama lama /sinyal, /analis, /aktif tetap dilayani.
+  GET  /signal/<bot>[/<bar>]  402 + PAYMENT-REQUIRED; dengan PAYMENT-SIGNATURE (x402 v2, exact, permit2 + eip2612GasSponsoring) -> settle -> paket
                               `?tg=<tautan bertanda>` (dari bot Telegram): sesudah settle, paket juga dikirim ke chat itu
   POST /faucet                {"address": "0x.."} -> gerbang mengirim FAB (pembeli tidak butuh tBNB sama sekali); berbatas per alamat + harian
 Pemeriksaan pembayaran (celah gate lama `x402_gate.py` yang hanya mencocokkan `accepted` dari klien): token, jumlah, penerima (`witness.to`),
@@ -341,7 +342,7 @@ class Gate:
         aktif = self.aktif_now().get("bot") or bookmod.IDENTITY_BOT_ID
         if b is None or self.now() - b["t"] > AKSES_HARI * 86400:
             return 402, {"error": f"no signal bought from this account's wallet in the last {AKSES_HARI} days", "syarat": f"buy >= 1 signal within {AKSES_HARI} days",
-                         "dompet": addrs, "beli": f"{self.web_url}/beli/{aktif}"}
+                         "dompet": addrs, "beli": f"{self.web_url}/buy"}
         recs = an.records(self.analis_dirs())
         closes = sorted({int(r["alasan"]["bar_close"]) for r in recs})[-AKSES_BAR_MAX:]
         v = self.analis_view()
@@ -479,7 +480,7 @@ class Gate:
             q = quote(led, path_bot, path_bar)
         except KeyError as e:
             return 404, {"error": str(e)}, {}
-        resource = f"{self.public_url}/sinyal/{q['bot']}/{q['bar']}"
+        resource = f"{self.public_url}/signal/{q['bot']}/{q['bar']}"
         desc = f"Fabius {q['bot']} bar {q['bar']}: niat posisi + bukti komit/validasi ({q['fab']:g} FAB, harga {q['alasan']})"
         if not hdr:
             req = {"x402Version": 2, "error": "PAYMENT-SIGNATURE header is required", "resource": {"url": resource, "description": desc, "mimeType": "application/json"},
@@ -587,6 +588,10 @@ def make_handler(gate: Gate):
         def do_GET(self):
             u = urllib.parse.urlparse(self.path)
             parts = [x for x in u.path.split("/") if x]
+            if parts:                                                    # rute English (P146) -> nama internal; nama lama tetap sah
+                parts[0] = RUTE_EN.get(parts[0], parts[0])
+                if parts[0] == "analis" and len(parts) == 2:
+                    parts[1] = RUTE_EN.get(parts[1], parts[1])
             qs = urllib.parse.parse_qs(u.query)
             try:
                 if not parts:
@@ -601,7 +606,7 @@ def make_handler(gate: Gate):
                             continue
                     return self._send(200, {"nama": "Fabius x402 - paket sinyal terverifikasi (testnet 97)", "token": cfg["token"], "simbol": "FAB", "proxy": PROXY,
                                             "payTo": cfg["facilitator"], "network": NETWORK, "harga": prices, "harga_kunci": harga.status()["state"],
-                                            "rute": ["/teaser/<bot>", "/sinyal/<bot>[/<bar>]", "POST /faucet"], "repo_head": gate.data.head})
+                                            "rute": ["/teaser/<bot>", "/signal/<bot>[/<bar>]", "/active", "/analysts[/<close>|/scores|/full]", "POST /faucet"], "repo_head": gate.data.head})
                 if parts[0] == "analis" and len(parts) == 2 and parts[1] == "skor":
                     v = gate.analis_view()
                     return self._send(200, {"papan": v["papan"], "pilihan_terskor": v["skor"], "aturan_bot_aktif": "engine/pemilih.py",
@@ -685,7 +690,7 @@ def tg_buy_privy(gate: "Gate", user_id: int, chat_id: int, bot: str) -> Tuple[Op
     import secrets as _sec
     led, cfg = gate.data.ledgers(), gate.data.cfg()
     q = quote(led, bot)
-    app = f"{gate.web_url}/beli/{bot}"
+    app = f"{gate.web_url}/buy"
     try:
         user = gate.privy.user_by_telegram(user_id)
     except pv.PrivyError as e:
@@ -710,7 +715,7 @@ def tg_buy_privy(gate: "Gate", user_id: int, chat_id: int, bot: str) -> Tuple[Op
             return ("Fabius bot is not allowed to pay from your wallet yet. Open the app and tap \"Allow Fabius bot to pay for me\" "
                     "(one time, revocable), then /buy again."), ("Allow bot payments", app + "?izin=1")
         return "Signing failed, try again in a minute.", None
-    pay = {"x402Version": 2, "resource": {"url": f"{gate.public_url}/sinyal/{bot}/{q['bar']}", "mimeType": "application/json"},
+    pay = {"x402Version": 2, "resource": {"url": f"{gate.public_url}/signal/{bot}/{q['bar']}", "mimeType": "application/json"},
            "accepted": {"scheme": "exact", "network": NETWORK, "amount": str(q["atomic"]), "asset": cfg["token"], "payTo": cfg["facilitator"]},
            "payload": {"signature": s1, "permit2Authorization": {"permitted": {"token": cfg["token"], "amount": str(q["atomic"])}, "from": addr,
                                                                  "spender": PROXY, "nonce": v["nonce"], "deadline": v["deadline"],
@@ -741,12 +746,19 @@ COMMANDS = [("buy", "buy the signal of the bot Fabius trades now (x402)"), ("top
             ("wallet", "your wallet"), ("help", "how it works")]
 
 
+STATUS_EN = {"INTI": "core (identity bot)", "SEMENTARA": "provisional"}
+GATE_EN = {"TOLAK": "rejected", "LOLOS_SHADOW": "passed", "TIDAK_TERUKUR": "not measurable"}
+FD16_EN = {"LOLOS": "passed", "BELUM CUKUP DATA": "not enough data yet", "TIDAK LOLOS": "failed"}
+RUTE_EN = {"signal": "sinyal", "analysts": "analis", "active": "aktif", "full": "lengkap", "scores": "skor"}
+
+
 def _teaser_en(q: dict) -> str:
     t = q["teaser"]
     conf = "not measured yet" if t["confidence_pct"] is None else f"{t['confidence_pct']}% ({'early, not meaningful yet' if t['fd16'] == 'BELUM CUKUP DATA' else 'measured'})"
     k = t["kematangan"]
-    return (f"{q['bot']} · bar {q['bar']}\nTrack-record confidence (forward results): {conf}\nRole: {t.get('status') or '-'} · locked backtest gate: {t.get('gerbang_v1') or '-'}"
-            f" · forward test F-D16: {t['fd16']}\nProgress: signals {k['sinyal'][0]}/{k['sinyal'][1]}, settled days {k['hari'][0]}/{k['hari'][1]}, "
+    st, gv = t.get("status"), t.get("gerbang_v1")
+    return (f"{q['bot']} · bar {q['bar']}\nTrack-record confidence (forward results): {conf}\nRole: {STATUS_EN.get(st, st) or '-'} · locked backtest gate: "
+            f"{GATE_EN.get(gv, gv) or '-'} · forward test F-D16: {FD16_EN.get(t['fd16'], t['fd16'])}\nProgress: signals {k['sinyal'][0]}/{k['sinyal'][1]}, settled days {k['hari'][0]}/{k['hari'][1]}, "
             f"months {k['bulan'][0]}/{k['bulan'][1]}\nPrice: {q['fab']:g} FAB ({'base price' if q['atomic'] == harga.HargaParams().dasar else 'confidence tier'}, locked table)")
 
 
@@ -773,6 +785,7 @@ def tg_reply(gate: "Gate", chat_id: int, text: str, private: bool = True, user_i
                 + "\n\nTrack-record confidence = how sure the bot's own forward results are that it makes money on average "
                   "(a number from 2 settled days, meaningful from 20). The % in /analysts is different: each AI agent's self-rated "
                   "conviction for one bar.\n\n/signal <BOT> for the teaser, /buy <BOT> to buy."), None
+    explicit = bool(bot)                                              # /buy <BOT> = pilihan sadar; /buy saja = sinyal hari ini (P146)
     if cmd in ("/signal", "/buy") and not bot:
         bot = gate.aktif_now().get("bot") or ""
     if cmd in ("/signal", "/buy"):
@@ -781,10 +794,11 @@ def tg_reply(gate: "Gate", chat_id: int, text: str, private: bool = True, user_i
         if cmd == "/buy" and private and getattr(gate, "privy", None) is not None:
             return tg_buy_privy(gate, user_id or chat_id, chat_id, bot)
         q = quote(led, bot)
-        link = f"{gate.web_url}/beli/{bot}?tg={tg_link(gate.tg_secret, chat_id, bot, q['bar'], int(gate.now()))}"
+        page = f"{gate.web_url}/buy/{bot}" if explicit else f"{gate.web_url}/buy"
+        link = f"{page}?tg={tg_link(gate.tg_secret, chat_id, bot, q['bar'], int(gate.now()))}"
         head = _teaser_en(q) if cmd == "/signal" else f"{bot} · bar {q['bar']} · {q['fab']:g} FAB"
         if not private:
-            return head + f"\n\nBuy in a private chat with me, or on the web: {gate.web_url}/beli/{bot}", None
+            return head + f"\n\nBuy in a private chat with me, or on the web: {page}", None
         return head + "\n\nTap the button: sign in with Telegram (or Google), get free FAB, pay with x402 (no gas). The signal is also sent here.", \
             (f"Buy {bot} · {q['fab']:g} FAB", link)
     if cmd == "/analysts":
@@ -804,14 +818,14 @@ def tg_reply(gate: "Gate", chat_id: int, text: str, private: bool = True, user_i
                 f"Analyst agents' picks for the bar closing {day} (committed before the close, scored later from the public ledger):\n\n"
                 + "\n".join(rows) + ("\n\nLeaderboard:\n" + "\n".join(lb) if lb else "")
                 + f"\n\nFull reasoning, hashes and scores: in the Fabius app (sign in + any signal bought in the last {AKSES_HARI} days)."
-                + ("" if private else f" {gate.web_url}/analis")), (("Analysts' reasoning", f"{gate.web_url}/analis") if private else None)
+                + ("" if private else f" {gate.web_url}/analysts")), (("Analysts' reasoning", f"{gate.web_url}/analysts") if private else None)
     if cmd == "/topup":
         if not private or getattr(gate, "privy", None) is None:
-            return "Get free FAB in the Fabius app (button below).", (("Open Fabius", f"{gate.web_url}/beli/{gate.aktif_now().get('bot') or 'B1-TREND'}") if private else None)
+            return "Get free FAB in the Fabius app (button below).", (("Open Fabius", f"{gate.web_url}/buy") if private else None)
         user = gate.privy.user_by_telegram(user_id or chat_id)
         w = pv.Privy.embedded_wallet(user) if user else None
         if not w:
-            return "Open the Fabius app once (sign in with Telegram) to create your wallet.", ("Open Fabius", f"{gate.web_url}/beli/B1-TREND")
+            return "Open the Fabius app once (sign in with Telegram) to create your wallet.", ("Open Fabius", f"{gate.web_url}/buy")
         code, body = gate.faucet(w[1], gate.data.cfg())
         if code == 200 and body.get("dikirim_atomic"):
             return f"Sent {body['dikirim_atomic'] / 1e6:g} FAB to your wallet {w[1][:8]}…\ntx {body['tx']}", None
@@ -821,7 +835,7 @@ def tg_reply(gate: "Gate", chat_id: int, text: str, private: bool = True, user_i
     if cmd == "/wallet":
         b = sorted(led)[0] if led else "B1-TREND"
         return ("Your wallet lives in the Fabius app (Privy): open it below and sign in with Telegram. Link your Google account there and the "
-                "website uses the SAME wallet. Testnet only; you need no tBNB."), (("Open my wallet", f"{gate.web_url}/beli/{b}") if private else None)
+                "website uses the SAME wallet. Testnet only; you need no tBNB."), (("Open my wallet", f"{gate.web_url}/buy") if private else None)
     return "Unknown command. /help", None
 
 

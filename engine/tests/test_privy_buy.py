@@ -215,7 +215,7 @@ class ReasoningAccessTests(unittest.TestCase):
         self.assertEqual(self.g.analis_lengkap(None)[0], 401)
         code, body = self.g.analis_lengkap(bearer)
         self.assertEqual(code, 402)                                                       # login tapi belum pernah beli
-        self.assertEqual(body["beli"], "https://w/beli/B1-TREND")
+        self.assertEqual(body["beli"], "https://w/buy")
         self.assertNotIn("RAHASIA", json.dumps(body))
         self.g.record_buy("B1-TREND", "2026-10-05", ADDR, "0xtx", 10_000)                  # ADDR = alamat user (huruf besar/kecil beda)
         code, body = self.g.analis_lengkap(bearer)

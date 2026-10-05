@@ -3,7 +3,7 @@ dikomit ke `SelectionAnchor` dari dompet agent SEBELUM bar ditutup. Agent tidak 
 
 Masukan (deterministik, di-hash `masukan_sha256`): fitur rezim pasar dari bar publik (tren/breadth/volatilitas/funding) + per bot: aturan, status,
 vonis gerbang v1, teaser confidence maju (P137), eksposur tick terakhir dan perubahannya. Prompt di-hash (`prompt_sha256`), jawaban mentah di-hash.
-Alasan lengkap = JSON (`reasonHash` = sha256 kanonisnya, on-chain); JSON-nya diterbitkan gerbang (`/analis`) dan dicetak di log.
+Alasan lengkap = JSON (`reasonHash` = sha256 kanonisnya, on-chain); JSON-nya diterbitkan gerbang (`/analysts`, nama lama `/analis`) dan dicetak di log.
 
 Penyedia: qwencloud (OpenAI-compatible, `reasoning_effort`) untuk DeepSeek V4.1 Flash (slot `glm`, sebelumnya GLM 5.3) + Qwen 3.8 Flash; Anthropic (Claude Sonnet 5.5) disiapkan tetapi NONAKTIF
 sampai `ANTHROPIC_API_KEY` ada (builder 5 Okt: belum ada dana kredit API) - jalur Anthropic BELUM PERNAH diuji dengan kunci sungguhan.
@@ -367,7 +367,7 @@ def reputasi(ev, pk: str, rep: str, scored: List[dict], state_path: str, base_ur
         val = int(round(r["selisih"] * 1e4 * 100))
         rec = {k2: r[k2] for k2 in ("agent", "agent_id", "bar_close", "bot", "net", "net_identitas", "selisih", "status_skor", "reasonHash")}
         data = calldata(SIG_FEEDBACK, ("uint256", "int128", "uint8", "string", "string", "string", "string", "bytes32"),
-                        (r["agent_id"], val, 2, REP_TAG, r["status_skor"], f"{base_url}/analis", f"{base_url}/analis/{r['bar_close']}", bytes.fromhex(sha(rec)[2:])))
+                        (r["agent_id"], val, 2, REP_TAG, r["status_skor"], f"{base_url}/analysts", f"{base_url}/analysts/{r['bar_close']}", bytes.fromhex(sha(rec)[2:])))
         tx = ev.send(pk, rep, data)
         if receipt_ok(tx):
             done[k] = tx["transactionHash"]
@@ -444,7 +444,8 @@ def card(ag: dict, sel: str) -> dict:
             **({"model_history": [{"id": h["model"], "effort": h["effort"], "until_bar_close": h["sampai_bar_close"]} for h in ag["riwayat"]]}
                if ag.get("riwayat") else {}),
             "evidence": {"selection_anchor": sel, "chain_id": 97, "operator": "Fabius (agent 2494)",
-                         "reasons": "https://fabius-x402-production.up.railway.app/analis", "code": "tools/analis.py"},
+                         "reasons": "https://fabius-x402-production.up.railway.app/analysts", "web": "https://fabius-one.vercel.app/analysts",
+                         "code": "tools/analis.py"},
             "limits_stated_honestly": ["paper only, BNB testnet", "LLM output is not reproducible; what is verifiable is that the pick existed before the bar closed"]}
 
 
@@ -539,7 +540,7 @@ def cmd_arsip(a) -> int:
     picks = onchain_picks(ev, cfg["selection"], cfg["agents"])
 
     def fetch(close: int) -> dict:
-        with urllib.request.urlopen(urllib.request.Request(f"{GATE_URL}/analis/{close}", headers={"User-Agent": "fabius-arsip"}), timeout=30) as r:
+        with urllib.request.urlopen(urllib.request.Request(f"{GATE_URL}/analysts/{close}", headers={"User-Agent": "fabius-arsip"}), timeout=30) as r:
             return json.loads(r.read().decode())
     n = arsip(picks, fetch, os.path.join(ROOT, "ledger", "analis"))
     print(f"RINGKAS arsip: {n} catatan baru dari {len(picks)} pilihan on-chain")

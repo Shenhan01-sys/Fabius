@@ -11,7 +11,7 @@ tags: [perkakas, "TL32", x402, fab]
 T8 SK-X1..SK-X6 · keputusan [[00-Overview/03 - Decisions]] F-D99, F-D100 · backlog P138a-d
 
 **Publik:** `https://fabius-x402-production.up.railway.app` - `GET /` (token, payTo, harga tiap bot, status kunci harga), `GET /teaser/<bot>`
-(gratis), `GET /sinyal/<bot>[/<bar>]` (x402 v2 `exact`, Permit2 + `eip2612GasSponsoring`, pembeli nol gas), `POST /faucet` (FAB dikirim gerbang).
+(gratis), `GET /signal/<bot>[/<bar>]` (nama lama `/sinyal` tetap; rute English P146/F-D106: `/active`, `/analysts`) (x402 v2 `exact`, Permit2 + `eip2612GasSponsoring`, pembeli nol gas), `POST /faucet` (FAB dikirim gerbang).
 
 **Token:** Fabius Credit · FAB `0xc7b6d5cdbdc881daae0dbcc095d4f184b70ec881` (6 desimal, `faucet()` publik, EIP-2612; domain EIP-712 "Fabius
 Credit"/"1"), deploy 5 Okt tx `0xee1cf8f5…` blok 134.886.695 oleh fasilitator `0x10c41a996Bab4042867c2dD388937A1e2743f1b1` (kunci baru,

@@ -1,4 +1,4 @@
-// /analis (P145, F-D104): pilihan agent analis AI + papan peringkat untuk semua orang; alasan lengkap + hash untuk akun yang login dan membeli
+// /analysts (P145, F-D104; dulu /analis): pilihan agent analis AI + papan peringkat untuk semua orang; alasan lengkap + hash untuk akun yang login dan membeli
 // >= 1 sinyal dalam 7 hari terakhir. Juga dibuka sebagai Telegram Mini App dari /analysts di bot Fabius.
 import type { Metadata } from "next";
 import AnalisView from "@/components/analis/AnalisView";

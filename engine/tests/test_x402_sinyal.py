@@ -164,7 +164,7 @@ class GateTests(unittest.TestCase):
         req = json.loads(base64.b64decode(hdr["PAYMENT-REQUIRED"]).decode())
         acc = req["accepts"][0]
         self.assertEqual((acc["amount"], acc["asset"], acc["payTo"], acc["extra"]["name"]), ("10000", TOKEN, PAYTO, "Fabius Credit"))
-        self.assertIn("/sinyal/B1-TREND/2026-10-02", acc["resource"])
+        self.assertIn("/signal/B1-TREND/2026-10-02", acc["resource"])
         self.assertNotIn("XRPUSDT", json.dumps(body))
 
     @unittest.skipUnless(HAVE_ETH, "eth-abi tidak terpasang")
@@ -218,7 +218,7 @@ class GateTests(unittest.TestCase):
         txt, button = xs.tg_reply(g, 7, "/signal b1-trend")
         self.assertIn("0.01 FAB", txt)
         self.assertNotIn("XRPUSDT", txt)
-        self.assertTrue(button[1].startswith("https://web.example/beli/B1-TREND?tg="))
+        self.assertTrue(button[1].startswith("https://web.example/buy/B1-TREND?tg="))                # bot disebut = halaman bot itu
         self.assertEqual(xs.tg_parse(g.tg_secret, button[1].split("?tg=")[1], NOW)["c"], 7)
         txt, button = xs.tg_reply(g, -100, "/buy B1-TREND", private=False)                        # grup: tanpa tombol Mini App
         self.assertIsNone(button)
@@ -238,8 +238,8 @@ class GateTests(unittest.TestCase):
         self.assertNotIn("RAHASIA", txt)
         self.assertIn("self-rated confidence 62%", txt)
         self.assertNotIn("/analis/skor", txt)                                                      # bukan tautan JSON gerbang
-        self.assertEqual(button, ("Analysts' reasoning", "https://web.example/analis"))
-        self.assertIn("https://web.example/analis", xs.tg_reply(g, -100, "/analysts", private=False)[0])
+        self.assertEqual(button, ("Analysts' reasoning", "https://web.example/analysts"))
+        self.assertIn("https://web.example/analysts", xs.tg_reply(g, -100, "/analysts", private=False)[0])
         rec = an.records([g.analis_dir])[0]
         shut = xs.tutup_alasan(rec, NOW)
         self.assertNotIn("pilihan", shut["alasan"])
@@ -293,7 +293,9 @@ class TelegramTableTests(unittest.TestCase):
         g.data.active_bot = lambda: "B1-TREND"
         txt, button = xs.tg_reply(g, 7, "/buy")
         self.assertIn("B1-TREND", txt)
-        self.assertIn("/beli/B1-TREND?tg=", button[1])
+        self.assertTrue(button[1].startswith("https://web.example/buy?tg="))                       # tanpa bot: sinyal hari ini, bukan halaman bot
+        self.assertNotIn("INTI", xs.tg_reply(g, 7, "/signal")[0])                                  # label English di teaser
+        self.assertIn("core (identity bot)", xs.tg_reply(g, 7, "/signal")[0])
         sent = []
         g.tg_send_photo = lambda chat, png, cap: False
         g.tg_send = lambda chat, text, button=None: sent.append(text)

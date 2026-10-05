@@ -1,9 +1,10 @@
 "use client";
 
-// /analis (P145, F-D104): tiap pilihan agent analis digambar sebagai slip bersegel - bot + keyakinan agent + reasonHash terlihat semua orang
+// /analysts (P145, F-D104; rute English P146): tiap pilihan agent analis digambar sebagai slip bersegel - bot + keyakinan agent + reasonHash terlihat semua orang
 // (semuanya sudah on-chain); isi alasan terbuka hanya untuk akun yang login DAN membeli >= 1 sinyal dalam 7 hari (gerbang memeriksa token akses
 // Privy + catatan pembelian). Papan peringkat = selisih bps vs bot identitas, digambar sebagai batang dari sumbu nol.
 
+import Link from "next/link";
 import Script from "next/script";
 import { useEffect, useRef, useState } from "react";
 import { PrivyProvider, usePrivy } from "@privy-io/react-auth";
@@ -44,12 +45,14 @@ function Hero({ children }: { children: React.ReactNode }) {
   const v = t.analis;
   return (
     <section className="relative overflow-hidden rounded-[30px] bg-gradient-to-b from-lav via-lav to-white px-6 pb-20 pt-32 sm:px-12 sm:pt-40 lg:px-16">
-      <span className="tag text-violet">{v.tag}</span>
-      <h1 className="mt-3 max-w-3xl font-display text-[clamp(2.2rem,5vw,4.4rem)] font-[300] leading-[0.95] tracking-[-0.03em] text-ink" style={{ fontStretch: "112%" }}>
-        {v.title}
-      </h1>
-      <p className="mt-4 max-w-2xl text-ink/60">{v.sub}</p>
-      <div className="mt-10 max-w-3xl space-y-6">{children}</div>
+      <div className="mx-auto max-w-3xl text-center">
+        <span className="tag text-violet">{v.tag}</span>
+        <h1 className="mt-3 font-display text-[clamp(2.2rem,5vw,4.4rem)] font-[300] leading-[0.95] tracking-[-0.03em] text-ink" style={{ fontStretch: "112%" }}>
+          {v.title}
+        </h1>
+        <p className="mx-auto mt-4 max-w-2xl text-ink/60">{v.sub}</p>
+      </div>
+      <div className="mx-auto mt-10 max-w-3xl space-y-6">{children}</div>
     </section>
   );
 }
@@ -96,6 +99,7 @@ function Board() {
   const bars = [...new Set(recs.map((r) => r.alasan.bar_close))].sort((a, b) => b - a);
   const latest = bars[0];
   const anchor = (open ? shown.anchor : undefined) ?? pub.anchor;
+  const nowName: Record<number, string> = Object.fromEntries(pub.papan.map((p) => [p.agent_id, p.nama ?? p.agent]));
 
   return (
     <>
@@ -130,9 +134,9 @@ function Board() {
                 {v.needBuy}
                 {shown.dompet?.[0] && <span className="block font-mono text-xs text-ink/50">{v.checked.replace("{w}", short(shown.dompet[0]))}</span>}
               </p>
-              <a className={btn} href={shown.beli ? new URL(shown.beli).pathname : `/beli/${pub.aktif.bot}`}>
+              <Link className={btn} href="/buy">
                 {v.buy}
-              </a>
+              </Link>
             </div>
           ) : (
             <p className="break-all text-sm text-ink/70">
@@ -157,7 +161,7 @@ function Board() {
               {recs
                 .filter((r) => r.alasan.bar_close === bc)
                 .map((r) => (
-                  <Slip key={`${r.agent}-${bc}`} r={r} open={open} sealed={authenticated ? v.sealedBuy : v.sealed} />
+                  <Slip key={`${r.agent}-${bc}`} r={r} open={open} sealed={authenticated ? v.sealedBuy : v.sealed} now={nowName[r.alasan.agent_id]} />
                 ))}
             </div>
           </div>
@@ -181,19 +185,18 @@ function Board() {
   );
 }
 
-function Slip({ r, open, sealed }: { r: AnalisRec; open: boolean; sealed: string }) {
+function Slip({ r, open, sealed, now }: { r: AnalisRec; open: boolean; sealed: string; now?: string }) {
   const { t } = useLang();
   const v = t.analis;
   const p = r.alasan.pilihan;
   return (
     <article className={`${panel} min-w-0`}>
       <header className="flex flex-wrap items-baseline justify-between gap-x-3">
-        <p className="font-display text-lg">{r.alasan.nama}</p>
-        <p className="text-xs text-ink/50">
-          agent {r.alasan.agent_id}
-          {r.alasan.model ? ` · ${r.alasan.model}` : ""}
-        </p>
+        <p className="font-display text-lg">{now ?? r.alasan.nama}</p>
+        <p className="text-xs text-ink/50">agent {r.alasan.agent_id}</p>
       </header>
+      {/* nama + model yang tercatat DI DALAM alasan yang di-hash = model yang benar-benar membuat pilihan ini (slot agent bisa berganti model, F-D105) */}
+      {now && now !== r.alasan.nama && <p className="mt-1 text-xs text-violet">{v.madeBy.replace("{m}", r.alasan.model ?? r.alasan.nama)}</p>}
       <p className="mt-3 font-display text-3xl font-[300]">{r.bot}</p>
       <div className="mt-3" title={v.convictionNote}>
         <div className="h-2 w-full overflow-hidden rounded-full bg-ink/10">

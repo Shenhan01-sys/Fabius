@@ -1,5 +1,5 @@
 // Agent analis (P141-P145, F-D102/F-D104): pilihan bot per bar dari gerbang x402 (tools/x402_sinyal.py). Bagian publik = bot, keyakinan agent,
-// reasonHash, tx (semuanya on-chain); alasan bar yang belum tutup tersegel. Alasan lengkap = /analis/lengkap dengan token akses Privy,
+// reasonHash, tx (semuanya on-chain); alasan bar yang belum tutup tersegel. Alasan lengkap = /analysts/full dengan token akses Privy,
 // hanya untuk akun yang membeli >= 1 sinyal dalam 7 hari terakhir (gerbang memeriksa token + catatan pembelian).
 
 import { GATE } from "./x402-buy";
@@ -42,12 +42,12 @@ const get = async (path: string) => {
 };
 
 export async function publik(): Promise<Publik> {
-  const [ak, an, sk] = await Promise.all([get("/aktif"), get("/analis"), get("/analis/skor")]);
+  const [ak, an, sk] = await Promise.all([get("/active"), get("/analysts"), get("/analysts/scores")]);
   return { aktif: ak, barClose: an.bar_close ?? null, pilihan: an.pilihan ?? [], papan: sk.papan ?? [], anchor: an.selection_anchor };
 }
 
 export async function lengkap(accessToken: string): Promise<Lengkap> {
-  const r = await fetch(`${GATE}/analis/lengkap`, { headers: { Authorization: `Bearer ${accessToken}` }, cache: "no-store" });
+  const r = await fetch(`${GATE}/analysts/full`, { headers: { Authorization: `Bearer ${accessToken}` }, cache: "no-store" });
   const b = await r.json().catch(() => ({}));
   if (!r.ok) return { ok: false, status: r.status, error: String(b.error ?? `HTTP ${r.status}`), beli: b.beli, dompet: b.dompet };
   return { ok: true, pilihan: b.pilihan ?? [], papan: b.papan ?? [], akses: b.akses, anchor: b.selection_anchor };

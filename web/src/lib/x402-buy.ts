@@ -14,7 +14,7 @@ export const PRIVY_APP_ID = "cmuukhkc200zo0cjh0jmqd11x"; // publik (builder, 5 O
 export const PRIVY_KEY_QUORUM_ID = "pyyven7fpdtnc30uuij8ikps"; // key quorum fabius-bot1 (P138e): pasangan lokal yang tidak pernah terbuka; izin user -> /buy dari chat
 const CHAIN_ID = 97;
 
-// Satu konfigurasi Privy untuk /beli dan /analis: akun + dompet yang SAMA di kedua halaman (dan di Telegram Mini App).
+// Satu konfigurasi Privy untuk /buy dan /analysts: akun + dompet yang SAMA di kedua halaman (dan di Telegram Mini App).
 export const PRIVY_CONFIG: PrivyClientConfig = {
   loginMethods: ["google", "telegram", "email"],
   embeddedWallets: { ethereum: { createOnLogin: "users-without-wallets" } },
@@ -83,7 +83,7 @@ function randomNonce(): string {
 
 /** 402 -> tanda tangani dua pesan -> ulangi permintaan dengan PAYMENT-SIGNATURE -> paket. `tg` = tautan bertanda dari bot Telegram (opsional). */
 export async function buy(bot: string, bar: string, owner: Hex, sign: SignFn, tg?: string | null): Promise<Package> {
-  const url = `${GATE}/sinyal/${bot}/${bar}${tg ? `?tg=${encodeURIComponent(tg)}` : ""}`;
+  const url = `${GATE}/signal/${bot}/${bar}${tg ? `?tg=${encodeURIComponent(tg)}` : ""}`;
   const first = await fetch(url, { cache: "no-store" });
   if (first.status !== 402) throw new Error(`expected 402, got ${first.status}`);
   const req = JSON.parse(atob(first.headers.get("payment-required") ?? "")) as { accepts: Accept[] };

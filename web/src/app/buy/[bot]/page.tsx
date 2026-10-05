@@ -1,4 +1,4 @@
-// /beli/<bot> (P138c): beli paket sinyal satu bot dengan x402 di testnet 97 (Privy: Google / Telegram / email, embedded wallet, nol gas).
+// /buy/<bot> (P138c; dulu /beli/<bot>): beli paket sinyal satu bot dengan x402 di testnet 97 (Privy: Google / Telegram / email, embedded wallet, nol gas).
 // Juga dibuka sebagai Telegram Mini App dari bot Fabius (tautan `?tg=` bertanda: paket ikut dikirim ke chat).
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";

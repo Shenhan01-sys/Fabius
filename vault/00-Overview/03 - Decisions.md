@@ -3090,3 +3090,22 @@ Builder: *"Coba untuk GLM 5.3 diganti model id ini "deepseek-v4.1-flash" lalu ef
 4. Alternatif yang TIDAK diambil (butuh izin transaksi): identitas baru (dompet + register + tBNB) supaya rekam jejak tiap model terpisah.
 
 **Terkait:** F-D102 · [[04-Tools/TL33 - agent analis]] · [[09-Inbox/Session-2026-10-02]] §89
+
+## F-D106 — Web: sinyal hari ini tanpa memilih bot, rute + label berbahasa Inggris · 5 Okt 2026 (WIB)
+
+Builder: *"di page beli/B1-TREND, kenapa masih belinya terhadap bot? Kan di tele udh saya minta untuk /buy aja karena user mana mau pilih bot"*,
+*"semua yg pakai bahasa indo di toggle english diganti ke inggris"*, *"routenya masa indo juga, /beli, /analis, dll ganti inggris dong"*.
+
+1. **`/buy` = sinyal hari ini**: bot diambil dari gerbang `/active` (aturan terkunci `engine/pemilih.py`), sama dengan `/buy` tanpa argumen di
+   Telegram. `/buy/<BOT>` tetap untuk tautan eksplisit (`/buy <BOT>` di chat, agent/MCP). Semua tautan app di bot Telegram, `/analysts`, dan gerbang
+   (402 `beli`) menunjuk `/buy`.
+2. **Rute English**: web `/buy`, `/buy/<bot>`, `/analysts` (redirect permanen dari `/beli`, `/beli/<bot>`, `/analis` - pesan Telegram lama memakai
+   rute lama). Gerbang `/signal`, `/active`, `/analysts[/<close>|/full|/scores]`; nama lama `/sinyal`, `/aktif`, `/analis` TETAP dilayani karena URI
+   feedback reputasi ERC-8004 yang sudah on-chain menunjuk `/analis/<close>`. Resource x402 kini `/signal/...`. Folder repo (`docs/analis` = URI kartu
+   on-chain, `ledger/analis`) dan kunci JSON API tidak diubah.
+3. **Mode English**: aturan, kriteria mati, dan klausul mati bot tampil dalam terjemahan Inggris; teks asli TERKUNCI (Indonesia, yang di-hash) tetap
+   bisa dibuka ("Locked original text"). Vonis gerbang/F-D16/label confidence dipetakan ke English di web dan teaser Telegram. Alasan GLM untuk
+   penutupan 2026-10-06 tetap berbahasa Indonesia (isi yang di-hash tidak bisa diubah; prompt memang meminta English).
+4. `/analysts` dan `/buy` diletakkan di tengah; slip pilihan memakai nama agent sekarang + "this pick was made by <model>" bila slot berganti model.
+
+**Terkait:** F-D104 · F-D105 · [[04-Tools/TL32 - gerbang x402 per sinyal]] · [[09-Inbox/Session-2026-10-02]] §90

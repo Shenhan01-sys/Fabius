@@ -109,6 +109,17 @@ function Chip({ children, dark = false }: { children: ReactNode; dark?: boolean 
   return <span className={`inline-flex max-w-full flex-wrap items-center gap-1.5 rounded-[18px] px-3.5 py-1.5 font-mono text-[0.72rem] ${dark ? "bg-white/10 text-white/75" : "bg-white/80 text-ink/70"}`}>{children}</span>;
 }
 
+// Mode English: terjemahan tampil utama; teks asli yang DIKUNCI (Indonesia, di-hash on-chain) tetap bisa dibuka - itulah yang diverifikasi.
+function Original({ text, dark }: { text: string; dark?: boolean }) {
+  const { t } = useLang();
+  return (
+    <details className={`mt-4 max-w-3xl text-[0.82rem] ${dark ? "text-white/45" : "text-ink/50"}`}>
+      <summary className="cursor-pointer select-none">{t.bot.original}</summary>
+      <p className="mt-2 font-mono text-[0.76rem] leading-relaxed" lang="id">{text}</p>
+    </details>
+  );
+}
+
 // ---------------------------------------------------------------- kepala: nama, aturan asli, kunci spesifikasi, peran di buku
 function Head({ s, b, fwd }: { s: Snapshot; b: Bot; fwd: boolean }) {
   const { t, lang } = useLang();
@@ -132,7 +143,7 @@ function Head({ s, b, fwd }: { s: Snapshot; b: Bot; fwd: boolean }) {
           </h1>
           <div className="mt-6 inline-flex items-center gap-2 rounded-full bg-ink px-4 py-2 text-sm font-semibold text-white">
             <IsoCube kind={kind} size={18} glow={kind === "core"} />
-            {slot >= 0 ? `${v.role.identity} ${String(slot + 1).padStart(2, "0")}` : ch ? `${v.role.challenger} ${shadow}/${SHADOW_NEED} d · gate ${ch.gate}` : v.role.idle}
+            {slot >= 0 ? `${v.role.identity} ${String(slot + 1).padStart(2, "0")}` : ch ? `${v.role.challenger} ${shadow}/${SHADOW_NEED} d · ${t.label.gate} ${t.label.verdict[ch.gate] ?? ch.gate}` : v.role.idle}
           </div>
           <div className="mt-3 max-w-xl">
             <StatusBadge b={b} note />
@@ -150,13 +161,8 @@ function Head({ s, b, fwd }: { s: Snapshot; b: Bot; fwd: boolean }) {
       <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25, type: "spring", stiffness: 90, damping: 16 }}
         className="glass relative mt-12 rounded-[26px] p-6 sm:p-8">
         <div className="tag text-ink/45">{v.rule}</div>
-        <p className="mt-3 max-w-4xl font-display text-[clamp(1.25rem,2.2vw,1.7rem)] font-[400] leading-snug text-ink" lang="id">“{b.method}”</p>
-        {gloss && (
-          <p className="mt-4 max-w-3xl border-l-2 border-violet/30 pl-4 text-[0.95rem] text-ink/60">
-            <span className="tag mb-1 block text-ink/35">{v.gloss}</span>
-            {gloss}
-          </p>
-        )}
+        <p className="mt-3 max-w-4xl font-display text-[clamp(1.25rem,2.2vw,1.7rem)] font-[400] leading-snug text-ink" lang={gloss ? "en" : "id"}>“{gloss ?? b.method}”</p>
+        {gloss && <Original text={b.method} />}
         <div className="mt-6 flex flex-wrap gap-2">
           <Chip>{v.param} · {b.param}</Chip>
           <Chip>{v.tier} {b.tier}</Chip>
@@ -540,15 +546,10 @@ function Kill({ n, s, b }: { n: number; s: Snapshot; b: Bot }) {
       <div className="pointer-events-none absolute -right-40 top-0 h-[420px] w-[420px] rounded-full bg-gap/10 blur-[150px]" />
       <Title label={tag(n, v.tag)} title={v.title} sub={v.sub} dark />
       <motion.blockquote initial={{ opacity: 0, y: 18 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ type: "spring", stiffness: 80, damping: 16 }}
-        className="mt-12 max-w-5xl font-display text-[clamp(1.6rem,3.4vw,2.9rem)] font-[300] italic leading-[1.12] tracking-[-0.01em]" style={{ fontStretch: "92%" }} lang="id">
-        “{b.killer}”
+        className="mt-12 max-w-5xl font-display text-[clamp(1.6rem,3.4vw,2.9rem)] font-[300] italic leading-[1.12] tracking-[-0.01em]" style={{ fontStretch: "92%" }} lang={gloss ? "en" : "id"}>
+        “{gloss ?? b.killer}”
       </motion.blockquote>
-      {gloss && (
-        <p className="mt-5 max-w-3xl border-l-2 border-violet-2/40 pl-4 text-white/60">
-          <span className="tag mb-1 block text-white/35">{t.bot.gloss}</span>
-          {gloss}
-        </p>
-      )}
+      {gloss && <Original text={b.killer} dark />}
       <div className="mt-12">
         <div className="tag text-white/45">{v.clauses}</div>
         {rules.length ? (
@@ -559,8 +560,14 @@ function Kill({ n, s, b }: { n: number; s: Snapshot; b: Bot }) {
                   <span className="rounded-lg bg-violet/30 px-2 py-1 font-mono text-xs font-bold text-violet-2">{r.id}</span>
                   <Lock className="text-violet-2/70" />
                 </div>
-                <p className="mt-3 font-mono text-[0.78rem] leading-relaxed text-white/80" lang="id">{r.rule}</p>
-                {lang === "en" && GLOSS.clauses[r.id] && <p className="mt-2 text-[0.85rem] text-white/50">{GLOSS.clauses[r.id]}</p>}
+                {lang === "en" && GLOSS.clauses[r.id] ? (
+                  <>
+                    <p className="mt-3 text-[0.85rem] leading-relaxed text-white/80">{GLOSS.clauses[r.id]}</p>
+                    <Original text={r.rule} dark />
+                  </>
+                ) : (
+                  <p className="mt-3 font-mono text-[0.78rem] leading-relaxed text-white/80" lang="id">{r.rule}</p>
+                )}
               </div>
             ))}
           </div>

@@ -103,7 +103,7 @@ export default function Book({ s }: { s: Snapshot }) {
                 <div className="font-mono text-sm text-violet-2">
                   {t.book.shadow} {c.live}/{SHADOW_NEED} d
                 </div>
-                <div className="mt-1 font-mono text-[0.66rem] text-white/40">gate {c.gate}</div>
+                <div className="mt-1 font-mono text-[0.66rem] text-white/40">{t.label.gate} {t.label.verdict[c.gate] ?? c.gate}</div>
               </div>
             </div>
           ))}

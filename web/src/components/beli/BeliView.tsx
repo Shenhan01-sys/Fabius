@@ -1,21 +1,24 @@
 "use client";
 
-// /beli/<bot> (P138c, F-D100/F-D101): beli satu paket sinyal dengan x402 di testnet 97. Login Privy (Google / Telegram / email) -> embedded wallet ->
+// /buy (P146; dulu /beli): sinyal HARI INI = bot yang dipakai Fabius (gerbang `/active`, aturan terkunci engine/pemilih.py) - pembeli tidak memilih bot.
+// /buy/<bot> tetap ada untuk tautan eksplisit (agent, `/buy <BOT>`).
+// (P138c, F-D100/F-D101): beli satu paket sinyal dengan x402 di testnet 97. Login Privy (Google / Telegram / email) -> embedded wallet ->
 // FAB gratis dari gerbang -> dua tanda tangan EIP-712 (nol gas) -> paket tampil. Di dalam Telegram (Mini App) Privy login otomatis lewat Telegram;
 // akun Google yang ditautkan memakai wallet yang SAMA. Skrip Mini App Telegram dimuat dulu supaya Privy melihat `window.Telegram`.
 
+import Link from "next/link";
 import Script from "next/script";
 import { useCallback, useEffect, useState } from "react";
 import { PrivyProvider, useLinkAccount, usePrivy, useSignTypedData, useSigners, useWallets } from "@privy-io/react-auth";
 import type { Hex } from "viem";
 import Nav from "@/components/Nav";
 import { LangProvider, useLang } from "@/components/lang";
-import { PRIVY_APP_ID, PRIVY_CONFIG, PRIVY_KEY_QUORUM_ID, buy, fabBalance, faucet, teaser, type Package, type RincianAset, type Teaser } from "@/lib/x402-buy";
+import { GATE, PRIVY_APP_ID, PRIVY_CONFIG, PRIVY_KEY_QUORUM_ID, buy, fabBalance, faucet, teaser, type Package, type RincianAset, type Teaser } from "@/lib/x402-buy";
 
 const px = (x: number) => (x >= 100 ? x.toLocaleString("en-US", { maximumFractionDigits: 2 }) : x >= 1 ? x.toFixed(4) : x.toFixed(6));
 const pct = (x: number) => `${x >= 0 ? "+" : ""}${(x * 100).toFixed(1)}%`;
 
-export default function BeliView({ bot }: { bot: string }) {
+export default function BeliView({ bot }: { bot?: string }) {
   const [scriptDone, setScriptDone] = useState(false);
   return (
     <LangProvider>
@@ -24,7 +27,7 @@ export default function BeliView({ bot }: { bot: string }) {
         <Nav />
         {scriptDone ? (
           <PrivyProvider appId={PRIVY_APP_ID} config={PRIVY_CONFIG}>
-            <Buy bot={bot} />
+            <Buy fixed={bot} />
           </PrivyProvider>
         ) : (
           <Shell bot={bot} />
@@ -34,17 +37,19 @@ export default function BeliView({ bot }: { bot: string }) {
   );
 }
 
-function Shell({ bot, children }: { bot: string; children?: React.ReactNode }) {
+function Shell({ bot, children }: { bot?: string; children?: React.ReactNode }) {
   const { t } = useLang();
   const v = t.beli;
   return (
     <section className="relative overflow-hidden rounded-[30px] bg-gradient-to-b from-lav via-lav to-white px-6 pb-20 pt-32 sm:px-12 sm:pt-40 lg:px-16">
-      <span className="tag text-violet">{v.tag}</span>
-      <h1 className="mt-3 max-w-3xl font-display text-[clamp(2.2rem,5vw,4.4rem)] font-[300] leading-[0.95] tracking-[-0.03em] text-ink" style={{ fontStretch: "112%" }}>
-        {v.title.replace("{bot}", bot)}
-      </h1>
-      <p className="mt-4 max-w-2xl text-ink/60">{v.sub}</p>
-      <div className="mt-10 max-w-2xl space-y-6">{children}</div>
+      <div className="mx-auto max-w-3xl text-center">
+        <span className="tag text-violet">{v.tag}</span>
+        <h1 className="mt-3 font-display text-[clamp(2.2rem,5vw,4.4rem)] font-[300] leading-[0.95] tracking-[-0.03em] text-ink" style={{ fontStretch: "112%" }}>
+          {bot ? v.title.replace("{bot}", bot) : v.titleToday}
+        </h1>
+        <p className="mx-auto mt-4 max-w-2xl text-ink/60">{bot ? v.sub : v.subToday}</p>
+      </div>
+      <div className="mx-auto mt-10 max-w-2xl space-y-6">{children}</div>
     </section>
   );
 }
@@ -62,7 +67,7 @@ function Step({ n, title, children }: { n: number; title: string; children: Reac
 
 const btn = "rounded-full bg-ink px-5 py-2.5 text-sm text-white transition hover:bg-violet disabled:cursor-not-allowed disabled:opacity-40";
 
-function Buy({ bot }: { bot: string }) {
+function Buy({ fixed }: { fixed?: string }) {
   const { t, lang } = useLang();
   const v = t.beli;
   const { ready, authenticated, login, logout, user } = usePrivy();
@@ -83,9 +88,17 @@ function Buy({ bot }: { bot: string }) {
   const [busy, setBusy] = useState<string | null>(null);
   const [note, setNote] = useState<string>("");
   const [pkg, setPkg] = useState<Package | null>(null);
+  const [aktif, setAktif] = useState<{ bot: string; en?: string; id?: string } | null>(null);
 
   useEffect(() => {
-    teaser(bot).then(setTz, (e: unknown) => setNote(String(e)));
+    if (fixed) return;
+    fetch(`${GATE}/active`, { cache: "no-store" })
+      .then((r) => r.json())
+      .then((a) => setAktif({ bot: a.bot, en: a.alasan_en, id: a.alasan }), (e: unknown) => setNote(String(e)));
+  }, [fixed]);
+  const bot = fixed ?? aktif?.bot;
+  useEffect(() => {
+    if (bot) teaser(bot).then(setTz, (e: unknown) => setNote(String(e)));
   }, [bot]);
   const refresh = useCallback(() => {
     if (owner) fabBalance(owner).then(setBal, () => setBal(null));
@@ -105,7 +118,7 @@ function Buy({ bot }: { bot: string }) {
   }
 
   async function pay() {
-    if (!owner || !tz) return;
+    if (!owner || !tz || !bot) return;
     setBusy("pay");
     setNote("");
     try {
@@ -122,15 +135,23 @@ function Buy({ bot }: { bot: string }) {
 
   const c = tz?.teaser;
   return (
-    <Shell bot={bot}>
+    <Shell bot={fixed}>
       <Step n={1} title={v.offer}>
         {tz ? (
           <>
+            {!fixed && bot && (
+              <div className="mb-3">
+                <p className="text-sm text-ink/50">{v.today}</p>
+                <p className="font-display text-4xl font-[300]">{bot}</p>
+                {(lang === "id" ? aktif?.id : aktif?.en) && <p className="mt-1 text-xs text-ink/50">{lang === "id" ? aktif?.id : aktif?.en}</p>}
+              </div>
+            )}
             <p className="font-display text-3xl font-[300]">
               {tz.harga.fab} FAB <span className="text-base text-ink/50">· bar {tz.harga.bar}</span>
             </p>
             <p className="mt-2 text-sm text-ink/70">
-              {v.confidence}: {c?.confidence_pct == null ? v.notMeasured : `${c.confidence_pct}% (${c.label})`} · {v.gate}: {c?.gerbang_v1 ?? "-"} · F-D16: {c?.fd16}
+              {v.confidence}: {c?.confidence_pct == null ? v.notMeasured : `${c.confidence_pct}% (${t.label.conf[c.label] ?? c.label})`} · {v.gate}:{" "}
+              {c?.gerbang_v1 ? (t.label.verdict[c.gerbang_v1] ?? c.gerbang_v1) : "-"} · F-D16: {c?.fd16 ? (t.label.fd16[c.fd16] ?? c.fd16) : "-"}
             </p>
             <p className="mt-1 text-sm text-ink/50">{v.priceRule}</p>
           </>
@@ -309,9 +330,9 @@ function Buy({ bot }: { bot: string }) {
               {v.paidTx}
             </a>
           </p>
-          <a className="mt-3 inline-block text-sm text-violet underline" href="/analis">
+          <Link className="mt-3 inline-block text-sm text-violet underline" href="/analysts">
             {v.analystsOpen}
-          </a>
+          </Link>
           <p className="mt-3 text-xs text-ink/50">{v.disclaimer}</p>
         </Step>
       )}

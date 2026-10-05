@@ -19,7 +19,8 @@
   "selection_anchor": "0xc0c16337e6c286ec54902d8de7aadf232587f3b1",
   "chain_id": 97,
   "operator": "Fabius (agent 2494)",
-  "reasons": "https://fabius-x402-production.up.railway.app/analis",
+  "reasons": "https://fabius-x402-production.up.railway.app/analysts",
+  "web": "https://fabius-one.vercel.app/analysts",
   "code": "tools/analis.py"
  },
  "limits_stated_honestly": [

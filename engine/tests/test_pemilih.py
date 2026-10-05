@@ -92,7 +92,7 @@ class ReputationTests(unittest.TestCase):
         ev, state = FakeEv(), os.path.join(self.tmp, "rep.json")
         self.assertEqual(an.reputasi(ev, "0xk", "0xrep", scored, state, "https://g", log=lambda m: None), 1)
         aid, val, dec, t1, t2, ep, uri, h = decode(["uint256", "int128", "uint8", "string", "string", "string", "string", "bytes32"], bytes(ev.sent[0][1][4:]))
-        self.assertEqual((aid, val, dec, t1, t2, uri), (2558, 1500, 2, "fabius-pick-v1", "provisional", "https://g/analis/100"))
+        self.assertEqual((aid, val, dec, t1, t2, uri), (2558, 1500, 2, "fabius-pick-v1", "provisional", "https://g/analysts/100"))
         self.assertEqual(an.reputasi(ev, "0xk", "0xrep", scored, state, "https://g", log=lambda m: None), 0)       # tidak dobel
         scored[0]["status_skor"] = "final"
         self.assertEqual(an.reputasi(ev, "0xk", "0xrep", scored, state, "https://g", log=lambda m: None), 1)       # final = feedback baru

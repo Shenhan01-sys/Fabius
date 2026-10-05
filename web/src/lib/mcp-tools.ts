@@ -104,12 +104,12 @@ export function registerFabiusTools(server: McpServer, s: Snapshot) {
     {
       title: "Analyst agents: active bot, picks, leaderboard",
       description:
-        "Fabius analyst agents (ERC-8004 identities; today DeepSeek V4.1 Flash = agent 2558 (GLM 5.3 through the bar closing 2026-10-06) and Qwen 3.8 Flash = agent 2559) each pick ONE locked bot per daily bar; picks are committed to SelectionAnchor on BNB testnet before the bar closes and scored later from the public paper ledger (excess vs the identity bot; provisional until Binance's monthly funding file, then final), with ERC-8004 reputation feedback. The active bot (what /buy sells) follows a rule locked before any scored pick (engine/pemilih.py). Agents never invent trades. Reasoning text of picks whose bar has not closed yet is sealed here (only bot, self-rated confidence and reasonHash are public); it is published in full after the close so the hash can be checked, and signed-in buyers read it earlier at https://fabius-one.vercel.app/analis.",
+        "Fabius analyst agents (ERC-8004 identities; today DeepSeek V4.1 Flash = agent 2558 (GLM 5.3 through the bar closing 2026-10-06) and Qwen 3.8 Flash = agent 2559) each pick ONE locked bot per daily bar; picks are committed to SelectionAnchor on BNB testnet before the bar closes and scored later from the public paper ledger (excess vs the identity bot; provisional until Binance's monthly funding file, then final), with ERC-8004 reputation feedback. The active bot (what /buy sells) follows a rule locked before any scored pick (engine/pemilih.py). Agents never invent trades. Reasoning text of picks whose bar has not closed yet is sealed here (only bot, self-rated confidence and reasonHash are public); it is published in full after the close so the hash can be checked, and signed-in buyers read it earlier at https://fabius-one.vercel.app/analysts.",
       inputSchema: z.object({}),
     },
     guard(async () => {
       const [ak, picks, board] = await Promise.all(
-        [`${X402_GATE}/aktif`, `${X402_GATE}/analis`, `${X402_GATE}/analis/skor`].map(async (u) => {
+        [`${X402_GATE}/active`, `${X402_GATE}/analysts`, `${X402_GATE}/analysts/scores`].map(async (u) => {
           const r = await fetch(u, { next: { revalidate: 120 } });
           if (!r.ok) throw new Error(`analyst endpoint HTTP ${r.status}`);
           return r.json();
@@ -132,10 +132,10 @@ export function registerFabiusTools(server: McpServer, s: Snapshot) {
         const res = await fetch(`${X402_GATE}/teaser/${bot}`, { next: { revalidate: 60 } });
         if (!res.ok) return fail(`x402 gate answered HTTP ${res.status} for ${bot}`);
         const t = (await res.json()) as { teaser: unknown; harga: { bar: string; atomic: number; fab: number; alasan: string } };
-        return ok(`${bot} bar ${t.harga.bar}: ${t.harga.fab} FAB via x402 at ${X402_GATE}/sinyal/${bot}`, {
+        return ok(`${bot} bar ${t.harga.bar}: ${t.harga.fab} FAB via x402 at ${X402_GATE}/signal/${bot}`, {
           price: t.harga,
           teaser: t.teaser,
-          pay_url: `${X402_GATE}/sinyal/${bot}/${t.harga.bar}`,
+          pay_url: `${X402_GATE}/signal/${bot}/${t.harga.bar}`,
           how_to_pay: "GET pay_url -> 402 with PAYMENT-REQUIRED (x402 v2, scheme exact, asset FAB, extra.name 'Fabius Credit') -> sign Permit2 witness + EIP-2612 permit for exactly that amount -> repeat GET with PAYMENT-SIGNATURE. Reference client: tools/x402_client.py",
           get_test_tokens: `POST ${X402_GATE}/faucet {"address": "0x..."} (FAB sent to you; you need no tBNB)`,
           token: { symbol: "FAB", address: X402_FAB, decimals: 6, network: "eip155:97" },
