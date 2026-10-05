@@ -392,7 +392,9 @@ class Gate:
             nama = "Fabius consensus" if name == meja.KONSENSUS else next((a["name"] for a in an.AGENTS if a["slug"] == name), name)
             out_books.append({"agent": name, "nama": nama, "ekuitas": round(e, 2), "hasil_pct": round((e / meja.PARAMS["modal_awal"] - 1) * 100, 3),
                               "biaya": round(b.get("biaya", 0), 2), "n_trade": b.get("n_trade", 0),
-                              "posisi": {a: round(t["w"], 4) for a, t in sorted((b.get("target") or {}).items()) if abs(t.get("w", 0)) > 1e-9},
+                              # posisi yang BENAR-BENAR terisi (qty x harga / ekuitas), bukan target: target < ambang 2 % tidak ditransaksikan
+                              "posisi": {a: round(q["qty"] * harga.get(a, q["masuk"]) / e, 4) for a, q in sorted(b.get("posisi", {}).items()) if e},
+                              "target": {a: round(t["w"], 4) for a, t in sorted((b.get("target") or {}).items()) if abs(t.get("w", 0)) > 1e-9},
                               "deret": [[r["siklus"], r["ekuitas"]] for r in mine if r["siklus"] >= cut],
                               "status_terakhir": mine[-1].get("status", "ok") if mine else None,
                               "keputusan_terakhir": (last.get("keputusan") or {"ringkasan": last.get("dasar"), "target": last.get("target")}) if last else None})
