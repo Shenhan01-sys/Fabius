@@ -10,7 +10,7 @@ export const FAB = "0xc7b6d5cdbdc881daae0dbcc095d4f184b70ec881" as const; // dep
 export const PERMIT2 = "0x000000000022D473030F116dDEE9F6B43aC78BA3" as const;
 export const PROXY = "0x402085c248EeA27D92E8b30b2C58ed07f9E20001" as const; // x402ExactPermit2Proxy kanonis
 export const PRIVY_APP_ID = "cmuukhkc200zo0cjh0jmqd11x"; // publik (builder, 5 Okt); secret hanya di Railway
-export const PRIVY_KEY_QUORUM_ID = "vb41lc4l9exfr5zfo09vj5fg"; // session signer bot Fabius (P138e): izin user -> /buy langsung dari chat
+export const PRIVY_KEY_QUORUM_ID = "pyyven7fpdtnc30uuij8ikps"; // key quorum fabius-bot1 (P138e): pasangan lokal yang tidak pernah terbuka; izin user -> /buy dari chat
 const CHAIN_ID = 97;
 
 export const chain97 = createPublicClient({ chain: bscTestnet, transport: http("https://bsc-testnet-rpc.publicnode.com") });

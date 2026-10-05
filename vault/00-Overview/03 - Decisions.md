@@ -3048,4 +3048,9 @@ lalu menempelkan ID DAN private key di chat. Diingatkan: kunci itu harus diangga
    `PRIVY_AUTH_PRIVATE_KEY` + `PRIVY_KEY_QUORUM_ID` (Railway + `web/src/lib/x402-buy.ts`), hapus key lama, minta user memberi izin ulang; tambahkan
    policy Privy yang membatasi tanda tangan ke domain Permit2/FAB chain 97.
 
+4. **Selesai lebih awal (5 Okt, hari yang sama):** izin bot di Mini App ditolak Privy (*"Unable to find the specified key quorums"*) karena
+   `vb41lc…` adalah ID authorization key, bukan key quorum. Karena key quorum harus dibuat juga, builder mendaftarkan public key CADANGAN (pasangan
+   lokal yang tidak pernah terbuka) -> key quorum `pyyven7fpdtnc30uuij8ikps` (fabius-bot1). Server + web dialihkan ke pasangan itu; kunci yang terbuka
+   PENSIUN (dihapus dari `.privy.env`; builder diminta menghapusnya di dashboard). Sisa pekerjaan migrasi: hanya policy Privy (opsional).
+
 **Terkait:** F-D101 · [[04-Tools/TL32 - gerbang x402 per sinyal]] · [[09-Inbox/Session-2026-10-02]] §87
