@@ -251,7 +251,7 @@ function Buy({ fixed }: { fixed?: string }) {
           {izin && <p className="mt-2 break-all text-sm text-ink/70">{izin}</p>}
         </Step>
       )}
-      <Step n={4} title={v.payTitle}>
+      <Step n={4} title={v.payTitle} wide={!(authenticated && owner)}>
         <button className={btn} disabled={!authenticated || !owner || !enough || busy != null || !tz} onClick={pay}>
           {busy === "pay" ? v.paying : v.pay.replace("{fab}", String(tz?.harga.fab ?? "…"))}
         </button>
