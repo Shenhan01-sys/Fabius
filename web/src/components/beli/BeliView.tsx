@@ -77,7 +77,7 @@ function Buy({ bot }: { bot: string }) {
   const v = t.beli;
   const { ready, authenticated, login, logout, user } = usePrivy();
   const [izinMsg, setIzinMsg] = useState<string>("");
-  const { linkTelegram } = useLinkAccount({
+  const { linkTelegram, linkOAuth } = useLinkAccount({
     onSuccess: () => setIzinMsg(v.tgDone),
     onError: (err) => setIzinMsg(`${v.tgFail}: ${String(err)}`),
   });
@@ -180,14 +180,22 @@ function Buy({ bot }: { bot: string }) {
               <p>{v.tgNeed}</p>
               <button
                 className={`${btn} mt-2`}
-                onClick={() => {
+                onClick={async () => {
                   const raw = (window as unknown as { Telegram?: { WebApp?: { initData?: string } } }).Telegram?.WebApp?.initData;
+                  const msg = (e: unknown) => (e instanceof Error ? e.message : String(e));
                   setIzinMsg(v.tgWorking);
+                  // linkTelegram = mode bot-token (HMAC); app Privy yang dikonfigurasi lewat Telegram OAuth (OIDC) harus lewat linkOAuth.
+                  // Keduanya async: galat datang sebagai promise ditolak, bukan lemparan sinkron - tanpa await label macet di "Linking…".
                   try {
-                    if (raw) linkTelegram({ launchParams: { initDataRaw: raw } });
-                    else linkTelegram();
+                    if (raw) await linkTelegram({ launchParams: { initDataRaw: raw } });
+                    else await linkTelegram();
                   } catch (e) {
-                    setIzinMsg(`${v.tgFail}: ${e instanceof Error ? e.message : String(e)}`);
+                    if (!/HMAC/i.test(msg(e))) return setIzinMsg(`${v.tgFail}: ${msg(e)}`);
+                    try {
+                      await linkOAuth({ provider: "telegram" });
+                    } catch (e2) {
+                      setIzinMsg(`${v.tgFail}: ${msg(e2)}`);
+                    }
                   }
                 }}
               >
