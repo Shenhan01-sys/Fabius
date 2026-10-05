@@ -2,7 +2,7 @@
 tags: [generated]
 ---
 
-_Auto-Index — 6 halaman · 2026-10-03T20:05Z · dari `vault/scripts/sync_vault.py`_
+_Auto-Index — 6 halaman · 2026-10-05T11:23Z · dari `vault/scripts/sync_vault.py`_
 
 ### 00-Overview (8)
 - [[00-Overview/00 - Hub Overview]]
@@ -21,13 +21,14 @@ _Auto-Index — 6 halaman · 2026-10-03T20:05Z · dari `vault/scripts/sync_vault
 - [[01-Agent/A4 - Trust Gating and Real-Money Rules]]
 - [[01-Agent/01 - Asset Classes and Seats]]
 
-### 02-Contracts (8)
+### 02-Contracts (9)
 - [[02-Contracts/00 - Hub Contracts]]
 - [[02-Contracts/C3 - ExecutionVault]]
 - [[02-Contracts/C4 - DemoPair and DemoAsset]]
 - [[02-Contracts/C5 - Vendored x402 Sources]]
 - [[02-Contracts/C6 - LockRegistry]]
 - [[02-Contracts/C7 - SignalAnchor]]
+- [[02-Contracts/C8 - ExecutionAnchor]]
 - [[02-Contracts/01 - DecisionAnchor]]
 - [[02-Contracts/02 - Deployed on 97]]
 
@@ -42,7 +43,7 @@ _Auto-Index — 6 halaman · 2026-10-03T20:05Z · dari `vault/scripts/sync_vault
 - [[03-Data/D8 - Buku Slot Hidup]]
 - [[03-Data/01 - Dataset]]
 
-### 04-Tools (25)
+### 04-Tools (35)
 - [[04-Tools/00 - Hub Tools]]
 - [[04-Tools/TL1 - judge]]
 - [[04-Tools/TL10 - kunci dan anchor kunci]]
@@ -61,7 +62,17 @@ _Auto-Index — 6 halaman · 2026-10-03T20:05Z · dari `vault/scripts/sync_vault
 - [[04-Tools/TL22 - eksekutor dan kertas-venue]]
 - [[04-Tools/TL23 - Sistem Visual FE]]
 - [[04-Tools/TL24 - halaman verify]]
+- [[04-Tools/TL25 - halaman bot]]
+- [[04-Tools/TL26 - halaman status]]
+- [[04-Tools/TL27 - ledger eksekusi]]
+- [[04-Tools/TL28 - bot sementara dan data B4 B5]]
+- [[04-Tools/TL29 - canary uang nyata]]
 - [[04-Tools/TL3 - security_gate]]
+- [[04-Tools/TL30 - validasi ERC-8004]]
+- [[04-Tools/TL31 - teaser confidence]]
+- [[04-Tools/TL32 - gerbang x402 per sinyal]]
+- [[04-Tools/TL33 - agent analis]]
+- [[04-Tools/TL34 - meja AI 5 menit]]
 - [[04-Tools/TL4 - anchor and verify]]
 - [[04-Tools/TL5 - ledger]]
 - [[04-Tools/TL6 - x402 gate and client]]
@@ -122,7 +133,7 @@ _Auto-Index — 6 halaman · 2026-10-03T20:05Z · dari `vault/scripts/sync_vault
 - [[07-Testing/T8 - Semantik Kegagalan Operator]]
 - [[07-Testing/01 - Test Commands]]
 
-### 08-Backlog (11)
+### 08-Backlog (12)
 - [[08-Backlog/00 - Hub Backlog]]
 - [[08-Backlog/01 - Backlog]]
 - [[08-Backlog/02 - Epik Alasan Masuk]]
@@ -134,6 +145,7 @@ _Auto-Index — 6 halaman · 2026-10-03T20:05Z · dari `vault/scripts/sync_vault
 - [[08-Backlog/08 - Riset Optimasi Ambang]]
 - [[08-Backlog/09 - Usulan P107 Pembunuh Terstruktur]]
 - [[08-Backlog/10 - Epik Eksekusi Venue]]
+- [[08-Backlog/11 - Epik Meja AI v2]]
 
 ### 09-Inbox (6)
 - [[09-Inbox/00 - Hub Inbox]]

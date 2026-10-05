@@ -2756,6 +2756,8 @@ Pertanyaan builder: *"Menurutmu paling optimal A1/A2"*. Jawaban asisten merevisi
 
 ## F-D89 — Pintu tingkat 0 hidup: hosting hanya lewat GitHub, data landing ikut bukti harian, daftar tunggu = chat builder · 3 Okt 2026 (WIB)
 
+> **5 Okt: untuk MCP digantikan oleh F-D111** (MCP = sinyal + data pendukung, hanya lewat x402 deposit). Teks di bawah tetap sebagai riwayat.
+
 Builder: *"Kan bisa tuh trigger deploy via vercel cli, klo blom connect tinggal di re-connect aja"*, lalu *"Gasss"* dua kali (snapshot otomatis + P115).
 Rancangan butir 3-5 diusulkan asisten di chat dan dijalankan atas "Gasss" itu; butir ini mencatatnya supaya bisa dibantah, bukan menyatakannya pilihan builder.
 
@@ -3173,3 +3175,34 @@ agents gini sepertinya perlu format khusus agar nanti bisa dimasukin rumus untuk
    Qwen memakai kredit qwencloud, model xkiro `:free` bisa kena batas.
 
 **Terkait:** F-D105 · F-D108 · [[04-Tools/TL34 - meja AI 5 menit]] · [[09-Inbox/Session-2026-10-02]] §97
+
+## F-D110 — Meja AI v2: tiga agent memilih bot + skor semua bot, rumus memilih satu bot dominan, evaluasi untuk perbaikan diri · 5 Okt 2026 (WIB)
+
+Builder: *"3 agent ini akan memberikan outputnya secara bersamaan tiap 5 menit dengan format yg ditentukan agar bisa dikalkulasi dan dianalisis dgn
+bot/rumus untuk open posisi"*, *"tiap output LLM nantinya jg hrs ada bot mana yg akan dipilih ... ambil 1 yg paling dominan untuk dipakai dan dibuat open
+posisi"*, *"harus ada loop evaluasi untuk self improvement"*; rencana disetujui *"Gasss"*.
+
+1. Platform data (DexScreener, RugCheck, FOMO, berita, Binance) dibaca **Fabius sendiri** lewat kode -> fitur terukur yang sama untuk ketiga agent
+   (bukan alat MCP publik). Bubblemaps dilewati (publik hanya ketersediaan peta), GMGN tidak (403).
+2. Format output v2: pilihan `bot` + `skor_bot` untuk keenam bot + `keyakinan` + `eksposur` + `veto_aset` + `faktor` (wajib dari daftar fitur).
+3. Rumus terkunci: bot dominan = argmax rata-rata berbobot (keyakinan x skor_bot) + prior kuantitatif; hysteresis >= 15 poin dan pegang >= 15 menit;
+   posisi = target bot dominan x eksposur, minus veto; batas 25 % per aset, gross 1x, stop ATR, rugi harian -3 %.
+4. Loop evaluasi: IC / hit rate / kalibrasi per agent, bobot agent per jam (0,5-2) sesudah 288 siklus, rapor ke prompt, buku ablasi per agent dan per
+   sumber, usulan evaluator hanya lewat versi bayangan + kunci (tanpa perubahan diri diam-diam).
+5. Meja v1 (F-D109) tetap jalan sampai v2 menggantikannya sesudah bayangan >= 288 siklus + kata builder.
+
+**Terkait:** F-D109 · F-D111 · [[08-Backlog/11 - Epik Meja AI v2]] · [[09-Inbox/Session-2026-10-02]] §98
+
+## F-D111 — MCP Fabius = sinyal + data pendukung, hanya lewat x402 (deposit FAB, dipotong per panggilan); mengganti tingkat 0 gratis F-D89 · 5 Okt 2026 (WIB)
+
+Builder: *"mcp fabius itu hanya menyediakan signal dan data yg mendukung/menjelaskan lebih detail mengenai sinyal itu dan mcpnya itu hanya bisa dipakai
+dengan melalui x402, jadi user bisa deposit dulu ... nanti tiap call mcp maka akan lgsg otomatis terpotong dari akunnya"*; usulan rinci disetujui
+*"Gasss"*.
+
+1. Deposit **FAB** lewat x402 (tanpa gas; FAB uji dari faucet) -> saldo per dompet; kunci API dari tanda tangan dompet; tiap panggilan dipotong.
+2. Harga: `fabius_signal` 0,01 FAB, `fabius_signal_explain` 0,02 FAB, `fabius_data` 0,005 FAB; gratis hanya `fabius_pricing` + `fabius_account`.
+3. Dicabut dari MCP: alat data publik P140 (`fabius_dexscreener`, `fabius_rugcheck`, `fabius_bubblemaps`, `fabius_fomo`) dan alat tingkat 0 gratis
+   F-D89 (dipindah ke berbayar). Web `/verify` tetap gratis.
+4. Sampai F5 dibangun, MCP yang hidup tetap seperti sekarang (dicatat, bukan disembunyikan).
+
+**Terkait:** F-D89 · F-D100 · F-D110 · [[08-Backlog/11 - Epik Meja AI v2]] §7 · [[04-Tools/TL20 - server MCP]]

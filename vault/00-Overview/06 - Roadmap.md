@@ -80,4 +80,7 @@ membeli hak untuk bilang "belum bisa diuji" dengan gaya yang lebih buruk.
   per-keputusan pola terburuk untuk objek storage), mainnet (testnet sah + dana asli bukan harga
   yang boleh diasumsikan), dan mengejar "edge" baru tanpa jendela validasi.
 
+**5 Okt - Meja AI v2 (rencana E0, F-D110/F-D111):** meja AI 5 menit v1 hidup (F-D109); v2 = data luas dibaca Fabius sendiri, tiga agent memilih bot
+dominan lewat rumus terkunci, loop evaluasi, dan MCP berbayar lewat deposit x402 - tonggak F1-F5 di [[08-Backlog/11 - Epik Meja AI v2]] (P153-P157).
+
 **Terkait:** [[08-Backlog/01 - Backlog]] · [[START-HERE]]

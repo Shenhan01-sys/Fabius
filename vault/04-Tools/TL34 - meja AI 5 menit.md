@@ -5,6 +5,7 @@ tags: [perkakas, "TL34", meja, llm, desk]
 # TL34 - meja AI 5 menit (DeskAnchor)
 
 **Bagian dari:** [[04-Tools/00 - Hub Tools]]
+**Rencana v2 (F-D110):** [[08-Backlog/11 - Epik Meja AI v2]] - tiga agent memilih bot dominan dari data luas, rumus terkunci, loop evaluasi (P153-P157).
 **Sumber:** kontrak `contracts/DeskAnchor.sol` (+ `test/DeskAnchor.t.sol`, 5 tes) · deploy `tools/deploy_desk_anchor.py` · meja `tools/meja.py`
 (`pasar`, `prompt`, `parse`, `konsensus`, `isi`, `siklus`, `root_of`, `proof_of`) · loop + endpoint `/desk`, `/desk/proof/<hash>` + Telegram `/desk` di
 `tools/x402_sinyal.py` · web `/desk` (`web/src/components/desk/DeskView.tsx`) · MCP `fabius_desk` · tes `engine/tests/test_meja.py` (6) · T8

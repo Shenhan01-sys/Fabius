@@ -5,6 +5,8 @@ tags: [backlog, epik, "gerbang-sinyal", x402, mcp, kontrak]
 # 06 - Epik Gerbang Sinyal (kirim sinyal bot lewat x402 V2 + MCP, dan kontrak yang masuk akal)
 
 **Bagian dari:** [[08-Backlog/00 - Hub Backlog]]
+**Pembaruan 5 Okt (F-D111):** MCP Fabius menjadi sinyal + data pendukung yang hanya bisa dipakai lewat x402 (deposit FAB, dipotong per panggilan);
+pintu tingkat 0 MCP gratis digantikan - rencana di [[08-Backlog/11 - Epik Meja AI v2]] §7 (P157). Isi di bawah tetap sebagai riwayat.
 **Dibuka:** 2 Okt 2026 (malam) oleh builder, kata-katanya (diringkas): *setelah mesin oke, FE dibuat sebagai gateway untuk
 jualan sinyal, agent-to-agent atau agent-to-user; dibungkus MCP supaya plug-and-play (baca sinyal lalu buka posisi yang sama);
 user berlangganan via x402 V2 yang memakai session dan tiap sinyal dikirim ke Gmail; agen membayar per sinyal via x402 dan

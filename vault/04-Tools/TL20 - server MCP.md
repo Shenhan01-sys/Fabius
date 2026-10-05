@@ -5,6 +5,8 @@ tags: [perkakas, "TL20"]
 # TL20 - server MCP (pintu agen, tingkat 0)
 
 **Bagian dari:** [[04-Tools/00 - Hub Tools]]
+**Rencana 5 Okt (F-D111, P157):** MCP = sinyal + data pendukung, hanya lewat x402 deposit (gratis hanya `fabius_pricing` + `fabius_account`); alat
+data publik P140 dan alat tingkat 0 dipindah/dicabut - [[08-Backlog/11 - Epik Meja AI v2]] §7. Sampai dibangun, MCP hidup seperti tertulis di bawah.
 **Sumber:** `web/src/app/mcp/route.ts` (route `/mcp` di app `web/` yang sama dengan landing) · `web/src/lib/mcp-tools.ts` (8 alat) ·
 `web/src/lib/fabius-chain.ts` (pembaca chain 97, tanpa kunci) · paket `mcp-handler` 2.2 + `@modelcontextprotocol/server` 2.3 + `viem` 2.57 + `zod` 4
 
