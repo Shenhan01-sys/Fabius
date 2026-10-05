@@ -41,6 +41,12 @@ class DeployFilesTests(unittest.TestCase):
         self.assertEqual(sorted(need - copied_tools()), [])
         self.assertEqual(sorted(need - set(railway_up.PATHS)), [])
 
+    def test_the_agent_registry_ships_with_the_gate_image(self):
+        # P159: analis.py membaca config/agents.json saat diimpor; tanpa berkas itu gerbang gagal mulai
+        self.assertIn("config/agents.json", railway_up.PATHS)
+        with open(os.path.join(ROOT, "railway", "Dockerfile"), encoding="utf-8") as f:
+            self.assertIn("COPY config/agents.json config/agents.json", f.read())
+
 
 if __name__ == "__main__":
     unittest.main()

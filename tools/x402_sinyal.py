@@ -398,6 +398,8 @@ class Gate:
             nama = {meja.KONSENSUS: "Fabius consensus", "v2": "Fabius v2 (bot + instruments)"}.get(name) or (f"v2 · {nama_ag}" if name.startswith("v2:") else nama_ag)
             kons = name in (meja.KONSENSUS, "v2")
             out_books.append({"agent": name, "nama": nama, "versi": 2 if name.startswith("v2") else 1,
+                              # P159: penampilan pekerja 3D dari config/agents.json (opsional; web membuatnya dari slug bila kosong)
+                              "npc": next((a.get("npc") for a in an.AGENTS if a["slug"] == slug), None) if not kons else None,
                               "ekuitas": round(e, 2), "hasil_pct": round((e / meja.PARAMS["modal_awal"] - 1) * 100, 3),
                               "biaya": round(b.get("biaya", 0), 2), "n_trade": b.get("n_trade", 0),
                               # posisi yang BENAR-BENAR terisi (qty x harga / ekuitas), bukan target: target < ambang 2 % tidak ditransaksikan

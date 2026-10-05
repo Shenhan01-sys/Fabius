@@ -27,7 +27,7 @@ import sys
 import time
 import urllib.parse
 import urllib.request
-from typing import Callable, Dict, List, Optional
+from typing import Callable, Dict, List, Optional, Tuple
 
 for _s in (sys.stdout, sys.stderr):
     try:
@@ -47,26 +47,78 @@ import signal_commit as sc                                                      
 ANALIS_ENV = os.path.join(ROOT, ".analis.env")
 CARD_DIR = os.path.join(ROOT, "docs", "analis")
 CARD_URL = "https://raw.githubusercontent.com/Shenhan01-sys/Fabius/master/docs/analis/{slug}.json"
-PROVIDERS = {
-    "qwencloud": {"base": "https://token-plan.ap-southeast-1.maas.aliyuncs.com/compatible-mode/v1", "key_var": "QWENCLOUD_API_KEY"},
-    "anthropic": {"base": "https://api.anthropic.com/v1", "key_var": "ANTHROPIC_API_KEY"},
-    "xkiro": {"base": "https://api.xkiro.com/v1", "key_var": "XKIRO_API_KEY"},          # P139 (F-D108): OpenAI-compatible, kunci dari opencode.json builder
-}
-# Slot `glm` (agent 2558): builder 5 Okt mengganti model ke deepseek-v4.1-flash effort high (diuji di qwencloud: HTTP 200). Identitas ERC-8004, dompet, dan
-# kartu (URI on-chain .../glm.json) TETAP; model tiap pilihan ikut di JSON alasan yang di-hash, riwayat model di kartu. GLM 5.3 dulu: effort hanya
-# low|high|max ("medium" = HTTP 400).
-AGENTS = [   # urutan tetap; `slug` = nama berkas kartu + variabel kunci
-    {"slug": "glm", "name": "Fabius Analyst · DeepSeek V4.1 Flash", "provider": "qwencloud", "model": "deepseek-v4.1-flash", "effort": "high",
-     "key_var": "ANALIS_GLM_PRIVATE_KEY", "riwayat": [{"model": "glm-5.3", "effort": "low", "sampai_bar_close": 1791244800}]},
-    {"slug": "qwen", "name": "Fabius Analyst · Qwen 3.8 Flash", "provider": "qwencloud", "model": "qwen3.8-flash", "effort": "xhigh",
-     "key_var": "ANALIS_QWEN_PRIVATE_KEY"},
-    {"slug": "claude", "name": "Fabius Analyst · Claude Sonnet 5.5", "provider": "anthropic", "model": "claude-sonnet-5-5", "effort": "xhigh",
-     "key_var": "ANALIS_CLAUDE_PRIVATE_KEY", "nonaktif": "builder 5 Okt: belum ada dana kredit API Anthropic"},
-    # P139 (F-D108): agent BERITA - masukan yang sama + judul berita/pengumuman Binance (tools/kabar.py) yang disalin ke alasan ber-hash; identitas
-    # sendiri supaya nilai berita terukur di papan (agent berita vs tanpa berita). Model diuji 5 Okt: HTTP 200, 6,2 s, effort high.
-    {"slug": "berita", "name": "Fabius Analyst · Qwen 3.8 Omni Flash (news)", "provider": "xkiro", "model": "qwen/qwen3.8-omni-flash:free",
-     "effort": "high", "key_var": "ANALIS_BERITA_PRIVATE_KEY", "berita": True},
-]
+AGENTS_PATH = os.path.join(ROOT, "config", "agents.json")
+# P159: penyedia model + agent rumah dibaca dari config/agents.json (sumber tunggal; `tambah` menambah entri tervalidasi). Riwayat yang dulu di sini:
+# slot `glm` (agent 2558) diganti builder 5 Okt ke deepseek-v4.1-flash effort high (identitas ERC-8004, dompet, URI kartu .../glm.json TETAP; model
+# tiap pilihan ikut di JSON alasan yang di-hash, riwayat model di kartu; GLM 5.3 dulu: effort hanya low|high|max). Agent `berita` (P139, F-D108):
+# masukan yang sama + judul berita/pengumuman Binance (tools/kabar.py) yang disalin ke alasan ber-hash. Penyedia xkiro = OpenAI-compatible.
+SLUG_OK = re.compile(r"^[a-z][a-z0-9]{1,15}$")
+EFFORTS = ("none", "minimal", "low", "medium", "high", "xhigh", "max")
+NPC_KEYS = {"shirt", "hair", "skin", "extra", "prop", "short"}
+NPC_EXTRA = ("headset", "cap", "glasses", "beanie", "hood", "none")
+NPC_PROP = ("mug", "paper", "plant", "books")
+HEX = re.compile(r"^#[0-9a-fA-F]{6}$")
+
+
+def muat_agents(path: str = AGENTS_PATH) -> Tuple[Dict[str, dict], List[dict]]:
+    with open(path, encoding="utf-8") as f:
+        d = json.load(f)
+    return d["providers"], d["agents"]
+
+
+PROVIDERS, AGENTS = muat_agents()
+
+
+def cek_npc(npc: dict) -> dict:
+    """Penampilan pekerja 3D di /desk (opsional). Ditolak bila kunci/warna/aksesori di luar daftar - web tidak menebak."""
+    bad = set(npc) - NPC_KEYS
+    if bad:
+        raise ValueError(f"npc: kunci tidak dikenal {sorted(bad)}")
+    for k in ("shirt", "hair", "skin"):
+        if k in npc and not HEX.match(str(npc[k])):
+            raise ValueError(f"npc.{k} harus warna #rrggbb")
+    if "extra" in npc and npc["extra"] not in NPC_EXTRA:
+        raise ValueError(f"npc.extra harus salah satu {NPC_EXTRA}")
+    if "prop" in npc and npc["prop"] not in NPC_PROP:
+        raise ValueError(f"npc.prop harus salah satu {NPC_PROP}")
+    if "short" in npc and not 1 <= len(str(npc["short"])) <= 14:
+        raise ValueError("npc.short 1-14 karakter")
+    return npc
+
+
+def tambah_agent(path: str, slug: str, nama: str, provider: str, model: str, effort: str, base: Optional[str] = None,
+                 key_var: Optional[str] = None, berita: bool = False, npc: Optional[dict] = None) -> dict:
+    """P159: jalan pintas agent rumah baru -> config/agents.json. Hanya menulis konfigurasi tervalidasi; TIDAK membuat kunci, tidak mengirim tx."""
+    with open(path, encoding="utf-8") as f:
+        d = json.load(f)
+    if not SLUG_OK.match(slug):
+        raise ValueError("slug: huruf kecil/angka, 2-16 karakter, diawali huruf")
+    if any(a["slug"] == slug for a in d["agents"]):
+        raise ValueError(f"slug {slug!r} sudah ada")
+    if effort not in EFFORTS:
+        raise ValueError(f"effort harus salah satu {EFFORTS}")
+    if not (nama.strip() and model.strip()):
+        raise ValueError("nama dan model wajib")
+    if provider not in d["providers"]:
+        if not (base and key_var):
+            raise ValueError(f"penyedia {provider!r} belum ada: beri --base (https, OpenAI-compatible) dan --key-var")
+        if not base.startswith("https://") or not re.match(r"^[A-Z][A-Z0-9_]{2,40}$", key_var):
+            raise ValueError("--base harus https://..., --key-var huruf besar/angka/_")
+        d["providers"][provider] = {"base": base.rstrip("/"), "key_var": key_var}
+    ag = {"slug": slug, "name": f"Fabius Analyst · {nama.strip()}", "provider": provider, "model": model.strip(), "effort": effort,
+          "key_var": f"ANALIS_{slug.upper()}_PRIVATE_KEY"}
+    if berita:
+        ag["berita"] = True
+    if npc:
+        ag["npc"] = cek_npc(npc)
+    d["agents"].append(ag)
+    tmp = path + ".tmp"
+    with open(tmp, "w", encoding="utf-8", newline="\n") as f:
+        f.write(json.dumps(d, indent=1, ensure_ascii=False) + "\n")
+    os.replace(tmp, path)
+    return ag
+
+
 SIG_PICK = "pick(uint256,uint64,bytes32,uint8,bytes32)"
 TRANSFER = "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef"
 FUND_WEI = 10 ** 16                 # 0,01 tBNB per agent (±20 pilihan + pendaftaran)
@@ -646,6 +698,42 @@ def cmd_daftar(a) -> int:
     return 0
 
 
+def cmd_tambah(a) -> int:
+    npc = {k: v for k, v in (("shirt", a.shirt), ("hair", a.hair), ("skin", a.skin), ("extra", a.extra), ("prop", a.prop), ("short", a.short)) if v}
+    try:
+        ag = tambah_agent(AGENTS_PATH, a.slug, a.nama, a.provider, a.model, a.effort, a.base, a.key_var, a.berita, npc or None)
+    except ValueError as e:
+        print(f"DITOLAK: {e}")
+        return 2
+    prov = muat_agents()[0][ag["provider"]]
+    print(f"DITAMBAHKAN {ag['slug']}: {ag['name']} ({ag['provider']} / {ag['model']}, effort {ag['effort']}) -> config/agents.json")
+    print("Langkah berikutnya (urut):")
+    print(f"  1. uji model    : python -X utf8 tools/analis.py uji --slug {ag['slug']}   (butuh {prov['key_var']} di env / .analis.env)")
+    print("  2. dompet agent : python -X utf8 tools/analis.py kunci   (kunci baru masuk .analis.env, tidak dicetak)")
+    print("  3. rencana      : python -X utf8 tools/analis.py daftar   (tanpa --send: hanya rencana isi 0,01 tBNB + register)")
+    print("  4. daftar       : python -X utf8 tools/analis.py daftar --send   (TX ERC-8004 - atas kata builder)")
+    print(f"  5. Railway fabius-x402: set {ag['key_var']}" + ("" if ag["provider"] in ("qwencloud", "xkiro", "anthropic") else f" + {prov['key_var']}"))
+    print("  6. commit config/agents.json + deployments/97.json + docs/analis/<slug>.json, push, lalu tools/railway_up.py --service fabius-x402")
+    print("  Pekerja 3D di /desk muncul otomatis begitu agent ini punya buku meja (siklus pertama sesudah deploy).")
+    return 0
+
+
+def cmd_uji(a) -> int:
+    """P159: satu panggilan kecil ke model agent sebelum didaftarkan (latensi + jawaban sah?). Tidak menulis apa pun, tidak mencetak kunci."""
+    ag = next((x for x in AGENTS if x["slug"] == a.slug), None)
+    if ag is None:
+        print(f"slug {a.slug!r} tidak ada di config/agents.json")
+        return 2
+    mulai = time.time()
+    try:
+        out = call_model(ag, "You are a health check. Reply with exactly: OK", "Reply with exactly: OK", timeout=a.timeout)
+    except Exception as e:  # noqa: BLE001 - laporan, bukan crash
+        print(f"GAGAL {ag['slug']} ({ag['provider']} / {ag['model']}) dalam {time.time() - mulai:.1f} s: {type(e).__name__}: {str(e)[:200]}")
+        return 1
+    print(f"OK {ag['slug']} ({ag['provider']} / {ag['model']}, effort {ag['effort']}) {time.time() - mulai:.1f} s: {out.strip()[:80]!r}")
+    return 0
+
+
 def cmd_masukan(a) -> int:
     print(json.dumps(masukan(ROOT, next_close(int(time.time()))), indent=1, ensure_ascii=False, sort_keys=True))
     return 0
@@ -708,8 +796,23 @@ def main() -> int:
     sub.add_parser("kunci")
     sub.add_parser("arsip")
     sub.add_parser("masukan")
+    t = sub.add_parser("tambah", help="P159: agent rumah baru -> config/agents.json (tanpa kunci, tanpa tx)")
+    t.add_argument("--slug", required=True)
+    t.add_argument("--nama", required=True, help="nama tampilan model, mis. 'Kimi K2.6' (diawali 'Fabius Analyst · ')")
+    t.add_argument("--provider", required=True)
+    t.add_argument("--model", required=True)
+    t.add_argument("--effort", default="high")
+    t.add_argument("--base", help="penyedia baru: URL https OpenAI-compatible")
+    t.add_argument("--key-var", help="penyedia baru: nama variabel kunci API")
+    t.add_argument("--berita", action="store_true", help="agent membaca judul berita (tools/kabar.py)")
+    for k in ("shirt", "hair", "skin", "extra", "prop", "short"):
+        t.add_argument(f"--{k}", help=f"penampilan NPC /desk (opsional): {k}")
+    u = sub.add_parser("uji", help="P159: satu panggilan kecil ke model agent")
+    u.add_argument("--slug", required=True)
+    u.add_argument("--timeout", type=int, default=120)
     a = ap.parse_args()
-    return {"kunci": cmd_kunci, "daftar": cmd_daftar, "masukan": cmd_masukan, "pilih": cmd_pilih, "arsip": cmd_arsip}[a.cmd](a)
+    return {"kunci": cmd_kunci, "daftar": cmd_daftar, "masukan": cmd_masukan, "pilih": cmd_pilih, "arsip": cmd_arsip, "tambah": cmd_tambah,
+            "uji": cmd_uji}[a.cmd](a)
 
 
 if __name__ == "__main__":

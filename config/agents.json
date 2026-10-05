@@ -1,0 +1,87 @@
+{
+ "_catatan": "Agent analis rumah Fabius + penyedia model (P142, P159). Tambah agent: python -X utf8 tools/analis.py tambah ... (lihat --help). Urutan agent tetap; `slug` = nama berkas kartu + variabel kunci; `npc` = penampilan pekerja 3D di /desk (opsional, tanpa itu dibuat dari slug).",
+ "providers": {
+  "qwencloud": {
+   "base": "https://token-plan.ap-southeast-1.maas.aliyuncs.com/compatible-mode/v1",
+   "key_var": "QWENCLOUD_API_KEY"
+  },
+  "anthropic": {
+   "base": "https://api.anthropic.com/v1",
+   "key_var": "ANTHROPIC_API_KEY"
+  },
+  "xkiro": {
+   "base": "https://api.xkiro.com/v1",
+   "key_var": "XKIRO_API_KEY"
+  }
+ },
+ "agents": [
+  {
+   "slug": "glm",
+   "name": "Fabius Analyst · DeepSeek V4.1 Flash",
+   "provider": "qwencloud",
+   "model": "deepseek-v4.1-flash",
+   "effort": "high",
+   "key_var": "ANALIS_GLM_PRIVATE_KEY",
+   "riwayat": [
+    {
+     "model": "glm-5.3",
+     "effort": "low",
+     "sampai_bar_close": 1791244800
+    }
+   ],
+   "npc": {
+    "shirt": "#6e4bff",
+    "hair": "#2a2140",
+    "skin": "#c68e63",
+    "extra": "headset",
+    "prop": "mug",
+    "short": "DeepSeek"
+   }
+  },
+  {
+   "slug": "qwen",
+   "name": "Fabius Analyst · Qwen 3.8 Flash",
+   "provider": "qwencloud",
+   "model": "qwen3.8-flash",
+   "effort": "xhigh",
+   "key_var": "ANALIS_QWEN_PRIVATE_KEY",
+   "npc": {
+    "shirt": "#9d86ff",
+    "hair": "#15122b",
+    "skin": "#f1c9a5",
+    "extra": "cap",
+    "prop": "mug",
+    "short": "Qwen"
+   }
+  },
+  {
+   "slug": "claude",
+   "name": "Fabius Analyst · Claude Sonnet 5.5",
+   "provider": "anthropic",
+   "model": "claude-sonnet-5-5",
+   "effort": "xhigh",
+   "key_var": "ANALIS_CLAUDE_PRIVATE_KEY",
+   "nonaktif": "builder 5 Okt: belum ada dana kredit API Anthropic",
+   "npc": {
+    "short": "Claude"
+   }
+  },
+  {
+   "slug": "berita",
+   "name": "Fabius Analyst · Qwen 3.8 Omni Flash (news)",
+   "provider": "xkiro",
+   "model": "qwen/qwen3.8-omni-flash:free",
+   "effort": "high",
+   "key_var": "ANALIS_BERITA_PRIVATE_KEY",
+   "berita": true,
+   "npc": {
+    "shirt": "#15122b",
+    "hair": "#3b2a1e",
+    "skin": "#8d5a3b",
+    "extra": "none",
+    "prop": "paper",
+    "short": "News"
+   }
+  }
+ ]
+}
