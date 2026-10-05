@@ -240,7 +240,7 @@ function Slip({ r, open, sealed, now }: { r: AnalisRec; open: boolean; sealed: s
               {p.risiko}
             </p>
           )}
-          <dl className="grid grid-cols-[auto,1fr] gap-x-3 gap-y-1 font-mono text-[11px] text-ink/60">
+          <dl className="grid grid-cols-[auto_1fr] gap-x-3 gap-y-1 font-mono text-[11px] text-ink/60">
             <dt>reasonHash</dt>
             <dd className="break-all">{r.reasonHash}</dd>
             {r.alasan.masukan_sha256 && (

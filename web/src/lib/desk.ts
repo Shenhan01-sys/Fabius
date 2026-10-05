@@ -4,10 +4,25 @@
 import { GATE } from "./x402-buy";
 
 export type Target = { w: number; k: number; alasan?: string };
-export type Keputusan = { ringkasan: string; target: Record<string, Target>; diubah?: string[]; ditolak?: { aset: string; galat: string }[] };
+export type Keputusan = {
+  ringkasan: string;
+  target: Record<string, Target>;
+  diubah?: string[];
+  ditolak?: { aset?: string; faktor?: string; galat: string }[];
+  // v2 (P154/P155, F-D112): agent = bot + instrumen {aset, k}; konsensus = bot dominan + daftar instrumen + skor
+  bot?: string;
+  skor_bot?: Record<string, number>;
+  nilai_bot?: Record<string, number>;
+  instrumen?: (string | { aset: string; k: number })[];
+  skor_instrumen?: Record<string, number>;
+  eksposur?: number;
+  veto?: (string | { aset: string; faktor: string })[];
+  arah_alasan?: Record<string, string>;
+};
 export type Buku = {
   agent: string;
   nama: string;
+  versi?: number;
   ekuitas: number;
   hasil_pct: number;
   biaya: number;
@@ -29,8 +44,11 @@ export type Rekaman = {
   isi?: { aset: string; dari: number; ke: number; harga: number; fee: number }[];
 };
 export type Desk = {
+  t: number;
   params: { siklus_s: number; fee: number; maks_per_aset: number; maks_gross: number; kuorum: number; ubah_min: number; modal_awal: number; aset: string[] };
   params_sha: string;
+  params_v2?: { universe_top: number; maks_instrumen: number; min_agent_instrumen: number; ambang_instrumen: number; likuiditas_min_usd: number; rugi_harian_maks: number };
+  params_v2_sha?: string;
   anchor?: string;
   buku: Buku[];
   rekaman: Rekaman[];
