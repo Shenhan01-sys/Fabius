@@ -53,6 +53,7 @@ import signal_commit as sc                                                    # 
 import sinyal_gambar as sg                                                    # noqa: E402
 import analis as an                                                           # noqa: E402
 import privy_server as pv                                                     # noqa: E402
+import meja                                                                   # noqa: E402
 
 NETWORK = "eip155:97"
 PROXY = "0x402085c248EeA27D92E8b30b2C58ed07f9E20001"      # x402ExactPermit2Proxy kanonis (56 & 97)
@@ -321,6 +322,99 @@ class Gate:
         self._disc: dict = {}                                                                # kursor pemindaian event Picked
         self._kartu: Dict[int, tuple] = {}                                                   # agent_id -> (waktu, kartu)
         self._luar_coba: Dict[str, float] = {}
+        self.meja_dir = os.path.join(os.path.dirname(self.analis_dir), "meja")                # P152: rekaman, siklus, buku meja AI 5 menit
+        self.meja_lock = threading.Lock()
+        self._kabar: tuple = (0.0, None)
+
+    def kabar_cache(self, umur_s: int = 900) -> Optional[List[dict]]:
+        """Judul berita untuk agent berita di meja: dibaca paling sering tiap 15 menit (bukan tiap 5 menit)."""
+        t, j = self._kabar
+        if j is None or time.time() - t > umur_s:
+            try:
+                import kabar
+                j = kabar.kabar(int(time.time()))["judul"]
+            except Exception as e:  # noqa: BLE001
+                self.log(f"kabar meja gagal: {type(e).__name__}: {str(e)[:120]}")
+                j = j or []
+            self._kabar = (time.time(), j)
+        return j
+
+    def _meja_path(self, kind: str, t: int) -> str:
+        return os.path.join(self.meja_dir, kind, time.strftime("%Y-%m-%d", time.gmtime(t)) + ".jsonl")
+
+    def meja_muat(self) -> Tuple[Dict[str, dict], Dict[str, str]]:
+        try:
+            with open(os.path.join(self.meja_dir, "buku.json"), encoding="utf-8") as f:
+                d = json.load(f)
+            return d.get("buku") or {}, d.get("ringkasan") or {}
+        except (OSError, ValueError):
+            return {}, {}
+
+    def meja_simpan(self, rek: List[dict], sik: dict, books: Dict[str, dict], ring: Dict[str, str]) -> None:
+        with self.meja_lock:
+            for kind, rows in (("rekaman", rek), ("siklus", [sik])):
+                path = self._meja_path(kind, sik["siklus"])
+                os.makedirs(os.path.dirname(path), exist_ok=True)
+                with open(path, "a", encoding="utf-8", newline="\n") as f:
+                    for r in rows:
+                        f.write(json.dumps(r, ensure_ascii=False, sort_keys=True) + "\n")
+            tmp = os.path.join(self.meja_dir, "buku.json.tmp")
+            with open(tmp, "w", encoding="utf-8") as f:
+                json.dump({"buku": books, "ringkasan": ring}, f, ensure_ascii=False, sort_keys=True)
+            os.replace(tmp, os.path.join(self.meja_dir, "buku.json"))
+        self._meja = None
+
+    def _meja_baca(self, kind: str, hari: int = 2) -> List[dict]:
+        now, out = int(self.now()), []
+        for k in range(hari - 1, -1, -1):
+            path = self._meja_path(kind, now - k * 86_400)
+            if os.path.exists(path):
+                out += [json.loads(ln) for ln in open(path, encoding="utf-8") if ln.strip()]
+        return out
+
+    def meja_view(self, max_age_s: int = 20) -> dict:
+        """Ringkasan publik meja: buku per agent + konsensus (ekuitas pada harga isi terakhir), deret ekuitas 24 jam, 40 rekaman terakhir, komit terakhir."""
+        st = getattr(self, "_meja", None)
+        if st and time.time() - st["t"] < max_age_s:
+            return st
+        rek, sik = self._meja_baca("rekaman"), self._meja_baca("siklus")
+        books, _ = self.meja_muat()
+        harga = (sik[-1].get("harga") if sik else None) or {}
+        cut = int(self.now()) - 86_400
+        out_books = []
+        for name in [meja.KONSENSUS] + sorted(b for b in books if b != meja.KONSENSUS):
+            b = books.get(name)
+            if not b:
+                continue
+            e = meja.ekuitas(b, harga)
+            mine = [r for r in rek if r["agent"] == name]
+            last = next((r for r in reversed(mine) if r.get("status", "ok") == "ok"), None)
+            nama = "Fabius consensus" if name == meja.KONSENSUS else next((a["name"] for a in an.AGENTS if a["slug"] == name), name)
+            out_books.append({"agent": name, "nama": nama, "ekuitas": round(e, 2), "hasil_pct": round((e / meja.PARAMS["modal_awal"] - 1) * 100, 3),
+                              "biaya": round(b.get("biaya", 0), 2), "n_trade": b.get("n_trade", 0),
+                              "posisi": {a: round(t["w"], 4) for a, t in sorted((b.get("target") or {}).items()) if abs(t.get("w", 0)) > 1e-9},
+                              "deret": [[r["siklus"], r["ekuitas"]] for r in mine if r["siklus"] >= cut],
+                              "status_terakhir": mine[-1].get("status", "ok") if mine else None,
+                              "keputusan_terakhir": (last.get("keputusan") or {"ringkasan": last.get("dasar"), "target": last.get("target")}) if last else None})
+        out = {"t": time.time(), "params": meja.PARAMS, "params_sha": meja.params_sha(),
+               "anchor": self.data.cfg_raw().get("contracts", {}).get("DeskAnchor"), "buku": out_books, "rekaman": rek[-40:],
+               "siklus_terakhir": ({k: sik[-1].get(k) for k in ("siklus", "root", "tx", "status", "n")} if sik else None),
+               "siklus_24j": sum(1 for x in sik if x["siklus"] >= cut), "komit_24j": sum(1 for x in sik if x["siklus"] >= cut and x.get("status") == "dikomit")}
+        self._meja = out
+        return out
+
+    def meja_proof(self, h: str) -> Tuple[int, dict]:
+        rek = next((r for r in self._meja_baca("rekaman", 3) if r.get("hash") == h), None)
+        if rek is None:
+            return 404, {"error": "hash tidak ada di rekaman 3 hari terakhir"}
+        sik = next((x for x in self._meja_baca("siklus", 3) if x["siklus"] == rek["siklus"]), None)
+        if sik is None:
+            return 404, {"error": "siklus rekaman tidak ditemukan"}
+        isi_tanpa_hash = {k: v for k, v in rek.items() if k != "hash"}
+        return 200, {"rekaman": rek, "hash_dihitung_ulang": meja.sha(isi_tanpa_hash), "root": sik.get("root"), "proof": meja.proof_of(sik["daun"], h),
+                     "siklus": sik["siklus"], "tx": sik.get("tx"), "anchor": self.data.cfg_raw().get("contracts", {}).get("DeskAnchor"),
+                     "cara_cek": "sha256(JSON kanonis rekaman tanpa 'hash') = hash; Merkle proof (engine/chain.py, pasangan terurut keccak) -> root = "
+                                 "DeskAnchor.rootOf(siklus); tx dikirim sebelum siklus + 300 s"}
 
     def record_buy(self, bot: str, bar: str, payer: str, tx: str, atomic: int) -> None:
         try:
@@ -696,6 +790,11 @@ def make_handler(gate: Gate):
                                             "tampil di papan, belum menentukan bot aktif (F-D107)", "join": f"{gate.public_url}/analysts/input"})
                 if parts[0] == "aktif" and len(parts) == 1:
                     return self._send(200, gate.aktif_now())
+                if parts[0] == "desk" and len(parts) == 1:
+                    return self._send(200, gate.meja_view())
+                if parts[0] == "desk" and len(parts) == 3 and parts[1] == "proof":
+                    code, body = gate.meja_proof(parts[2])
+                    return self._send(code, body)
                 if parts[0] == "analis" and len(parts) in (1, 2):
                     recs = gate.analis_records(int(parts[1]) if len(parts) == 2 else None)
                     last = max((r["alasan"]["bar_close"] for r in recs), default=None)
@@ -817,10 +916,11 @@ HELP = ("Fabius - verified trading signals, paid per signal with x402 on BNB tes
         "/buy - the signal of the bot Fabius is trading now (or /buy <BOT>): pay with x402 in the Fabius app inside Telegram, no gas\n"
         "/signal - free teaser of the active bot (or /signal <BOT>; no assets, no direction)\n/bots - all bots, prices, track-record confidence\n"
         "/topup - free FAB test tokens to your wallet\n"
+        "/desk - the AI desk: every 5 minutes each AI agent decides, anchored on-chain\n"
         "/analysts - which bot each AI analyst agent picked today (committed on-chain before the bar closes); full reasoning in the app\n"
         "/wallet - your wallet (same wallet as on the Fabius website when you link Google)\n\n"
         "Every signal is committed on-chain before the market moves; anyone can verify it.")
-COMMANDS = [("buy", "buy the signal of the bot Fabius trades now (x402)"), ("topup", "free FAB test tokens to your wallet"), ("signal", "free teaser of the active bot"), ("analysts", "today's AI analyst picks"),
+COMMANDS = [("buy", "buy the signal of the bot Fabius trades now (x402)"), ("desk", "AI desk: 5-minute decisions and paper results"), ("topup", "free FAB test tokens to your wallet"), ("signal", "free teaser of the active bot"), ("analysts", "today's AI analyst picks"),
             ("bots", "all bots, prices, track-record confidence"),
             ("wallet", "your wallet"), ("help", "how it works")]
 
@@ -900,6 +1000,20 @@ def tg_reply(gate: "Gate", chat_id: int, text: str, private: bool = True, user_i
                 + "\n".join(rows) + ("\n\nLeaderboard:\n" + "\n".join(lb) if lb else "")
                 + f"\n\nFull reasoning, hashes and scores: in the Fabius app (sign in + any signal bought in the last {AKSES_HARI} days)."
                 + ("" if private else f" {gate.web_url}/analysts")), (("Analysts' reasoning", f"{gate.web_url}/analysts") if private else None)
+    if cmd == "/desk":
+        v = gate.meja_view()
+        if not v["buku"]:
+            return "The AI desk has no cycles yet.", None
+        rows = []
+        for b in v["buku"]:
+            k = b.get("keputusan_terakhir") or {}
+            pos = ", ".join(f"{a} {w:+.2f}" for a, w in list(b["posisi"].items())[:6]) or "flat"
+            rows.append(f"{'CONSENSUS' if b['agent'] == meja.KONSENSUS else b['agent']}: equity {b['ekuitas']:.2f} ({b['hasil_pct']:+.2f}%), "
+                        f"{b['n_trade']} trades, fees {b['biaya']:.2f} | {pos}" + (f"\n  {str(k.get('ringkasan') or '')[:200]}" if b['agent'] != meja.KONSENSUS else ""))
+        s_ = v.get("siklus_terakhir") or {}
+        return ("AI desk (paper, decides every 5 minutes, each cycle anchored on-chain):\n\n" + "\n\n".join(rows)
+                + f"\n\nLast cycle {time.strftime('%H:%M', time.gmtime(s_.get('siklus') or 0))}Z: {s_.get('status')}"), \
+            (("AI desk", f"{gate.web_url}/desk") if private else None)
     if cmd == "/topup":
         if not private or getattr(gate, "privy", None) is None:
             return "Get free FAB in the Fabius app (button below).", (("Open Fabius", f"{gate.web_url}/buy") if private else None)
@@ -965,10 +1079,47 @@ def analis_loop(gate: "Gate", ev, stop: threading.Event, every_s: int = 600) -> 
             v = gate.analis_view(max_age_s=0)
             rep = (gate.data.cfg_raw().get("erc8004") or {}).get("reputation")
             if rep and gate.pk:
-                an.reputasi(ev, gate.pk, rep, [x for x in v["skor"] if not x.get("luar")], os.path.join(gate.analis_dir, "reputasi.json"),
-                            gate.public_url, log=gate.log)                          # F-D107: feedback hanya agent rumah (gas gerbang tidak bisa dikuras Sybil)
+                with gate.tx_lock:                                         # kunci gerbang juga dipakai komit meja tiap 5 menit: satu pengirim sekaligus
+                    an.reputasi(ev, gate.pk, rep, [x for x in v["skor"] if not x.get("luar")], os.path.join(gate.analis_dir, "reputasi.json"),
+                                gate.public_url, log=gate.log)                      # F-D107: feedback hanya agent rumah (gas gerbang tidak bisa dikuras Sybil)
         except Exception as e:  # noqa: BLE001 - analis gagal tidak boleh mengganggu penjualan sinyal
             gate.log(f"analis gagal: {type(e).__name__}: {str(e)[:200]}")
+
+
+def meja_loop(gate: "Gate", ev, stop: threading.Event) -> None:
+    """P152 (F-D109): tiap batas 5 menit UTC (+8 s supaya candle tutup) satu siklus meja; Merkle root dikomit ke DeskAnchor SELAMA siklus berjalan.
+    Komit gagal / terlambat dicatat di rekaman siklus (status), tidak pernah diulang sesudah siklus berakhir (kontrak menolak TooLate)."""
+    from evm import calldata, receipt_ok
+    books, ring = gate.meja_muat()
+
+    def call(ag, system, user):
+        return an.call_model({**ag, "effort": meja.PARAMS["effort"]}, system, user, timeout=meja.PARAMS["batas_jawab_s"] - 10)
+    while True:
+        now = time.time()
+        t0 = int(now // meja.PARAMS["siklus_s"] * meja.PARAMS["siklus_s"]) + meja.PARAMS["siklus_s"]
+        if stop.wait(max(0.0, t0 + 8 - now)):
+            return
+        try:
+            gate.data.refresh()
+            acfg = an.load_cfg(os.path.join(gate.data.workdir, "deployments", "97.json"))
+            desk = gate.data.cfg_raw().get("contracts", {}).get("DeskAnchor")
+            agents = an.active_agents(acfg) if acfg.get("selection") else []
+            if not (desk and agents and gate.pk):
+                continue
+            judul = gate.kabar_cache() if any(a.get("berita") for a in agents) else None
+            rek, sik = meja.siklus(t0, agents, books, ring, call, judul=judul, log=gate.log)
+            sik.update(root=meja.root_of(sik["daun"]), n=len(sik["daun"]), status="tidak dikomit", tx=None)
+            if time.time() < t0 + meja.PARAMS["siklus_s"] - 12:
+                data = calldata("commit(uint64,bytes32,uint16)", ("uint64", "bytes32", "uint16"), (t0, bytes.fromhex(sik["root"][2:]), sik["n"]))
+                with gate.tx_lock:
+                    r = ev.send(gate.pk, desk, data, gas=120_000)
+                sik.update(tx=r.get("transactionHash"), status="dikomit" if receipt_ok(r) else "komit gagal")
+            else:
+                sik["status"] = "terlambat (siklus hampir habis, tidak dikomit)"
+            gate.meja_simpan(rek, sik, books, ring)
+            gate.log(f"meja {time.strftime('%H:%M', time.gmtime(t0))}Z root {sik['root'][:18]}… {sik['status']} {sik.get('tx') or ''}")
+        except Exception as e:  # noqa: BLE001 - meja gagal tidak boleh mengganggu penjualan sinyal
+            gate.log(f"meja gagal: {type(e).__name__}: {str(e)[:200]}")
 
 
 def main() -> int:
@@ -1007,6 +1158,10 @@ def main() -> int:
         threading.Thread(target=analis_loop, args=(gate, ev, stop), daemon=True).start()
     if gate.tg_token:
         threading.Thread(target=telegram_loop, args=(gate, stop), daemon=True).start()
+    desk = data.cfg_raw().get("contracts", {}).get("DeskAnchor")
+    gate.log(f"meja AI 5 menit: {'NYALA, DeskAnchor ' + desk if (desk and aktif and pk) else 'mati (DeskAnchor/agent/kunci belum ada)'} | params {meja.params_sha()[:18]}")
+    if desk and aktif and pk:
+        threading.Thread(target=meja_loop, args=(gate, ev, stop), daemon=True).start()
     ThreadingHTTPServer(("0.0.0.0", a.port), make_handler(gate)).serve_forever()
     return 0
 

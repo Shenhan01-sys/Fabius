@@ -14,6 +14,7 @@ export default function Nav() {
     ["/verify", t.nav.verify],
     ["/status", t.nav.status],
     ["/analysts", t.nav.analysts],
+    ["/desk", t.nav.desk],
     ["/#access", t.nav.access],
   ];
   return (

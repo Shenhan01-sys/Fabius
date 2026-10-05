@@ -3151,3 +3151,25 @@ keduanya"* (transaksi identitas + kunci xkiro ke Railway).
    permintaan bertanda tangan).
 
 **Terkait:** F-D102 · F-D105 · F-D107 · [[04-Tools/TL33 - agent analis]] · [[09-Inbox/Session-2026-10-02]] §96
+
+## F-D109 — Meja AI 5 menit: keputusan wajib tiap 5 menit, format baku + rumus konsensus terkunci, komit per siklus · 5 Okt 2026 (WIB)
+
+Builder: *"maksimal hold/diam ga open posisi itu 5 menit gitu, biar kliatan jelas analisis AInya"*, lalu *"penentuan open posisinya kalau ada banyak
+agents gini sepertinya perlu format khusus agar nanti bisa dimasukin rumus untuk kalkulasi keputusan"*. Pilihan builder (AskUserQuestion):
+
+1. **Meja terpisah**, bukan mengubah enam bot harian: spesifikasi terkunci + uji maju F-D16 tetap utuh. Paper saja, Binance USDⓈ-M, 16 aset mayor.
+2. **Wajib keputusan + alasan tiap 5 menit**; HOLD boleh asal dijelaskan (memaksa buka posisi = overtrading; fee 0,05 % per sisi dihitung jujur).
+3. **Ketiga agent rumah** (2558 DeepSeek, 2559 Qwen, 2561 berita) memutuskan paralel tiap siklus, effort high, batas jawab 210 s.
+4. **Komit per siklus 5 menit** ke kontrak baru `DeskAnchor` `0x706da379a5112aa7c86803dcf58d8fdab442305f` (tx `0xd817fc87…`, blok 134996700):
+   satu Merkle root atas rekaman semua agent + konsensus, HANYA diterima selama siklus berjalan (kontrak menolak `TooLate`) - keputusan terkunci
+   sebelum harga penentu hasilnya ada. **Ralat biaya:** awalnya kusebut ±0,0015 tBNB/hari (asumsi 0,1 gwei); terukur 1 gwei -> ±0,011 tBNB/hari
+   (gas komit ±38 ribu); builder akan mengisi faucet tiap hari ke gerbang `0x10c4…f1b1`.
+5. **Format baku** (dari builder): `{"ringkasan", "target": {ASET: {"arah": long|short|flat, "ukuran": 0..0,25, "keyakinan": 0..100, "alasan"}}}`;
+   aset tak disebut = target sebelumnya. **Rumus konsensus v1** (dikunci, `tools/meja.py::PARAMS`, sha `0xf42f0cc1fd8c6107…`): rata-rata
+   (keyakinan/100 × bobot bertanda) atas agent yang menjawab sah, bobot agent sama; kuorum 2 (kurang = tahan); per aset <= 25 %, gross <= 1x;
+   perubahan < 2 % ekuitas tidak ditransaksikan. Buku: satu per agent + satu konsensus; isi pada harga mark yang diambil SESUDAH semua keputusan.
+6. Uji kering 5 Okt 10:20Z (model + data asli, tanpa komit): siklus 126,5 s (DeepSeek 13,9 s, berita 56,1 s, Qwen 121,4 s); DeepSeek long kecil
+   NEAR/AVAX/LTC/XRP, Qwen long ADA/NEAR, berita flat (gerak 5 menit < fee); konsensus NEAR 3,8 % (1 isi). ±864 panggilan model/hari: DeepSeek +
+   Qwen memakai kredit qwencloud, model xkiro `:free` bisa kena batas.
+
+**Terkait:** F-D105 · F-D108 · [[04-Tools/TL34 - meja AI 5 menit]] · [[09-Inbox/Session-2026-10-02]] §97

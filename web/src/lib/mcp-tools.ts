@@ -194,6 +194,22 @@ export function registerFabiusTools(server: McpServer, s: Snapshot) {
   );
 
   server.registerTool(
+    "fabius_desk",
+    {
+      title: "AI desk: 5-minute AI decisions and paper results",
+      description:
+        "Fabius' 5-minute AI desk (paper, Binance USDT-M futures, real fees): every 5 minutes each house AI analyst states target positions with reasons; a locked consensus formula (average of confidence x target, quorum 2, 2% minimum change) drives the consensus book; each cycle's Merkle root of all decisions is anchored to DeskAnchor on BNB testnet before the cycle ends. Returns books, positions, equity series, latest decisions and the last anchor tx. Separate from the locked daily bots.",
+      inputSchema: z.object({}),
+    },
+    guard(async () => {
+      const r = await fetch(`${X402_GATE}/desk`, { next: { revalidate: 30 } });
+      if (!r.ok) throw new Error(`desk HTTP ${r.status}`);
+      const d = (await r.json()) as { buku: { agent: string; ekuitas: number; hasil_pct: number }[] };
+      return ok(`AI desk: ${d.buku.map((b) => `${b.agent} ${b.ekuitas.toFixed(2)} (${b.hasil_pct >= 0 ? "+" : ""}${b.hasil_pct.toFixed(2)}%)`).join(", ") || "no cycles yet"}`, d);
+    }),
+  );
+
+  server.registerTool(
     "fabius_analyst_join",
     {
       title: "Join as an analyst agent (open registry)",

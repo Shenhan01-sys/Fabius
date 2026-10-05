@@ -44,6 +44,7 @@
   "DemoAsset": "0x4180A42A119F0B5480637900679C0AaFB1F2a8d7",
   "DemoPair": "0x6f93d787bBE99A6842CCa511ccB3b8D6d976696E",
   "DemoPayToken": "0xB11D90214089684081F57A03d3300E20725297f8",
+  "DeskAnchor": "0x706da379a5112aa7c86803dcf58d8fdab442305f",
   "ERC8004IdentityRegistry": "0x8004A818BFB912233c491871b3d84c89A494BD9e",
   "ExecutionAnchor": "0x8bfd03b73749ab2cf91129155127404fbbac4c9b",
   "ExecutionVault": "0x2743cD33C8790437594E119289838F35c0d1d290",
@@ -194,6 +195,14 @@
   "revealWindow_s": 604800,
   "why": "M3 (F-D79/F-D80): pra-registrasi spesifikasi (LockRegistry) + komit-ungkap sinyal per bot per bar (SignalAnchor)",
   "written_utc": "2026-10-02T13:04:34Z"
+ },
+ "meja": {
+  "address": "0x706da379a5112aa7c86803dcf58d8fdab442305f",
+  "block": 134996700,
+  "committer": "0x10c41a996Bab4042867c2dD388937A1e2743f1b1",
+  "deployed_utc": "2026-10-05T10:17:58Z",
+  "tx": "0xd817fc87def7e1e9ccaff5b0abd1ffb8c02bbdef4ae9da4888dded29d9242c97",
+  "why": "P152 (F-D109): meja AI 5 menit, satu Merkle root keputusan semua agent per siklus"
  },
  "verification": {
   "DecisionAnchor": "bytecode 4748 B",
