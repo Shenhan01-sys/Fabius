@@ -27,8 +27,8 @@ PARAMS2 = {"v": 2, "maks_instrumen": 8, "universe_top": 50, "hysteresis_poin": 1
            # F-D113 #3: ambang proporsional terhadap n kursi AKTIF (n = 3 -> kuorum 2, instrumen/veto >= 2 agent, skor instrumen >= 1,2 = nilai v1)
            "ambang": "kuorum max(2, ceil(n/2)); instrumen + veto max(2, ceil(n/3)) agent; skor instrumen 0,4 n",
            "instrumen_dari": "agent yang memilih bot akhir; tanpa pemilih + bot ditahan -> instrumen siklus lalu"}
-# P160 (F-D113): kursi agent LLM. USULAN kriteria (status "usulan" sampai dikunci atas kata builder); kursi hanya berubah di evaluasi harian 00:00 UTC.
-PARAMS_KURSI = {"v": 1, "status": "usulan", "maks_aktif": 7, "maks_uji": 3, "jendela_siklus": 288, "naik_sah_min": 0.95, "tukar_unggul_min": 0.005,
+# P160 (F-D113): kursi agent LLM, kriteria DIKUNCI atas kata builder 5 Okt ("Gas"); sha di Decisions F-D113. Kursi hanya berubah di evaluasi harian 00:00 UTC.
+PARAMS_KURSI = {"v": 1, "status": "terkunci", "maks_aktif": 7, "maks_uji": 3, "jendela_siklus": 288, "naik_sah_min": 0.95, "tukar_unggul_min": 0.005,
                 "turun_sah_maks": 0.80}
 
 
