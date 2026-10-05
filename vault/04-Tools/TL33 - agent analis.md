@@ -37,6 +37,8 @@ penyedia baru wajib https + nama variabel kunci, `npc` hanya kunci/warna/aksesor
 builder; P150 tetap berlaku) -> variabel Railway `ANALIS_<SLUG>_PRIVATE_KEY` (+ kunci penyedia baru) -> commit + push + `railway_up --service
 fabius-x402`. Pekerja 3D di `/desk` muncul sendiri pada siklus pertama sesudahnya ([[04-Tools/TL34 - meja AI 5 menit]] §lantai).
 
+**Ganti model satu agent (P162):** `python -X utf8 tools/analis.py ganti --slug <s> --nama "<Model>" --provider <p> --model <id> [--base ... --key-var ...] [--short ...]` - slot, agent_id, dompet, URI kartu, dan kursi meja tetap; model lama masuk `riwayat`/`model_history`; kartu ditulis ulang; tanpa tx. Dipakai pertama untuk slot 2568: Grok 4.7 -> GPT 6 Luna (VyceAI).
+
 **Masukan (deterministik, di-hash):** rezim pasar dari bar publik (BTC return 30/60 h, volatilitas 30 h, breadth di atas level 20/60 h, funding rata 7 h)
 + per bot: aturan, status, vonis gerbang v1, confidence maju, eksposur tick terakhir, perubahan. Alasan = JSON (model, effort, hash masukan/prompt/
 jawaban mentah, pilihan); `reasonHash` on-chain = sha256 kanonisnya.
