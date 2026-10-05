@@ -7,7 +7,19 @@ import { dedupeShort, lookFor, type Look, type NpcHint } from "./looks";
 
 export type { Look } from "./looks";
 export type Pose = "trade" | "hold" | "flat" | "fail" | "think";
-export type Seat = { slug: string; nama: string; main: Buku; v1?: Buku; v2?: Buku; pose: Pose; look: Look; pos: [number, number, number]; rotY: number; scale: number };
+export type Seat = {
+  slug: string;
+  nama: string;
+  main: Buku;
+  v1?: Buku;
+  v2?: Buku;
+  pose: Pose;
+  look: Look;
+  pos: [number, number, number];
+  rotY: number;
+  scale: number;
+  trial: boolean; // P160: kursi uji - suaranya belum dihitung di konsensus
+};
 
 // penampilan tiga agent pertama bila gerbang belum mengirim `npc` (sama dengan config/agents.json)
 const FALLBACK: Record<string, NpcHint> = {
@@ -60,6 +72,7 @@ export function seats(d: Desk, now: number): Seat[] {
       v2,
       pose: pose(main, last, now),
       look: lookFor(slug, nama, main.npc ?? v1?.npc ?? FALLBACK[slug]),
+      trial: (v2?.kursi ?? d.kursi?.[slug]) === "uji",
       ...layout(slugs.length, i),
     };
   });

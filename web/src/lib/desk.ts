@@ -34,6 +34,7 @@ export type Buku = {
   siklus_terakhir?: number | null;
   isi_terakhir?: number;
   // P159: penampilan pekerja 3D dari config/agents.json (opsional)
+  kursi?: "aktif" | "uji" | "antre" | null; // P160: kursi agent di meja v2
   npc?: { shirt?: string; hair?: string; skin?: string; extra?: "headset" | "cap" | "glasses" | "beanie" | "hood" | "none"; prop?: "mug" | "paper" | "plant" | "books"; short?: string } | null;
 };
 export type Isi = { aset: string; dari: number; ke: number; harga: number; fee: number };
@@ -53,7 +54,11 @@ export type Desk = {
   t: number;
   params: { siklus_s: number; fee: number; maks_per_aset: number; maks_gross: number; kuorum: number; ubah_min: number; modal_awal: number; aset: string[] };
   params_sha: string;
-  params_v2?: { universe_top: number; maks_instrumen: number; min_agent_instrumen: number; ambang_instrumen: number; likuiditas_min_usd: number; rugi_harian_maks: number };
+  params_v2?: { universe_top: number; maks_instrumen: number; likuiditas_min_usd: number; rugi_harian_maks: number };
+  // P160 (F-D113): ambang konsensus untuk jumlah kursi aktif sekarang + aturan kursi
+  ambang_v2?: { kuorum: number; min_agent_instrumen: number; veto_min_agent: number; ambang_instrumen: number };
+  params_kursi?: { status: string; maks_aktif: number; maks_uji: number; jendela_siklus: number; naik_sah_min: number; tukar_unggul_min: number; turun_sah_maks: number };
+  kursi?: Record<string, "aktif" | "uji" | "antre">;
   params_v2_sha?: string;
   anchor?: string;
   buku: Buku[];

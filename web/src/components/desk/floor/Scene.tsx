@@ -281,8 +281,8 @@ function Desk({ seat, bridge, onOpen, reduced }: { seat: Seat; bridge: Bridge; o
   const { camera, size } = useThree();
   const [hover, setHover] = useState(false);
   const m = useMemo(
-    () => ({ base: mat(C.lav), top: mat(C.clay), leg: mat(C.lav2), ink: mat(C.ink, { roughness: 0.45 }), key: mat(C.lav), chair: mat(C.lav3), paper: mat("#ffffff"), mug: mat(C.violet), leaf: mat(C.violet2) }),
-    [],
+    () => ({ base: mat(C.lav), top: mat(C.clay), leg: mat(C.lav2), ink: mat(C.ink, { roughness: 0.45 }), key: mat(C.lav), chair: mat(seat.trial ? C.lav2 : C.lav3), paper: mat("#ffffff"), mug: mat(C.violet), leaf: mat(C.violet2) }),
+    [seat.trial],
   );
   const open = () => onOpen(seat.main.agent, projectRect(screen.current, 0.39, 0.23, camera, size));
   useEffect(() => {
@@ -486,7 +486,7 @@ function Tower({ cycles, bridge, beat, reduced }: { cycles: Siklus[]; bridge: Br
 
 // ---------------------------------------------------------------- garis cahaya di lantai + denyut
 
-function Wire({ from, to, beat, delay, reduced }: { from: THREE.Vector3; to: THREE.Vector3; beat: number; delay: number; reduced: boolean }) {
+function Wire({ from, to, beat, delay, reduced, dim = false }: { from: THREE.Vector3; to: THREE.Vector3; beat: number; delay: number; reduced: boolean; dim?: boolean }) {
   const dot = useRef<THREE.Mesh>(null!);
   const burst = useRef(-1);
   const first = useRef(true);
@@ -504,8 +504,8 @@ function Wire({ from, to, beat, delay, reduced }: { from: THREE.Vector3; to: THR
     burst.current = 0;
   }, [beat]);
   useFrame(({ clock }, dt) => {
-    if (reduced) {
-      dot.current.visible = false;
+    if (reduced || dim) {
+      dot.current.visible = false; // kursi uji: suaranya belum mengalir ke hub
       return;
     }
     let u: number;
@@ -523,7 +523,7 @@ function Wire({ from, to, beat, delay, reduced }: { from: THREE.Vector3; to: THR
   return (
     <group>
       <mesh geometry={geo}>
-        <meshBasicMaterial color={C.violet2} transparent opacity={0.75} toneMapped={false} />
+        <meshBasicMaterial color={dim ? C.lav3 : C.violet2} transparent opacity={dim ? 0.35 : 0.75} toneMapped={false} />
       </mesh>
       <mesh ref={dot}>
         <sphereGeometry args={[0.055, 12, 12]} />
@@ -585,10 +585,10 @@ export default function Scene({
     const hubEdge = (p: THREE.Vector3) => p.clone().setY(0).normalize().multiplyScalar(1.12).setY(0.012);
     const out = seats.map((s, i) => {
       const p = new THREE.Vector3(...s.pos);
-      return { from: p.clone().multiplyScalar(0.62).setY(0.012), to: hubEdge(p), delay: i * 0.25 };
+      return { from: p.clone().multiplyScalar(0.62).setY(0.012), to: hubEdge(p), delay: i * 0.25, dim: s.trial };
     });
     const t = new THREE.Vector3(...TOWER);
-    out.push({ from: hubEdge(t), to: t.clone().multiplyScalar(0.83).setY(0.012), delay: 1.1 });
+    out.push({ from: hubEdge(t), to: t.clone().multiplyScalar(0.83).setY(0.012), delay: 1.1, dim: false });
     return out;
   }, [seats]);
   return (
@@ -624,7 +624,7 @@ export default function Scene({
       <Tilt reduced={reduced}>
         <Floor />
         {wires.map((w, i) => (
-          <Wire key={i} from={w.from} to={w.to} beat={beat} delay={w.delay} reduced={reduced} />
+          <Wire key={i} from={w.from} to={w.to} beat={beat} delay={w.delay} reduced={reduced} dim={w.dim} />
         ))}
         <Hub book={hub} bridge={bridge} onOpen={onOpen} reduced={reduced} />
         <Tower cycles={cycles} bridge={bridge} beat={beat} reduced={reduced} />

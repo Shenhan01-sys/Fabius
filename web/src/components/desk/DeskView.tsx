@@ -377,10 +377,25 @@ function Rules({ d }: { d: Desk }) {
             .replace("{top}", String(d.params_v2.universe_top))
             .replace("{reg}", "12")
             .replace("{max}", String(d.params_v2.maks_instrumen))
-            .replace("{minag}", String(d.params_v2.min_agent_instrumen))
-            .replace("{th}", String(d.params_v2.ambang_instrumen))
+            .replace("{n}", String(Object.values(d.kursi ?? {}).filter((x) => x === "aktif").length || 3))
+            .replace("{q}", String(d.ambang_v2?.kuorum ?? 2))
+            .replace("{minag}", String(d.ambang_v2?.min_agent_instrumen ?? 2))
+            .replace("{th}", String(d.ambang_v2?.ambang_instrumen ?? 1.2))
+            .replace("{veto}", String(d.ambang_v2?.veto_min_agent ?? 2))
             .replace("{liq}", d.params_v2.likuiditas_min_usd.toLocaleString("en-US"))
             .replace("{loss}", String(d.params_v2.rugi_harian_maks * 100))}
+        </p>
+      )}
+      {d.params_kursi && (
+        <p className="mt-2 text-sm text-ink/70">
+          {v.seatRules
+            .replace("{a}", String(d.params_kursi.maks_aktif))
+            .replace("{u}", String(d.params_kursi.maks_uji))
+            .replace("{w}", String(d.params_kursi.jendela_siklus))
+            .replace("{up}", String(Math.round(d.params_kursi.naik_sah_min * 100)))
+            .replace("{swap}", String(d.params_kursi.tukar_unggul_min * 100))
+            .replace("{down}", String(Math.round(d.params_kursi.turun_sah_maks * 100)))
+            .replace("{status}", d.params_kursi.status)}
         </p>
       )}
       <p className="mt-2 font-mono text-[11px] text-ink/50">

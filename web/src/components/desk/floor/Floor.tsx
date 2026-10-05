@@ -60,6 +60,8 @@ export default function Floor({ d }: { d: Desk }) {
   const kh = hub?.keputusan_terakhir;
   const nInstr = kh?.instrumen?.length ?? Object.keys(hub?.posisi ?? {}).length;
   const hubLine = !hub ? "-" : nInstr ? f.onInstr.replace("{bot}", kh?.bot ?? "consensus").replace("{n}", String(nInstr)) : f.flatHub;
+  // terlambat = model tidak menjawab dalam batas waktu (bukan galat model): kata "late", bukan "failed"
+  const word = (s: (typeof seatList)[number]) => (s.pose === "fail" && s.main.status_terakhir === "terlambat" ? v.status.terlambat : f.poses[s.pose]);
   const last = d.siklus_terakhir;
   const caption = last
     ? f.caption
@@ -67,7 +69,7 @@ export default function Floor({ d }: { d: Desk }) {
         .replace(
           "{agents}",
           seatList
-            .map((s) => `${s.nama} ${glyph[s.pose]} ${f.poses[s.pose]}${s.pose === "trade" && s.main.isi_terakhir ? ` (${s.main.isi_terakhir} ${f.fills})` : ""}`)
+            .map((s) => `${s.nama}${s.trial ? ` (${f.trial})` : ""} ${glyph[s.pose]} ${word(s)}${s.pose === "trade" && s.main.isi_terakhir ? ` (${s.main.isi_terakhir} ${f.fills})` : ""}`)
             .join(" · "),
         )
         .replace("{hub}", hubLine)
@@ -127,12 +129,16 @@ export default function Floor({ d }: { d: Desk }) {
               {compact ? (
                 <span className={`block font-mono text-[10px] leading-tight ${s.pose === "fail" ? "text-gap" : s.pose === "trade" ? "text-violet" : "text-ink/70"}`}>
                   {glyph[s.pose]} {s.look.short}
+                  {s.trial ? ` · ${f.trialShort}` : ""}
                 </span>
               ) : (
                 <>
-                  <span className="block text-[11px] font-medium leading-tight text-ink">{s.nama}</span>
+                  <span className="block text-[11px] font-medium leading-tight text-ink">
+                    {s.nama}
+                    {s.trial && <span className="ml-1 rounded bg-lav-2 px-1 font-mono text-[9px] uppercase text-ink/60">{f.trialShort}</span>}
+                  </span>
                   <span className={`block font-mono text-[10px] leading-tight ${s.pose === "fail" ? "text-gap" : s.pose === "trade" ? "text-violet" : "text-ink/55"}`}>
-                    {glyph[s.pose]} {f.poses[s.pose]}
+                    {glyph[s.pose]} {word(s)}
                     {s.pose === "trade" && s.main.isi_terakhir ? ` · ${s.main.isi_terakhir} ${f.fills}` : ""} · {fmtPct(s.main.hasil_pct)}
                   </span>
                 </>
