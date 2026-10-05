@@ -108,6 +108,8 @@ class ArchiveTests(unittest.TestCase):
             picks = [{"agent": "glm", "bar_close": 100, "bot": "B1-TREND", "reasonHash": an.sha(good["alasan"])},
                      {"agent": "qwen", "bar_close": 100, "bot": "B1-TREND", "reasonHash": an.sha({"lain": True})}]
             logs = []
+            self.assertEqual(an.arsip(picks, lambda c: {"pilihan": [good, bad]}, tmp, log=logs.append, now_s=99), 0)   # bar belum tutup: tersegel
+            self.assertEqual(logs, [])
             n = an.arsip(picks, lambda c: {"pilihan": [good, bad]}, tmp, log=logs.append)
             self.assertEqual(n, 1)
             self.assertTrue(any("DITOLAK" in x and "qwen" in x for x in logs))

@@ -148,5 +148,84 @@ class DirectBuyTests(unittest.TestCase):
         self.assertEqual(self.sent, [])
 
 
+def jwt(key, claims: dict) -> str:
+    from cryptography.hazmat.primitives import hashes
+    from cryptography.hazmat.primitives.asymmetric import ec, utils
+    enc = lambda b: base64.urlsafe_b64encode(b).rstrip(b"=").decode()                    # noqa: E731
+    h, p = enc(json.dumps({"alg": "ES256", "typ": "JWT"}).encode()), enc(json.dumps(claims).encode())
+    r, s_ = utils.decode_dss_signature(key.sign(f"{h}.{p}".encode(), ec.ECDSA(hashes.SHA256())))
+    return f"{h}.{p}." + enc(r.to_bytes(32, "big") + s_.to_bytes(32, "big"))
+
+
+def p256():
+    from cryptography.hazmat.primitives import serialization as ser
+    from cryptography.hazmat.primitives.asymmetric import ec
+    k = ec.generate_private_key(ec.SECP256R1())
+    return k, k.public_key().public_bytes(ser.Encoding.PEM, ser.PublicFormat.SubjectPublicKeyInfo).decode()
+
+
+CLAIMS = {"iss": "privy.io", "aud": "app", "sub": "did:privy:u1", "exp": NOW + 600, "iat": NOW}
+
+
+@unittest.skipUnless(HAVE, "cryptography/eth-abi tidak terpasang")
+class AccessTokenTests(unittest.TestCase):
+    def test_only_an_unexpired_privy_token_for_this_app_signed_by_its_key_is_accepted(self):
+        k, pem = p256()
+        self.assertEqual(pv.verify_access_token(jwt(k, CLAIMS), "app", pem, NOW)["sub"], "did:privy:u1")
+        other, _ = p256()
+        for tok in (jwt(other, CLAIMS), jwt(k, {**CLAIMS, "aud": "app-lain"}), jwt(k, {**CLAIMS, "exp": NOW}),
+                    jwt(k, {**CLAIMS, "iss": "evil"}), "bukan.jwt", jwt(k, CLAIMS)[:-4] + "AAAA"):
+            with self.assertRaises(pv.PrivyError):
+                pv.verify_access_token(tok, "app", pem, NOW)
+
+
+@unittest.skipUnless(HAVE, "cryptography/eth-abi tidak terpasang")
+class ReasoningAccessTests(unittest.TestCase):
+    """P145 (F-D104): alasan lengkap agent analis di web = login Privy + >= 1 sinyal dibeli dalam 7 hari dari dompet akun itu."""
+
+    def setUp(self):
+        from engine.tests.test_x402_sinyal import tulis_pilihan
+        self.repo = tempfile.mkdtemp()
+        os.makedirs(os.path.join(self.repo, "ledger", "paper"))
+        os.makedirs(os.path.join(self.repo, "deployments"))
+        with open(os.path.join(self.repo, "deployments", "97.json"), "w", encoding="utf-8") as f:
+            json.dump({"x402_sinyal": {"token": TOKEN, "facilitator": PAYTO}, "m3": {"committer": "0x" + "11" * 20},
+                       "contracts": {"SignalAnchor": "0x" + "a1" * 20, "LockRegistry": "0x" + "a2" * 20, "SelectionAnchor": "0x" + "a3" * 20}}, f)
+        self.key, pem = p256()
+        self.t = NOW
+        user = {"id": "did:privy:u1", "linked_accounts": [{"type": "google_oauth"}, {"type": "wallet", "address": "0xAbAb" + "ab" * 18, "chain_type": "ethereum"}]}
+
+        def http(method, url, headers, body):
+            if url.endswith("/api/v1/apps/app"):
+                return 200, {"verification_key": pem}
+            if url.endswith("/v1/users/did:privy:u1"):
+                return 200, user
+            return 404, {}
+        self.g = xs.Gate(xs.Data(self.repo), "0xk", "https://g", "https://w", log=lambda m: None, now=lambda: self.t)
+        self.g.privy = pv.Privy("app", "s", None, http=http)
+        self.g.analis_dir = os.path.join(self.repo, "data", "analis")
+        self.g.buys_path = os.path.join(self.repo, "data", "pembelian.jsonl")
+        tulis_pilihan(self.g.analis_dir, NOW + 3600)
+
+    def tearDown(self):
+        shutil.rmtree(self.repo, ignore_errors=True)
+
+    def test_signed_in_buyers_get_the_full_reasoning_and_everyone_else_is_told_what_to_do(self):
+        bearer = "Bearer " + jwt(self.key, CLAIMS)
+        self.assertEqual(self.g.analis_lengkap(None)[0], 401)
+        code, body = self.g.analis_lengkap(bearer)
+        self.assertEqual(code, 402)                                                       # login tapi belum pernah beli
+        self.assertEqual(body["beli"], "https://w/beli/B1-TREND")
+        self.assertNotIn("RAHASIA", json.dumps(body))
+        self.g.record_buy("B1-TREND", "2026-10-05", ADDR, "0xtx", 10_000)                  # ADDR = alamat user (huruf besar/kecil beda)
+        code, body = self.g.analis_lengkap(bearer)
+        self.assertEqual(code, 200)
+        self.assertIn("RAHASIA-ALASAN glm", json.dumps(body))
+        self.assertEqual(body["akses"]["pembelian_terakhir"]["tx"], "0xtx")
+        self.assertEqual(body["selection_anchor"], "0x" + "a3" * 20)
+        self.t = NOW + 8 * 86_400                                                          # > 7 hari sesudah beli: akses habis
+        self.assertEqual(self.g.analis_lengkap("Bearer " + jwt(self.key, {**CLAIMS, "exp": self.t + 600}))[0], 402)
+
+
 if __name__ == "__main__":
     unittest.main()

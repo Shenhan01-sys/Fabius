@@ -16,6 +16,7 @@ except ImportError:
     HAVE_ETH = False
 
 import x402_sinyal as xs                                            # noqa: E402
+import analis as an                                                 # noqa: E402
 from engine import harga                                            # noqa: E402
 from engine.tests.test_fd16 import ledger as fd16_ledger, wobble    # noqa: E402
 
@@ -223,6 +224,37 @@ class GateTests(unittest.TestCase):
         self.assertIsNone(button)
         self.assertIn("private chat", txt)
         self.assertEqual(xs.tg_reply(g, 7, "/help")[0], xs.HELP)
+
+    def test_bots_names_the_track_record_confidence_and_says_how_it_differs_from_the_analysts(self):
+        txt, _ = xs.tg_reply(self.gate(FakeEv()), 7, "/bots")
+        self.assertIn("track-record confidence not measured yet (settled days 0/20)", txt)
+        self.assertIn("self-rated", txt)                                                           # % analis = keyakinan agent sendiri
+
+    def test_open_bar_reasoning_is_sealed_in_public_and_in_chat_and_published_after_the_close(self):
+        g = self.gate(FakeEv())
+        g.analis_dir = os.path.join(self.repo, "data", "analis")
+        tulis_pilihan(g.analis_dir, NOW + 3600)
+        txt, button = xs.tg_reply(g, 7, "/analysts")
+        self.assertNotIn("RAHASIA", txt)
+        self.assertIn("self-rated confidence 62%", txt)
+        self.assertNotIn("/analis/skor", txt)                                                      # bukan tautan JSON gerbang
+        self.assertEqual(button, ("Analysts' reasoning", "https://web.example/analis"))
+        self.assertIn("https://web.example/analis", xs.tg_reply(g, -100, "/analysts", private=False)[0])
+        rec = an.records([g.analis_dir])[0]
+        shut = xs.tutup_alasan(rec, NOW)
+        self.assertNotIn("pilihan", shut["alasan"])
+        self.assertIn("terkunci", shut["alasan"])
+        self.assertEqual((shut["reasonHash"], shut["bot"], shut["keyakinan"]), (rec["reasonHash"], rec["bot"], rec["keyakinan"]))   # sudah on-chain
+        self.assertIs(xs.tutup_alasan(rec, NOW + 3600), rec)                                       # sesudah tutup: utuh, hash bisa dicek
+
+
+def tulis_pilihan(d: str, close: int) -> None:
+    os.makedirs(d, exist_ok=True)
+    with open(os.path.join(d, f"{close}.jsonl"), "w", encoding="utf-8") as f:
+        for ag, aid, k in (("glm", 2558, 62), ("qwen", 2559, 42)):
+            print(json.dumps({"agent": ag, "bot": "B1-TREND", "keyakinan": k, "reasonHash": "0x" + "ab" * 32, "status": "dikomit", "tx": "0xt",
+                              "alasan": {"agent": ag, "agent_id": aid, "nama": f"Fabius Analyst {ag}", "bar_close": close,
+                                         "pilihan": {"bot": "B1-TREND", "keyakinan": k, "alasan": "RAHASIA-ALASAN " + ag, "risiko": "r"}}}), file=f)
 
 
 class TelegramTableTests(unittest.TestCase):

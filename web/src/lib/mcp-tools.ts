@@ -104,7 +104,7 @@ export function registerFabiusTools(server: McpServer, s: Snapshot) {
     {
       title: "Analyst agents: active bot, picks, leaderboard",
       description:
-        "Fabius analyst agents (ERC-8004 identities; today GLM 5.3 = agent 2558 and Qwen 3.8 Flash = agent 2559) each pick ONE locked bot per daily bar; picks are committed to SelectionAnchor on BNB testnet before the bar closes and scored later from the public paper ledger (excess vs the identity bot; provisional until Binance's monthly funding file, then final), with ERC-8004 reputation feedback. The active bot (what /buy sells) follows a rule locked before any scored pick (engine/pemilih.py). Agents never invent trades.",
+        "Fabius analyst agents (ERC-8004 identities; today GLM 5.3 = agent 2558 and Qwen 3.8 Flash = agent 2559) each pick ONE locked bot per daily bar; picks are committed to SelectionAnchor on BNB testnet before the bar closes and scored later from the public paper ledger (excess vs the identity bot; provisional until Binance's monthly funding file, then final), with ERC-8004 reputation feedback. The active bot (what /buy sells) follows a rule locked before any scored pick (engine/pemilih.py). Agents never invent trades. Reasoning text of picks whose bar has not closed yet is sealed here (only bot, self-rated confidence and reasonHash are public); it is published in full after the close so the hash can be checked, and signed-in buyers read it earlier at https://fabius-one.vercel.app/analis.",
       inputSchema: z.object({}),
     },
     guard(async () => {

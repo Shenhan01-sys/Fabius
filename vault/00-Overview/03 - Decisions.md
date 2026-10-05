@@ -3054,3 +3054,25 @@ lalu menempelkan ID DAN private key di chat. Diingatkan: kunci itu harus diangga
    PENSIUN (dihapus dari `.privy.env`; builder diminta menghapusnya di dashboard). Sisa pekerjaan migrasi: hanya policy Privy (opsional).
 
 **Terkait:** F-D101 · [[04-Tools/TL32 - gerbang x402 per sinyal]] · [[09-Inbox/Session-2026-10-02]] §87
+
+## F-D104 — Alasan agent analis: tersegel sampai bar tutup; lengkap di web untuk akun yang login + membeli sinyal dalam 7 hari · 5 Okt 2026 (WIB)
+
+Builder (setelah melihat `/analysts` menautkan JSON gerbang): *"Mending ditaruh di FE web deh tp hanya bisa diakses untuk org yg login + bayar,
+masa org awam disuruh akses file json dari BE?"*
+
+1. **Publik** (gerbang `/analis`, Telegram `/analysts`, MCP `fabius_analysts`): bot pilihan, keyakinan agent, reasonHash, tx - semuanya memang sudah
+   on-chain. Isi alasan pilihan yang barnya BELUM tutup disegel (`tools/x402_sinyal.py::tutup_alasan`); `/analysts` tidak lagi mengutip alasan dan
+   tidak lagi menautkan JSON - tombol Mini App ke `/analis`.
+2. **Web `/analis`** (untuk semua): bot aktif, slip pilihan bersegel (bot + keyakinan + reasonHash), papan peringkat. **Alasan lengkap** (teks,
+   risiko, sidik input/prompt/jawaban mentah) hanya untuk akun Privy yang login DAN dompetnya membeli >= 1 sinyal dalam **7 hari** (14 bar terakhir).
+   Gerbang `GET /analis/lengkap` memeriksa token akses Privy (JWT ES256, iss `privy.io`, aud = app id, kunci verifikasi publik app) lalu dompet user
+   (GET /v1/users/{did}) terhadap catatan pembelian `/data/pembelian.jsonl` (ditulis sesudah settle TERBUKTI). Tanpa login 401, tanpa pembelian 402 +
+   tautan beli.
+3. **Sesudah bar tutup alasan terbit penuh** (gerbang `/analis/<close>` + arsip repo PUBLIK `ledger/analis`) - itu syarat agar siapa pun bisa
+   mencocokkan sha256-nya dengan reasonHash on-chain. Menutupnya selamanya = verifikasi pihak ketiga hilang; tidak dipilih. Yang dijual = membaca
+   SEBELUM tutup (saat masih berguna) + tampilan rapi; web tetap hanya menampilkan isi alasan ke pembeli. Arsip melewati bar yang belum tutup.
+4. 7 hari dan 14 bar = pilihan produk (bisa diubah builder), bukan angka statistik. Pembelian sebelum deploy ini tidak tercatat (catatan mulai sekarang).
+5. Dua "confidence" dibedakan di Telegram: `/bots` = *track-record confidence* (1 - p F-D16 atas hasil maju bot, `engine/confidence.py`; angka dari 2
+   hari settle, bermakna dari 20) dan `/analysts` = *self-rated confidence* (keyakinan agent untuk satu bar, field `confidence` SelectionAnchor).
+
+**Terkait:** F-D99 · F-D102 · [[04-Tools/TL33 - agent analis]] · [[04-Tools/TL32 - gerbang x402 per sinyal]] · [[09-Inbox/Session-2026-10-02]] §88

@@ -4,6 +4,7 @@
 
 import { createPublicClient, http, parseAbi, type Hex } from "viem";
 import { bscTestnet } from "viem/chains";
+import type { PrivyClientConfig } from "@privy-io/react-auth";
 
 export const GATE = "https://fabius-x402-production.up.railway.app"; // tools/x402_sinyal.py di Railway fabius-x402
 export const FAB = "0xc7b6d5cdbdc881daae0dbcc095d4f184b70ec881" as const; // deployments/97.json x402_sinyal.token
@@ -12,6 +13,15 @@ export const PROXY = "0x402085c248EeA27D92E8b30b2C58ed07f9E20001" as const; // x
 export const PRIVY_APP_ID = "cmuukhkc200zo0cjh0jmqd11x"; // publik (builder, 5 Okt); secret hanya di Railway
 export const PRIVY_KEY_QUORUM_ID = "pyyven7fpdtnc30uuij8ikps"; // key quorum fabius-bot1 (P138e): pasangan lokal yang tidak pernah terbuka; izin user -> /buy dari chat
 const CHAIN_ID = 97;
+
+// Satu konfigurasi Privy untuk /beli dan /analis: akun + dompet yang SAMA di kedua halaman (dan di Telegram Mini App).
+export const PRIVY_CONFIG: PrivyClientConfig = {
+  loginMethods: ["google", "telegram", "email"],
+  embeddedWallets: { ethereum: { createOnLogin: "users-without-wallets" } },
+  defaultChain: bscTestnet,
+  supportedChains: [bscTestnet],
+  appearance: { theme: "light", accentColor: "#6E56CF", landingHeader: "Fabius" },
+};
 
 export const chain97 = createPublicClient({ chain: bscTestnet, transport: http("https://bsc-testnet-rpc.publicnode.com") });
 const ERC20 = parseAbi(["function balanceOf(address) view returns (uint256)", "function nonces(address) view returns (uint256)"]);

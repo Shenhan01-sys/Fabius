@@ -13,6 +13,7 @@ export default function Nav() {
     ["/#book", t.nav.book],
     ["/verify", t.nav.verify],
     ["/status", t.nav.status],
+    ["/analis", t.nav.analysts],
     ["/#access", t.nav.access],
   ];
   return (

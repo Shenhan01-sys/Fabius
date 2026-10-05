@@ -7,11 +7,10 @@
 import Script from "next/script";
 import { useCallback, useEffect, useState } from "react";
 import { PrivyProvider, useLinkAccount, usePrivy, useSignTypedData, useSigners, useWallets } from "@privy-io/react-auth";
-import { bscTestnet } from "viem/chains";
 import type { Hex } from "viem";
 import Nav from "@/components/Nav";
 import { LangProvider, useLang } from "@/components/lang";
-import { PRIVY_APP_ID, PRIVY_KEY_QUORUM_ID, buy, fabBalance, faucet, teaser, type Package, type RincianAset, type Teaser } from "@/lib/x402-buy";
+import { PRIVY_APP_ID, PRIVY_CONFIG, PRIVY_KEY_QUORUM_ID, buy, fabBalance, faucet, teaser, type Package, type RincianAset, type Teaser } from "@/lib/x402-buy";
 
 const px = (x: number) => (x >= 100 ? x.toLocaleString("en-US", { maximumFractionDigits: 2 }) : x >= 1 ? x.toFixed(4) : x.toFixed(6));
 const pct = (x: number) => `${x >= 0 ? "+" : ""}${(x * 100).toFixed(1)}%`;
@@ -24,16 +23,7 @@ export default function BeliView({ bot }: { bot: string }) {
       <div className="p-2 sm:p-3">
         <Nav />
         {scriptDone ? (
-          <PrivyProvider
-            appId={PRIVY_APP_ID}
-            config={{
-              loginMethods: ["google", "telegram", "email"],
-              embeddedWallets: { ethereum: { createOnLogin: "users-without-wallets" } },
-              defaultChain: bscTestnet,
-              supportedChains: [bscTestnet],
-              appearance: { theme: "light", accentColor: "#6E56CF", landingHeader: "Fabius" },
-            }}
-          >
+          <PrivyProvider appId={PRIVY_APP_ID} config={PRIVY_CONFIG}>
             <Buy bot={bot} />
           </PrivyProvider>
         ) : (
@@ -319,6 +309,9 @@ function Buy({ bot }: { bot: string }) {
               {v.paidTx}
             </a>
           </p>
+          <a className="mt-3 inline-block text-sm text-violet underline" href="/analis">
+            {v.analystsOpen}
+          </a>
           <p className="mt-3 text-xs text-ink/50">{v.disclaimer}</p>
         </Step>
       )}

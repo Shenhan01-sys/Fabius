@@ -500,12 +500,16 @@ def cmd_masukan(a) -> int:
 GATE_URL = "https://fabius-x402-production.up.railway.app"
 
 
-def arsip(picks: List[dict], fetch: Callable[[int], dict], out_dir: str, log: Callable[[str], None] = print) -> int:
+def arsip(picks: List[dict], fetch: Callable[[int], dict], out_dir: str, log: Callable[[str], None] = print, now_s: Optional[int] = None) -> int:
     """Alasan yang diterbitkan gerbang -> `ledger/analis/<bar_close>.jsonl`, HANYA bila sha256 alasannya = reasonHash on-chain (pilihan yang dikomit).
-    Bar yang sudah punya catatan cocok untuk agent itu tidak ditulis ulang. -> jumlah catatan baru."""
+    Bar yang sudah punya catatan cocok untuk agent itu tidak ditulis ulang; bar yang BELUM tutup dilewati (alasannya masih tersegel di gerbang,
+    F-D104) dan diarsip di putaran sesudah tutup. -> jumlah catatan baru."""
+    now = int(time.time()) if now_s is None else now_s
     have = {(r["agent"], int(r["alasan"]["bar_close"])) for r in records([out_dir])}
     n = 0
     for close in sorted({p["bar_close"] for p in picks}):
+        if close > now:
+            continue
         want = {p["agent"]: p for p in picks if p["bar_close"] == close and (p["agent"], close) not in have}
         if not want:
             continue

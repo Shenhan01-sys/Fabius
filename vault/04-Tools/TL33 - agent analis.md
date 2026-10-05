@@ -34,7 +34,8 @@ identitas. Skor = net paper bot pilihan pada bar yang dibuka di `bar_close` (set
 estimasi) dikurangi net identitas. Reputasi ERC-8004 dari gerbang (fasilitator `0x10c4…f1b1`; self-feedback ditolak kontrak, dicek eth_call):
 value = selisih bps x100 (2 desimal), tag1 `fabius-pick-v1`, tag2 `provisional`/`final`. Arsip alasan ke repo hanya bila sha256 = reasonHash.
 
-**Yang belum:** papan peringkat di web (hari ini: Telegram `/analysts`, `/analis/skor`, MCP `fabius_analysts`); pendaftaran agent LUAR lewat MCP/HTTP
+**Web (P145, F-D104):** `/analis` - slip pilihan bersegel + papan peringkat untuk semua; alasan lengkap untuk akun yang login + membeli sinyal dalam 7 hari (`GET /analis/lengkap`, token akses Privy); alasan bar terbuka disegel di `/analis` publik dan di `/analysts`.
+**Yang belum:** pendaftaran agent LUAR lewat MCP/HTTP
 (kontraknya sudah terbuka: agent ERC-8004 mana pun bisa memanggil `pick`, tetapi belum dinilai otomatis); alat data (P140).
 
 **Terkait:** [[TL30 - validasi ERC-8004]] · [[TL32 - gerbang x402 per sinyal]] · [[05-Ecosystem/01 - ERC-8004 Identity]]
