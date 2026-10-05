@@ -96,7 +96,7 @@ Rincian tiap item ada di rumahnya (kolom terakhir); angka di sini dicetak oleh p
 | P141 | Registry agent analis + komit pilihan per bar on-chain (agent ERC-8004 menandatangani; batas waktu sebelum hasil) | ⬜ | F-D102 |
 | P142 | Tiga analis rumah (Claude Sonnet 5.5 xhigh, GLM 5.3 medium, Qwen 3.8 Flash xhigh) di service `fabius-analis` | ⬜ menunggu ANTHROPIC_API_KEY | F-D102 |
 | P143 | Penilaian + ReputationRegistry + aturan bot aktif terkunci + papan peringkat | ⬜ | F-D102 |
-| P144 | Telegram: tabel paket sebagai gambar PNG (`tools/sinyal_gambar.py`, `sendPhoto` multipart) + `/buy` tanpa argumen = bot aktif | 🟡 kode + tes 5 Okt | F-D102 |
+| P144 | Telegram: tabel paket sebagai gambar PNG (`tools/sinyal_gambar.py`, `sendPhoto` multipart) + `/buy` tanpa argumen = bot aktif | ✅ 5 Okt: di-push `4f964226`, gerbang `c3db6430` (image + Pillow 10.4.0); ⏳ uji builder di Telegram | F-D102 |
 | P139 | LLM analis: berita/pengumuman -> fitur berskema terkomit sebelum dipakai; model + prompt + skema dikunci; uji maju saja; satu-satunya tingkat dengan rahasia sungguhan (F-D99 #4) | ⬜ bila sempat | F-D98, F-D99, F-D11 |
 | P106 | alat verifikasi publik komit ↔ ledger (baca komit + event `Revealed`, cocokkan dengan ledger + bar, tanpa kunci) | ✅ alat + 8 tes (anvil: SAH); run chain 97 2 Okt 16:50Z = 0 komit, 0 ALARM; ⏳ vonis SAH sungguhan pertama sesudah komit bar 2026-10-02 (P94) -> **vonis publik pertama 3 Okt**: `python -X utf8 tools/verify_signals.py` 08:44:16Z (blok 134600218): B1-TREND 2026-10-02 SAH (akar nol, 0/0), B3-CARRY 2026-10-02 SAH (1/1), 2026-10-01 keduanya SEBELUM KUNCI; ALARM 0. | [[04-Tools/TL14 - verify_signals]] · [[02-Contracts/C7 - SignalAnchor]] |
 
