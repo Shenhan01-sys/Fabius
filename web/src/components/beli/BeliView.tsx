@@ -76,7 +76,11 @@ function Buy({ bot }: { bot: string }) {
   const { t, lang } = useLang();
   const v = t.beli;
   const { ready, authenticated, login, logout, user } = usePrivy();
-  const { linkTelegram } = useLinkAccount();
+  const [izinMsg, setIzinMsg] = useState<string>("");
+  const { linkTelegram } = useLinkAccount({
+    onSuccess: () => setIzinMsg(v.tgDone),
+    onError: (err) => setIzinMsg(`${v.tgFail}: ${String(err)}`),
+  });
   const tgLinked = !!user?.telegram;
   const { wallets } = useWallets();
   const { signTypedData } = useSignTypedData();
@@ -178,16 +182,18 @@ function Buy({ bot }: { bot: string }) {
                 className={`${btn} mt-2`}
                 onClick={() => {
                   const raw = (window as unknown as { Telegram?: { WebApp?: { initData?: string } } }).Telegram?.WebApp?.initData;
+                  setIzinMsg(v.tgWorking);
                   try {
                     if (raw) linkTelegram({ launchParams: { initDataRaw: raw } });
                     else linkTelegram();
                   } catch (e) {
-                    setIzin(e instanceof Error ? e.message : String(e));
+                    setIzinMsg(`${v.tgFail}: ${e instanceof Error ? e.message : String(e)}`);
                   }
                 }}
               >
                 {v.tgLink}
               </button>
+              {izinMsg && <p className="mt-2 break-all text-sm text-ink/80">{izinMsg}</p>}
             </div>
           )}
           {tgLinked && <p className="mt-2 text-sm text-ink/60">{v.tgOk.replace("{u}", user?.telegram?.username ? "@" + user.telegram.username : String(user?.telegram?.telegramUserId ?? ""))}</p>}
