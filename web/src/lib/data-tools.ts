@@ -84,3 +84,27 @@ export async function bubblemaps(chain: string, token: string) {
     note: "The public Bubblemaps API only exposes map availability (metadata/data endpoints answered 500/404 on 5 Oct); open the map for holder clusters.",
   };
 }
+
+// FOMO API (fomoapi.io, fomo.family): leaderboard trader + "thesis" (alasan trader di balik trade). Kunci `FOMO_API_KEY` hanya di env Vercel.
+// Paket gratis 250.000 kredit/bulan: leaderboard 250, thesis 1.250 per halaman (dok fomoapi.io/docs, 5 Okt). Supaya agent tidak bisa menguras kuota:
+// hanya 3 tampilan tetap + cache server (leaderboard 12 jam, thesis 6 jam) -> terburuk ±180.000 kredit/bulan; posisi per handle TIDAK disediakan.
+export const FOMO_VIEWS = ["leaderboard_24h", "leaderboard_7d", "theses"] as const;
+export type FomoView = (typeof FOMO_VIEWS)[number];
+
+function trim(o: unknown, n = 20): unknown {
+  if (Array.isArray(o)) return o.slice(0, n);
+  if (o && typeof o === "object") return Object.fromEntries(Object.entries(o as Record<string, unknown>).map(([k, v]) => [k, Array.isArray(v) ? v.slice(0, n) : v]));
+  return o;
+}
+
+export async function fomo(view: FomoView) {
+  const key = process.env.FOMO_API_KEY;
+  if (!key) throw new Error("FOMO_API_KEY is not set on the Fabius server yet");
+  const path = view === "theses" ? "/v2/thesis?sort=recent&limit=20" : `/v2/leaderboard/${view === "leaderboard_7d" ? "7d" : "24h"}`;
+  const r = await fetch(`https://api.fomoapi.io${path}`, { headers: { ...UA, authorization: `Bearer ${key}` }, next: { revalidate: view === "theses" ? 21_600 : 43_200 } });
+  if (!r.ok) {
+    const b = (await r.json().catch(() => ({}))) as { error?: string };
+    throw new Error(`fomoapi.io answered HTTP ${r.status}${b.error ? ` (${b.error})` : ""}`);
+  }
+  return trim(await r.json());
+}

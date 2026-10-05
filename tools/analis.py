@@ -50,6 +50,7 @@ CARD_URL = "https://raw.githubusercontent.com/Shenhan01-sys/Fabius/master/docs/a
 PROVIDERS = {
     "qwencloud": {"base": "https://token-plan.ap-southeast-1.maas.aliyuncs.com/compatible-mode/v1", "key_var": "QWENCLOUD_API_KEY"},
     "anthropic": {"base": "https://api.anthropic.com/v1", "key_var": "ANTHROPIC_API_KEY"},
+    "xkiro": {"base": "https://api.xkiro.com/v1", "key_var": "XKIRO_API_KEY"},          # P139 (F-D108): OpenAI-compatible, kunci dari opencode.json builder
 }
 # Slot `glm` (agent 2558): builder 5 Okt mengganti model ke deepseek-v4.1-flash effort high (diuji di qwencloud: HTTP 200). Identitas ERC-8004, dompet, dan
 # kartu (URI on-chain .../glm.json) TETAP; model tiap pilihan ikut di JSON alasan yang di-hash, riwayat model di kartu. GLM 5.3 dulu: effort hanya
@@ -61,6 +62,10 @@ AGENTS = [   # urutan tetap; `slug` = nama berkas kartu + variabel kunci
      "key_var": "ANALIS_QWEN_PRIVATE_KEY"},
     {"slug": "claude", "name": "Fabius Analyst · Claude Sonnet 5.5", "provider": "anthropic", "model": "claude-sonnet-5-5", "effort": "xhigh",
      "key_var": "ANALIS_CLAUDE_PRIVATE_KEY", "nonaktif": "builder 5 Okt: belum ada dana kredit API Anthropic"},
+    # P139 (F-D108): agent BERITA - masukan yang sama + judul berita/pengumuman Binance (tools/kabar.py) yang disalin ke alasan ber-hash; identitas
+    # sendiri supaya nilai berita terukur di papan (agent berita vs tanpa berita). Model diuji 5 Okt: HTTP 200, 6,2 s, effort high.
+    {"slug": "berita", "name": "Fabius Analyst · Qwen 3.8 Omni Flash (news)", "provider": "xkiro", "model": "qwen/qwen3.8-omni-flash:free",
+     "effort": "high", "key_var": "ANALIS_BERITA_PRIVATE_KEY", "berita": True},
 ]
 SIG_PICK = "pick(uint256,uint64,bytes32,uint8,bytes32)"
 TRANSFER = "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef"
@@ -156,6 +161,29 @@ def prompt(m: dict) -> str:
             '{"bot": "<one of ' + ", ".join(sorted(m["bot"])) + '>", "keyakinan": <integer 0-100>, "alasan": "<max 600 chars>", "risiko": "<max 300 chars>"}')
 
 
+def prompt_berita(m: dict, judul: List[dict]) -> str:
+    """Prompt agent berita: masukan yang sama + daftar judul (terbaru dulu). Fitur berita diminta lebih dulu, lalu pilihan - semuanya satu JSON."""
+    daftar = "\n".join(f"- [{x['sumber']}] {dt.datetime.fromtimestamp(x['waktu'], dt.timezone.utc).strftime('%m-%d %H:%MZ')} {x['judul']}" for x in judul)
+    return (prompt(m).split("\n\nChoose the bot")[0]
+            + "\n\nNews and Binance announcements read this round (newest first; Binance listing/delisting matter most for B4-LISTING-FADE):\n"
+            + (daftar or "(none)")
+            + "\n\nFirst turn the news into features, then choose the bot most likely to have the best net paper return over the NEXT daily bar. "
+            "Use news only where it plausibly moves these assets within one day; otherwise say it is noise. Write all text in English. Reply with exactly "
+            'this JSON: {"fitur_berita": {"sentimen": <integer -2..2>, "kejadian": ["<max 5 events that matter>"], "aset_disebut": ["<symbols>"]}, '
+            '"bot": "<one of ' + ", ".join(sorted(m["bot"])) + '>", "keyakinan": <integer 0-100>, "alasan": "<max 600 chars>", "risiko": "<max 300 chars>"}')
+
+
+def _fitur(o) -> Optional[dict]:
+    if not isinstance(o, dict):
+        return None
+    try:
+        sen = max(-2, min(2, int(o.get("sentimen", 0))))
+    except (TypeError, ValueError):
+        sen = 0
+    lst = lambda v, n, k: [str(x)[:k] for x in (v if isinstance(v, list) else [])][:n]     # noqa: E731
+    return {"sentimen": sen, "kejadian": lst(o.get("kejadian"), 5, 160), "aset_disebut": lst(o.get("aset_disebut"), 10, 20)}
+
+
 def parse(text: str, allowed: List[str]) -> dict:
     """JSON pertama di teks -> pilihan tervalidasi. Galat = ValueError (agent tidak memilih bar itu, tidak dikarang)."""
     m = re.search(r"\{.*\}", text or "", re.S)
@@ -168,13 +196,17 @@ def parse(text: str, allowed: List[str]) -> dict:
     k = int(o.get("keyakinan"))
     if not 0 <= k <= 100:
         raise ValueError(f"keyakinan di luar 0..100: {k}")
-    return {"bot": bot, "keyakinan": k, "alasan": str(o.get("alasan", ""))[:600], "risiko": str(o.get("risiko", ""))[:300]}
+    out = {"bot": bot, "keyakinan": k, "alasan": str(o.get("alasan", ""))[:600], "risiko": str(o.get("risiko", ""))[:300]}
+    f = _fitur(o.get("fitur_berita"))
+    if f is not None:
+        out["fitur_berita"] = f
+    return out
 
 
 # ---------------------------------------------------------------- model
 
 def _post(url: str, headers: dict, body: dict, timeout: int) -> dict:
-    req = urllib.request.Request(url, data=json.dumps(body).encode(), headers={"Content-Type": "application/json", **headers})
+    req = urllib.request.Request(url, data=json.dumps(body).encode(), headers={"Content-Type": "application/json", "User-Agent": "fabius-analis/1.0", **headers})
     with urllib.request.urlopen(req, timeout=timeout) as r:
         return json.loads(r.read().decode())
 
@@ -214,7 +246,7 @@ def active_agents(cfg: dict) -> List[dict]:
 # ---------------------------------------------------------------- satu putaran pilihan (dipakai CLI dan thread gerbang)
 
 def run_round(workdir: str, cfg: dict, ev, now_s: int, send: bool, log: Callable[[str], None] = print, post: Callable = _post,
-              out_dir: Optional[str] = None) -> List[dict]:
+              out_dir: Optional[str] = None, kabar_fn: Optional[Callable[[int], dict]] = None) -> List[dict]:
     """Untuk penutupan bar berikutnya: tiap agent aktif yang belum memilih -> model -> pilihan -> komit. -> catatan per agent."""
     from evm import address_of, calldata, receipt_ok
     sel = cfg["selection"]
@@ -223,21 +255,36 @@ def run_round(workdir: str, cfg: dict, ev, now_s: int, send: bool, log: Callable
     allowed = sorted(m["bot"])
     user = prompt(m)
     res = []
+    news = None
     for ag in active_agents(cfg):
         got = ev.call_decode(sel, "getPick(uint256,uint64)", ("uint256", "uint64"), (int(ag["agent_id"]), close), ("(bytes32,uint8,bytes32,uint64)",))[0]
         if int(got[3]):
             res.append({"agent": ag["slug"], "status": "sudah"})
             continue
+        m_ag, user_ag, extra = m, user, {}
+        if ag.get("berita"):
+            if news is None:
+                import kabar
+                news = (kabar_fn or kabar.kabar)(now_s)
+            if not news["judul"]:
+                why = f"semua sumber berita gagal / kosong: {news['status']}"
+                log(f"analis {ag['slug']}: tidak memilih ({why})")
+                res.append({"agent": ag["slug"], "status": "gagal", "galat": why})
+                continue
+            m_ag = {**m, "berita": news["judul"]}
+            user_ag = prompt_berita(m, news["judul"])
+            extra = {"berita": news["judul"], "sumber_berita": news["status"]}
         try:
-            raw = call_model(ag, SYSTEM, user, post)
+            raw = call_model(ag, SYSTEM, user_ag, post)
             choice = parse(raw, allowed)
         except Exception as e:  # noqa: BLE001 - satu agent gagal tidak menghentikan yang lain; bar itu tanpa pilihannya (dicatat)
             log(f"analis {ag['slug']}: tidak memilih ({type(e).__name__}: {str(e)[:160]})")
             res.append({"agent": ag["slug"], "status": "gagal", "galat": f"{type(e).__name__}: {str(e)[:160]}"})
             continue
         reason = {"v": 1, "agent": ag["slug"], "agent_id": int(ag["agent_id"]), "nama": ag["name"], "penyedia": ag["provider"], "model": ag["model"],
-                  "effort": ag["effort"], "bar_close": close, "masukan_sha256": sha(m), "prompt_sha256": sha(SYSTEM.encode() + b"\n" + user.encode()),
-                  "jawaban_mentah_sha256": sha(raw.encode()), "pilihan": choice, "dibuat_utc": dt.datetime.fromtimestamp(now_s, dt.timezone.utc).isoformat()}
+                  "effort": ag["effort"], "bar_close": close, "masukan_sha256": sha(m_ag), "prompt_sha256": sha(SYSTEM.encode() + b"\n" + user_ag.encode()),
+                  "jawaban_mentah_sha256": sha(raw.encode()), "pilihan": choice, "dibuat_utc": dt.datetime.fromtimestamp(now_s, dt.timezone.utc).isoformat(),
+                  **extra}
         rh = sha(reason)
         rec = {"agent": ag["slug"], "status": "rencana", "bot": choice["bot"], "keyakinan": choice["keyakinan"], "reasonHash": rh, "alasan": reason}
         if send:
@@ -515,22 +562,20 @@ def _evm():
 
 def cmd_kunci(a) -> int:
     from eth_account import Account
-    have = sc.read_env_file(ANALIS_ENV, "ANALIS_GLM_PRIVATE_KEY") if os.path.exists(ANALIS_ENV) else None
-    if have:
-        for ag in AGENTS:
-            k = secret(ag["key_var"])
-            print(f"{ag['slug']}: {Account.from_key(k).address if k else '-'}")
-        print(f"{ANALIS_ENV} sudah ada - tidak ditimpa")
-        return 0
-    lines = ["# kunci dompet agent analis rumah Fabius (P142). JANGAN di-commit/ditempel. Railway: variabel dengan nama yang sama"]
+    lines = [] if os.path.exists(ANALIS_ENV) else ["# kunci dompet agent analis rumah Fabius (P142). JANGAN di-commit/ditempel. Railway: variabel dengan nama yang sama"]
     for ag in AGENTS:
+        k = secret(ag["key_var"])
+        if k:
+            print(f"{ag['slug']}: {Account.from_key(k).address} (sudah ada, tidak ditimpa)")
+            continue
         acct = Account.create()
         k = acct.key.hex()
         lines.append(f"{ag['key_var']}={k if k.startswith('0x') else '0x' + k}")
-        print(f"{ag['slug']}: {acct.address}")
-    with open(ANALIS_ENV, "w", encoding="utf-8") as f:
-        f.write("\n".join(lines) + "\n")
-    print("kunci dibuat di .analis.env (tidak dicetak)")
+        print(f"{ag['slug']}: {acct.address} (BARU)")
+    if lines:
+        with open(ANALIS_ENV, "a", encoding="utf-8") as f:                      # TAMBAH, tidak pernah menimpa kunci lama
+            f.write("\n".join(lines) + "\n")
+    print("kunci baru ditambahkan ke .analis.env (tidak dicetak)" if lines else "tidak ada kunci baru")
     return 0
 
 
@@ -538,7 +583,9 @@ def card(ag: dict, sel: str) -> dict:
     return {"protocol": "erc-8004/1", "name": ag["name"], "type": "analyst",
             "description": (f"House analyst agent of Fabius ({ag['model']}, reasoning effort {ag['effort']}, via {ag['provider']}). Each day it picks ONE "
                             "locked Fabius bot for the next daily bar; the pick (bot, confidence, sha256 of the full reasoning) is committed to "
-                            "SelectionAnchor before the bar closes and scored later from the public ledger. It never invents trades."),
+                            "SelectionAnchor before the bar closes and scored later from the public ledger. It never invents trades."
+                            + (" It also reads public crypto news and Binance listing/delisting announcements (tools/kabar.py); the exact headlines it "
+                               "read are copied into the hashed reasoning, so what it knew before the close is checkable." if ag.get("berita") else "")),
             "model": {"provider": ag["provider"], "id": ag["model"], "effort": ag["effort"]},
             **({"model_history": [{"id": h["model"], "effort": h["effort"], "until_bar_close": h["sampai_bar_close"]} for h in ag["riwayat"]]}
                if ag.get("riwayat") else {}),

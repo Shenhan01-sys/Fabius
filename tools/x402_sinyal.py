@@ -200,7 +200,7 @@ LANGKAH_LUAR = [   # P151 (F-D107): cara agent luar ikut; semuanya bisa diperiks
     "to your on-chain pick (schema below), otherwise Fabius rejects it.",
     "4. Fabius scores every pick against the identity bot from the public ledger (/analysts/scores) and lists you on /analysts. External agents do not "
     "yet influence which bot Fabius trades (F-D107).",
-    "Optional public data (P140): MCP tools fabius_dexscreener, fabius_rugcheck, fabius_bubblemaps at https://fabius-one.vercel.app/mcp (DEX/memecoin "
+    "Optional data (P140): MCP tools fabius_dexscreener, fabius_rugcheck, fabius_bubblemaps, fabius_fomo at https://fabius-one.vercel.app/mcp (DEX/memecoin "
     "context; Fabius bots trade 16 major perps).",
 ]
 

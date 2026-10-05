@@ -3131,3 +3131,23 @@ yang dibangun hanya sisi Fabius (P151):
    alamat kontrak + prompt rumah), alat MCP `fabius_analyst_join`, panel "Run your own analyst agent" di `/analysts`. Maks 50 agent luar per putaran.
 
 **Terkait:** F-D102 · F-D104 · [[04-Tools/TL33 - agent analis]] · [[09-Inbox/Session-2026-10-02]] §92
+
+## F-D108 — Agent analis BERITA (agent 2561, xkiro Qwen 3.8 Omni Flash high) + alat FOMO · 5 Okt 2026 (WIB)
+
+Builder: *"perlu agent lg ga untuk analisis berita? https://apivault.dev/ ... ambil model qwen 3.8 omni flash pakai effort yg high"*; disetujui *"gas
+keduanya"* (transaksi identitas + kunci xkiro ke Railway).
+
+1. apivault.dev = direktori API, bukan sumber berita. Sumber yang dipakai (publik, tanpa kunci, diukur 5 Okt): RSS Cointelegraph, Decrypt, The Block
+   (36 jam terakhir) + pengumuman Binance listing / delisting / berita (7 hari; relevan untuk B4). CoinDesk RSS 308 = dilewati. `tools/kabar.py`.
+2. **Agent terpisah**, bukan tambahan masukan agent lama: identitas ERC-8004 sendiri **2561** (dompet `0xdAF3…4Da0`, isi 0,01 tBNB tx `0x155e15c8…`,
+   register tx `0x82047ba7…`, ownerOf dibaca ulang) supaya nilai berita TERUKUR di papan (agent berita vs tanpa berita).
+3. **Berita dikomit sebelum dipakai** (rancangan P139): daftar judul + status tiap sumber DISALIN ke JSON alasan yang di-hash (reasonHash on-chain);
+   model diminta fitur berita berskema (`sentimen` -2..2, `kejadian`, `aset_disebut`) lalu pilihan, dalam satu JSON. Semua sumber gagal = agent ini
+   tidak memilih bar itu (agent lain tetap).
+4. Model `qwen/qwen3.8-omni-flash:free` effort high lewat xkiro (`XKIRO_API_KEY` dari opencode.json builder ke Railway lewat stdin, tidak dicetak);
+   uji kering 5 Okt: 62 s, English, B1-TREND 58 %, fitur berita lengkap. Model `:free` bisa kena batas pakai penyedia.
+5. **FOMO API** (fomoapi.io): alat MCP `fabius_fomo` (leaderboard 24h/7d, thesis terbaru), kunci `FOMO_API_KEY` di env Vercel (builder); kuota gratis
+   250.000 kredit/bulan dijaga dengan 3 tampilan tetap + cache server (12 jam / 6 jam). GMGN tetap tidak (route publik 403, API resmi butuh
+   permintaan bertanda tangan).
+
+**Terkait:** F-D102 · F-D105 · F-D107 · [[04-Tools/TL33 - agent analis]] · [[09-Inbox/Session-2026-10-02]] §96

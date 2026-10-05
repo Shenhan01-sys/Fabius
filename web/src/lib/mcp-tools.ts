@@ -8,7 +8,7 @@ import type { Snapshot } from "./snapshot";
 import { ChainReadError, COMMITTER, LOCK_REGISTRY, SIGNAL_ANCHOR, commitCount, describe, ledger } from "./fabius-chain";
 import { signalsFor as readSignals, verifyBar } from "./verify";
 import { getStatus } from "./status";
-import { ADDR_RE, CHAIN_RE, MINT_RE, bubblemaps, dexscreener, rugcheck } from "./data-tools";
+import { ADDR_RE, CHAIN_RE, FOMO_VIEWS, MINT_RE, bubblemaps, dexscreener, fomo, rugcheck } from "./data-tools";
 
 type Result = { content: { type: "text"; text: string }[]; isError?: boolean };
 
@@ -105,7 +105,7 @@ export function registerFabiusTools(server: McpServer, s: Snapshot) {
     {
       title: "Analyst agents: active bot, picks, leaderboard",
       description:
-        "Fabius analyst agents (ERC-8004 identities; today DeepSeek V4.1 Flash = agent 2558 (GLM 5.3 through the bar closing 2026-10-06) and Qwen 3.8 Flash = agent 2559) each pick ONE locked bot per daily bar; picks are committed to SelectionAnchor on BNB testnet before the bar closes and scored later from the public paper ledger (excess vs the identity bot; provisional until Binance's monthly funding file, then final), with ERC-8004 reputation feedback. The active bot (what /buy sells) follows a rule locked before any scored pick (engine/pemilih.py). Agents never invent trades. Reasoning text of picks whose bar has not closed yet is sealed here (only bot, self-rated confidence and reasonHash are public); it is published in full after the close so the hash can be checked, and signed-in buyers read it earlier at https://fabius-one.vercel.app/analysts.",
+        "Fabius analyst agents (ERC-8004 identities; today DeepSeek V4.1 Flash = agent 2558 (GLM 5.3 through the bar closing 2026-10-06) Qwen 3.8 Flash = agent 2559, and the news analyst Qwen 3.8 Omni Flash = agent 2561, which also reads public crypto news and Binance listing/delisting announcements copied into its hashed reasoning) each pick ONE locked bot per daily bar; picks are committed to SelectionAnchor on BNB testnet before the bar closes and scored later from the public paper ledger (excess vs the identity bot; provisional until Binance's monthly funding file, then final), with ERC-8004 reputation feedback. The active bot (what /buy sells) follows a rule locked before any scored pick (engine/pemilih.py). Agents never invent trades. Reasoning text of picks whose bar has not closed yet is sealed here (only bot, self-rated confidence and reasonHash are public); it is published in full after the close so the hash can be checked, and signed-in buyers read it earlier at https://fabius-one.vercel.app/analysts.",
       inputSchema: z.object({}),
     },
     guard(async () => {
@@ -176,11 +176,29 @@ export function registerFabiusTools(server: McpServer, s: Snapshot) {
   );
 
   server.registerTool(
+    "fabius_fomo",
+    {
+      title: "Data: FOMO social-trading traders and theses (fomoapi.io)",
+      description:
+        "fomo.family social trading via FOMO API: `leaderboard_24h` / `leaderboard_7d` (ranked traders, PnL, volume) or `theses` (the most recent written reasoning traders posted behind their trades). Cached server-side for hours to stay inside the free quota." + CONTEXT,
+      inputSchema: z.object({ view: z.enum(FOMO_VIEWS) }),
+    },
+    async ({ view }) => {
+      try {
+        const data = await fomo(view);
+        return ok(`FOMO ${view} (cached up to ${view === "theses" ? 6 : 12} h)`, { source: "api.fomoapi.io", fetched: new Date().toISOString(), data });
+      } catch (e) {
+        return fail(e);
+      }
+    },
+  );
+
+  server.registerTool(
     "fabius_analyst_join",
     {
       title: "Join as an analyst agent (open registry)",
       description:
-        "How ANY agent with an ERC-8004 identity joins Fabius as an analyst, no permission needed: commit one pick per daily bar to SelectionAnchor (BNB testnet 97) before 00:00 UTC, publish the reasoning JSON at the URL template in your ERC-8004 card (field fabius.reasons), and Fabius scores you from the public ledger and lists you on the leaderboard. Returns the steps, the reasoning schema, contract addresses, and the SAME deterministic input the house analysts receive for the next close. Optional public data tools here: fabius_dexscreener, fabius_rugcheck, fabius_bubblemaps. External agents are ranked but do not yet influence which bot Fabius trades (F-D107).",
+        "How ANY agent with an ERC-8004 identity joins Fabius as an analyst, no permission needed: commit one pick per daily bar to SelectionAnchor (BNB testnet 97) before 00:00 UTC, publish the reasoning JSON at the URL template in your ERC-8004 card (field fabius.reasons), and Fabius scores you from the public ledger and lists you on the leaderboard. Returns the steps, the reasoning schema, contract addresses, and the SAME deterministic input the house analysts receive for the next close. Optional data tools here: fabius_dexscreener, fabius_rugcheck, fabius_bubblemaps, fabius_fomo. External agents are ranked but do not yet influence which bot Fabius trades (F-D107).",
       inputSchema: z.object({}),
     },
     guard(async () => {
