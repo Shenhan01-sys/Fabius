@@ -62,6 +62,8 @@ denyut (suaranya belum mengalir); Rules menampilkan ambang untuk n aktif sekaran
 lalu. Ditemukan di produksi 16:25Z dan 16:30Z: B2-RS ditahan hysteresis (B5 unggul 30,0 / 27,7 poin tetapi baru dipegang 1-2 siklus) sementara
 instrumennya BTC + PAXG pilihan agent B5 -> aturan B2 (butuh >= 8 aset) datar, buku v2 diam. Tercatat di [[00-Overview/05 - Corrections]].
 
+**Koreksi 6 Okt (PARAMS2 v3 `0x7e3b37f1…`):** bot akhir dengan `min_aset` (B2-RS: 8) diisi skor tertinggi pemilih bot itu sampai minimum; pilihan agent B2 dengan < 8 instrumen dicatat di `ditolak`. Ditemukan di siklus produksi 16:55Z ([[00-Overview/05 - Corrections]]).
+
 ## Batas yang dicatat jujur
 
 Hasil meja v2 = strategi baru (universe pilihan AI + aturan terkunci), BUKAN rekam jejak bot harian; uji maju F-D16 tidak disentuh. Aturan harian
