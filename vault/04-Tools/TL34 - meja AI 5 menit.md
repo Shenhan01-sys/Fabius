@@ -18,6 +18,17 @@ terakhir, + funding) -> ketiga agent rumah memutuskan paralel dalam format baku 
 mark diambil SESUDAH semua jawaban -> buku per agent + buku konsensus diisi (fee 0,05 % per sisi) -> setiap rekaman di-hash -> Merkle root dikomit
 ke DeskAnchor selama siklus berjalan. Volume: `/data/meja/rekaman/<tgl>.jsonl`, `/data/meja/siklus/<tgl>.jsonl`, `/data/meja/buku.json`.
 
+## Buku konsensus (v1) - kenapa transaksi dan PnL-nya beda dari agent
+
+Tiap agent punya buku paper sendiri (modal 10.000 USDT) yang mengikuti targetnya sendiri. Buku konsensus adalah buku keempat: targetnya = rata-rata
+(keyakinan x target) atas agent yang menjawab sah (kuorum 2), lalu diisi dengan aturan yang sama (fee 0,05 % per sisi, perubahan < 2 % ekuitas tidak
+ditransaksikan). Rata-rata mengecilkan dan meratakan posisi, jadi banyak perubahan agent jatuh di bawah ambang 2 % -> transaksinya lebih sedikit dan
+PnL-nya berbeda dari tiap agent. Dicetak 5 Okt ±14:2xZ dari `/desk`: konsensus 13 transaksi / ekuitas 10.005,95; DeepSeek 19 / 10.005,92; Qwen 26 /
+10.017,70; berita 4 / 9.996,33. Agent berita (Qwen 3.8 Omni Flash) status `ok` di semua siklus tetapi memilih datar sampai 14:10Z dengan alasan gerak
+5 menit di bawah ambang biaya pulang-pergi 0,10 %; transaksi pertamanya 14:10Z (4 isi).
+
+**v2 (F-D112) berjalan di siklus yang sama:** [[04-Tools/TL36 - meja v2 bot + instrumen]]; rekamannya ikut root yang sama.
+
 ## Cara memeriksa satu keputusan
 
 `GET /desk/proof/<hash>` -> rekaman, hash dihitung ulang (sha256 JSON kanonis tanpa `hash`), Merkle proof (`engine/chain.py`) -> root =

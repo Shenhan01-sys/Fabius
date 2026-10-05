@@ -3206,3 +3206,30 @@ dengan melalui x402, jadi user bisa deposit dulu ... nanti tiap call mcp maka ak
 4. Sampai F5 dibangun, MCP yang hidup tetap seperti sekarang (dicatat, bukan disembunyikan).
 
 **Terkait:** F-D89 · F-D100 · F-D110 · [[08-Backlog/11 - Epik Meja AI v2]] §7 · [[04-Tools/TL20 - server MCP]]
+
+## F-D112 — Meja v2 opsi D: AI memilih bot DAN instrumen; aturan bot terkunci dihitung kode pada instrumen itu; v1 berdampingan 24 jam · 5 Okt 2026 (WIB)
+
+Builder: *"v2 ini AInya hanya memilih bot ya tanpa memilih instrument apa yg mau di trade?"*, *"Bisa ga sih kalau instrumennya pilih sendiri? ... AInya
+pilih bot sendiri dan instrumen sendiri, jadi bot apa dan instrumen mana yg akan diterapkan pakai bot itu"*, lalu *"Gas, ikuti saranmu"* (opsi D +
+v1 berdampingan 24 jam lalu dimatikan). Juga: *"Kenapa ga collect + analysis secara realtime aja?"* -> v2 langsung hidup (bukan menunggu 24 jam F1).
+Mengubah F-D110 #2-#3 (F-D110 tetap sebagai riwayat):
+
+1. **Output agent:** `bot` + `skor_bot` keenam bot + **`instrumen`** (maks 8, tiap entri: aset, keyakinan, faktor) + `eksposur` + `veto_aset` + `faktor`.
+2. **Universe yang boleh dipilih:** 50 perp USDT Binance teratas menurut volume kuotasi 24 jam (`/fapi/v1/ticker/24hr`, satu panggilan) + 12 token registry
+   (TL35). Di luar itu = ditolak + dicatat (SK-M14).
+3. **Konsensus:** bot dominan = argmax rata-rata berbobot (keyakinan x skor_bot) (+ hysteresis 15 poin / 15 menit); instrumen = skor berbobot keyakinan
+   dari semua agent, masuk bila dipilih >= 2 agent atau skor >= ambang, maks 8.
+4. **Arah dihitung KODE** dengan aturan bot terkunci (`engine.bots.REGISTRY[bot]`, spec yang sama, universe = instrumen terpilih) pada candle harian
+   Binance live; posisi = arah x bobot rata x eksposur, veto, maks 25 % per aset, gross 1x. Aturan yang tidak cocok dengan instrumennya ditolak
+   (SK-M15): B3 butuh kaki spot (meja hanya perp -> datar), B4 hanya untuk perp yang baru listing (`onboardDate` <= H hari).
+5. **Kejujuran:** hasil meja = strategi baru (universe pilihan AI + aturan terkunci), BUKAN rekam jejak bot; uji maju F-D16 tidak disentuh.
+6. **v1 berdampingan 24 jam** pada jam yang sama (panggilan model ±2x selama itu), lalu v1 dimatikan atas laporan pembanding.
+
+**Terkait:** F-D109 · F-D110 · [[08-Backlog/11 - Epik Meja AI v2]] · [[04-Tools/TL35 - data meja v2]]
+
+**Tambahan implementasi F-D112 (5 Okt sore, sebelum deploy):** (a) uji kering pertama tanpa masukan aturan: ketiga agent memilih B5 karena "tidak ada
+fitur 60/28/10 hari" -> kode kini menghitung `tren_60h`, `r_28h`, `z_10h`, `umur_listing_h`, `hari_data` per instrumen dari candle harian (rumus sama
+dengan aturan) dan memberikannya ke agent; uji kering kedua: ketiganya memilih B1 pada instrumen bertren positif (Test Commands #78). (b) Ambang veto
+likuiditas DEX = 50.000 USD (`PARAMS2.likuiditas_min_usd`, dipilih sebelum data hidup; diubah hanya lewat versi params baru). (c) Rem rugi harian 3 %
+dari Epik 11 dipasang di buku v2. (d) Hysteresis "15 menit" dibaca sebagai >= 3 siklus dipegang. (e) v2 menunggu snapshot siklusnya sendiri sampai
+t0+75 s, model dibatasi sampai t0+265 s; v2 yang belum selesai tidak masuk root siklus itu. (f) Teks publik rekaman v2 berbahasa Inggris.

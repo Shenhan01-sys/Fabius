@@ -15,9 +15,12 @@ tags: [backlog, epik, "meja-ai", llm, x402, mcp]
 - *"mcp fabius itu hanya menyediakan signal dan data yg mendukung/menjelaskan lebih detail mengenai sinyal itu dan mcpnya itu hanya bisa dipakai dengan
   melalui x402, jadi user bisa deposit dulu ... nanti tiap call mcp maka akan lgsg otomatis terpotong dari akunnya"*
 
-**Status:** tonggak **E0 rencana** - BELUM DIBANGUN. Disetujui builder 5 Okt (*"Gasss"*, workflow: *"OKe nice, gas catat ke vault"*). Keputusan F-D110
+**Status (5 Okt sore):** F1 HIDUP (P153, cek 24 jam ±6 Okt 11:40Z); F2 + F3 opsi D dibangun dan diuji kering (P154/P155,
+[[04-Tools/TL36 - meja v2 bot + instrumen]]), menunggu push + deploy; F4/F5 belum. Rencana E0 disetujui builder 5 Okt (*"Gasss"*, workflow: *"OKe nice, gas catat ke vault"*). Keputusan F-D110
 (meja v2) dan F-D111 (MCP berbayar). Backlog P153-P157. Status per item hanya di [[08-Backlog/01 - Backlog]].
 **Bahan:** F-D109 meja v1 ([[04-Tools/TL34 - meja AI 5 menit]]) · F-D102/F-D107 analis + registry luar ([[04-Tools/TL33 - agent analis]]) · F-D104
+
+> **Revisi 5 Okt (F-D112, opsi D):** AI memilih **bot + instrumen** (maks 8, dari 50 perp teratas volume 24 jam + 12 token registry); arah per instrumen dihitung KODE dengan aturan bot terkunci (`engine.bots.REGISTRY`) pada candle harian live; v2 langsung hidup berdampingan dengan v1 24 jam (tidak menunggu kriteria 24 jam F1). Bagian §4 dan §5 di bawah dibaca bersama F-D112: `instrumen` ditambahkan ke format, dan posisi = arah aturan x bobot rata x eksposur pada instrumen terpilih (bukan target harian bot).
 alasan berbayar · F-D108 agent berita + FOMO · F-D89 tingkat 0 MCP gratis (DIGANTI oleh F-D111) · [[07-Testing/T8 - Semantik Kegagalan Operator]]
 SK-M4..SK-M13 (rencana).
 
