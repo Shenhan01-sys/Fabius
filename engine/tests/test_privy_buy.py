@@ -138,7 +138,7 @@ class DirectBuyTests(unittest.TestCase):
 
     def test_no_wallet_low_balance_and_missing_consent_each_say_what_to_do(self):
         txt, button = xs.tg_reply(self.gate(FakePrivy(user=False), 10 ** 6), 99, "/buy", True, 42)
-        self.assertIn("create your wallet", txt)
+        self.assertIn("not linked to a Fabius wallet", txt)
         self.assertEqual(button[0], "Open Fabius")
         txt, _ = xs.tg_reply(self.gate(FakePrivy(), 5), 99, "/buy", True, 42)
         self.assertIn("/topup", txt)

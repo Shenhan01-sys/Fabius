@@ -623,7 +623,8 @@ def tg_buy_privy(gate: "Gate", user_id: int, chat_id: int, bot: str) -> Tuple[Op
         return "Wallet lookup failed, try again in a minute.", None
     w = pv.Privy.embedded_wallet(user) if user else None
     if not w:
-        return "Open the Fabius app once (sign in with Telegram) to create your wallet, then /buy again.", ("Open Fabius", app)
+        return ("Your Telegram is not linked to a Fabius wallet yet. Open the app, sign in (Telegram or Google), tap \"Link my Telegram\" and "
+                "\"Allow Fabius bot to pay for me\", then /buy again."), ("Open Fabius", app + "?izin=1")
     wid, addr = w
     bal = int(gate.ev.call_decode(cfg["token"], "balanceOf(address)", ("address",), (addr,), ("uint256",))[0])
     if bal < q["atomic"]:

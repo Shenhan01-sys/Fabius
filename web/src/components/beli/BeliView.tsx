@@ -6,7 +6,7 @@
 
 import Script from "next/script";
 import { useCallback, useEffect, useState } from "react";
-import { PrivyProvider, usePrivy, useSignTypedData, useSigners, useWallets } from "@privy-io/react-auth";
+import { PrivyProvider, useLinkAccount, usePrivy, useSignTypedData, useSigners, useWallets } from "@privy-io/react-auth";
 import { bscTestnet } from "viem/chains";
 import type { Hex } from "viem";
 import Nav from "@/components/Nav";
@@ -75,7 +75,9 @@ const btn = "rounded-full bg-ink px-5 py-2.5 text-sm text-white transition hover
 function Buy({ bot }: { bot: string }) {
   const { t, lang } = useLang();
   const v = t.beli;
-  const { ready, authenticated, login, logout } = usePrivy();
+  const { ready, authenticated, login, logout, user } = usePrivy();
+  const { linkTelegram } = useLinkAccount();
+  const tgLinked = !!user?.telegram;
   const { wallets } = useWallets();
   const { signTypedData } = useSignTypedData();
   const { addSigners, removeSigners } = useSigners();
@@ -169,6 +171,26 @@ function Buy({ bot }: { bot: string }) {
       {authenticated && owner && (
         <Step n={3} title={v.botTitle}>
           <p className="text-sm text-ink/70">{v.botSub}</p>
+          {!tgLinked && (
+            <div className="mt-3 rounded-xl bg-lav/60 p-3 text-sm">
+              <p>{v.tgNeed}</p>
+              <button
+                className={`${btn} mt-2`}
+                onClick={() => {
+                  const raw = (window as unknown as { Telegram?: { WebApp?: { initData?: string } } }).Telegram?.WebApp?.initData;
+                  try {
+                    if (raw) linkTelegram({ launchParams: { initDataRaw: raw } });
+                    else linkTelegram();
+                  } catch (e) {
+                    setIzin(e instanceof Error ? e.message : String(e));
+                  }
+                }}
+              >
+                {v.tgLink}
+              </button>
+            </div>
+          )}
+          {tgLinked && <p className="mt-2 text-sm text-ink/60">{v.tgOk.replace("{u}", user?.telegram?.username ? "@" + user.telegram.username : String(user?.telegram?.telegramUserId ?? ""))}</p>}
           <div className="mt-3 flex flex-wrap gap-3">
             <button
               className={btn}
