@@ -34,6 +34,7 @@ berbahaya dari alat yang gagal keras.
 - [[TL20 - server MCP]] — pintu agen tingkat 0: route `/mcp` di app `web/`, 8 alat hanya baca (sinyal live, periksa leaf/id vs ledger, rekam jejak, kunci); tanpa kunci, tingkat 1 tetap terkunci (P114)
 - [[TL33 - agent analis]] — P141/P142: SelectionAnchor + agent analis ERC-8004 (GLM 2558, Qwen 2559) memilih bot per bar sebelum penutupan
 - [[TL34 - meja AI 5 menit]] — P152: tiga agent memutuskan tiap 5 menit, konsensus terkunci, Merkle root per siklus ke DeskAnchor
+- [[TL35 - data meja v2]] — P153 (F1): Binance, DexScreener, RugCheck, FOMO, berita -> fitur terukur per aset + per bot tiap 5 menit, registry alamat terkunci
 - [[TL32 - gerbang x402 per sinyal]] — P138a: FAB testnet, harga dari confidence (terkunci), gerbang publik Railway, faucet relay, pembelian publik terbukti
 - [[TL31 - teaser confidence]] — P137: 1 - p bootstrap F-D16 atas settle maju, gratis sebelum bayar; tanpa aset/arah/ukuran
 - [[TL30 - validasi ERC-8004]] — P136: tiap komit dimintakan validasi di ValidationRegistry resmi (agen 2494); validator di GitHub Actions menjawab dari pemeriksa P106

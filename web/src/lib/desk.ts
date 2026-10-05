@@ -45,4 +45,19 @@ export async function desk(): Promise<Desk> {
   return r.json();
 }
 
+export type DataHealth = {
+  snapshot_24j: number;
+  durasi_maks_s: number | null;
+  lambat_24j: number;
+  registry_sha: string | null;
+  sumber: Record<string, { cakupan_rata: number | null; siklus_cakupan_penuh: number; status_terakhir: string | null }>;
+  terakhir: { t: number } | null;
+};
+
+export async function dataHealth(): Promise<DataHealth> {
+  const r = await fetch(`${GATE}/desk/data`, { cache: "no-store" });
+  if (!r.ok) throw new Error(`/desk/data HTTP ${r.status}`);
+  return r.json();
+}
+
 export const hhmm = (s: number) => new Date(s * 1000).toISOString().slice(11, 16) + "Z";

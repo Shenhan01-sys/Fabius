@@ -405,6 +405,32 @@ class Gate:
         self._meja = out
         return out
 
+    def data_simpan(self, snap: dict) -> None:
+        """P153 (F1): snapshot data luas meja v2 -> /data/meja/fitur/<tgl>.jsonl (sha atas isi tanpa `durasi_s`)."""
+        with self.meja_lock:
+            path = self._meja_path("fitur", snap["t"])
+            os.makedirs(os.path.dirname(path), exist_ok=True)
+            with open(path, "a", encoding="utf-8", newline="\n") as f:
+                f.write(json.dumps(snap, ensure_ascii=False, sort_keys=True) + "\n")
+        self._data_last, self._data_view = snap, None
+
+    def data_view(self, max_age_s: int = 60) -> dict:
+        """Kesehatan data 24 jam (kriteria keluar F1, Epik 11 §8) + snapshot terakhir."""
+        st = getattr(self, "_data_view", None)
+        if st and time.time() - st["t_view"] < max_age_s:
+            return st
+        rows = [r for r in self._meja_baca("fitur") if r["t"] >= int(self.now()) - 86_400]
+        sumber = sorted({k for r in rows for k in r.get("kesehatan", {})})
+        rk = {k: {"cakupan_rata": round(sum((r["kesehatan"].get(k) or {}).get("cakupan") or 0 for r in rows) / len(rows), 4) if rows else None,
+                  "siklus_cakupan_penuh": sum(1 for r in rows if ((r["kesehatan"].get(k) or {}).get("cakupan") or 0) >= 0.95),
+                  "status_terakhir": (rows[-1]["kesehatan"].get(k) or {}).get("status") if rows else None} for k in sumber}
+        last = rows[-1] if rows else getattr(self, "_data_last", None)
+        out = {"t_view": time.time(), "snapshot_24j": len(rows), "durasi_maks_s": max((r.get("durasi_s") or 0 for r in rows), default=None),
+               "lambat_24j": sum(1 for r in rows if (r.get("durasi_s") or 0) > 240), "sumber": rk,
+               "registry_sha": (last or {}).get("registry_sha"), "terakhir": last}
+        self._data_view = out
+        return out
+
     def meja_proof(self, h: str) -> Tuple[int, dict]:
         rek = next((r for r in self._meja_baca("rekaman", 3) if r.get("hash") == h), None)
         if rek is None:
@@ -794,6 +820,8 @@ def make_handler(gate: Gate):
                     return self._send(200, gate.aktif_now())
                 if parts[0] == "desk" and len(parts) == 1:
                     return self._send(200, gate.meja_view())
+                if parts[0] == "desk" and len(parts) == 2 and parts[1] == "data":
+                    return self._send(200, gate.data_view())
                 if parts[0] == "desk" and len(parts) == 3 and parts[1] == "proof":
                     code, body = gate.meja_proof(parts[2])
                     return self._send(code, body)
@@ -1124,6 +1152,32 @@ def meja_loop(gate: "Gate", ev, stop: threading.Event) -> None:
             gate.log(f"meja gagal: {type(e).__name__}: {str(e)[:200]}")
 
 
+def data_loop(gate: "Gate", stop: threading.Event) -> None:
+    """P153 (F1, F-D110): tiap batas 5 menit UTC (+20 s) snapshot data luas meja v2 (tools/meja_data.py): fitur per aset + per bot dari Binance,
+    DexScreener, RugCheck, FOMO, berita. Belum dibaca agent (F2); dicatat untuk mengukur cakupan + kuota + durasi 24 jam."""
+    import meja_data as md
+    peng = md.Pengumpul(fomo_key=os.environ.get("FOMO_API_KEY"), kabar_fn=lambda now: {"judul": gate.kabar_cache() or []})
+    while True:
+        now = time.time()
+        t0 = int(now // meja.PARAMS["siklus_s"] * meja.PARAMS["siklus_s"]) + meja.PARAMS["siklus_s"]
+        if stop.wait(max(0.0, t0 + 20 - now)):
+            return
+        try:
+            gate.data.refresh()
+            targets = {}
+            for b, recs in gate.data.ledgers().items():
+                ticks = [r for r in recs if r.get("type") == "tick"]
+                targets[b] = (max(ticks, key=lambda r: r["asof"]).get("targets") or {}) if ticks else {}
+            mulai = time.time()
+            snap = peng.kumpul(t0, meja.pasar(t0), targets)
+            snap["durasi_s"] = round(time.time() - mulai, 1)
+            gate.data_simpan(snap)
+            k = snap["kesehatan"]
+            gate.log(f"data {time.strftime('%H:%M', time.gmtime(t0))}Z {snap['durasi_s']}s " + " ".join(f"{n}={v['cakupan']}" for n, v in k.items()))
+        except Exception as e:  # noqa: BLE001 - data gagal tidak boleh mengganggu meja v1 / penjualan
+            gate.log(f"data gagal: {type(e).__name__}: {str(e)[:200]}")
+
+
 def main() -> int:
     ap = argparse.ArgumentParser(description="Gerbang x402 per sinyal Fabius (P138a).")
     ap.add_argument("--port", type=int, default=int(os.environ.get("PORT", "8050")))
@@ -1164,6 +1218,9 @@ def main() -> int:
     gate.log(f"meja AI 5 menit: {'NYALA, DeskAnchor ' + desk if (desk and aktif and pk) else 'mati (DeskAnchor/agent/kunci belum ada)'} | params {meja.params_sha()[:18]}")
     if desk and aktif and pk:
         threading.Thread(target=meja_loop, args=(gate, ev, stop), daemon=True).start()
+    import meja_data as md
+    gate.log(f"data meja v2 (F1): NYALA | registry {md.registry_sha()[:18]} ({len(md.REGISTRY)} token) | FOMO {'ada kunci' if os.environ.get('FOMO_API_KEY') else 'tanpa kunci'}")
+    threading.Thread(target=data_loop, args=(gate, stop), daemon=True).start()
     ThreadingHTTPServer(("0.0.0.0", a.port), make_handler(gate)).serve_forever()
     return 0
 

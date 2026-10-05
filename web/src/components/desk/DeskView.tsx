@@ -8,7 +8,7 @@ import { useEffect, useState } from "react";
 import Nav from "@/components/Nav";
 import { LangProvider, useLang } from "@/components/lang";
 import { LINKS } from "@/lib/copy";
-import { desk, hhmm, type Buku, type Desk, type Rekaman } from "@/lib/desk";
+import { dataHealth, desk, hhmm, type Buku, type DataHealth, type Desk, type Rekaman } from "@/lib/desk";
 
 export default function DeskView() {
   return (
@@ -66,6 +66,7 @@ function Body() {
           </div>
         )}
         {d && d.rekaman.length > 0 && <Feed rows={d.rekaman} names={Object.fromEntries(d.buku.map((b) => [b.agent, b.nama]))} />}
+        <Health />
         {d && <Rules d={d} />}
       </div>
     </section>
@@ -205,6 +206,44 @@ function Feed({ rows, names }: { rows: Rekaman[]; names: Record<string, string> 
           </li>
         ))}
       </ul>
+    </div>
+  );
+}
+
+// P153 (F1): kesehatan data luas yang dibaca Fabius sendiri (cakupan 24 jam per sumber) - kriteria keluar F1 di Epik 11 §8
+function Health() {
+  const { t } = useLang();
+  const v = t.desk;
+  const [h, setH] = useState<DataHealth | null>(null);
+  useEffect(() => {
+    let live = true;
+    const load = () => dataHealth().then((x) => live && setH(x), () => undefined);
+    load();
+    const id = setInterval(load, 60_000);
+    return () => {
+      live = false;
+      clearInterval(id);
+    };
+  }, []);
+  if (!h || !h.terakhir) return null;
+  return (
+    <div className={panel}>
+      <p className={label}>{v.dataTitle}</p>
+      <p className="mt-1 text-xs text-ink/50">{v.dataSub.replace("{n}", String(h.snapshot_24j)).replace("{slow}", String(h.lambat_24j))}</p>
+      <div className="mt-3 grid gap-2 sm:grid-cols-3">
+        {Object.entries(h.sumber).map(([k, s]) => (
+          <div key={k} className="rounded-xl border border-ink/10 p-3 text-xs">
+            <p className="font-medium">{k}</p>
+            <p className={s.status_terakhir === "ok" ? "text-violet" : "text-ink/60"}>{s.status_terakhir}</p>
+            <p className="text-ink/50">
+              {v.coverage} {s.cakupan_rata == null ? "-" : `${Math.round(s.cakupan_rata * 100)}%`}
+            </p>
+          </div>
+        ))}
+      </div>
+      <p className="mt-2 font-mono text-[11px] text-ink/45">
+        {v.lastSnapshot} {hhmm(h.terakhir.t)} · registry {short(h.registry_sha)}
+      </p>
     </div>
   );
 }

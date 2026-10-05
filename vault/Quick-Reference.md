@@ -24,6 +24,9 @@ dihapus saat audit, bukan disimpan sopan-sopanan.
 | X402DemoToken (koin demo kami) | `0xB11D90214089684081F57A03d3300E20725297f8` | `python -X utf8 -u tools/x402_deploy.py` |
 | LockRegistry (chain 97, M3) | `0xcF6fBF95fc04DEd8d670512CEc0723a2246Fbb0C` | [[02-Contracts/C6 - LockRegistry]] · ter-deploy 2 Okt 13:04Z |
 | SignalAnchor (chain 97, M3) | `0x9B78200beFbbBe836585d31bd5b6dB32587064f3` | [[02-Contracts/C7 - SignalAnchor]] · maxLag 43200 s, revealWindow 604800 s |
+| SelectionAnchor (chain 97, P141) | `0xc0c16337e6c286ec54902d8de7aadf232587f3b1` | [[04-Tools/TL33 - agent analis]] · pilihan agent analis per bar |
+| FabiusCredit FAB (chain 97, P138a) | `0xc7b6d5cdbdc881daae0dbcc095d4f184b70ec881` | [[04-Tools/TL32 - gerbang x402 per sinyal]] · token uji x402, 6 desimal |
+| DeskAnchor (chain 97, P152) | `0x706da379a5112aa7c86803dcf58d8fdab442305f` | [[04-Tools/TL34 - meja AI 5 menit]] · blok 134996700, satu Merkle root per siklus 5 menit |
 | landing + server MCP (tingkat 0) | https://fabius-one.vercel.app · MCP `https://fabius-one.vercel.app/mcp` | project Vercel `fabius` (Root Directory `web`, GitHub `master`) · [[04-Tools/TL19 - web landing]] · [[04-Tools/TL20 - server MCP]] |
 | committer SignalAnchor (aktif) | `0xCA9c7322210E9a7F7d0953c862d4Ef60cC0D64A4` (saldo 0,12 tBNB sesudah isi ulang 3 Okt, tx `0x41e4bcf3…`; cara isi: `m3_setup.py --deployer-env ../app/.env --fund X --min Y` rencana dulu, lalu `--go`) | `deployments/97.json` `m3.committer`; `0xE12e…812a` pensiun (F-D82) |
 | kunci ambang peninjau v1 | sha `0xf145b70abd251b9fcf421bfb811bcf3788dade347c37b3bea331a09fedfe5f32`, anchoredAt 2026-10-02T08:17:48Z | `python -X utf8 tools/anchor_lock.py --verify` · F-D74 |
