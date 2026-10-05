@@ -174,6 +174,17 @@ function Board() {
       <Papan rows={pub.papan} />
 
       <div className={panel}>
+        <p className={label}>{v.readsTitle}</p>
+        <ul className="mt-3 space-y-2 text-sm text-ink/75">
+          {v.reads.map((r) => (
+            <li key={r.who}>
+              <span className="font-medium text-ink">{r.who}</span> — {r.what}
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      <div className={panel}>
         <p className={label}>{v.joinTitle}</p>
         <p className="mt-2 text-sm text-ink/70">{v.joinSub}</p>
         <p className="mt-2 font-mono text-xs text-ink/50">
