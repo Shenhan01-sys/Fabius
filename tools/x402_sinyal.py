@@ -250,6 +250,7 @@ class Gate:
         self.faucet_day, self.faucet_count = "", 0
         self.tg_secret = hashlib.sha256(b"fabius-tg-link|" + (pk or "tanpa-kunci").encode()).digest()
 
+
     # -- pembaca chain (None tanpa ev)
     def views(self, cfg):
         if self.ev is None:
@@ -299,10 +300,14 @@ class Gate:
         self.faucet_count += 1
         return 200, {"dikirim_atomic": FAUCET_ATOMIC, "tx": r["transactionHash"], "token": cfg["token"]}
 
-    def tg_send(self, chat_id: int, text: str) -> None:
+    def tg_send(self, chat_id: int, text: str, button: Optional[Tuple[str, str]] = None) -> None:
+        """`button` = (label, url) -> tombol Mini App (`web_app`) di bawah pesan: halaman web Fabius terbuka DI DALAM Telegram."""
         if not self.tg_token:
             return
-        body = json.dumps({"chat_id": chat_id, "text": text, "disable_web_page_preview": True}).encode()
+        msg = {"chat_id": chat_id, "text": text, "disable_web_page_preview": True}
+        if button:
+            msg["reply_markup"] = {"inline_keyboard": [[{"text": button[0], "web_app": {"url": button[1]}}]]}
+        body = json.dumps(msg).encode()
         req = urllib.request.Request(f"https://api.telegram.org/bot{self.tg_token}/sendMessage", data=body, headers={"Content-Type": "application/json"})
         try:
             urllib.request.urlopen(req, timeout=15).read()
@@ -350,10 +355,15 @@ class Gate:
 
 def fmt_package(p: dict) -> str:
     tg = sorted(p.get("targets", {}).items(), key=lambda kv: -abs(float(kv[1])))
-    lines = [f"Fabius {p['bot']} bar {p['bar']} (paper, niat posisi)"] + [f"  {a}: {float(w):+.4f}" for a, w in tg[:16]]
+    lines = [f"Fabius {p['bot']} · bar {p['bar']} (paper position intents, not orders)"] + [f"  {a}: {float(w):+.4f}" for a, w in tg[:16]]
     if not tg:
-        lines.append("  datar (tidak ada posisi)")
-    lines.append(f"commitId {p['commitId'][:18]}…  bayar tx {p.get('pembayaran', {}).get('tx', '-')}")
+        lines.append("  flat (no positions)")
+    k = p.get("komit") or {}
+    v = p.get("validasi_erc8004")
+    lines.append(f"commitId {p['commitId'][:18]}… · committed on-chain: {'yes' if k.get('ada') else 'not yet'}"
+                 + (f" · ERC-8004 validation: {v['skor']}" if v and v.get("dijawab") else ""))
+    if p.get("pembayaran"):
+        lines.append(f"paid {p['pembayaran']['atomic'] / 1e6:g} FAB · tx {p['pembayaran']['tx']}")
     return "\n".join(lines)
 
 
@@ -429,14 +439,76 @@ def make_handler(gate: Gate):
     return H
 
 
-# ---------------------------------------------------------------- bot Telegram (P138d; long polling, hanya bila token ada)
+# ---------------------------------------------------------------- bot Telegram (P138d, F-D101): perintah Inggris, dompet = Privy (Mini App)
+# Dompet TIDAK dibuat di sini (keputusan F-D101: opsi custodial dibatalkan). Membeli dan melihat dompet terjadi di halaman web `/beli/<bot>` yang dibuka
+# sebagai Telegram Mini App: Privy login otomatis lewat Telegram, akun Google yang ditautkan memakai dompet yang SAMA. Tautan `?tg=` bertanda membuat
+# paket juga dikirim ke chat sesudah settle. Beli otomatis dari chat (session signer Privy) = tahap berikutnya.
 
-def telegram_loop(gate: Gate, stop: threading.Event) -> None:
+HELP = ("Fabius - verified trading signals, paid per signal with x402 on BNB testnet (chain 97). FAB is a test token with no value.\n\n"
+        "/bots - bots, prices, confidence\n/signal <BOT> - free teaser (no assets, no direction)\n"
+        "/buy <BOT> - open the Fabius app inside Telegram and pay with x402 (sign in with Telegram or Google, no gas)\n"
+        "/wallet - your wallet (same wallet as on the Fabius website when you link Google)\n\n"
+        "Every signal is committed on-chain before the market moves; anyone can verify it.")
+COMMANDS = [("bots", "bots, prices, confidence"), ("signal", "free teaser: /signal B1-TREND"), ("buy", "buy with x402: /buy B1-TREND"),
+            ("wallet", "your wallet"), ("help", "how it works")]
+
+
+def _teaser_en(q: dict) -> str:
+    t = q["teaser"]
+    conf = "not measured yet" if t["confidence_pct"] is None else f"{t['confidence_pct']}% ({'early, not meaningful yet' if t['fd16'] == 'BELUM CUKUP DATA' else 'measured'})"
+    k = t["kematangan"]
+    return (f"{q['bot']} · bar {q['bar']}\nConfidence (forward record): {conf}\nRole: {t.get('status') or '-'} · locked backtest gate: {t.get('gerbang_v1') or '-'}"
+            f" · forward test F-D16: {t['fd16']}\nProgress: signals {k['sinyal'][0]}/{k['sinyal'][1]}, settled days {k['hari'][0]}/{k['hari'][1]}, "
+            f"months {k['bulan'][0]}/{k['bulan'][1]}\nPrice: {q['fab']:g} FAB ({'base price' if q['atomic'] == harga.HargaParams().dasar else 'confidence tier'}, locked table)")
+
+
+def tg_reply(gate: "Gate", chat_id: int, text: str, private: bool = True) -> Tuple[str, Optional[Tuple[str, str]]]:
+    """-> (teks, tombol Mini App atau None)."""
+    cmd, _, arg = text.partition(" ")
+    cmd = cmd.split("@")[0].lower()
+    bot = arg.strip().upper()
+    gate.data.refresh()
+    led = gate.data.ledgers()
+    if cmd in ("/start", "/help"):
+        return HELP, None
+    if cmd == "/bots":
+        rows = []
+        for b in sorted(led):
+            try:
+                q = quote(led, b)
+                c = q["teaser"]["confidence_pct"]
+                rows.append(f"{b}: {q['fab']:g} FAB · confidence {'not measured yet' if c is None else f'{c}%'}")
+            except KeyError:
+                continue
+        return "Bots with a forward clock (latest bar):\n" + "\n".join(rows) + "\n\n/signal <BOT> for the teaser, /buy <BOT> to buy.", None
+    if cmd in ("/signal", "/buy"):
+        if bot not in led:
+            return f"Usage: {cmd} <BOT>. Bots: {', '.join(sorted(led))}", None
+        q = quote(led, bot)
+        link = f"{gate.web_url}/beli/{bot}?tg={tg_link(gate.tg_secret, chat_id, bot, q['bar'], int(gate.now()))}"
+        head = _teaser_en(q) if cmd == "/signal" else f"{bot} · bar {q['bar']} · {q['fab']:g} FAB"
+        if not private:
+            return head + f"\n\nBuy in a private chat with me, or on the web: {gate.web_url}/beli/{bot}", None
+        return head + "\n\nTap the button: sign in with Telegram (or Google), get free FAB, pay with x402 (no gas). The signal is also sent here.", \
+            (f"Buy {bot} · {q['fab']:g} FAB", link)
+    if cmd == "/wallet":
+        b = sorted(led)[0] if led else "B1-TREND"
+        return ("Your wallet lives in the Fabius app (Privy): open it below and sign in with Telegram. Link your Google account there and the "
+                "website uses the SAME wallet. Testnet only; you need no tBNB."), (("Open my wallet", f"{gate.web_url}/beli/{b}") if private else None)
+    return "Unknown command. /help", None
+
+
+def telegram_loop(gate: "Gate", stop: threading.Event) -> None:
     offset = 0
     base = f"https://api.telegram.org/bot{gate.tg_token}"
+    try:
+        body = json.dumps({"commands": [{"command": c, "description": d} for c, d in COMMANDS]}).encode()
+        urllib.request.urlopen(urllib.request.Request(f"{base}/setMyCommands", data=body, headers={"Content-Type": "application/json"}), timeout=15).read()
+    except Exception as e:  # noqa: BLE001
+        gate.log(f"telegram setMyCommands gagal: {type(e).__name__}")
     while not stop.is_set():
         try:
-            with urllib.request.urlopen(f"{base}/getUpdates?timeout=50&offset={offset}", timeout=60) as r:
+            with urllib.request.urlopen(f"{base}/getUpdates?timeout=25&offset={offset}", timeout=40) as r:
                 ups = json.loads(r.read().decode()).get("result", [])
         except Exception as e:  # noqa: BLE001
             gate.log(f"telegram getUpdates gagal: {type(e).__name__}")
@@ -445,41 +517,14 @@ def telegram_loop(gate: Gate, stop: threading.Event) -> None:
         for u in ups:
             offset = max(offset, int(u["update_id"]) + 1)
             m = u.get("message") or {}
-            chat, text = (m.get("chat") or {}).get("id"), (m.get("text") or "").strip()
-            if not chat or not text.startswith("/"):
+            chat, text = m.get("chat") or {}, (m.get("text") or "").strip()
+            if not chat.get("id") or not text.startswith("/"):
                 continue
             try:
-                gate.tg_send(chat, tg_reply(gate, int(chat), text))
+                msg, button = tg_reply(gate, int(chat["id"]), text, chat.get("type") == "private")
+                gate.tg_send(int(chat["id"]), msg, button)
             except Exception as e:  # noqa: BLE001
-                gate.log(f"telegram balasan gagal: {type(e).__name__}")
-
-
-def tg_reply(gate: Gate, chat_id: int, text: str) -> str:
-    cmd, _, arg = text.partition(" ")
-    cmd = cmd.split("@")[0].lower()
-    gate.data.refresh()
-    led = gate.data.ledgers()
-    if cmd in ("/start", "/help", "/bots"):
-        rows = []
-        for b in sorted(led):
-            try:
-                q = quote(led, b)
-                rows.append(f"{b}: {q['fab']:g} FAB · confidence {q['teaser']['label']}" + (f" {q['teaser']['confidence_pct']}%" if q['teaser']['confidence_pct'] is not None else ""))
-            except KeyError:
-                continue
-        return ("Fabius - paket sinyal terverifikasi (testnet BNB 97, token FAB tanpa nilai).\nKetik /sinyal <BOT> untuk teaser + tautan bayar.\n\n"
-                + "\n".join(rows))
-    if cmd == "/sinyal":
-        bot = arg.strip().upper()
-        if bot not in led:
-            return f"Bot tidak dikenal. Pilihan: {', '.join(sorted(led))}"
-        q = quote(led, bot)
-        t = q["teaser"]
-        link = f"{gate.web_url}/beli/{bot}?tg={tg_link(gate.tg_secret, chat_id, bot, q['bar'], int(gate.now()))}"
-        conf = "belum terukur" if t["confidence_pct"] is None else f"{t['confidence_pct']}% ({t['label']})"
-        return (f"{bot} bar {q['bar']}\nConfidence: {conf}\n" + "\n".join(f"• {a}" for a in t["alasan"])
-                + f"\n\nHarga: {q['fab']:g} FAB ({q['alasan']})\nBayar (nol gas, dompet testnet): {link}\nSesudah bayar, isi sinyal dikirim ke chat ini.")
-    return "Perintah: /bots, /sinyal <BOT>"
+                gate.log(f"telegram balasan gagal: {type(e).__name__}: {str(e)[:120]}")
 
 
 def main() -> int:

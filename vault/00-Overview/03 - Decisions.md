@@ -2989,3 +2989,21 @@ Credit · FAB).
 5. **Faucet relay:** gerbang mengirim FAB ke alamat pembeli (berbatas), jadi pembeli tidak butuh tBNB sama sekali.
 
 **Terkait:** F-D72 · F-D98 · F-D99 · [[04-Tools/TL6 - x402 gate and client]] · [[09-Inbox/Session-2026-10-02]] §81
+
+## F-D101 — Dompet pembeli = Privy (login Google / Telegram / email, satu dompet lintas web dan Telegram); dompet custodial bot dibatalkan; bot berbahasa Inggris · 5 Okt 2026 (WIB)
+
+Builder: *"A boleh deh, tapi dompetnya ga berubah" kan? Lalu commandnya pakai inggris ya"* lalu *"BIsa ga pakai konsep kayak privy? Jadi wallet itu
+terhubung dengan akun googlenya, jadi pas login di web fabius jg tinggal pakai akun google aja"*. App ID Privy diberikan di chat (publik); App secret
+dipasang builder sendiri di variabel Railway `fabius-x402` (`PRIVY_APP_SECRET`), BUKAN lewat chat (diingatkan; aturan tetap proyek).
+
+1. **Privy** = dompet pembeli: login Google, Telegram (Mini App: login otomatis), atau email -> embedded wallet; akun Telegram bisa ditautkan ke user
+   Google (`linkWithOAuth`) -> SATU user, SATU dompet di web dan Telegram. Paket gratis Developer (0-499 MAU, 50 rb tanda tangan/bulan, dibaca 5 Okt).
+2. **Opsi A (dompet custodial diturunkan dari rahasia server) DIBATALKAN sebelum rilis:** alamatnya akan berbeda dari dompet Privy, jadi merilis A
+   lalu pindah = dompet user berganti (bertentangan dengan syarat builder "dompetnya ga berubah"). Kodenya dihapus, tidak pernah ter-deploy.
+3. **Halaman `/beli/<bot>`** (P138c): Privy + dua tanda tangan EIP-712 (Permit2 + EIP-2612), nol gas, faucet FAB; dibuka juga sebagai Telegram Mini
+   App dari tombol `web_app` bot.
+4. **Bot Telegram berbahasa Inggris** (`/bots`, `/signal`, `/buy`, `/wallet`, `/help`); `/buy` dan `/wallet` = tombol Mini App. Beli LANGSUNG dari
+   chat + langganan otomatis = tahap berikutnya lewat session signer Privy (butuh App secret di server + kunci otorisasi P-256 milik kita).
+5. App ID ditanam di kode web sebagai konstanta publik; App secret hanya di Railway.
+
+**Terkait:** F-D98 · F-D99 · F-D100 · [[04-Tools/TL32 - gerbang x402 per sinyal]] · [[09-Inbox/Session-2026-10-02]] §82

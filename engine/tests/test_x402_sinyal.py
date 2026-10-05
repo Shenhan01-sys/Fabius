@@ -154,7 +154,7 @@ class GateTests(unittest.TestCase):
                     log=self.logs.append, now=lambda: NOW)
         g.ev = ev
         g.views = lambda cfg: (None, None)
-        g.tg_send = lambda chat, text: self.tg.append((chat, text))
+        g.tg_send = lambda chat, text, button=None: self.tg.append((chat, text))
         return g
 
     def test_no_payment_gets_402_with_the_frozen_price_and_a_teaser_without_details(self):
@@ -202,14 +202,17 @@ class GateTests(unittest.TestCase):
         self.assertEqual(g.faucet(PAYER, cfg)[0], 200)
         self.assertEqual(g.faucet(PAYER, cfg)[0], 429)
 
-    def test_the_telegram_teaser_has_a_signed_pay_link_and_no_signal_details(self):
+    def test_the_telegram_teaser_opens_the_mini_app_with_a_signed_link_and_no_signal_details(self):
         g = self.gate(FakeEv())
-        txt = xs.tg_reply(g, 7, "/sinyal b1-trend")
-        self.assertIn("https://web.example/beli/B1-TREND?tg=", txt)
+        txt, button = xs.tg_reply(g, 7, "/signal b1-trend")
         self.assertIn("0.01 FAB", txt)
         self.assertNotIn("XRPUSDT", txt)
-        tok = txt.split("?tg=")[1].split()[0]
-        self.assertEqual(xs.tg_parse(g.tg_secret, tok, NOW)["c"], 7)
+        self.assertTrue(button[1].startswith("https://web.example/beli/B1-TREND?tg="))
+        self.assertEqual(xs.tg_parse(g.tg_secret, button[1].split("?tg=")[1], NOW)["c"], 7)
+        txt, button = xs.tg_reply(g, -100, "/buy B1-TREND", private=False)                        # grup: tanpa tombol Mini App
+        self.assertIsNone(button)
+        self.assertIn("private chat", txt)
+        self.assertEqual(xs.tg_reply(g, 7, "/help")[0], xs.HELP)
 
 
 if __name__ == "__main__":
