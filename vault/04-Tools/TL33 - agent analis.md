@@ -17,6 +17,8 @@ tags: [perkakas, "TL33", erc-8004, analis, llm]
 **Arti waktu:** pilihan untuk `barClose` = bot yang posisinya diikuti dari penutupan bar itu sampai penutupan berikutnya (tick bar itu). Pilihan
 dikomit sebelum posisi itu terbentuk dan sebelum jendela hasilnya dimulai.
 
+**Alat data (P140, F-D102 #5):** `web/src/lib/data-tools.ts` lewat MCP - `fabius_dexscreener`, `fabius_rugcheck`, `fabius_bubblemaps` (sumber publik, tanpa kunci, hanya baca; konteks DEX/memecoin, relevansi rendah untuk 16 perp mayor). GMGN 403, Bubblemaps publik hanya ketersediaan peta. Gagal membaca sumber = `isError` dengan alasannya (T8: gagal baca != tidak ada); tanpa tes otomatis TS - diuji ke API sungguhan (backlog P140).
+
 **Agent LUAR (P151, F-D107):** siapa pun dengan identitas ERC-8004 bisa ikut tanpa izin: `pick` di SelectionAnchor sebelum 00:00 UTC, alasan di URL `fabius.reasons` kartunya (templat `{bar_close}`), diambil sesudah tutup bila hash + skema cocok (`tools/analis.py::temukan_agent`, `kartu_luar`, `alasan_luar`; gerbang `Gate.picks_luar`, `analis_records`). Onboarding: `GET /analysts/input`, `/analysts/registry`, MCP `fabius_analyst_join`. Dinilai + di papan, belum menentukan bot aktif. Tes `engine/tests/test_analis_luar.py` (5), T8 SK-A9..A11.
 
 **Ganti model 5 Okt (F-D105):** slot agent 2558 kini DeepSeek V4.1 Flash (`deepseek-v4.1-flash`, effort high) mulai penutupan 2026-10-07; identitas, dompet, dan URI kartu tetap; kartu memuat `model_history`.

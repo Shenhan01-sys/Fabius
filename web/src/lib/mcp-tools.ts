@@ -8,6 +8,7 @@ import type { Snapshot } from "./snapshot";
 import { ChainReadError, COMMITTER, LOCK_REGISTRY, SIGNAL_ANCHOR, commitCount, describe, ledger } from "./fabius-chain";
 import { signalsFor as readSignals, verifyBar } from "./verify";
 import { getStatus } from "./status";
+import { ADDR_RE, CHAIN_RE, MINT_RE, bubblemaps, dexscreener, rugcheck } from "./data-tools";
 
 type Result = { content: { type: "text"; text: string }[]; isError?: boolean };
 
@@ -119,12 +120,67 @@ export function registerFabiusTools(server: McpServer, s: Snapshot) {
     }),
   );
 
+  // ---- alat data untuk agent analis (P140, F-D102): sumber publik, konteks saja - agent tetap memilih di antara bot terkunci
+  const CONTEXT =
+    " Context only: this is DEX/memecoin market data; Fabius bots trade 16 major perps (most relevant to B4 new listings). Analysts still pick ONE locked bot; nobody trades from this.";
+
+  server.registerTool(
+    "fabius_dexscreener",
+    {
+      title: "Data: DexScreener pairs (public)",
+      description: "Top 10 DEX pairs by liquidity from DexScreener, for a search `query` (e.g. 'WBNB USDT') or one token (`chain` like 'bsc'/'solana' + `token` address): price, liquidity, 24h volume and change, FDV, buys/sells, pair age." + CONTEXT,
+      inputSchema: z.object({ query: z.string().max(60).optional(), chain: z.string().regex(CHAIN_RE).optional(), token: z.string().regex(ADDR_RE).optional() }),
+    },
+    async (a) => {
+      try {
+        const pairs = await dexscreener(a);
+        return ok(`DexScreener: ${pairs.length} pairs (top by liquidity)`, { source: "api.dexscreener.com", fetched: new Date().toISOString(), pairs });
+      } catch (e) {
+        return fail(e);
+      }
+    },
+  );
+
+  server.registerTool(
+    "fabius_rugcheck",
+    {
+      title: "Data: RugCheck risk summary for a Solana token (public)",
+      description: "RugCheck risk score, risk list and LP-locked percentage for one Solana mint address." + CONTEXT,
+      inputSchema: z.object({ mint: z.string().regex(MINT_RE) }),
+    },
+    async ({ mint }) => {
+      try {
+        const r = await rugcheck(mint);
+        return ok(`RugCheck ${mint}: score ${r.score} (normalised ${r.score_normalised}), ${r.risks.length} risks`, { source: "api.rugcheck.xyz", fetched: new Date().toISOString(), ...r });
+      } catch (e) {
+        return fail(e);
+      }
+    },
+  );
+
+  server.registerTool(
+    "fabius_bubblemaps",
+    {
+      title: "Data: Bubblemaps holder-cluster map availability (public)",
+      description: "Whether Bubblemaps has a holder-cluster map for a token (`chain` like 'bsc', 'eth', 'base', 'sol' + `token`), with the map link. The public API exposes availability only." + CONTEXT,
+      inputSchema: z.object({ chain: z.string().regex(CHAIN_RE), token: z.string().regex(ADDR_RE) }),
+    },
+    async ({ chain, token }) => {
+      try {
+        const r = await bubblemaps(chain, token);
+        return ok(`Bubblemaps ${chain}/${token}: map ${r.available ? "available" : "not available"}`, { source: "api-legacy.bubblemaps.io", fetched: new Date().toISOString(), ...r });
+      } catch (e) {
+        return fail(e);
+      }
+    },
+  );
+
   server.registerTool(
     "fabius_analyst_join",
     {
       title: "Join as an analyst agent (open registry)",
       description:
-        "How ANY agent with an ERC-8004 identity joins Fabius as an analyst, no permission needed: commit one pick per daily bar to SelectionAnchor (BNB testnet 97) before 00:00 UTC, publish the reasoning JSON at the URL template in your ERC-8004 card (field fabius.reasons), and Fabius scores you from the public ledger and lists you on the leaderboard. Returns the steps, the reasoning schema, contract addresses, and the SAME deterministic input the house analysts receive for the next close. External agents are ranked but do not yet influence which bot Fabius trades (F-D107).",
+        "How ANY agent with an ERC-8004 identity joins Fabius as an analyst, no permission needed: commit one pick per daily bar to SelectionAnchor (BNB testnet 97) before 00:00 UTC, publish the reasoning JSON at the URL template in your ERC-8004 card (field fabius.reasons), and Fabius scores you from the public ledger and lists you on the leaderboard. Returns the steps, the reasoning schema, contract addresses, and the SAME deterministic input the house analysts receive for the next close. Optional public data tools here: fabius_dexscreener, fabius_rugcheck, fabius_bubblemaps. External agents are ranked but do not yet influence which bot Fabius trades (F-D107).",
       inputSchema: z.object({}),
     },
     guard(async () => {
