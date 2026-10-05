@@ -70,6 +70,16 @@ class RegistryTests(unittest.TestCase):
         self.assertEqual(card["model_history"][0]["id"], "grok-4.7-free")
 
 
+    def test_the_model_comes_from_config_not_from_the_registration_record(self):
+        from unittest import mock
+        ag = next(a for a in an.AGENTS if a["slug"] == "glm")
+        cfg = {"agents": {"glm": {"agent_id": 2558, "wallet": "0x" + "11" * 20, "model": "glm-5.3", "provider": "lama", "effort": "low"}}}
+        env = {an.PROVIDERS[ag["provider"]]["key_var"]: "k", ag["key_var"]: "0x" + "22" * 32}
+        with mock.patch.dict(os.environ, env), mock.patch.object(an, "ANALIS_ENV", os.path.join(self.tmp, "tidak-ada.env")):
+            got = [a for a in an.active_agents(cfg) if a["slug"] == "glm"][0]
+        self.assertEqual((got["model"], got["provider"], got["effort"], got["agent_id"]), (ag["model"], ag["provider"], ag["effort"], 2558))
+
+
 class GateNpcTests(unittest.TestCase):
     def test_desk_books_carry_the_npc_look_from_the_registry(self):
         import meja

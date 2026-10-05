@@ -325,7 +325,9 @@ def active_agents(cfg: dict) -> List[dict]:
             continue
         if not secret(a["key_var"]):
             continue
-        out.append({**a, **reg})
+        # identitas dari pendaftaran (agent_id, wallet, tx, uri); MODEL selalu dari config/agents.json - catatan pendaftaran menyimpan model saat
+        # didaftarkan dan tidak boleh menimpa model sesudah `ganti` (6 Okt: slot 2568 tetap memanggil grok-4.7-free walau config sudah gpt-6-luna)
+        out.append({**a, **{k: v for k, v in reg.items() if k not in ("model", "provider", "effort")}})
     return out
 
 
