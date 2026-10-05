@@ -405,6 +405,8 @@ class Gate:
                               "target": {a: round(t["w"], 4) for a, t in sorted((b.get("target") or {}).items()) if abs(t.get("w", 0)) > 1e-9},
                               "deret": [[r["siklus"], r["ekuitas"]] for r in mine if r["siklus"] >= cut],
                               "status_terakhir": mine[-1].get("status", "ok") if mine else None,
+                              # P158: keadaan NPC di lantai /desk (transaksi / tahan / gagal) dibaca dari rekaman terakhir buku ini
+                              "siklus_terakhir": mine[-1]["siklus"] if mine else None, "isi_terakhir": len(mine[-1].get("isi") or []) if mine else 0,
                               "keputusan_terakhir": ((last.get("keputusan") if not kons else
                                                       {k: last.get(k) for k in ("dasar", "target", "bot", "nilai_bot", "instrumen", "skor_instrumen", "eksposur", "veto",
                                                                                 "arah_alasan", "masuk", "data_t") if last.get(k) is not None}
@@ -413,9 +415,34 @@ class Gate:
         out = {"t": time.time(), "params": meja.PARAMS, "params_sha": meja.params_sha(), "params_v2": meja2.PARAMS2, "params_v2_sha": meja.sha(meja2.PARAMS2),
                "anchor": self.data.cfg_raw().get("contracts", {}).get("DeskAnchor"), "buku": out_books, "rekaman": rek[-40:],
                "siklus_terakhir": ({k: sik[-1].get(k) for k in ("siklus", "root", "tx", "status", "n")} if sik else None),
+               "siklus_12": [{k: x.get(k) for k in ("siklus", "root", "tx", "status", "n")} for x in sik[-12:]],
                "siklus_24j": sum(1 for x in sik if x["siklus"] >= cut), "komit_24j": sum(1 for x in sik if x["siklus"] >= cut and x.get("status") == "dikomit")}
         self._meja = out
         return out
+
+    def meja_agent(self, name: str, n: int = 60) -> Tuple[int, dict]:
+        """P158: rincian satu buku meja untuk modal lantai /desk: statistik terukur 24 jam + riwayat keputusan (terbaru dulu, maks n)."""
+        buku = next((b for b in self.meja_view()["buku"] if b["agent"] == name), None)
+        if buku is None:
+            return 404, {"error": "buku tidak ada"}
+        cut = int(self.now()) - 86_400
+        mine = [r for r in self._meja_baca("rekaman") if r["agent"] == name]
+        d24 = [r for r in mine if r["siklus"] >= cut]
+        st = [r.get("status", "ok") for r in d24]
+        bots: Dict[str, int] = {}
+        for r in d24:
+            b = (r.get("keputusan") or {}).get("bot") or r.get("bot")
+            if b and r.get("status", "ok") == "ok":
+                bots[b] = bots.get(b, 0) + 1
+        stat = {"siklus_24j": len(d24), "ok": st.count("ok"), "gagal": st.count("gagal"), "terlambat": st.count("terlambat"),
+                "siklus_bertransaksi": sum(1 for r in d24 if r.get("isi")), "isi_24j": sum(len(r.get("isi") or []) for r in d24),
+                "biaya_24j": round(sum(x.get("fee", 0) for r in d24 for x in r.get("isi") or []), 4), "bot_pilihan": bots}
+        riwayat = [{"siklus": r["siklus"], "status": r.get("status", "ok"), "galat": r.get("galat"),
+                    "ringkasan": (r.get("keputusan") or {}).get("ringkasan") or r.get("dasar"), "bot": (r.get("keputusan") or {}).get("bot") or r.get("bot"),
+                    "target": (r.get("keputusan") or {}).get("target") or r.get("target") or {}, "isi": r.get("isi") or [], "ekuitas": r.get("ekuitas"),
+                    "hash": r.get("hash")} for r in reversed(mine[-n:])]
+        return 200, {"buku": buku, "statistik": stat, "riwayat": riwayat, "model": next((r.get("model") for r in reversed(mine) if r.get("model")), None),
+                     "agent_id": next((r.get("agent_id") for r in reversed(mine) if r.get("agent_id")), None)}
 
     def data_simpan(self, snap: dict) -> None:
         """P153 (F1): snapshot data luas meja v2 -> /data/meja/fitur/<tgl>.jsonl (sha atas isi tanpa `durasi_s`)."""
@@ -848,6 +875,9 @@ def make_handler(gate: Gate):
                     return self._send(200, gate.data_view())
                 if parts[0] == "desk" and len(parts) == 3 and parts[1] == "proof":
                     code, body = gate.meja_proof(parts[2])
+                    return self._send(code, body)
+                if parts[0] == "desk" and len(parts) == 3 and parts[1] == "agent":
+                    code, body = gate.meja_agent(urllib.parse.unquote(parts[2]))
                     return self._send(code, body)
                 if parts[0] == "analis" and len(parts) in (1, 2):
                     recs = gate.analis_records(int(parts[1]) if len(parts) == 2 else None)

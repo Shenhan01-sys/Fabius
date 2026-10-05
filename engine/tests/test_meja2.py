@@ -162,6 +162,21 @@ class GateTests(unittest.TestCase):
         self.assertTrue(by["v2:glm"]["nama"].startswith("v2 · "))
         self.assertEqual(v["params_v2"], meja2.PARAMS2)
 
+    def test_agent_detail_counts_measured_24h_stats_and_lists_history_newest_first(self):
+        t0 = 1_791_200_100
+        rek = [{"siklus": t0 - 300, "agent": "v2:glm", "status": "ok", "agent_id": 2558, "model": "deepseek", "keputusan": {"bot": "B1-TREND", "ringkasan": "a", "target": {}},
+                "isi": [{"aset": "BTCUSDT", "dari": 0.0, "ke": 0.1, "harga": 100.0, "fee": 0.5}], "ekuitas": 9999.5, "hash": "0xa"},
+               {"siklus": t0, "agent": "v2:glm", "status": "gagal", "galat": "429", "agent_id": 2558, "model": "deepseek", "ekuitas": 9999.5, "hash": "0xb"}]
+        books = {"v2:glm": meja.buku_baru()}
+        self.g.meja_simpan(rek, {"siklus": t0, "daun": ["0xa", "0xb"], "harga": {}, "root": "0x1", "status": "dikomit", "n": 2}, books, {})
+        code, d = self.g.meja_agent("v2:glm")
+        self.assertEqual(code, 200)
+        self.assertEqual((d["statistik"]["ok"], d["statistik"]["gagal"], d["statistik"]["isi_24j"], d["statistik"]["bot_pilihan"]), (1, 1, 1, {"B1-TREND": 1}))
+        self.assertEqual([r["hash"] for r in d["riwayat"]], ["0xb", "0xa"])                  # terbaru dulu
+        self.assertEqual((d["agent_id"], d["buku"]["isi_terakhir"]), (2558, 0))               # rekaman terakhir gagal: tanpa isi
+        self.assertEqual(self.g.meja_agent("tidak-ada")[0], 404)
+        self.assertEqual(self.g.meja_view()["siklus_12"][-1]["status"], "dikomit")
+
     def test_a_late_v2_cycle_stays_out_of_the_root_and_leaves_the_v2_books_untouched(self):
         import x402_sinyal as xs
         rek, sik, books, ring = [{"hash": "0x01"}], {"daun": ["0x01"]}, {"v2": {"saldo": 1.0}}, {}
