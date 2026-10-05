@@ -45,14 +45,14 @@ function Hero({ children }: { children: React.ReactNode }) {
   const v = t.analis;
   return (
     <section className="relative overflow-hidden rounded-[30px] bg-gradient-to-b from-lav via-lav to-white px-6 pb-20 pt-32 sm:px-12 sm:pt-40 lg:px-16">
-      <div className="mx-auto max-w-3xl text-center">
+      <div className="mx-auto max-w-4xl text-center">
         <span className="tag text-violet">{v.tag}</span>
         <h1 className="mt-3 font-display text-[clamp(2.2rem,5vw,4.4rem)] font-[300] leading-[0.95] tracking-[-0.03em] text-ink" style={{ fontStretch: "112%" }}>
           {v.title}
         </h1>
         <p className="mx-auto mt-4 max-w-2xl text-ink/60">{v.sub}</p>
       </div>
-      <div className="mx-auto mt-10 max-w-3xl space-y-6">{children}</div>
+      <div className="mx-auto mt-10 max-w-6xl space-y-6">{children}</div>
     </section>
   );
 }
@@ -103,51 +103,53 @@ function Board() {
 
   return (
     <>
-      <div className={panel}>
-        <p className={label}>{v.active}</p>
-        <p className="mt-2 font-display text-4xl font-[300]">{pub.aktif.bot}</p>
-        <p className="mt-2 text-sm text-ink/60">
-          {v.activeRule}: {pub.aktif.alasan_en ?? "-"}
-        </p>
-      </div>
+      <div className="grid gap-6 lg:grid-cols-2">
+        <div className={panel}>
+          <p className={label}>{v.active}</p>
+          <p className="mt-2 font-display text-4xl font-[300]">{pub.aktif.bot}</p>
+          <p className="mt-2 text-sm text-ink/60">
+            {v.activeRule}: {pub.aktif.alasan_en ?? "-"}
+          </p>
+        </div>
 
-      <div className={panel}>
-        <p className={label}>{v.accessTitle}</p>
-        <p className="mt-2 text-sm text-ink/70">{v.accessSub}</p>
-        <div className="mt-3">
-          {!ready ? (
-            <p className="text-ink/50">{v.loading}</p>
-          ) : !authenticated ? (
-            <button className={btn} onClick={login}>
-              {v.signIn}
-            </button>
-          ) : !shown ? (
-            <p className="text-ink/50">{v.checking}</p>
-          ) : shown.ok ? (
-            <p className="text-sm">
-              <span className="font-medium text-violet">{v.unlocked.replace("{d}", utc(shown.akses.berlaku_sampai))}</span>
-              <span className="text-ink/60"> · {v.boughtWith.replace("{bot}", shown.akses.pembelian_terakhir.bot).replace("{bar}", shown.akses.pembelian_terakhir.bar)}</span>
-            </p>
-          ) : shown.status === 402 ? (
-            <div className="flex flex-wrap items-center gap-3">
-              <p className="text-sm text-ink/80">
-                {v.needBuy}
-                {shown.dompet?.[0] && <span className="block font-mono text-xs text-ink/50">{v.checked.replace("{w}", short(shown.dompet[0]))}</span>}
+        <div className={panel}>
+          <p className={label}>{v.accessTitle}</p>
+          <p className="mt-2 text-sm text-ink/70">{v.accessSub}</p>
+          <div className="mt-3">
+            {!ready ? (
+              <p className="text-ink/50">{v.loading}</p>
+            ) : !authenticated ? (
+              <button className={btn} onClick={login}>
+                {v.signIn}
+              </button>
+            ) : !shown ? (
+              <p className="text-ink/50">{v.checking}</p>
+            ) : shown.ok ? (
+              <p className="text-sm">
+                <span className="font-medium text-violet">{v.unlocked.replace("{d}", utc(shown.akses.berlaku_sampai))}</span>
+                <span className="text-ink/60"> · {v.boughtWith.replace("{bot}", shown.akses.pembelian_terakhir.bot).replace("{bar}", shown.akses.pembelian_terakhir.bar)}</span>
               </p>
-              <Link className={btn} href="/buy">
-                {v.buy}
-              </Link>
-            </div>
-          ) : (
-            <p className="break-all text-sm text-ink/70">
-              {v.error}: {shown.error}
-            </p>
-          )}
-          {authenticated && (
-            <button className="mt-3 block text-sm text-ink/50 underline" onClick={logout}>
-              {v.signOut}
-            </button>
-          )}
+            ) : shown.status === 402 ? (
+              <div className="flex flex-wrap items-center gap-3">
+                <p className="text-sm text-ink/80">
+                  {v.needBuy}
+                  {shown.dompet?.[0] && <span className="block font-mono text-xs text-ink/50">{v.checked.replace("{w}", short(shown.dompet[0]))}</span>}
+                </p>
+                <Link className={btn} href="/buy">
+                  {v.buy}
+                </Link>
+              </div>
+            ) : (
+              <p className="break-all text-sm text-ink/70">
+                {v.error}: {shown.error}
+              </p>
+            )}
+            {authenticated && (
+              <button className="mt-3 block text-sm text-ink/50 underline" onClick={logout}>
+                {v.signOut}
+              </button>
+            )}
+          </div>
         </div>
       </div>
 

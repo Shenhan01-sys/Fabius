@@ -42,21 +42,21 @@ function Shell({ bot, children }: { bot?: string; children?: React.ReactNode }) 
   const v = t.beli;
   return (
     <section className="relative overflow-hidden rounded-[30px] bg-gradient-to-b from-lav via-lav to-white px-6 pb-20 pt-32 sm:px-12 sm:pt-40 lg:px-16">
-      <div className="mx-auto max-w-3xl text-center">
+      <div className="mx-auto max-w-4xl text-center">
         <span className="tag text-violet">{v.tag}</span>
         <h1 className="mt-3 font-display text-[clamp(2.2rem,5vw,4.4rem)] font-[300] leading-[0.95] tracking-[-0.03em] text-ink" style={{ fontStretch: "112%" }}>
           {bot ? v.title.replace("{bot}", bot) : v.titleToday}
         </h1>
         <p className="mx-auto mt-4 max-w-2xl text-ink/60">{bot ? v.sub : v.subToday}</p>
       </div>
-      <div className="mx-auto mt-10 max-w-2xl space-y-6">{children}</div>
+      <div className="mx-auto mt-10 grid max-w-5xl gap-6 lg:grid-cols-2">{children}</div>
     </section>
   );
 }
 
-function Step({ n, title, children }: { n: number; title: string; children: React.ReactNode }) {
+function Step({ n, title, wide, children }: { n: number; title: string; wide?: boolean; children: React.ReactNode }) {
   return (
-    <div className="rounded-2xl border border-ink/10 bg-white/70 p-5">
+    <div className={`min-w-0 rounded-2xl border border-ink/10 bg-white/70 p-5 ${wide ? "lg:col-span-2" : ""}`}>
       <p className="text-sm uppercase tracking-wide text-ink/50">
         {String(n).padStart(2, "0")} · {title}
       </p>
@@ -259,7 +259,7 @@ function Buy({ fixed }: { fixed?: string }) {
         {note && <p className="mt-3 break-all text-sm text-ink/70">{note}</p>}
       </Step>
       {pkg && (
-        <Step n={5} title={v.result}>
+        <Step n={5} title={v.result} wide>
           {pkg.rincian && (
             <div className="mb-4 text-sm">
               <p>
