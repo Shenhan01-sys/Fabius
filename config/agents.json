@@ -12,6 +12,14 @@
   "xkiro": {
    "base": "https://api.xkiro.com/v1",
    "key_var": "XKIRO_API_KEY"
+  },
+  "kiosapi": {
+   "base": "https://kiosapi.com/v1",
+   "key_var": "KIOSAPI_API_KEY"
+  },
+  "groq": {
+   "base": "https://api.groq.com/openai/v1",
+   "key_var": "GROQ_API_KEY"
   }
  },
  "agents": [
@@ -81,6 +89,61 @@
     "extra": "none",
     "prop": "paper",
     "short": "News"
+   }
+  },
+  {
+   "slug": "muse",
+   "name": "Fabius Analyst · Muse Spark 1.3",
+   "provider": "xkiro",
+   "model": "meta/muse-spark-1.3-contributor:free",
+   "effort": "high",
+   "key_var": "ANALIS_MUSE_PRIVATE_KEY",
+   "npc": {
+    "short": "Muse"
+   }
+  },
+  {
+   "slug": "qwenplus",
+   "name": "Fabius Analyst · Qwen 3.7 Plus",
+   "provider": "xkiro",
+   "model": "qwen/qwen3.7-plus:free",
+   "effort": "high",
+   "key_var": "ANALIS_QWENPLUS_PRIVATE_KEY",
+   "npc": {
+    "short": "Qwen Plus"
+   }
+  },
+  {
+   "slug": "grok",
+   "name": "Fabius Analyst · Grok 4.7",
+   "provider": "kiosapi",
+   "model": "grok-4.7-free",
+   "effort": "high",
+   "key_var": "ANALIS_GROK_PRIVATE_KEY",
+   "npc": {
+    "short": "Grok"
+   }
+  },
+  {
+   "slug": "glmflash",
+   "name": "Fabius Analyst · GLM 5.3 Flash",
+   "provider": "kiosapi",
+   "model": "glm-5.3-flash-free",
+   "effort": "high",
+   "key_var": "ANALIS_GLMFLASH_PRIVATE_KEY",
+   "npc": {
+    "short": "GLM Flash"
+   }
+  },
+  {
+   "slug": "qwen27b",
+   "name": "Fabius Analyst · Qwen 3.8 27B",
+   "provider": "groq",
+   "model": "qwen/qwen3.8-27b",
+   "effort": "high",
+   "key_var": "ANALIS_QWEN27B_PRIVATE_KEY",
+   "npc": {
+    "short": "Qwen 27B"
    }
   }
  ]

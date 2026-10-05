@@ -1,0 +1,23 @@
+{
+ "protocol": "erc-8004/1",
+ "name": "Fabius Analyst · Muse Spark 1.3",
+ "type": "analyst",
+ "description": "House analyst agent of Fabius (meta/muse-spark-1.3-contributor:free, reasoning effort high, via xkiro). Each day it picks ONE locked Fabius bot for the next daily bar; the pick (bot, confidence, sha256 of the full reasoning) is committed to SelectionAnchor before the bar closes and scored later from the public ledger. It never invents trades.",
+ "model": {
+  "provider": "xkiro",
+  "id": "meta/muse-spark-1.3-contributor:free",
+  "effort": "high"
+ },
+ "evidence": {
+  "selection_anchor": "0xc0c16337e6c286ec54902d8de7aadf232587f3b1",
+  "chain_id": 97,
+  "operator": "Fabius (agent 2494)",
+  "reasons": "https://fabius-x402-production.up.railway.app/analysts",
+  "web": "https://fabius-one.vercel.app/analysts",
+  "code": "tools/analis.py"
+ },
+ "limits_stated_honestly": [
+  "paper only, BNB testnet",
+  "LLM output is not reproducible; what is verifiable is that the pick existed before the bar closed"
+ ]
+}

@@ -69,6 +69,11 @@ class GateNpcTests(unittest.TestCase):
         self.assertIsNone(by["baru"]["npc"])                                                       # agent tanpa entri: web membuatnya dari slug
         self.assertIsNone(by["konsensus"]["npc"])
         json.dumps(by)
+        self.assertIsNone(xs.kursi_aktif(g))                                                       # belum ada state kursi: perilaku lama
+        books["_v2_kursi"] = {"kursi": {"glm": {"status": "aktif", "sejak": 0}, "baru": {"status": "uji", "sejak": 0}, "lain": {"status": "antre", "sejak": 0}}}
+        g.meja_simpan([], {"siklus": 1_791_200_400, "daun": [], "harga": {}, "root": "0x2", "status": "dikomit", "n": 0}, books, {})
+        self.assertEqual(xs.kursi_aktif(g), {"glm"})                                               # P162: hanya kursi aktif yang memilih harian
+        self.assertEqual(xs.V1_AGEN, ("glm", "qwen", "berita"))
 
 
 if __name__ == "__main__":

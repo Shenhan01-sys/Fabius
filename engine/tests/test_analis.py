@@ -104,6 +104,13 @@ class RoundTests(unittest.TestCase):
         self.assertEqual(ev.sent, [])
         self.assertTrue(any("tidak memilih" in x for x in self.logs))
 
+    def test_agents_outside_active_desk_seats_do_not_pick(self):
+        ev = FakeEv()
+        with mock.patch.dict(os.environ, self.env), mock.patch.object(an, "ANALIS_ENV", os.path.join(self.out, "tidak-ada.env")):
+            res = an.run_round(ROOT, self.cfg, ev, NOW, True, log=self.logs.append, post=self.post("{}"), out_dir=self.out, boleh=lambda s: False)
+        self.assertEqual([x["status"] for x in res if x["agent"] == "glm"], ["kursi uji"])                 # P162: tidak ada panggilan model, tidak ada tx
+        self.assertEqual(ev.sent, [])
+
     def test_inactive_or_unregistered_agents_never_run(self):
         names = [a["slug"] for a in an.active_agents({"selection": SEL, "agents": {"claude": {"agent_id": 1, "wallet": "0x" + "11" * 20}}})]
         self.assertEqual(names, [])

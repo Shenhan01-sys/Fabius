@@ -298,8 +298,10 @@ def active_agents(cfg: dict) -> List[dict]:
 # ---------------------------------------------------------------- satu putaran pilihan (dipakai CLI dan thread gerbang)
 
 def run_round(workdir: str, cfg: dict, ev, now_s: int, send: bool, log: Callable[[str], None] = print, post: Callable = _post,
-              out_dir: Optional[str] = None, kabar_fn: Optional[Callable[[int], dict]] = None) -> List[dict]:
-    """Untuk penutupan bar berikutnya: tiap agent aktif yang belum memilih -> model -> pilihan -> komit. -> catatan per agent."""
+              out_dir: Optional[str] = None, kabar_fn: Optional[Callable[[int], dict]] = None,
+              boleh: Optional[Callable[[str], bool]] = None) -> List[dict]:
+    """Untuk penutupan bar berikutnya: tiap agent aktif yang belum memilih -> model -> pilihan -> komit. -> catatan per agent.
+    `boleh(slug)` = False -> agent itu tidak memilih (P162, turunan F-D113: kursi uji/antre meja tidak ikut suara bot aktif P143)."""
     from evm import address_of, calldata, receipt_ok
     sel = cfg["selection"]
     close = next_close(now_s)
@@ -309,6 +311,9 @@ def run_round(workdir: str, cfg: dict, ev, now_s: int, send: bool, log: Callable
     res = []
     news = None
     for ag in active_agents(cfg):
+        if boleh is not None and not boleh(ag["slug"]):
+            res.append({"agent": ag["slug"], "status": "kursi uji"})
+            continue
         got = ev.call_decode(sel, "getPick(uint256,uint64)", ("uint256", "uint64"), (int(ag["agent_id"]), close), ("(bytes32,uint8,bytes32,uint64)",))[0]
         if int(got[3]):
             res.append({"agent": ag["slug"], "status": "sudah"})

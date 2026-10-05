@@ -1154,6 +1154,16 @@ def telegram_loop(gate: "Gate", stop: threading.Event) -> None:
                 gate.log(f"telegram balasan gagal: {type(e).__name__}: {str(e)[:120]}")
 
 
+# Meja v1 (dipensiunkan sesudah 24 jam berdampingan dengan v2) tetap tiga agent awal: laporan pembanding v1 vs v2 tidak tercampur agent baru (P162).
+V1_AGEN = ("glm", "qwen", "berita")
+
+
+def kursi_aktif(gate: "Gate") -> Optional[set]:
+    """P162 (turunan F-D113): slug kursi AKTIF meja v2 dari buku meja tersimpan; None = state kursi belum ada (perilaku lama: semua agent)."""
+    k = ((gate.meja_muat()[0].get("_v2_kursi") or {}).get("kursi") or {})
+    return {s for s, v in k.items() if v.get("status") == "aktif"} if k else None
+
+
 def analis_loop(gate: "Gate", ev, stop: threading.Event, every_s: int = 600) -> None:
     """Sekali per bar: antara 09:00 dan 22:00 UTC (tick bar sebelumnya sudah ada; jauh sebelum penutupan), tiap agent aktif yang belum memilih
     untuk penutupan berikutnya dipanggil + dikomit. `run_round` membaca SelectionAnchor dulu -> tidak pernah memilih dua kali."""
@@ -1165,7 +1175,9 @@ def analis_loop(gate: "Gate", ev, stop: threading.Event, every_s: int = 600) -> 
             cfg = an.load_cfg(os.path.join(gate.data.workdir, "deployments", "97.json"))
             if not cfg.get("selection") or not an.active_agents(cfg):
                 continue
-            an.run_round(gate.data.workdir, cfg, ev, int(time.time()), True, log=gate.log, out_dir=gate.analis_dir)
+            aktif = kursi_aktif(gate)                                        # kursi uji/antre tidak ikut suara bot aktif (P143 tetap)
+            an.run_round(gate.data.workdir, cfg, ev, int(time.time()), True, log=gate.log, out_dir=gate.analis_dir,
+                         boleh=None if aktif is None else (lambda s: s in aktif))
             v = gate.analis_view(max_age_s=0)
             rep = (gate.data.cfg_raw().get("erc8004") or {}).get("reputation")
             if rep and gate.pk:
@@ -1231,7 +1243,7 @@ def meja_loop(gate: "Gate", ev, stop: threading.Event) -> None:
             h2: dict = {}
             th = threading.Thread(target=v2, args=(t0, agents, h2), daemon=True)
             th.start()
-            rek, sik = meja.siklus(t0, agents, books, ring, call, judul=judul, log=gate.log)
+            rek, sik = meja.siklus(t0, [a for a in agents if a["slug"] in V1_AGEN], books, ring, call, judul=judul, log=gate.log)
             th.join(timeout=max(0.0, t0 + meja.PARAMS["siklus_s"] - 25 - time.time()))
             if not gabung_v2(rek, sik, books, ring, h2):
                 gate.log(f"meja v2 {time.strftime('%H:%M', time.gmtime(t0))}Z: tidak selesai sebelum komit - tidak masuk root siklus ini")
