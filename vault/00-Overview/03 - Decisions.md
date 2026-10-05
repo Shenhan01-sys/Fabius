@@ -3034,3 +3034,18 @@ decision making bot maa yg dipakai"*. Jawaban AskUserQuestion: peran = **"Pemili
    `ANTHROPIC_API_KEY` ada.
 
 **Terkait:** F-D11 · F-D70 · F-D71 · F-D98 · [[05-Ecosystem/01 - ERC-8004 Identity]] · [[09-Inbox/Session-2026-10-02]] §84
+
+## F-D103 — Kunci otorisasi Privy yang TERBUKA di chat dipakai sampai hackathon selesai, lalu migrasi · 5 Okt 2026 (WIB)
+
+Untuk P138e (/buy langsung dari chat lewat session signer Privy), builder membuat key di dashboard dengan "Create new key" (Privy yang membuat kunci)
+lalu menempelkan ID DAN private key di chat. Diingatkan: kunci itu harus dianggap bocor; disarankan hapus + daftarkan public key buatan kita lewat
+"Register key quorum instead". Builder: *"Pakai dulu aja, nanti pas selesai hackathon ku migrate"*.
+
+1. Dipakai: key quorum `vb41lc4l9exfr5zfo09vj5fg`, private key di `.privy.env` (di-gitignore) + Railway `fabius-x402` lewat stdin; tidak dicetak lagi.
+2. Batas risiko: testnet, token FAB tanpa nilai; server hanya membangun typed data pembayaran FAB tepat tagihan ke payTo gerbang (DIJAGA KODE, belum
+   policy Privy - teks izin di web menyebutnya jujur). Siapa pun yang memegang kunci itu bisa menandatangani dari dompet user yang memberi izin.
+3. **Migrasi sesudah hackathon (wajib):** daftarkan `PRIVY_AUTH_PUBLIC_KEY_CADANGAN` (`.privy.env`, belum pernah terbuka) sebagai key quorum baru, ganti
+   `PRIVY_AUTH_PRIVATE_KEY` + `PRIVY_KEY_QUORUM_ID` (Railway + `web/src/lib/x402-buy.ts`), hapus key lama, minta user memberi izin ulang; tambahkan
+   policy Privy yang membatasi tanda tangan ke domain Permit2/FAB chain 97.
+
+**Terkait:** F-D101 · [[04-Tools/TL32 - gerbang x402 per sinyal]] · [[09-Inbox/Session-2026-10-02]] §87

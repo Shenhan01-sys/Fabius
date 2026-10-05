@@ -53,3 +53,5 @@ qwen-code-export-*.md
 .x402.env
 # kunci dompet agent analis (P142)
 .analis.env
+# kunci otorisasi Privy (P138e, session signer bot)
+.privy.env

@@ -6,12 +6,12 @@
 
 import Script from "next/script";
 import { useCallback, useEffect, useState } from "react";
-import { PrivyProvider, usePrivy, useSignTypedData, useWallets } from "@privy-io/react-auth";
+import { PrivyProvider, usePrivy, useSignTypedData, useSigners, useWallets } from "@privy-io/react-auth";
 import { bscTestnet } from "viem/chains";
 import type { Hex } from "viem";
 import Nav from "@/components/Nav";
 import { LangProvider, useLang } from "@/components/lang";
-import { PRIVY_APP_ID, buy, fabBalance, faucet, teaser, type Package, type RincianAset, type Teaser } from "@/lib/x402-buy";
+import { PRIVY_APP_ID, PRIVY_KEY_QUORUM_ID, buy, fabBalance, faucet, teaser, type Package, type RincianAset, type Teaser } from "@/lib/x402-buy";
 
 const px = (x: number) => (x >= 100 ? x.toLocaleString("en-US", { maximumFractionDigits: 2 }) : x >= 1 ? x.toFixed(4) : x.toFixed(6));
 const pct = (x: number) => `${x >= 0 ? "+" : ""}${(x * 100).toFixed(1)}%`;
@@ -78,6 +78,8 @@ function Buy({ bot }: { bot: string }) {
   const { ready, authenticated, login, logout } = usePrivy();
   const { wallets } = useWallets();
   const { signTypedData } = useSignTypedData();
+  const { addSigners, removeSigners } = useSigners();
+  const [izin, setIzin] = useState<string>("");
   const w = wallets.find((x) => x.walletClientType === "privy") ?? wallets[0];
   const owner = w?.address as Hex | undefined;
   const [tz, setTz] = useState<Teaser | null>(null);
@@ -164,7 +166,45 @@ function Buy({ bot }: { bot: string }) {
           </>
         )}
       </Step>
-      <Step n={3} title={v.payTitle}>
+      {authenticated && owner && (
+        <Step n={3} title={v.botTitle}>
+          <p className="text-sm text-ink/70">{v.botSub}</p>
+          <div className="mt-3 flex flex-wrap gap-3">
+            <button
+              className={btn}
+              disabled={busy != null}
+              onClick={async () => {
+                setBusy("izin");
+                try {
+                  await addSigners({ address: owner, signers: [{ signerId: PRIVY_KEY_QUORUM_ID }] });
+                  setIzin(v.botOn);
+                } catch (e) {
+                  setIzin(e instanceof Error ? e.message : String(e));
+                }
+                setBusy(null);
+              }}
+            >
+              {busy === "izin" ? "…" : v.botAllow}
+            </button>
+            <button
+              className="text-sm text-ink/50 underline"
+              disabled={busy != null}
+              onClick={async () => {
+                try {
+                  await removeSigners({ address: owner });
+                  setIzin(v.botOff);
+                } catch (e) {
+                  setIzin(e instanceof Error ? e.message : String(e));
+                }
+              }}
+            >
+              {v.botRevoke}
+            </button>
+          </div>
+          {izin && <p className="mt-2 break-all text-sm text-ink/70">{izin}</p>}
+        </Step>
+      )}
+      <Step n={4} title={v.payTitle}>
         <button className={btn} disabled={!authenticated || !owner || !enough || busy != null || !tz} onClick={pay}>
           {busy === "pay" ? v.paying : v.pay.replace("{fab}", String(tz?.harga.fab ?? "…"))}
         </button>
@@ -172,7 +212,7 @@ function Buy({ bot }: { bot: string }) {
         {note && <p className="mt-3 break-all text-sm text-ink/70">{note}</p>}
       </Step>
       {pkg && (
-        <Step n={4} title={v.result}>
+        <Step n={5} title={v.result}>
           {pkg.rincian && (
             <div className="mb-4 text-sm">
               <p>

@@ -51,6 +51,7 @@ from engine.spec import SPECS                                                 # 
 import signal_commit as sc                                                    # noqa: E402
 import sinyal_gambar as sg                                                    # noqa: E402
 import analis as an                                                           # noqa: E402
+import privy_server as pv                                                     # noqa: E402
 
 NETWORK = "eip155:97"
 PROXY = "0x402085c248EeA27D92E8b30b2C58ed07f9E20001"      # x402ExactPermit2Proxy kanonis (56 & 97)
@@ -279,6 +280,7 @@ class Gate:
                  log: Callable[[str], None] = print, now: Callable[[], float] = time.time):
         self.data, self.pk, self.public_url, self.web_url, self.ev, self.tg_token, self.log, self.now = data, pk, public_url.rstrip("/"), web_url.rstrip("/"), ev, tg_token, log, now
         self.tx_lock = threading.Lock()
+        self.privy: Optional[pv.Privy] = None              # P138e: diisi main() bila PRIVY_APP_ID/SECRET/AUTH_PRIVATE_KEY lengkap
         self.faucet_seen: Dict[str, float] = {}
         self.faucet_day, self.faucet_count = "", 0
         self.tg_secret = hashlib.sha256(b"fabius-tg-link|" + (pk or "tanpa-kunci").encode()).digest()
@@ -578,6 +580,79 @@ def make_handler(gate: Gate):
     return H
 
 
+# ---------------------------------------------------------------- beli langsung dari chat lewat dompet Privy user (P138e, F-D101)
+
+def typed_pair(token: str, amount: int, pay_to: str, owner: str, tok_nonce: int, now_s: int, nonce: int, chain_id: int = 97) -> Tuple[dict, dict, dict]:
+    """(Permit2 witness, EIP-2612 permit, nilai) - SELALU dibangun gerbang: token FAB, tepat tagihan, ke payTo gerbang; tidak ada input bebas dari user."""
+    va, dl = str(now_s - 15), str(now_s + 110)
+    p2 = {"domain": {"name": "Permit2", "chainId": chain_id, "verifyingContract": PERMIT2},
+          "types": {"EIP712Domain": [{"name": "name", "type": "string"}, {"name": "chainId", "type": "uint256"}, {"name": "verifyingContract", "type": "address"}],
+                    "PermitWitnessTransferFrom": [{"name": "permitted", "type": "TokenPermissions"}, {"name": "spender", "type": "address"},
+                                                  {"name": "nonce", "type": "uint256"}, {"name": "deadline", "type": "uint256"}, {"name": "witness", "type": "Witness"}],
+                    "TokenPermissions": [{"name": "token", "type": "address"}, {"name": "amount", "type": "uint256"}],
+                    "Witness": [{"name": "to", "type": "address"}, {"name": "validAfter", "type": "uint256"}]},
+          "primaryType": "PermitWitnessTransferFrom",
+          "message": {"permitted": {"token": token, "amount": str(amount)}, "spender": PROXY, "nonce": str(nonce), "deadline": dl,
+                      "witness": {"to": pay_to, "validAfter": va}}}
+    e2612 = {"domain": {"name": TOKEN_NAME, "version": TOKEN_VERSION, "chainId": chain_id, "verifyingContract": token},
+             "types": {"EIP712Domain": [{"name": "name", "type": "string"}, {"name": "version", "type": "string"}, {"name": "chainId", "type": "uint256"},
+                                        {"name": "verifyingContract", "type": "address"}],
+                       "Permit": [{"name": "owner", "type": "address"}, {"name": "spender", "type": "address"}, {"name": "value", "type": "uint256"},
+                                  {"name": "nonce", "type": "uint256"}, {"name": "deadline", "type": "uint256"}]},
+             "primaryType": "Permit",
+             "message": {"owner": owner, "spender": PERMIT2, "value": str(amount), "nonce": str(tok_nonce), "deadline": dl}}
+    return p2, e2612, {"valid_after": va, "deadline": dl, "nonce": str(nonce)}
+
+
+def _v27(sig: str) -> str:
+    h = sig[2:] if sig.startswith("0x") else sig
+    v = int(h[128:130], 16)
+    return "0x" + h[:128] + ("%02x" % (v + 27 if v < 27 else v))
+
+
+def tg_buy_privy(gate: "Gate", user_id: int, chat_id: int, bot: str) -> Tuple[Optional[str], Optional[Tuple[str, str]]]:
+    """-> (teks, tombol). Berhasil = paket dikirim sebagai gambar lewat `deliver_tg` dan teks None."""
+    import secrets as _sec
+    led, cfg = gate.data.ledgers(), gate.data.cfg()
+    q = quote(led, bot)
+    app = f"{gate.web_url}/beli/{bot}"
+    try:
+        user = gate.privy.user_by_telegram(user_id)
+    except pv.PrivyError as e:
+        gate.log(f"privy cari user gagal: {e}")
+        return "Wallet lookup failed, try again in a minute.", None
+    w = pv.Privy.embedded_wallet(user) if user else None
+    if not w:
+        return "Open the Fabius app once (sign in with Telegram) to create your wallet, then /buy again.", ("Open Fabius", app)
+    wid, addr = w
+    bal = int(gate.ev.call_decode(cfg["token"], "balanceOf(address)", ("address",), (addr,), ("uint256",))[0])
+    if bal < q["atomic"]:
+        return f"Not enough FAB in {addr[:8]}…: {bal / 1e6:g} < {q['fab']:g}. Send /topup for free test FAB.", None
+    tok_nonce = int(gate.ev.call_decode(cfg["token"], "nonces(address)", ("address",), (addr,), ("uint256",))[0])
+    now_s = int(gate.now())
+    p2, e2612, v = typed_pair(cfg["token"], q["atomic"], cfg["facilitator"], addr, tok_nonce, now_s, int.from_bytes(_sec.token_bytes(16), "big"))
+    try:
+        s1, s2 = _v27(gate.privy.sign_typed_data(wid, p2)), _v27(gate.privy.sign_typed_data(wid, e2612))
+    except pv.PrivyError as e:
+        gate.log(f"privy tanda tangan ditolak: {e}")
+        if e.status in (401, 403):
+            return ("Fabius bot is not allowed to pay from your wallet yet. Open the app and tap \"Allow Fabius bot to pay for me\" "
+                    "(one time, revocable), then /buy again."), ("Allow bot payments", app + "?izin=1")
+        return "Signing failed, try again in a minute.", None
+    pay = {"x402Version": 2, "resource": {"url": f"{gate.public_url}/sinyal/{bot}/{q['bar']}", "mimeType": "application/json"},
+           "accepted": {"scheme": "exact", "network": NETWORK, "amount": str(q["atomic"]), "asset": cfg["token"], "payTo": cfg["facilitator"]},
+           "payload": {"signature": s1, "permit2Authorization": {"permitted": {"token": cfg["token"], "amount": str(q["atomic"])}, "from": addr,
+                                                                 "spender": PROXY, "nonce": v["nonce"], "deadline": v["deadline"],
+                                                                 "witness": {"to": cfg["facilitator"], "validAfter": v["valid_after"]}}},
+           "extensions": {"eip2612GasSponsoring": {"info": {"from": addr, "asset": cfg["token"], "spender": PERMIT2, "amount": str(q["atomic"]),
+                                                            "nonce": str(tok_nonce), "deadline": v["deadline"], "signature": s2, "version": TOKEN_VERSION}}}}
+    code, body, _ = gate.handle_signal(bot, q["bar"], base64.b64encode(json.dumps(pay).encode()).decode(), None)
+    if code != 200:
+        return f"Payment failed ({code}): {body.get('error')}", None
+    gate.deliver_tg(chat_id, body)
+    return None, None
+
+
 # ---------------------------------------------------------------- bot Telegram (P138d, F-D101): perintah Inggris, dompet = Privy (Mini App)
 # Dompet TIDAK dibuat di sini (keputusan F-D101: opsi custodial dibatalkan). Membeli dan melihat dompet terjadi di halaman web `/beli/<bot>` yang dibuka
 # sebagai Telegram Mini App: Privy login otomatis lewat Telegram, akun Google yang ditautkan memakai dompet yang SAMA. Tautan `?tg=` bertanda membuat
@@ -586,10 +661,11 @@ def make_handler(gate: Gate):
 HELP = ("Fabius - verified trading signals, paid per signal with x402 on BNB testnet (chain 97). FAB is a test token with no value.\n\n"
         "/buy - the signal of the bot Fabius is trading now (or /buy <BOT>): pay with x402 in the Fabius app inside Telegram, no gas\n"
         "/signal - free teaser of the active bot (or /signal <BOT>; no assets, no direction)\n/bots - all bots, prices, confidence\n"
+        "/topup - free FAB test tokens to your wallet\n"
         "/analysts - which bot each AI analyst agent picked today, and why (committed on-chain before the bar closes)\n"
         "/wallet - your wallet (same wallet as on the Fabius website when you link Google)\n\n"
         "Every signal is committed on-chain before the market moves; anyone can verify it.")
-COMMANDS = [("buy", "signal of the bot Fabius trades now (x402)"), ("signal", "free teaser of the active bot"), ("analysts", "today's AI analyst picks"),
+COMMANDS = [("buy", "buy the signal of the bot Fabius trades now (x402)"), ("topup", "free FAB test tokens to your wallet"), ("signal", "free teaser of the active bot"), ("analysts", "today's AI analyst picks"),
             ("bots", "all bots, prices, confidence"),
             ("wallet", "your wallet"), ("help", "how it works")]
 
@@ -603,7 +679,7 @@ def _teaser_en(q: dict) -> str:
             f"months {k['bulan'][0]}/{k['bulan'][1]}\nPrice: {q['fab']:g} FAB ({'base price' if q['atomic'] == harga.HargaParams().dasar else 'confidence tier'}, locked table)")
 
 
-def tg_reply(gate: "Gate", chat_id: int, text: str, private: bool = True) -> Tuple[str, Optional[Tuple[str, str]]]:
+def tg_reply(gate: "Gate", chat_id: int, text: str, private: bool = True, user_id: Optional[int] = None) -> Tuple[Optional[str], Optional[Tuple[str, str]]]:
     """-> (teks, tombol Mini App atau None)."""
     cmd, _, arg = text.partition(" ")
     cmd = cmd.split("@")[0].lower()
@@ -627,6 +703,8 @@ def tg_reply(gate: "Gate", chat_id: int, text: str, private: bool = True) -> Tup
     if cmd in ("/signal", "/buy"):
         if bot not in led:
             return f"Usage: {cmd} <BOT>. Bots: {', '.join(sorted(led))}", None
+        if cmd == "/buy" and private and getattr(gate, "privy", None) is not None:
+            return tg_buy_privy(gate, user_id or chat_id, chat_id, bot)
         q = quote(led, bot)
         link = f"{gate.web_url}/beli/{bot}?tg={tg_link(gate.tg_secret, chat_id, bot, q['bar'], int(gate.now()))}"
         head = _teaser_en(q) if cmd == "/signal" else f"{bot} · bar {q['bar']} · {q['fab']:g} FAB"
@@ -651,6 +729,19 @@ def tg_reply(gate: "Gate", chat_id: int, text: str, private: bool = True) -> Tup
                 f"Analyst agents' picks for the bar closing {day} (committed before the close, scored later from the public ledger):\n\n"
                 + "\n\n".join(rows) + ("\n\nLeaderboard:\n" + "\n".join(lb) if lb else "")
                 + f"\n\nFull reasoning + hashes: {gate.public_url}/analis · scores: {gate.public_url}/analis/skor"), None
+    if cmd == "/topup":
+        if not private or getattr(gate, "privy", None) is None:
+            return "Get free FAB in the Fabius app (button below).", (("Open Fabius", f"{gate.web_url}/beli/{gate.aktif_now().get('bot') or 'B1-TREND'}") if private else None)
+        user = gate.privy.user_by_telegram(user_id or chat_id)
+        w = pv.Privy.embedded_wallet(user) if user else None
+        if not w:
+            return "Open the Fabius app once (sign in with Telegram) to create your wallet.", ("Open Fabius", f"{gate.web_url}/beli/B1-TREND")
+        code, body = gate.faucet(w[1], gate.data.cfg())
+        if code == 200 and body.get("dikirim_atomic"):
+            return f"Sent {body['dikirim_atomic'] / 1e6:g} FAB to your wallet {w[1][:8]}…\ntx {body['tx']}", None
+        if code == 200:
+            return f"You already have {body.get('saldo_atomic', 0) / 1e6:g} FAB (top-up only below 0.1 FAB).", None
+        return f"Top-up refused: {body.get('error')}", None
     if cmd == "/wallet":
         b = sorted(led)[0] if led else "B1-TREND"
         return ("Your wallet lives in the Fabius app (Privy): open it below and sign in with Telegram. Link your Google account there and the "
@@ -681,8 +772,9 @@ def telegram_loop(gate: "Gate", stop: threading.Event) -> None:
             if not chat.get("id") or not text.startswith("/"):
                 continue
             try:
-                msg, button = tg_reply(gate, int(chat["id"]), text, chat.get("type") == "private")
-                gate.tg_send(int(chat["id"]), msg, button)
+                msg, button = tg_reply(gate, int(chat["id"]), text, chat.get("type") == "private", (m.get("from") or {}).get("id"))
+                if msg:
+                    gate.tg_send(int(chat["id"]), msg, button)
             except Exception as e:  # noqa: BLE001
                 gate.log(f"telegram balasan gagal: {type(e).__name__}: {str(e)[:120]}")
 
@@ -732,6 +824,9 @@ def main() -> int:
              f"harga {harga.status()['state']} | telegram {'nyala' if gate.tg_token else 'mati'} | repo {data.head}")
     if pk and cfg["facilitator"] and evmmod.address_of(pk).lower() != cfg["facilitator"].lower():
         gate.log(f"PERINGATAN: kunci fasilitator {evmmod.address_of(pk)} != x402_sinyal.facilitator {cfg['facilitator']} - settle akan ditolak")
+    pa, ps, pk_auth = os.environ.get("PRIVY_APP_ID"), os.environ.get("PRIVY_APP_SECRET"), os.environ.get("PRIVY_AUTH_PRIVATE_KEY")
+    gate.privy = pv.Privy(pa, ps, pk_auth) if (pa and ps and pk_auth) else None
+    gate.log(f"privy beli-langsung: {'NYALA' if gate.privy else 'mati (PRIVY_APP_ID/SECRET/AUTH_PRIVATE_KEY belum lengkap)'}")
     stop = threading.Event()
     acfg = an.load_cfg(os.path.join(data.workdir, "deployments", "97.json"))
     aktif = an.active_agents(acfg) if acfg.get("selection") else []
