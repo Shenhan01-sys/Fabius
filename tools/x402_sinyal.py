@@ -190,6 +190,17 @@ def tg_parse(secret: bytes, token: str, now_s: int) -> Optional[dict]:
 AKSES_HARI = 7          # alasan lengkap di app = login + membeli >= 1 sinyal dalam 7 hari terakhir (dompet yang sama)
 AKSES_BAR_MAX = 14      # bar terakhir yang dikirim ke pembeli (riwayat lebih tua tetap di arsip publik ledger/analis)
 TERKUNCI_EN = "sealed until the bar closes: full reasoning in the Fabius app (sign in + any signal bought in the last 7 days)"
+TIDAK_TERBIT_EN = "reasoning not published at the agent's card URL (or its sha256 did not match the on-chain reasonHash)"
+LANGKAH_LUAR = [   # P151 (F-D107): cara agent luar ikut; semuanya bisa diperiksa tanpa izin Fabius
+    "1. Register an ERC-8004 identity on the IdentityRegistry (register(string agentURI)). Your card JSON at agentURI must contain "
+    "\"fabius\": {\"reasons\": \"https://<your host>/<path>/{bar_close}.json\"}.",
+    "2. Before each daily close (00:00 UTC), read this input, pick ONE bot, and call SelectionAnchor.pick(agentId, barClose, bytes32(bot), confidence 0-100, "
+    "reasonHash) from the agent's owner or agent wallet. reasonHash = sha256 of your reasoning JSON in canonical form (sorted keys, no spaces, UTF-8).",
+    "3. After the close, serve that exact JSON at your reasons URL with {bar_close} filled in. It must contain agent_id, bar_close and pilihan.bot equal "
+    "to your on-chain pick (schema below), otherwise Fabius rejects it.",
+    "4. Fabius scores every pick against the identity bot from the public ledger (/analysts/scores) and lists you on /analysts. External agents do not "
+    "yet influence which bot Fabius trades (F-D107).",
+]
 
 
 def tutup_alasan(r: dict, now_s: int) -> dict:
@@ -304,6 +315,10 @@ class Gate:
         self.analis_dir = os.environ.get("ANALIS_DIR") or ("/data/analis" if os.path.isdir("/data") else os.path.join(data.workdir, "data", "analis"))
         self.buys_path = os.path.join(os.path.dirname(self.analis_dir), "pembelian.jsonl")     # P145: pembeli -> akses alasan lengkap
         self.buys_lock = threading.Lock()
+        self.luar_dir = os.path.join(self.analis_dir, "luar")                                # P151: alasan agent luar yang hash + skemanya cocok
+        self._disc: dict = {}                                                                # kursor pemindaian event Picked
+        self._kartu: Dict[int, tuple] = {}                                                   # agent_id -> (waktu, kartu)
+        self._luar_coba: Dict[str, float] = {}
 
     def record_buy(self, bot: str, bar: str, payer: str, tx: str, atomic: int) -> None:
         try:
@@ -343,7 +358,7 @@ class Gate:
         if b is None or self.now() - b["t"] > AKSES_HARI * 86400:
             return 402, {"error": f"no signal bought from this account's wallet in the last {AKSES_HARI} days", "syarat": f"buy >= 1 signal within {AKSES_HARI} days",
                          "dompet": addrs, "beli": f"{self.web_url}/buy"}
-        recs = an.records(self.analis_dirs())
+        recs = self.analis_records()
         closes = sorted({int(r["alasan"]["bar_close"]) for r in recs})[-AKSES_BAR_MAX:]
         v = self.analis_view()
         return 200, {"pilihan": [r for r in recs if int(r["alasan"]["bar_close"]) in closes], "papan": v["papan"], "skor": v["skor"],
@@ -353,21 +368,65 @@ class Gate:
                      "catatan": "reasonHash on-chain = sha256 JSON 'alasan' kanonis (sort_keys, tanpa spasi); pilihan dikomit SEBELUM bar_close"}
 
     def analis_dirs(self) -> List[str]:
-        return [self.analis_dir, os.path.join(self.data.workdir, "ledger", "analis")]
+        return [self.analis_dir, self.luar_dir, os.path.join(self.data.workdir, "ledger", "analis")]
+
+    def picks_luar(self, acfg: dict) -> List[dict]:
+        """Pilihan on-chain agent LUAR (P151): ditemukan dari event Picked, kartu dibaca ulang tiap 6 jam, alasan bar tutup diambil + diverifikasi."""
+        sel = ((self.data.cfg_raw().get("erc8004") or {}).get("selection") or {})
+        if not sel.get("block"):
+            return []
+        house = {int(a["agent_id"]) for a in acfg["agents"].values()}
+        ids = [i for i in an.temukan_agent(self.ev, acfg["selection"], int(sel["block"]), self._disc) if i not in house][:an.LUAR_MAX]
+        if not ids:
+            return []
+        luar = an.onchain_picks(self.ev, acfg["selection"], {f"x{i}": {"agent_id": i} for i in ids})
+        for r in luar:
+            r["luar"] = True
+        now = time.time()
+        for i in ids:
+            if i not in self._kartu or now - self._kartu[i][0] > 6 * 3600:
+                self._kartu[i] = (now, an.kartu_luar(self.ev, acfg["identity"], i))
+        an.alasan_luar(luar, {i: self._kartu[i][1] for i in ids}, self.luar_dir, int(self.now()), log=self.log, coba=self._luar_coba)
+        return luar
+
+    def analis_records(self, close: Optional[int] = None) -> List[dict]:
+        """Catatan alasan (berkas: rumah + luar terverifikasi) + pilihan on-chain yang belum punya catatan (bar terbuka / agent luar tanpa alasan terbit)."""
+        recs = an.records(self.analis_dirs(), close)
+        have = {(r["agent"], int(r["alasan"]["bar_close"])) for r in recs}
+        v = self.analis_view()
+        names = {**{a["slug"]: a["name"] for a in an.AGENTS}, **{f"x{i}": c["nama"] for i, c in v.get("kartu", {}).items()}}
+        now = int(self.now())
+        for pk in v["picks"]:
+            if (close is not None and pk["bar_close"] != close) or (pk["agent"], pk["bar_close"]) in have:
+                continue
+            a = {"agent": pk["agent"], "agent_id": pk["agent_id"], "nama": names.get(pk["agent"], f"agent {pk['agent_id']}"), "bar_close": pk["bar_close"]}
+            if pk["bar_close"] > now:
+                a["terkunci"] = TERKUNCI_EN
+            else:
+                a["tidak_terbit"] = TIDAK_TERBIT_EN
+            recs.append({"agent": pk["agent"], "bot": pk["bot"], "keyakinan": pk["keyakinan"], "reasonHash": pk["reasonHash"], "status": "dikomit",
+                         "luar": bool(pk.get("luar")), "alasan": a})
+        return sorted(recs, key=lambda r: (int(r["alasan"]["bar_close"]), int(r["alasan"].get("agent_id") or 0)))
 
     def analis_view(self, max_age_s: int = 600) -> dict:
         """Pilihan ON-CHAIN (SelectionAnchor) + skor (ledger final / provisional) + papan; disimpan 10 menit. Tanpa chain = kosong (bukan karangan)."""
         st = getattr(self, "_analis", None)
         if st and time.time() - st["t"] < max_age_s:
             return st
-        out = {"t": time.time(), "picks": [], "skor": [], "papan": []}
+        out = {"t": time.time(), "picks": [], "skor": [], "papan": [], "kartu": {}}
         try:
             acfg = an.load_cfg(os.path.join(self.data.workdir, "deployments", "97.json"))
             if self.ev is not None and acfg.get("selection") and acfg.get("agents"):
                 from paper_tick import Views
-                out["picks"] = an.onchain_picks(self.ev, acfg["selection"], acfg["agents"])
+                picks = an.onchain_picks(self.ev, acfg["selection"], acfg["agents"])
+                try:
+                    picks += self.picks_luar(acfg)
+                except Exception as e:  # noqa: BLE001 - agent luar gagal dibaca tidak boleh menghapus papan agent rumah
+                    self.log(f"agent luar gagal: {type(e).__name__}: {str(e)[:160]}")
+                out["picks"] = sorted(picks, key=lambda r: (r["bar_close"], r["agent_id"]))
                 out["skor"] = an.skor(self.data.workdir, out["picks"], Views(os.path.join(self.data.workdir, "ledger", "bars")).get("provisional"))
-                out["papan"] = an.papan(out["skor"])
+                out["kartu"] = {i: c for i, (_, c) in self._kartu.items()}
+                out["papan"] = an.papan(out["skor"], {f"x{i}": c["nama"] for i, c in out["kartu"].items()})
         except Exception as e:  # noqa: BLE001
             self.log(f"analis_view gagal: {type(e).__name__}: {str(e)[:160]}")
         self._analis = out
@@ -382,7 +441,8 @@ class Gate:
             return {"bot": ident, "alasan": "belum ada tick bot identitas", "alasan_en": "no tick yet", "bar_close": None, "pilihan": {}}
         close = sc.asof_s_of(max(ticks, key=lambda r: r["asof"]))
         v = self.analis_view()
-        return an.bot_aktif(v["picks"], v["skor"], close, ident)
+        rumah = lambda xs: [x for x in xs if not x.get("luar")]                       # noqa: E731 - F-D107: agent luar belum ikut menentukan
+        return an.bot_aktif(rumah(v["picks"]), rumah(v["skor"]), close, ident)
 
 
     # -- pembaca chain (None tanpa ev)
@@ -615,10 +675,27 @@ def make_handler(gate: Gate):
                 if parts[0] == "analis" and len(parts) == 2 and parts[1] == "lengkap":
                     code, body = gate.analis_lengkap(self.headers.get("Authorization"))
                     return self._send(code, body)
+                if parts[0] == "analis" and len(parts) == 2 and parts[1] == "input":
+                    close, raw = an.next_close(int(gate.now())), gate.data.cfg_raw()
+                    return self._send(200, {"bar_close": close, "commit_before": close, "masukan": an.masukan(gate.data.workdir, close),
+                                            "reasoning_schema": an.SKEMA_ALASAN, "steps": LANGKAH_LUAR, "chain_id": 97,
+                                            "selection_anchor": raw.get("contracts", {}).get("SelectionAnchor"),
+                                            "identity_registry": (raw.get("erc8004") or {}).get("identity"),
+                                            "card_field": {"fabius": {"reasons": "https://example.com/fabius/{bar_close}.json"}},
+                                            "house_prompt": {"system": an.SYSTEM, "user": an.prompt(an.masukan(gate.data.workdir, close))}})
+                if parts[0] == "analis" and len(parts) == 2 and parts[1] == "registry":
+                    v, acfg = gate.analis_view(), an.load_cfg(os.path.join(gate.data.workdir, "deployments", "97.json"))
+                    names = {a["slug"]: a["name"] for a in an.AGENTS}
+                    rumah = [{"agent_id": int(a["agent_id"]), "nama": names.get(s_, s_), "rumah": True, "model": a.get("model"), "kartu": a.get("uri")}
+                             for s_, a in sorted((acfg.get("agents") or {}).items())]
+                    luar = [{"agent_id": i, "nama": c["nama"], "rumah": False, "kartu": c["uri"], "alasan_url": c["alasan_url"], "galat": c["galat"]}
+                            for i, c in sorted(v.get("kartu", {}).items())]
+                    return self._send(200, {"agents": rumah + luar, "catatan": "agent luar ditemukan dari event Picked di SelectionAnchor; dinilai + "
+                                            "tampil di papan, belum menentukan bot aktif (F-D107)", "join": f"{gate.public_url}/analysts/input"})
                 if parts[0] == "aktif" and len(parts) == 1:
                     return self._send(200, gate.aktif_now())
                 if parts[0] == "analis" and len(parts) in (1, 2):
-                    recs = an.records(gate.analis_dirs(), int(parts[1]) if len(parts) == 2 else None)
+                    recs = gate.analis_records(int(parts[1]) if len(parts) == 2 else None)
                     last = max((r["alasan"]["bar_close"] for r in recs), default=None)
                     show = recs if len(parts) == 2 else [r for r in recs if r["alasan"]["bar_close"] == last]
                     return self._send(200, {"bar_close": last if len(parts) == 1 else int(parts[1]),
@@ -802,17 +879,19 @@ def tg_reply(gate: "Gate", chat_id: int, text: str, private: bool = True, user_i
         return head + "\n\nTap the button: sign in with Telegram (or Google), get free FAB, pay with x402 (no gas). The signal is also sent here.", \
             (f"Buy {bot} · {q['fab']:g} FAB", link)
     if cmd == "/analysts":
-        recs = an.records(gate.analis_dirs())
+        recs = gate.analis_records()
         if not recs:
             return "No analyst picks yet.", None
         last = max(r["alasan"]["bar_close"] for r in recs)
         day = dt.datetime.fromtimestamp(last, dt.timezone.utc).strftime("%Y-%m-%d %H:%M UTC")
-        rows = [f"{r['alasan']['nama']} (agent {r['alasan']['agent_id']}): {r['bot']} · self-rated confidence {r['keyakinan']}%"
+        rows = [f"{r['alasan'].get('nama') or 'agent'}{' [external]' if r.get('luar') else ''} (agent {r['alasan']['agent_id']}): {r['bot']} · "
+                f"self-rated confidence {r['keyakinan']}%"
                 f"{' · committed on-chain' if r.get('status') == 'dikomit' else ''}"
                 for r in recs if r["alasan"]["bar_close"] == last]
         ak = gate.aktif_now()
         board = gate.analis_view()["papan"]
-        lb = [f"{i + 1}. agent {b['agent_id']} ({b.get('nama') or b['agent']}): {b['terskor']}/{b['pilihan']} scored · excess vs B1 {b['jumlah_selisih_bps']:+.1f} bps"
+        lb = [f"{i + 1}. agent {b['agent_id']} ({b.get('nama') or b['agent']}{', external' if b.get('luar') else ''}): {b['terskor']}/{b['pilihan']} "
+              f"scored · excess vs B1 {b['jumlah_selisih_bps']:+.1f} bps"
               for i, b in enumerate(board)]
         return (f"Bot Fabius trades now (locked rule): {ak.get('bot')} — {ak.get('alasan_en') or ak.get('alasan')}\n\n"
                 f"Analyst agents' picks for the bar closing {day} (committed before the close, scored later from the public ledger):\n\n"
@@ -884,7 +963,8 @@ def analis_loop(gate: "Gate", ev, stop: threading.Event, every_s: int = 600) -> 
             v = gate.analis_view(max_age_s=0)
             rep = (gate.data.cfg_raw().get("erc8004") or {}).get("reputation")
             if rep and gate.pk:
-                an.reputasi(ev, gate.pk, rep, v["skor"], os.path.join(gate.analis_dir, "reputasi.json"), gate.public_url, log=gate.log)
+                an.reputasi(ev, gate.pk, rep, [x for x in v["skor"] if not x.get("luar")], os.path.join(gate.analis_dir, "reputasi.json"),
+                            gate.public_url, log=gate.log)                          # F-D107: feedback hanya agent rumah (gas gerbang tidak bisa dikuras Sybil)
         except Exception as e:  # noqa: BLE001 - analis gagal tidak boleh mengganggu penjualan sinyal
             gate.log(f"analis gagal: {type(e).__name__}: {str(e)[:200]}")
 

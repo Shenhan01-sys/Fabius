@@ -11,7 +11,7 @@ import { PrivyProvider, usePrivy } from "@privy-io/react-auth";
 import Nav from "@/components/Nav";
 import { LangProvider, useLang } from "@/components/lang";
 import { LINKS } from "@/lib/copy";
-import { PRIVY_APP_ID, PRIVY_CONFIG } from "@/lib/x402-buy";
+import { GATE, PRIVY_APP_ID, PRIVY_CONFIG } from "@/lib/x402-buy";
 import { lengkap, publik, short, utc, type AnalisRec, type Lengkap, type PapanRow, type Publik } from "@/lib/analis";
 
 export default function AnalisView() {
@@ -172,6 +172,14 @@ function Board() {
 
       <Papan rows={pub.papan} />
 
+      <div className={panel}>
+        <p className={label}>{v.joinTitle}</p>
+        <p className="mt-2 text-sm text-ink/70">{v.joinSub}</p>
+        <p className="mt-2 font-mono text-xs text-ink/50">
+          MCP <span className="text-ink/80">fabius_analyst_join</span> · {GATE.replace("https://", "")}/analysts/input · /analysts/registry
+        </p>
+      </div>
+
       <p className="text-xs text-ink/50">
         {v.hashNote}
         {anchor && (
@@ -194,11 +202,14 @@ function Slip({ r, open, sealed, now }: { r: AnalisRec; open: boolean; sealed: s
   return (
     <article className={`${panel} min-w-0`}>
       <header className="flex flex-wrap items-baseline justify-between gap-x-3">
-        <p className="font-display text-lg">{now ?? r.alasan.nama}</p>
-        <p className="text-xs text-ink/50">agent {r.alasan.agent_id}</p>
+        <p className="font-display text-lg">{now ?? r.alasan.nama ?? `agent ${r.alasan.agent_id}`}</p>
+        <p className="text-xs text-ink/50">
+          agent {r.alasan.agent_id}
+          {r.luar && <span className="ml-2 rounded-full bg-ink/10 px-2 py-0.5 text-[10px] uppercase tracking-wide text-ink/60">{v.external}</span>}
+        </p>
       </header>
       {/* nama + model yang tercatat DI DALAM alasan yang di-hash = model yang benar-benar membuat pilihan ini (slot agent bisa berganti model, F-D105) */}
-      {now && now !== r.alasan.nama && <p className="mt-1 text-xs text-violet">{v.madeBy.replace("{m}", r.alasan.model ?? r.alasan.nama)}</p>}
+      {now && r.alasan.nama && now !== r.alasan.nama && <p className="mt-1 text-xs text-violet">{v.madeBy.replace("{m}", r.alasan.model ?? r.alasan.nama)}</p>}
       <p className="mt-3 font-display text-3xl font-[300]">{r.bot}</p>
       <div className="mt-3" title={v.convictionNote}>
         <div className="h-2 w-full overflow-hidden rounded-full bg-ink/10">
@@ -246,7 +257,7 @@ function Slip({ r, open, sealed, now }: { r: AnalisRec; open: boolean; sealed: s
             {r.reasonHash.slice(2, 6)}
           </span>
           <div className="min-w-0">
-            <p className="text-sm text-ink/80">{sealed}</p>
+            <p className="text-sm text-ink/80">{r.alasan.tidak_terbit ? v.notPublished : sealed}</p>
             <p className="truncate font-mono text-[11px] text-ink/50">reasonHash {r.reasonHash}</p>
           </div>
         </div>
@@ -282,6 +293,7 @@ function Papan({ rows }: { rows: PapanRow[] }) {
               <div className="flex flex-wrap items-baseline justify-between gap-x-3 text-sm">
                 <span>
                   {i + 1}. agent {r.agent_id} <span className="text-ink/50">({r.nama ?? r.agent})</span>
+                  {r.luar && <span className="ml-2 rounded-full bg-ink/10 px-2 py-0.5 text-[10px] uppercase tracking-wide text-ink/60">{v.external}</span>}
                 </span>
                 <span className="font-mono text-xs text-ink/70">
                   {r.terskor}/{r.pilihan} {v.colScored} · {r.jumlah_selisih_bps >= 0 ? "+" : ""}

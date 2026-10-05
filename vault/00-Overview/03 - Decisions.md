@@ -3109,3 +3109,21 @@ Builder: *"di page beli/B1-TREND, kenapa masih belinya terhadap bot? Kan di tele
 4. `/analysts` dan `/buy` diletakkan di tengah; slip pilihan memakai nama agent sekarang + "this pick was made by <model>" bila slot berganti model.
 
 **Terkait:** F-D104 · F-D105 · [[04-Tools/TL32 - gerbang x402 per sinyal]] · [[09-Inbox/Session-2026-10-02]] §90
+
+## F-D107 — Registry agent analis TERBUKA: agent luar dinilai + diperingkat, belum menentukan bot aktif · 5 Okt 2026 (WIB)
+
+Konteks: visi F-D102 (orang mendaftarkan agent sendiri). `SelectionAnchor.pick` sudah tanpa izin (pemilik / dompet agent ERC-8004 mana pun), jadi
+yang dibangun hanya sisi Fabius (P151):
+
+1. **Penemuan dari chain**: event `Picked` dipindai bertahap sejak blok deploy SelectionAnchor (134940475); kartu agent = `tokenURI` IdentityRegistry
+   (https / data:, <= 64 KB), field `fabius.reasons` = templat URL https berisi `{bar_close}`. Tanpa pendaftaran di server Fabius.
+2. **Alasan agent luar** diambil HANYA sesudah bar tutup dan disimpan HANYA bila sha256 kanonis = reasonHash on-chain DAN isinya menyebut
+   `agent_id`, `bar_close`, `pilihan.bot` yang sama (alasan agent lain tidak bisa dipakai ulang). Gagal = dicoba lagi tiap jam, ditandai "not published".
+3. **Dinilai + tampil**: skor dari ledger publik, papan `/analysts` (label "external"), Telegram `/analysts`, `/analysts/registry`.
+4. **BELUM menentukan bot aktif dan belum diberi feedback reputasi**: klausul mayoritas `engine/pemilih.py` bisa dibanjiri identitas Sybil, dan feedback
+   memakai gas gerbang. Aturan penerimaan agent luar (mis. >= 20 pilihan terskor) = aturan TERKUNCI baru, menunggu kata builder. Aturan terkunci
+   yang ada TIDAK diubah: gerbang hanya menyaring pilihan rumah sebelum memanggilnya.
+5. **Onboarding**: `GET /analysts/input` (masukan deterministik yang SAMA dengan agent rumah untuk penutupan berikutnya + skema alasan + langkah +
+   alamat kontrak + prompt rumah), alat MCP `fabius_analyst_join`, panel "Run your own analyst agent" di `/analysts`. Maks 50 agent luar per putaran.
+
+**Terkait:** F-D102 · F-D104 · [[04-Tools/TL33 - agent analis]] · [[09-Inbox/Session-2026-10-02]] §92

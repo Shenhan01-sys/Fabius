@@ -16,6 +16,7 @@ sampai `ANTHROPIC_API_KEY` ada (builder 5 Okt: belum ada dana kredit API) - jalu
 from __future__ import annotations
 
 import argparse
+import base64
 import datetime as dt
 import hashlib
 import json
@@ -24,6 +25,7 @@ import os
 import re
 import sys
 import time
+import urllib.parse
 import urllib.request
 from typing import Callable, Dict, List, Optional
 
@@ -276,6 +278,103 @@ def onchain_picks(ev, sel: str, agents: Dict[str, dict]) -> List[dict]:
     return sorted(out, key=lambda r: (r["bar_close"], r["agent_id"]))
 
 
+# ---------------------------------------------------------------- agent LUAR (P151, F-D107)
+# SelectionAnchor sudah terbuka: identitas ERC-8004 mana pun (pemilik / dompet agent) boleh `pick`. Fabius menemukan mereka dari event `Picked`,
+# membaca kartu ERC-8004 mereka (`tokenURI`), dan mengambil alasan dari URL di kartu HANYA sesudah bar tutup, disimpan HANYA bila sha256 kanonisnya
+# = reasonHash on-chain DAN isinya menyebut agent, bar, dan bot yang sama. Agent luar dinilai + tampil di papan; BELUM ikut menentukan bot aktif
+# dan belum diberi feedback reputasi (F-D107: klausul mayoritas bisa dibanjiri identitas Sybil; penerimaan butuh aturan terkunci baru).
+PICKED_TOPIC = "0x885257223219a0b7ef22e0f10be61383789c95e280729027d2b944f2240e122e"   # Picked(uint256,uint64,bytes32,uint8,bytes32,address), dari log chain 97
+CARD_MAX = 64 * 1024
+LUAR_MAX = 50                      # agent luar yang dibaca per putaran (biaya RPC terbatas; urutan = id terkecil dulu)
+SKEMA_ALASAN = {"agent_id": "int (agent ERC-8004 kamu)", "bar_close": "int (unix detik, penutupan bar yang dipilih)", "nama": "str (opsional)",
+                "model": "str (opsional)", "pilihan": {"bot": "salah satu bot maju", "keyakinan": "int 0-100", "alasan": "str", "risiko": "str (opsional)"}}
+
+
+def ambil(url: str, limit: int = CARD_MAX) -> bytes:
+    """https:// atau data: (JSON base64 / percent-encoded), paling banyak `limit` byte; selain itu galat."""
+    if url.startswith("data:"):
+        head, _, data = url.partition(",")
+        raw = base64.b64decode(data) if head.endswith(";base64") else urllib.parse.unquote_to_bytes(data)
+    elif url.startswith("https://"):
+        with urllib.request.urlopen(urllib.request.Request(url, headers={"User-Agent": "fabius-analis/1.0"}), timeout=10) as r:
+            raw = r.read(limit + 1)
+    else:
+        raise ValueError("hanya https:// atau data:")
+    if len(raw) > limit:
+        raise ValueError(f"lebih dari {limit} byte")
+    return raw
+
+
+def temukan_agent(ev, sel: str, from_block: int, state: dict, step: int = 40_000) -> List[int]:
+    """agentId yang pernah memilih di SelectionAnchor (event `Picked`), dipindai bertahap dari `state["blok"]` (disimpan pemanggil)."""
+    latest = int(ev.rpc("eth_blockNumber", []), 16)
+    b, seen = int(state.get("blok") or from_block), set(state.get("agen") or [])
+    while b <= latest:
+        e = min(b + step - 1, latest)
+        try:
+            logs = ev.rpc("eth_getLogs", [{"address": sel, "fromBlock": hex(b), "toBlock": hex(e), "topics": [PICKED_TOPIC]}])
+        except Exception:  # noqa: BLE001 - rentang terlalu lebar untuk RPC publik -> perkecil
+            if step <= 500:
+                raise
+            step //= 2
+            continue
+        seen.update(int(lg["topics"][1], 16) for lg in logs)
+        b = e + 1
+    state["blok"], state["agen"] = b, sorted(seen)
+    return state["agen"]
+
+
+def kartu_luar(ev, identity: str, agent_id: int, fetch: Callable[[str], bytes] = ambil) -> dict:
+    """Kartu ERC-8004 agent luar -> {agent_id, nama, alasan_url (berisi {bar_close}) | None, uri, galat}. Kartu rusak = agent tetap tampil tanpa alasan."""
+    out = {"agent_id": agent_id, "nama": f"agent {agent_id}", "alasan_url": None, "uri": None, "galat": None}
+    try:
+        uri = ev.call_decode(identity, "tokenURI(uint256)", ("uint256",), (agent_id,), ("string",))[0]
+        out["uri"] = uri[:300]
+        card = json.loads(fetch(uri))
+        if not isinstance(card, dict):
+            raise ValueError("kartu bukan objek JSON")
+        out["nama"] = str(card.get("name") or out["nama"])[:80]
+        tpl = (card.get("fabius") or {}).get("reasons") if isinstance(card.get("fabius"), dict) else None
+        if isinstance(tpl, str) and tpl.startswith("https://") and "{bar_close}" in tpl:
+            out["alasan_url"] = tpl
+        else:
+            out["galat"] = "kartu tanpa fabius.reasons (https, berisi {bar_close})"
+    except Exception as e:  # noqa: BLE001
+        out["galat"] = f"{type(e).__name__}: {str(e)[:120]}"
+    return out
+
+
+def alasan_luar(picks: List[dict], kartu: Dict[int, dict], out_dir: str, now_s: int, fetch: Callable[[str], bytes] = ambil,
+                log: Callable[[str], None] = print, coba: Optional[Dict[str, float]] = None, jeda_s: int = 3600) -> int:
+    """Alasan agent luar untuk bar yang SUDAH tutup -> `<out_dir>/<bar_close>.jsonl`, hanya bila hash + skema cocok. Gagal dicoba lagi tiap `jeda_s`."""
+    coba = {} if coba is None else coba
+    have = {(r["agent"], int(r["alasan"]["bar_close"])) for r in records([out_dir])}
+    n = 0
+    for p in picks:
+        key = f"{p['agent']}:{p['bar_close']}"
+        tpl = (kartu.get(p["agent_id"]) or {}).get("alasan_url")
+        if p["bar_close"] > now_s or (p["agent"], p["bar_close"]) in have or not tpl or now_s - coba.get(key, -jeda_s) < jeda_s:
+            continue
+        coba[key] = now_s
+        try:
+            a = json.loads(fetch(tpl.replace("{bar_close}", str(p["bar_close"]))))
+            pl = a.get("pilihan") if isinstance(a, dict) else None
+            if sha(a) != p["reasonHash"]:
+                raise ValueError("sha256 alasan != reasonHash on-chain")
+            if not isinstance(pl, dict) or int(a.get("agent_id", -1)) != p["agent_id"] or int(a.get("bar_close", -1)) != p["bar_close"] or pl.get("bot") != p["bot"]:
+                raise ValueError("isi tidak menyebut agent/bar/bot yang sama dengan pilihan on-chain")
+        except Exception as e:  # noqa: BLE001
+            log(f"alasan luar {key} DITOLAK: {type(e).__name__}: {str(e)[:120]}")
+            continue
+        os.makedirs(out_dir, exist_ok=True)
+        with open(os.path.join(out_dir, f"{p['bar_close']}.jsonl"), "a", encoding="utf-8", newline="\n") as f:
+            f.write(json.dumps({"agent": p["agent"], "bot": p["bot"], "keyakinan": p["keyakinan"], "reasonHash": p["reasonHash"], "status": "dikomit",
+                                "luar": True, "alasan": a}, ensure_ascii=False, sort_keys=True) + "\n")
+        n += 1
+        log(f"alasan luar {key} {p['bot']} (hash + skema cocok)")
+    return n
+
+
 def net_of(bot: str, bar_ms: int, led: Dict[str, list], md_prov) -> tuple:
     """(status, net) return paper bot untuk bar `bar_ms`: settle FINAL di ledger bila ada; selain itu PROVISIONAL (funding estimasi, fungsi settle
     yang sama); selain itu menunggu (bar belum ditutup / data belum ada)."""
@@ -308,12 +407,12 @@ def skor(workdir: str, picks: List[dict], md_prov=None, identitas: Optional[str]
     return out
 
 
-def papan(scored: List[dict]) -> List[dict]:
-    nama = {a["slug"]: a["name"] for a in AGENTS}
+def papan(scored: List[dict], nama_luar: Optional[Dict[str, str]] = None) -> List[dict]:
+    nama = {**{a["slug"]: a["name"] for a in AGENTS}, **(nama_luar or {})}
     rows: Dict[int, dict] = {}
     for r in scored:
         a = rows.setdefault(r["agent_id"], {"agent": r["agent"], "nama": nama.get(r["agent"], r["agent"]), "agent_id": r["agent_id"], "pilihan": 0,
-                                             "terskor": 0, "final": 0,
+                                             "luar": bool(r.get("luar")), "terskor": 0, "final": 0,
                                              "jumlah_net_bps": 0.0, "jumlah_selisih_bps": 0.0})
         a["pilihan"] += 1
         if r["status_skor"] != "menunggu":

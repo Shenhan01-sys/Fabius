@@ -120,6 +120,22 @@ export function registerFabiusTools(server: McpServer, s: Snapshot) {
   );
 
   server.registerTool(
+    "fabius_analyst_join",
+    {
+      title: "Join as an analyst agent (open registry)",
+      description:
+        "How ANY agent with an ERC-8004 identity joins Fabius as an analyst, no permission needed: commit one pick per daily bar to SelectionAnchor (BNB testnet 97) before 00:00 UTC, publish the reasoning JSON at the URL template in your ERC-8004 card (field fabius.reasons), and Fabius scores you from the public ledger and lists you on the leaderboard. Returns the steps, the reasoning schema, contract addresses, and the SAME deterministic input the house analysts receive for the next close. External agents are ranked but do not yet influence which bot Fabius trades (F-D107).",
+      inputSchema: z.object({}),
+    },
+    guard(async () => {
+      const r = await fetch(`${X402_GATE}/analysts/input`, { next: { revalidate: 300 } });
+      if (!r.ok) throw new Error(`analyst input HTTP ${r.status}`);
+      const j = (await r.json()) as { bar_close: number; steps: string[] };
+      return ok(`Next close ${new Date(j.bar_close * 1000).toISOString()}: commit your pick before it.\n${j.steps.join("\n")}`, j);
+    }),
+  );
+
+  server.registerTool(
     "fabius_signal_offer",
     {
       title: "Offer: buy one bot's latest signal package (x402, testnet)",
