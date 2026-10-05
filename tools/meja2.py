@@ -22,11 +22,13 @@ from engine.data import ListingEvent, MarketData
 from engine.series import Series
 from engine.spec import SPECS
 
-PARAMS2 = {"v": 2, "maks_instrumen": 8, "universe_top": 50, "hysteresis_poin": 15, "pegang_min_siklus": 3, "harian_limit": 120,
+PARAMS2 = {"v": 3, "maks_instrumen": 8, "universe_top": 50, "hysteresis_poin": 15, "pegang_min_siklus": 3, "harian_limit": 120,
            "likuiditas_min_usd": 50_000, "rugi_harian_maks": 0.03,
            # F-D113 #3: ambang proporsional terhadap n kursi AKTIF (n = 3 -> kuorum 2, instrumen/veto >= 2 agent, skor instrumen >= 1,2 = nilai v1)
            "ambang": "kuorum max(2, ceil(n/2)); instrumen + veto max(2, ceil(n/3)) agent; skor instrumen 0,4 n",
-           "instrumen_dari": "agent yang memilih bot akhir; tanpa pemilih + bot ditahan -> instrumen siklus lalu"}
+           "instrumen_dari": "agent yang memilih bot akhir; tanpa pemilih + bot ditahan -> instrumen siklus lalu",
+           # v3 (koreksi 6 Okt): aturan dengan jumlah aset minimum (B2-RS min_aset 8) diisi skor tertinggi pemilih bot akhir sampai minimum
+           "isi_minimum_aturan": "konstanta min_aset spesifikasi bot akhir"}
 # P160 (F-D113): kursi agent LLM, kriteria DIKUNCI atas kata builder 5 Okt ("Gas"); sha di Decisions F-D113. Kursi hanya berubah di evaluasi harian 00:00 UTC.
 PARAMS_KURSI = {"v": 1, "status": "terkunci", "maks_aktif": 7, "maks_uji": 3, "jendela_siklus": 288, "naik_sah_min": 0.95, "tukar_unggul_min": 0.005,
                 "turun_sah_maks": 0.80}
@@ -220,6 +222,9 @@ def parse2(text: str, uni: List[str], fitur: List[str]) -> dict:
             ditolak.append({"aset": a, "galat": "outside universe"})
             continue
         ins.append({"aset": a, "k": max(0, min(100, int(it.get("keyakinan", 0)))) / 100, "faktor": [f for f in (it.get("faktor") or []) if f in fset]})
+    mn = int(SPECS[bot].konstanta.get("min_aset", 0))
+    if mn and len(ins) < mn:                                                                 # dicatat, bukan ditolak: buku agent ini datar menurut aturan
+        ditolak.append({"bot": bot, "galat": f"{bot} needs >= {mn} instruments, got {len(ins)}"})
     veto = [{"aset": str(v.get("aset", "")).upper(), "faktor": v.get("faktor")} for v in (o.get("veto_aset") or [])
             if str(v.get("aset", "")).upper() in uni and v.get("faktor") in fset]
     return {"ringkasan": ring, "bot": bot, "skor_bot": skor, "k": k / 100, "eksposur": eks / 100, "instrumen": ins, "veto": veto, "faktor": fk,
@@ -256,6 +261,10 @@ def konsensus2(kep: Dict[str, dict], state: dict, snap: Optional[dict], n_aktif:
            if jml[a] >= am["min_agent_instrumen"] or skor_i[a] >= am["ambang_instrumen"]][:PARAMS2["maks_instrumen"]]
     if not pemilih and top == cur:
         ins = list(state.get("instrumen", []))
+    min_ins = int(SPECS[top].konstanta.get("min_aset", 0)) if top in SPECS else 0
+    if min_ins and len(ins) < min_ins:                                                       # B2-RS: peringkat butuh >= 8 aset
+        ins = (ins + [a for a in sorted(skor_i, key=lambda a: (-skor_i[a], a)) if a not in ins])[:max(min_ins, PARAMS2["maks_instrumen"])]
+        why += f"; filled to {len(ins)} instruments for the {top} minimum of {min_ins}"
     vc: Dict[str, int] = {}
     for d in kep.values():
         for v in d["veto"]:

@@ -90,6 +90,14 @@ class ConsensusTests(unittest.TestCase):
         d = meja2.parse2(out(bot="B6-BOUNCE", skor={b: (100 if b == "B6-BOUNCE" else 0) for b in meja2.BOTS}, ins=(("NEARUSDT", 90),)), UNI, FIT)
         k3, _ = meja2.konsensus2({"a": d, "b": a, "c": b}, {}, None)
         self.assertEqual((k3["bot"], k3["instrumen"]), ("B1-TREND", ["SOLUSDT"]))             # NEAR dipilih untuk B6, bukan untuk B1
+        ins8 = [("SOLUSDT", 90), ("NEARUSDT", 80), ("WIFUSDT", 70), ("BTCUSDT", 60), ("PAXGUSDT", 50), ("NEWUSDT", 40)]
+        e = meja2.parse2(out(bot="B2-RS", skor={b: (90 if b == "B2-RS" else 0) for b in meja2.BOTS}, ins=ins8), UNI, FIT)
+        self.assertIn({"bot": "B2-RS", "galat": "B2-RS needs >= 8 instruments, got 6"}, e["ditolak"])
+        f = meja2.parse2(out(bot="B2-RS", skor={b: (90 if b == "B2-RS" else 0) for b in meja2.BOTS}, ins=ins8[:2]), UNI, FIT)
+        k4, why4 = meja2.konsensus2({"e": e, "f": f}, {}, None)
+        self.assertEqual(k4["bot"], "B2-RS")
+        self.assertEqual(len(k4["instrumen"]), 6)                                             # 2 lolos ambang + 4 skor tertinggi pemilih B2 (semua yang ada)
+        self.assertIn("minimum of 8", why4)
 
 
 class RuleTests(unittest.TestCase):
