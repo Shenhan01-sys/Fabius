@@ -227,5 +227,29 @@ class ReasoningAccessTests(unittest.TestCase):
         self.assertEqual(self.g.analis_lengkap("Bearer " + jwt(self.key, {**CLAIMS, "exp": self.t + 600}))[0], 402)
 
 
+@unittest.skipUnless(HAVE, "cryptography/eth-abi tidak terpasang")
+class PolicyTests(unittest.TestCase):
+    """P148: policy Privy kunci bot - hanya Permit2/EIP-2612 FAB ke payTo gerbang, chain 97, <= 1 FAB; `types` harus PERSIS yang dikirim gerbang."""
+
+    def test_the_bot_policy_allows_only_fab_payments_to_the_gate_with_the_exact_types_the_gate_sends(self):
+        import privy_policy as pp
+        b = pp.policy_body(TOKEN, PAYTO)
+        p2, e2612, _ = xs.typed_pair(TOKEN, 1, PAYTO, "0x" + "00" * 20, 0, 0, 0)
+        r1, r2 = b["rules"]
+        self.assertEqual(({r["action"] for r in b["rules"]}, {r["method"] for r in b["rules"]}), ({"ALLOW"}, {"eth_signTypedData_v4"}))
+        for rule, td, fields in ((r1, p2, {"spender": "in", "witness.to": "in", "permitted.token": "in", "permitted.amount": "lte"}),
+                                 (r2, e2612, {"spender": "in", "value": "lte"})):
+            msg = [c for c in rule["conditions"] if c["field_source"] == "ethereum_typed_data_message"]
+            dom = {c["field"]: c["value"] for c in rule["conditions"] if c["field_source"] == "ethereum_typed_data_domain"}
+            self.assertTrue(all(c["typed_data"] == {"types": td["types"], "primary_type": td["primaryType"]} for c in msg))
+            self.assertEqual({c["field"]: c["operator"] for c in msg}, fields)
+            self.assertEqual(dom["chainId"], "97")
+            self.assertIn(td["domain"]["verifyingContract"], dom["verifyingContract"])
+        cap = {c["field"]: c["value"] for c in r1["conditions"] + r2["conditions"] if c["operator"] == "lte"}
+        self.assertEqual(cap, {"permitted.amount": "1000000", "value": "1000000"})              # = harga puncak tabel terkunci
+        self.assertIn(PAYTO, next(c for c in r1["conditions"] if c["field"] == "witness.to")["value"])
+        self.assertIn(pp.PROXY, next(c for c in r1["conditions"] if c["field"] == "spender")["value"])
+
+
 if __name__ == "__main__":
     unittest.main()

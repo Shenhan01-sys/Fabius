@@ -11,7 +11,10 @@ export const FAB = "0xc7b6d5cdbdc881daae0dbcc095d4f184b70ec881" as const; // dep
 export const PERMIT2 = "0x000000000022D473030F116dDEE9F6B43aC78BA3" as const;
 export const PROXY = "0x402085c248EeA27D92E8b30b2C58ed07f9E20001" as const; // x402ExactPermit2Proxy kanonis
 export const PRIVY_APP_ID = "cmuukhkc200zo0cjh0jmqd11x"; // publik (builder, 5 Okt); secret hanya di Railway
-export const PRIVY_KEY_QUORUM_ID = "pyyven7fpdtnc30uuij8ikps"; // key quorum fabius-bot1 (P138e): pasangan lokal yang tidak pernah terbuka; izin user -> /buy dari chat
+export const PRIVY_KEY_QUORUM_ID = "pyyven7fpdtnc30uuij8ikps";
+// Policy Privy P148 (tools/privy_policy.py, diuji 6/6 pada dompet server 5 Okt): kunci bot hanya boleh menandatangani Permit2/EIP-2612 FAB ke payTo
+// gerbang di chain 97, <= 1 FAB per tanda tangan. Dipasang bersama izin bot; izin lama tanpa policy diganti saat user menekan Allow lagi.
+export const PRIVY_POLICY_ID = "g0mqf8prswwwe63rai348zcd"; // key quorum fabius-bot1 (P138e): pasangan lokal yang tidak pernah terbuka; izin user -> /buy dari chat
 const CHAIN_ID = 97;
 
 // Satu konfigurasi Privy untuk /buy dan /analysts: akun + dompet yang SAMA di kedua halaman (dan di Telegram Mini App).

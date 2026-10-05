@@ -3053,6 +3053,10 @@ lalu menempelkan ID DAN private key di chat. Diingatkan: kunci itu harus diangga
    lokal yang tidak pernah terbuka) -> key quorum `pyyven7fpdtnc30uuij8ikps` (fabius-bot1). Server + web dialihkan ke pasangan itu; kunci yang terbuka
    PENSIUN (dihapus dari `.privy.env`; builder diminta menghapusnya di dashboard). Sisa pekerjaan migrasi: hanya policy Privy (opsional).
 
+5. **Policy dipasang 5 Okt (P148):** `g0mqf8prswwwe63rai348zcd` membatasi kunci bot di enclave Privy ke pembayaran FAB ke payTo gerbang, chain 97,
+   <= 1 FAB per tanda tangan (diuji 6/6 di dompet server). Berlaku untuk izin yang dipasang lewat tombol Allow sesudah web ini; izin lama tanpa
+   policy berlaku sampai user menekan Allow lagi.
+
 **Terkait:** F-D101 · [[04-Tools/TL32 - gerbang x402 per sinyal]] · [[09-Inbox/Session-2026-10-02]] §87
 
 ## F-D104 — Alasan agent analis: tersegel sampai bar tutup; lengkap di web untuk akun yang login + membeli sinyal dalam 7 hari · 5 Okt 2026 (WIB)

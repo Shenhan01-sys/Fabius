@@ -13,7 +13,7 @@ import { PrivyProvider, useLinkAccount, usePrivy, useSignTypedData, useSigners, 
 import type { Hex } from "viem";
 import Nav from "@/components/Nav";
 import { LangProvider, useLang } from "@/components/lang";
-import { GATE, PRIVY_APP_ID, PRIVY_CONFIG, PRIVY_KEY_QUORUM_ID, buy, fabBalance, faucet, teaser, type Package, type RincianAset, type Teaser } from "@/lib/x402-buy";
+import { GATE, PRIVY_APP_ID, PRIVY_CONFIG, PRIVY_KEY_QUORUM_ID, PRIVY_POLICY_ID, buy, fabBalance, faucet, teaser, type Package, type RincianAset, type Teaser } from "@/lib/x402-buy";
 
 const px = (x: number) => (x >= 100 ? x.toLocaleString("en-US", { maximumFractionDigits: 2 }) : x >= 1 ? x.toFixed(4) : x.toFixed(6));
 const pct = (x: number) => `${x >= 0 ? "+" : ""}${(x * 100).toFixed(1)}%`;
@@ -223,7 +223,9 @@ function Buy({ fixed }: { fixed?: string }) {
               onClick={async () => {
                 setBusy("izin");
                 try {
-                  await addSigners({ address: owner, signers: [{ signerId: PRIVY_KEY_QUORUM_ID }] });
+                  // Ganti izin lama (tanpa policy) dengan izin ber-policy: bot hanya bisa membayar FAB ke gerbang, <= 1 FAB (P148).
+                  await removeSigners({ address: owner }).catch(() => undefined);
+                  await addSigners({ address: owner, signers: [{ signerId: PRIVY_KEY_QUORUM_ID, policyIds: [PRIVY_POLICY_ID] }] });
                   setIzin(v.botOn);
                 } catch (e) {
                   setIzin(e instanceof Error ? e.message : String(e));

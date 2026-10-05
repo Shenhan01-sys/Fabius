@@ -111,6 +111,20 @@ class Privy:
                 return a["id"], a["address"]
         return None
 
+    def create_policy(self, body: dict) -> dict:
+        """POST /v1/policies (milik app, tanpa owner) -> objek policy dengan `id` (P148)."""
+        st, resp = self.http("POST", f"{self.base}/v1/policies", self._headers(), body)
+        if st != 200 or not resp.get("id"):
+            raise PrivyError(st, resp, "buat policy")
+        return resp
+
+    def create_wallet(self, policy_ids: list, owner_id: str) -> dict:
+        """POST /v1/wallets: dompet server Ethereum milik key quorum `owner_id` dengan policy terpasang (dipakai uji policy P148)."""
+        st, resp = self.http("POST", f"{self.base}/v1/wallets", self._headers(), {"chain_type": "ethereum", "policy_ids": policy_ids, "owner_id": owner_id})
+        if st != 200 or not resp.get("id"):
+            raise PrivyError(st, resp, "buat dompet")
+        return resp
+
     def sign_typed_data(self, wallet_id: str, typed: dict) -> str:
         if not self.auth_key:
             raise PrivyError(0, {"error": "PRIVY_AUTH_PRIVATE_KEY tidak ada"}, "tanda tangan")
