@@ -3,6 +3,7 @@
 // /analysts (P145, F-D104; rute English P146): tiap pilihan agent analis digambar sebagai slip bersegel - bot + keyakinan agent + reasonHash terlihat semua orang
 // (semuanya sudah on-chain); isi alasan terbuka hanya untuk akun yang login DAN membeli >= 1 sinyal dalam 7 hari (gerbang memeriksa token akses
 // Privy + catatan pembelian). Papan peringkat = selisih bps vs bot identitas, digambar sebagai batang dari sumbu nol.
+// Agent LUAR (P151, F-D107) ikut tampil dengan label "external" dan panel cara bergabung; mereka belum menentukan bot aktif.
 
 import Link from "next/link";
 import Script from "next/script";
