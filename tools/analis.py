@@ -99,12 +99,7 @@ def tambah_agent(path: str, slug: str, nama: str, provider: str, model: str, eff
         raise ValueError(f"effort harus salah satu {EFFORTS}")
     if not (nama.strip() and model.strip()):
         raise ValueError("nama dan model wajib")
-    if provider not in d["providers"]:
-        if not (base and key_var):
-            raise ValueError(f"penyedia {provider!r} belum ada: beri --base (https, OpenAI-compatible) dan --key-var")
-        if not base.startswith("https://") or not re.match(r"^[A-Z][A-Z0-9_]{2,40}$", key_var):
-            raise ValueError("--base harus https://..., --key-var huruf besar/angka/_")
-        d["providers"][provider] = {"base": base.rstrip("/"), "key_var": key_var}
+    _penyedia(d, provider, base, key_var)
     ag = {"slug": slug, "name": f"Fabius Analyst · {nama.strip()}", "provider": provider, "model": model.strip(), "effort": effort,
           "key_var": f"ANALIS_{slug.upper()}_PRIVATE_KEY"}
     if berita:
@@ -112,10 +107,49 @@ def tambah_agent(path: str, slug: str, nama: str, provider: str, model: str, eff
     if npc:
         ag["npc"] = cek_npc(npc)
     d["agents"].append(ag)
+    _tulis(path, d)
+    return ag
+
+
+def _penyedia(d: dict, provider: str, base: Optional[str], key_var: Optional[str]) -> None:
+    if provider in d["providers"]:
+        return
+    if not (base and key_var):
+        raise ValueError(f"penyedia {provider!r} belum ada: beri --base (https, OpenAI-compatible) dan --key-var")
+    if not base.startswith("https://") or not re.match(r"^[A-Z][A-Z0-9_]{2,40}$", key_var):
+        raise ValueError("--base harus https://..., --key-var huruf besar/angka/_")
+    d["providers"][provider] = {"base": base.rstrip("/"), "key_var": key_var}
+
+
+def _tulis(path: str, d: dict) -> None:
     tmp = path + ".tmp"
     with open(tmp, "w", encoding="utf-8", newline="\n") as f:
         f.write(json.dumps(d, indent=1, ensure_ascii=False) + "\n")
     os.replace(tmp, path)
+
+
+def ganti_model(path: str, slug: str, nama: str, provider: str, model: str, effort: str, base: Optional[str] = None,
+                key_var: Optional[str] = None, short: Optional[str] = None, sampai_bar_close: Optional[int] = None) -> dict:
+    """P162: ganti model satu agent rumah TANPA identitas baru (pola F-D105): slug, agent_id, dompet, kartu URI, kursi meja tetap; model lama masuk
+    `riwayat` (kartu: `model_history`). Tidak membuat kunci, tidak mengirim tx."""
+    with open(path, encoding="utf-8") as f:
+        d = json.load(f)
+    ag = next((a for a in d["agents"] if a["slug"] == slug), None)
+    if ag is None:
+        raise ValueError(f"slug {slug!r} tidak ada")
+    if effort not in EFFORTS:
+        raise ValueError(f"effort harus salah satu {EFFORTS}")
+    if not (nama.strip() and model.strip()):
+        raise ValueError("nama dan model wajib")
+    if (provider, model.strip()) == (ag["provider"], ag["model"]):
+        raise ValueError("model dan penyedia sama dengan yang sekarang")
+    _penyedia(d, provider, base, key_var)
+    ag.setdefault("riwayat", []).append({"model": ag["model"], "provider": ag["provider"], "effort": ag["effort"],
+                                         "sampai_bar_close": sampai_bar_close or next_close(int(time.time()))})
+    ag.update(name=f"Fabius Analyst · {nama.strip()}", provider=provider, model=model.strip(), effort=effort)
+    if short:
+        ag["npc"] = cek_npc({**(ag.get("npc") or {}), "short": short})
+    _tulis(path, d)
     return ag
 
 
@@ -723,6 +757,26 @@ def cmd_tambah(a) -> int:
     return 0
 
 
+def cmd_ganti(a) -> int:
+    try:
+        ag = ganti_model(AGENTS_PATH, a.slug, a.nama, a.provider, a.model, a.effort, a.base, a.key_var, a.short)
+    except ValueError as e:
+        print(f"DITOLAK: {e}")
+        return 2
+    os.makedirs(CARD_DIR, exist_ok=True)
+    with open(os.path.join(CARD_DIR, f"{ag['slug']}.json"), "w", encoding="utf-8", newline="\n") as f:     # URI on-chain sama, isinya diperbarui
+        json.dump(card(ag, load_cfg()["selection"]), f, indent=1, ensure_ascii=False)
+        f.write("\n")
+    prov = muat_agents()[0][ag["provider"]]
+    old = ag["riwayat"][-1]
+    print(f"DIGANTI {ag['slug']}: {old['provider']} / {old['model']} -> {ag['provider']} / {ag['model']} (effort {ag['effort']}); identitas, dompet, kursi tetap")
+    print("Langkah berikutnya (urut):")
+    print(f"  1. Railway fabius-x402: set {prov['key_var']} (kunci penyedia; tanpa itu agent ini tidak dijalankan)")
+    print(f"  2. (opsional) uji lokal: tambahkan {prov['key_var']} ke .analis.env lalu python -X utf8 tools/analis.py uji --slug {ag['slug']}")
+    print(f"  3. commit config/agents.json + docs/analis/{ag['slug']}.json, push, lalu tools/railway_up.py --service fabius-x402 (tanpa tx)")
+    return 0
+
+
 def cmd_uji(a) -> int:
     """P159: satu panggilan kecil ke model agent sebelum didaftarkan (latensi + jawaban sah?). Tidak menulis apa pun, tidak mencetak kunci."""
     ag = next((x for x in AGENTS if x["slug"] == a.slug), None)
@@ -812,12 +866,21 @@ def main() -> int:
     t.add_argument("--berita", action="store_true", help="agent membaca judul berita (tools/kabar.py)")
     for k in ("shirt", "hair", "skin", "extra", "prop", "short"):
         t.add_argument(f"--{k}", help=f"penampilan NPC /desk (opsional): {k}")
+    g = sub.add_parser("ganti", help="P162: ganti model satu agent tanpa identitas baru (riwayat model tercatat; tanpa kunci, tanpa tx)")
+    g.add_argument("--slug", required=True)
+    g.add_argument("--nama", required=True)
+    g.add_argument("--provider", required=True)
+    g.add_argument("--model", required=True)
+    g.add_argument("--effort", default="high")
+    g.add_argument("--base")
+    g.add_argument("--key-var")
+    g.add_argument("--short")
     u = sub.add_parser("uji", help="P159: satu panggilan kecil ke model agent")
     u.add_argument("--slug", required=True)
     u.add_argument("--timeout", type=int, default=120)
     a = ap.parse_args()
     return {"kunci": cmd_kunci, "daftar": cmd_daftar, "masukan": cmd_masukan, "pilih": cmd_pilih, "arsip": cmd_arsip, "tambah": cmd_tambah,
-            "uji": cmd_uji}[a.cmd](a)
+            "ganti": cmd_ganti, "uji": cmd_uji}[a.cmd](a)
 
 
 if __name__ == "__main__":

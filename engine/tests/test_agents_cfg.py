@@ -52,6 +52,24 @@ class RegistryTests(unittest.TestCase):
         self.assertEqual(len(an.muat_agents(self.path)[1]), len(an.AGENTS) + 2)                  # yang ditolak tidak menulis apa pun
 
 
+    def test_ganti_swaps_the_model_keeps_the_slot_and_records_the_old_model(self):
+        an.tambah_agent(self.path, "tesgrok", "Grok 4.7", "kios", "grok-4.7-free", "high", base="https://kios.example/v1", key_var="KIOS_API_KEY",
+                        npc={"short": "Grok"})
+        ag = an.ganti_model(self.path, "tesgrok", "GPT 6 Luna", "vyce", "gpt-6-luna", "high", base="https://vyce.example/v1", key_var="VYCE_API_KEY",
+                            short="Luna", sampai_bar_close=1_791_244_800)
+        self.assertEqual((ag["slug"], ag["key_var"], ag["model"], ag["name"], ag["npc"]["short"]),
+                         ("tesgrok", "ANALIS_TESGROK_PRIVATE_KEY", "gpt-6-luna", "Fabius Analyst · GPT 6 Luna", "Luna"))   # slot + dompet tetap
+        self.assertEqual(ag["riwayat"], [{"model": "grok-4.7-free", "provider": "kios", "effort": "high", "sampai_bar_close": 1_791_244_800}])
+        self.assertEqual(an.muat_agents(self.path)[0]["vyce"]["key_var"], "VYCE_API_KEY")
+        for bad in (dict(slug="tidakada"), dict(provider="vyce", model="gpt-6-luna"), dict(provider="baru"), dict(effort="ultra")):
+            args = {"slug": "tesgrok", "nama": "X", "provider": "kios", "model": "m2", "effort": "high", **bad}
+            with self.assertRaises(ValueError, msg=str(bad)):
+                an.ganti_model(self.path, args["slug"], args["nama"], args["provider"], args["model"], args["effort"])
+        card = an.card(ag, "0xsel")
+        self.assertEqual(card["model"]["id"], "gpt-6-luna")
+        self.assertEqual(card["model_history"][0]["id"], "grok-4.7-free")
+
+
 class GateNpcTests(unittest.TestCase):
     def test_desk_books_carry_the_npc_look_from_the_registry(self):
         import meja

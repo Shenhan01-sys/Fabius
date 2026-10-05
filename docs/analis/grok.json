@@ -1,13 +1,20 @@
 {
  "protocol": "erc-8004/1",
- "name": "Fabius Analyst · Grok 4.7",
+ "name": "Fabius Analyst · GPT 6 Luna",
  "type": "analyst",
- "description": "House analyst agent of Fabius (grok-4.7-free, reasoning effort high, via kiosapi). Each day it picks ONE locked Fabius bot for the next daily bar; the pick (bot, confidence, sha256 of the full reasoning) is committed to SelectionAnchor before the bar closes and scored later from the public ledger. It never invents trades.",
+ "description": "House analyst agent of Fabius (gpt-6-luna, reasoning effort high, via vyceai). Each day it picks ONE locked Fabius bot for the next daily bar; the pick (bot, confidence, sha256 of the full reasoning) is committed to SelectionAnchor before the bar closes and scored later from the public ledger. It never invents trades.",
  "model": {
-  "provider": "kiosapi",
-  "id": "grok-4.7-free",
+  "provider": "vyceai",
+  "id": "gpt-6-luna",
   "effort": "high"
  },
+ "model_history": [
+  {
+   "id": "grok-4.7-free",
+   "effort": "high",
+   "until_bar_close": 1791244800
+  }
+ ],
  "evidence": {
   "selection_anchor": "0xc0c16337e6c286ec54902d8de7aadf232587f3b1",
   "chain_id": 97,

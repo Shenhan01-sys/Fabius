@@ -20,6 +20,10 @@
   "groq": {
    "base": "https://api.groq.com/openai/v1",
    "key_var": "GROQ_API_KEY"
+  },
+  "vyceai": {
+   "base": "https://vyceai.com/v1",
+   "key_var": "VYCEAI_API_KEY"
   }
  },
  "agents": [
@@ -115,14 +119,22 @@
   },
   {
    "slug": "grok",
-   "name": "Fabius Analyst · Grok 4.7",
-   "provider": "kiosapi",
-   "model": "grok-4.7-free",
+   "name": "Fabius Analyst · GPT 6 Luna",
+   "provider": "vyceai",
+   "model": "gpt-6-luna",
    "effort": "high",
    "key_var": "ANALIS_GROK_PRIVATE_KEY",
    "npc": {
-    "short": "Grok"
-   }
+    "short": "Luna"
+   },
+   "riwayat": [
+    {
+     "model": "grok-4.7-free",
+     "provider": "kiosapi",
+     "effort": "high",
+     "sampai_bar_close": 1791244800
+    }
+   ]
   },
   {
    "slug": "glmflash",
