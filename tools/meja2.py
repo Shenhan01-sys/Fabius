@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import dataclasses
 import json
+import math
 import re
 import time
 from typing import Callable, Dict, List, Optional, Tuple
@@ -21,9 +22,20 @@ from engine.data import ListingEvent, MarketData
 from engine.series import Series
 from engine.spec import SPECS
 
-PARAMS2 = {"v": 1, "maks_instrumen": 8, "universe_top": 50, "hysteresis_poin": 15, "pegang_min_siklus": 3, "min_agent_instrumen": 2,
-           "ambang_instrumen": 1.2, "veto_min_agent": 2, "harian_limit": 120,
-           "likuiditas_min_usd": 50_000, "rugi_harian_maks": 0.03}
+PARAMS2 = {"v": 2, "maks_instrumen": 8, "universe_top": 50, "hysteresis_poin": 15, "pegang_min_siklus": 3, "harian_limit": 120,
+           "likuiditas_min_usd": 50_000, "rugi_harian_maks": 0.03,
+           # F-D113 #3: ambang proporsional terhadap n kursi AKTIF (n = 3 -> kuorum 2, instrumen/veto >= 2 agent, skor instrumen >= 1,2 = nilai v1)
+           "ambang": "kuorum max(2, ceil(n/2)); instrumen + veto max(2, ceil(n/3)) agent; skor instrumen 0,4 n",
+           "instrumen_dari": "agent yang memilih bot akhir; tanpa pemilih + bot ditahan -> instrumen siklus lalu"}
+# P160 (F-D113): kursi agent LLM. USULAN kriteria (status "usulan" sampai dikunci atas kata builder); kursi hanya berubah di evaluasi harian 00:00 UTC.
+PARAMS_KURSI = {"v": 1, "status": "usulan", "maks_aktif": 7, "maks_uji": 3, "jendela_siklus": 288, "naik_sah_min": 0.95, "tukar_unggul_min": 0.005,
+                "turun_sah_maks": 0.80}
+
+
+def ambang(n_aktif: int) -> dict:
+    n = max(1, int(n_aktif))
+    return {"kuorum": max(2, math.ceil(n / 2)), "min_agent_instrumen": max(2, math.ceil(n / 3)), "veto_min_agent": max(2, math.ceil(n / 3)),
+            "ambang_instrumen": round(0.4 * n, 4)}
 BOTS = sorted(SPECS)
 EMAS = "PAXGUSDT"
 FAPI = meja.FAPI
@@ -216,9 +228,11 @@ def parse2(text: str, uni: List[str], fitur: List[str]) -> dict:
 
 # ---------------------------------------------------------------- konsensus v2 + posisi
 
-def konsensus2(kep: Dict[str, dict], state: dict, snap: Optional[dict]) -> Tuple[dict, str]:
-    """Bot dominan (hysteresis) + instrumen + eksposur + veto dari keputusan SAH. state = {"bot", "pegang"} dibawa antar siklus."""
-    if len(kep) < meja.PARAMS["kuorum"]:
+def konsensus2(kep: Dict[str, dict], state: dict, snap: Optional[dict], n_aktif: int = 3) -> Tuple[dict, str]:
+    """Bot dominan (hysteresis) + instrumen + eksposur + veto dari keputusan SAH kursi AKTIF. state = {"bot", "pegang"} dibawa antar siklus.
+    Ambang dari `ambang(n_aktif)` (F-D113 #3)."""
+    am = ambang(n_aktif)
+    if len(kep) < am["kuorum"]:
         return {"bot": state.get("bot"), "instrumen": state.get("instrumen", []), "eksposur": state.get("eksposur", 0.0), "veto": []}, \
             f"quorum not reached ({len(kep)} valid)"
     n = len(kep)
@@ -229,14 +243,19 @@ def konsensus2(kep: Dict[str, dict], state: dict, snap: Optional[dict]) -> Tuple
         top, why = cur, f"hold {cur} (hysteresis: {nilai[top] - nilai[cur]:+.1f} points, held {pegang} cycles)"
     else:
         why = f"dominant bot {top} ({nilai[top]:+.1f})"
+    # koreksi 5 Okt (PARAMS2 v2): instrumen hanya dari agent yang memilih bot AKHIR - instrumen pilihan untuk bot lain tidak cocok dengan aturan
+    # bot ini (16:25Z produksi: B2-RS ditahan hysteresis dengan BTC + PAXG pilihan B5 -> aturan B2 datar). Tak ada pemilihnya -> instrumen lama.
     skor_i: Dict[str, float] = {}
     jml: Dict[str, int] = {}
-    for d in kep.values():
+    pemilih = [d for d in kep.values() if d["bot"] == top]
+    for d in pemilih:
         for it in d["instrumen"]:
             skor_i[it["aset"]] = skor_i.get(it["aset"], 0.0) + it["k"]
             jml[it["aset"]] = jml.get(it["aset"], 0) + 1
     ins = [a for a in sorted(skor_i, key=lambda a: (-skor_i[a], a))
-           if jml[a] >= PARAMS2["min_agent_instrumen"] or skor_i[a] >= PARAMS2["ambang_instrumen"]][:PARAMS2["maks_instrumen"]]
+           if jml[a] >= am["min_agent_instrumen"] or skor_i[a] >= am["ambang_instrumen"]][:PARAMS2["maks_instrumen"]]
+    if not pemilih and top == cur:
+        ins = list(state.get("instrumen", []))
     vc: Dict[str, int] = {}
     for d in kep.values():
         for v in d["veto"]:
@@ -244,10 +263,84 @@ def konsensus2(kep: Dict[str, dict], state: dict, snap: Optional[dict]) -> Tuple
     fa = (snap or {}).get("fitur_aset") or {}
     keras = {a for a in ins if (fa.get(a) or {}).get("rug_bahaya")                      # SK-M9: veto keras dari data terukur, bukan dari agent
              or ((fa.get(a) or {}).get("dex_likuiditas_usd") is not None and fa[a]["dex_likuiditas_usd"] < PARAMS2["likuiditas_min_usd"])}
-    veto = sorted({a for a, c in vc.items() if c >= PARAMS2["veto_min_agent"]} | keras)
+    veto = sorted({a for a, c in vc.items() if c >= am["veto_min_agent"]} | keras)
     eks = round(sum(d["eksposur"] for d in kep.values()) / n, 4)
     state.update(bot=top, pegang=pegang + 1 if top == cur else 1, instrumen=ins, eksposur=eks)
-    return {"bot": top, "nilai_bot": nilai, "instrumen": ins, "skor_instrumen": {a: round(skor_i[a], 4) for a in ins}, "eksposur": eks, "veto": veto}, why
+    return {"bot": top, "nilai_bot": nilai, "instrumen": ins, "skor_instrumen": {a: round(skor_i[a], 4) for a in ins if a in skor_i}, "eksposur": eks, "veto": veto}, why
+
+
+def kursi_daftar(st: dict, slugs: List[str], t0: int) -> List[dict]:
+    """P160: agent yang belum punya kursi -> aktif (hanya saat state kursi masih kosong = agent awal), lalu uji, lalu antre (SK-M19). Antre naik ke uji
+    begitu ada kursi uji kosong. -> peristiwa kursi (ikut rekaman `kursi` yang di-hash)."""
+    P, k = PARAMS_KURSI, st.setdefault("kursi", {})
+    awal, ev = not k, []
+    n = lambda status: sum(1 for v in k.values() if v["status"] == status)  # noqa: E731
+    for s in slugs:
+        if s in k:
+            continue
+        if awal and n("aktif") < P["maks_aktif"]:
+            ke, why = "aktif", "agent awal meja v2"
+        elif n("uji") < P["maks_uji"]:
+            ke, why = "uji", "agent baru"
+        else:
+            ke, why = "antre", "kursi uji penuh"
+        k[s] = {"status": ke, "sejak": t0}
+        ev.append({"agent": s, "dari": None, "ke": ke, "alasan": why})
+    for s in sorted((x for x, v in k.items() if v["status"] == "antre"), key=lambda x: k[x]["sejak"]):
+        if n("uji") < P["maks_uji"]:
+            k[s] = {"status": "uji", "sejak": t0}
+            ev.append({"agent": s, "dari": "antre", "ke": "uji", "alasan": "kursi uji kosong"})
+    return ev
+
+
+def kursi_catat(st: dict, slug: str, sah: bool, ekuitas: float) -> None:
+    """Riwayat bergulir per agent (jendela 288 siklus): jawaban sah 1/0 + ekuitas buku v2-nya - dasar evaluasi harian."""
+    h = st.setdefault("riwayat", {}).setdefault(slug, {"sah": [], "eq": []})
+    w = PARAMS_KURSI["jendela_siklus"]
+    h["sah"] = (h["sah"] + [1 if sah else 0])[-w:]
+    h["eq"] = (h["eq"] + [round(ekuitas, 4)])[-(w + 1):]
+
+
+def kursi_evaluasi(st: dict, t0: int) -> List[dict]:
+    """P160 evaluasi harian (SK-M21, SK-M22): turun bila sah < 80 % dalam jendela penuh; naik bila >= jendela siklus di kursi uji, sah >= 95 % dan hasil
+    jendela >= median aktif (kursi aktif kosong) atau unggul >= 0,5 pp dari aktif terburuk (tukar). -> peristiwa."""
+    P, k, r, ev = PARAMS_KURSI, st.get("kursi", {}), st.get("riwayat", {}), []
+    w = P["jendela_siklus"]
+
+    def stat(s):
+        h = r.get(s) or {"sah": [], "eq": []}
+        eq = h["eq"]
+        return len(h["sah"]), (sum(h["sah"]) / len(h["sah"]) if h["sah"] else 0.0), (eq[-1] / eq[0] - 1 if len(eq) > 1 and eq[0] else 0.0)
+
+    def pindah(s, ke, why, extra=None):
+        ev.append({"agent": s, "dari": k[s]["status"], "ke": ke, "alasan": why, **(extra or {})})
+        k[s] = {"status": ke, "sejak": t0}
+
+    for s in sorted(x for x, v in k.items() if v["status"] == "aktif"):
+        n, sah, _ = stat(s)
+        if n >= w and sah < P["turun_sah_maks"]:
+            pindah(s, "uji", f"valid answers {sah:.0%} < {P['turun_sah_maks']:.0%} over {n} cycles")
+    aktif = [x for x, v in k.items() if v["status"] == "aktif"]
+    rets = sorted(stat(x)[2] for x in aktif)
+    median = rets[len(rets) // 2] if len(rets) % 2 else (sum(rets[len(rets) // 2 - 1:len(rets) // 2 + 1]) / 2 if rets else 0.0)
+    calon = []
+    for s, v in k.items():
+        n, sah, ret = stat(s)
+        if v["status"] == "uji" and (t0 - v["sejak"]) // meja.PARAMS["siklus_s"] >= w and sah >= P["naik_sah_min"] and ret >= median:
+            calon.append((ret, s, sah))
+    for ret, s, sah in sorted(calon, reverse=True):
+        aktif = [x for x, v in k.items() if v["status"] == "aktif"]
+        if len(aktif) < P["maks_aktif"]:
+            pindah(s, "aktif", f"valid {sah:.0%}, return {ret:+.2%} >= active median {median:+.2%}")
+            continue
+        lama = [x for x in aktif if (t0 - k[x]["sejak"]) // meja.PARAMS["siklus_s"] >= w]
+        if not lama:
+            continue
+        worst = min(lama, key=lambda x: (stat(x)[2], x))
+        if ret - stat(worst)[2] >= P["tukar_unggul_min"]:
+            pindah(worst, "uji", f"swapped out by {s} (return {stat(worst)[2]:+.2%} vs {ret:+.2%})")
+            pindah(s, "aktif", f"swapped in for {worst} (+{ret - stat(worst)[2]:.2%})")
+    return ev
 
 
 def posisi(bot: Optional[str], ins: List[str], eks: float, veto: List[str], p: Pasar2) -> Tuple[Dict[str, dict], dict]:
@@ -274,6 +367,12 @@ def siklus2(t0: int, agents: List[dict], books: Dict[str, dict], ring: Dict[str,
     import concurrent.futures as cf
     get = get or meja._get_json
     state = books.setdefault("_v2_state", {})
+    kst = books.setdefault("_v2_kursi", {})
+    ev_kursi = kursi_daftar(kst, [ag["slug"] for ag in agents], t0)
+    if t0 % 86_400 == 0:                                                                     # SK-M21: kursi hanya berubah di siklus 00:00 UTC
+        ev_kursi += kursi_evaluasi(kst, t0)
+    kursi = {s: v["status"] for s, v in kst["kursi"].items()}
+    agents = [ag for ag in agents if kursi.get(ag["slug"]) in ("aktif", "uji")]               # SK-M19: antre tidak dijalankan
     uni, tk = p.universe(), p.tick()
     fitur = nama_fitur(snap)
     far = fitur_aturan(p, uni)
@@ -303,7 +402,7 @@ def siklus2(t0: int, agents: List[dict], books: Dict[str, dict], ring: Dict[str,
     for ag in agents:
         s, h, nb = ag["slug"], hasil.get(ag["slug"]), f"v2:{ag['slug']}"
         r = {"v": 2, "siklus": t0, "agent": nb, "agent_id": int(ag["agent_id"]), "model": ag["model"], "data_sha": data_sha, "data_t": data_t, "harga_isi_sha": meja.sha(harga),
-             "prompt_sha": meja.sha(SYSTEM2.encode() + b"\n" + prompts[s].encode())}
+             "prompt_sha": meja.sha(SYSTEM2.encode() + b"\n" + prompts[s].encode()), "kursi": kursi[s]}
         if h is None:
             r.update(status="terlambat", galat=f"no answer within {batas:.0f} s")
         elif "galat" in h:
@@ -317,9 +416,11 @@ def siklus2(t0: int, agents: List[dict], books: Dict[str, dict], ring: Dict[str,
                      "target": tg, "diubah": sorted(tg), "arah_alasan": why}, isi=meja.isi(books[nb], tg, harga))
             ring[nb] = k["ringkasan"]
         r["ekuitas"] = round(meja.ekuitas(books[nb], harga), 4)
+        kursi_catat(kst, s, r["status"] == "ok", r["ekuitas"])
         rek.append(r)
-    sah = {s: h["kep"] for s, h in hasil.items() if h and "kep" in h}
-    kk, why = konsensus2(sah, state, snap)
+    aktif = [ag["slug"] for ag in agents if kursi[ag["slug"]] == "aktif"]
+    sah = {s: h["kep"] for s, h in hasil.items() if h and "kep" in h and s in aktif}             # SK-M20: kursi uji tidak dihitung
+    kk, why = konsensus2(sah, state, snap, n_aktif=len(aktif))
     tg, arah_why = posisi(kk.get("bot"), kk.get("instrumen", []), kk.get("eksposur", 0.0), kk.get("veto", []), p)
     hari, e_now = time.strftime("%Y-%m-%d", time.gmtime(t0)), meja.ekuitas(books["v2"], harga)
     if state.get("hari") != hari:
@@ -327,12 +428,21 @@ def siklus2(t0: int, agents: List[dict], books: Dict[str, dict], ring: Dict[str,
     rugi = e_now / max(state["ekuitas_awal_hari"], 1e-9) - 1
     if rugi <= -PARAMS2["rugi_harian_maks"]:                                                 # SK-M10: rem rugi harian, datar sampai 00:00 UTC
         tg, why = {}, f"{why}; daily loss brake {rugi:+.2%} -> flat until 00:00 UTC"
-    rk = {"v": 2, "siklus": t0, "agent": "v2", "rumus": f"v2 params {meja.sha(PARAMS2)[:18]}", "dasar": why, "masuk": sorted(sah), "data_sha": data_sha, "data_t": data_t,
+    rk = {"v": 2, "siklus": t0, "agent": "v2", "rumus": f"v2 params {meja.sha(PARAMS2)[:18]}", "dasar": why, "masuk": sorted(sah), "aktif": sorted(aktif),
+          "ambang": ambang(len(aktif)), "data_sha": data_sha, "data_t": data_t,
           **kk, "target": tg, "arah_alasan": arah_why, "harga_isi_sha": meja.sha(harga), "isi": meja.isi(books["v2"], tg, harga)}
     rk["ekuitas"] = round(meja.ekuitas(books["v2"], harga), 4)
     rek.append(rk)
+    if ev_kursi:                                                                             # SK-M21: tiap perubahan kursi ikut Merkle root siklus ini
+        rek.append({"v": 2, "siklus": t0, "agent": "kursi", "peristiwa": ev_kursi, "kursi": dict(sorted(kursi_now(kst).items())),
+                    "params_kursi_sha": meja.sha(PARAMS_KURSI), "ekuitas": 0.0})
     for r in rek:
         r["hash"] = meja.sha(r)
     log(f"meja v2 {time.strftime('%H:%M', time.gmtime(t0))}Z: {why} | instrumen {kk.get('instrumen')} | eksposur {kk.get('eksposur')} | "
-        + " | ".join(f"{r['agent']} {r.get('status', 'ok')} eq {r['ekuitas']:.2f}" for r in rek))
+        + " | ".join(f"{r['agent']} {r.get('status', 'ok')} eq {r['ekuitas']:.2f}" for r in rek if r["agent"] != "kursi")
+        + (f" | kursi: {'; '.join(e['agent'] + ' ' + str(e['dari']) + '->' + e['ke'] for e in ev_kursi)}" if ev_kursi else ""))
     return rek, harga
+
+
+def kursi_now(kst: dict) -> Dict[str, str]:
+    return {s: v["status"] for s, v in kst.get("kursi", {}).items()}

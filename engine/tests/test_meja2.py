@@ -86,6 +86,10 @@ class ConsensusTests(unittest.TestCase):
         k2, why2 = meja2.konsensus2({"a": c, "b": c}, state, None)
         self.assertEqual(k2["bot"], "B1-TREND")                                                # unggul tetapi baru dipegang 1 siklus: tahan
         self.assertIn("hysteresis", why2)
+        self.assertEqual(k2["instrumen"], ["SOLUSDT"])                                        # instrumen pilihan B6 tidak dipakai untuk B1: tetap yang lama
+        d = meja2.parse2(out(bot="B6-BOUNCE", skor={b: (100 if b == "B6-BOUNCE" else 0) for b in meja2.BOTS}, ins=(("NEARUSDT", 90),)), UNI, FIT)
+        k3, _ = meja2.konsensus2({"a": d, "b": a, "c": b}, {}, None)
+        self.assertEqual((k3["bot"], k3["instrumen"]), ("B1-TREND", ["SOLUSDT"]))             # NEAR dipilih untuk B6, bukan untuk B1
 
 
 class RuleTests(unittest.TestCase):
@@ -133,6 +137,85 @@ class CycleTests(unittest.TestCase):
         self.assertEqual(rek[-1]["target"], {})
         self.assertIn("daily loss brake", rek[-1]["dasar"])
 
+
+
+class KursiTests(unittest.TestCase):
+    """P160 (F-D113): 7 aktif + 3 uji; agent baru uji/antre; konsensus hanya kursi aktif; kursi berubah hanya di evaluasi harian."""
+
+    def test_new_agents_get_trial_seats_then_queue_and_thresholds_scale_with_active_seats(self):
+        st = {}
+        ev = meja2.kursi_daftar(st, ["a", "b", "c"], 1_791_200_100)
+        self.assertEqual({e["ke"] for e in ev}, {"aktif"})                                       # agent awal meja v2
+        ev = meja2.kursi_daftar(st, ["a", "b", "c", "d", "e", "f", "g"], 1_791_200_400)
+        self.assertEqual([(e["agent"], e["ke"]) for e in ev], [("d", "uji"), ("e", "uji"), ("f", "uji"), ("g", "antre")])   # SK-M19
+        st["kursi"]["d"]["status"] = "aktif"                                                      # satu kursi uji kosong
+        self.assertEqual(meja2.kursi_daftar(st, ["g"], 1_791_200_700), [{"agent": "g", "dari": "antre", "ke": "uji", "alasan": "kursi uji kosong"}])
+        self.assertEqual(meja2.ambang(3), {"kuorum": 2, "min_agent_instrumen": 2, "veto_min_agent": 2, "ambang_instrumen": 1.2})   # = nilai v1
+        self.assertEqual(meja2.ambang(7), {"kuorum": 4, "min_agent_instrumen": 3, "veto_min_agent": 3, "ambang_instrumen": 2.8})
+
+    def test_daily_evaluation_promotes_swaps_and_demotes_on_measured_history(self):
+        w = meja2.PARAMS_KURSI["jendela_siklus"]
+        t0 = 1_791_244_800                                                                        # 00:00 UTC
+        lama = t0 - (w + 1) * 300
+
+        def hist(sah_rate, ret):
+            n_ok = round(w * sah_rate)
+            return {"sah": [1] * n_ok + [0] * (w - n_ok), "eq": [10_000.0] * w + [10_000.0 * (1 + ret)]}
+        st = {"kursi": {f"a{i}": {"status": "aktif", "sejak": lama} for i in range(7)} | {"u1": {"status": "uji", "sejak": lama},
+                                                                                         "u2": {"status": "uji", "sejak": t0 - 300}},
+              "riwayat": {f"a{i}": hist(1.0, 0.001 * i) for i in range(7)} | {"u1": hist(0.99, 0.02), "u2": hist(1.0, 0.05)}}
+        st["riwayat"]["a0"] = hist(0.5, 0.0)                                                      # SK-M22: sah 50 % -> turun
+        ev = meja2.kursi_evaluasi(st, t0)
+        moves = {(e["agent"], e["ke"]) for e in ev}
+        self.assertIn(("a0", "uji"), moves)
+        self.assertIn(("u1", "aktif"), moves)                                                    # kursi aktif kosong sesudah a0 turun
+        self.assertNotIn(("u2", "aktif"), moves)                                                 # baru 1 siklus di kursi uji: belum boleh naik
+        st2 = {"kursi": {f"a{i}": {"status": "aktif", "sejak": lama} for i in range(7)} | {"u1": {"status": "uji", "sejak": lama}},
+               "riwayat": {f"a{i}": hist(1.0, 0.001 * i) for i in range(7)} | {"u1": hist(1.0, 0.004)}}
+        self.assertEqual(meja2.kursi_evaluasi(st2, t0), [])                                       # unggul 0,4 pp dari a0 (0 %) < 0,5 pp: tidak tukar
+        st2["riwayat"]["u1"] = hist(1.0, 0.02)
+        moves = [(e["agent"], e["ke"]) for e in meja2.kursi_evaluasi(st2, t0)]
+        self.assertEqual(moves, [("a0", "uji"), ("u1", "aktif")])                                 # tukar dengan aktif terburuk
+
+    def test_seats_change_only_in_the_midnight_cycle(self):
+        def get(url):
+            return [{"symbol": a, "markPrice": "100", "lastFundingRate": "0"} for a in UNI]
+        w = meja2.PARAMS_KURSI["jendela_siklus"]
+        lama = 1_791_244_800 - (w + 1) * 300
+        agents = [{"slug": s, "agent_id": i, "model": "m"} for i, s in enumerate(["a", "b", "u"], 1)]
+
+        def books():
+            hist = {"sah": [1] * w, "eq": [10_000.0] * w + [10_100.0]}
+            return {"_v2_kursi": {"kursi": {"a": {"status": "aktif", "sejak": lama}, "b": {"status": "aktif", "sejak": lama}, "u": {"status": "uji", "sejak": lama}},
+                                  "riwayat": {"a": dict(hist, eq=[10_000.0] * (w + 1)), "b": dict(hist, eq=[10_000.0] * (w + 1)), "u": hist}}}
+        snap = {"sha": "0x1", "fitur_aset": {"SOLUSDT": {"r_1j": 0.01}}, "fitur_bot": {}}
+        siang = books()
+        rek, _ = meja2.siklus2(1_791_244_800 - 300, agents, siang, {}, lambda ag, sy, us: out(), snap, FakePasar(), get=get, log=lambda m: None)
+        self.assertEqual(siang["_v2_kursi"]["kursi"]["u"]["status"], "uji")                    # SK-M21: syarat terpenuhi siang hari -> tunggu
+        self.assertNotIn("kursi", {r["agent"] for r in rek})
+        malam = books()
+        rek, _ = meja2.siklus2(1_791_244_800, agents, malam, {}, lambda ag, sy, us: out(), snap, FakePasar(), get=get, log=lambda m: None)
+        self.assertEqual(malam["_v2_kursi"]["kursi"]["u"]["status"], "aktif")                  # 00:00 UTC: naik
+        self.assertEqual([e["ke"] for e in {r["agent"]: r for r in rek}["kursi"]["peristiwa"]], ["aktif"])
+
+    def test_trial_seat_votes_are_recorded_but_not_counted_and_seat_changes_are_hashed(self):
+        def get(url):
+            return [{"symbol": a, "markPrice": "100", "lastFundingRate": "0"} for a in UNI]
+        agents = [{"slug": s, "agent_id": i, "model": "m"} for i, s in enumerate(["a", "b", "c", "d"], 1)]
+        books = {"_v2_kursi": {"kursi": {"a": {"status": "aktif", "sejak": 0}, "b": {"status": "aktif", "sejak": 0}, "c": {"status": "aktif", "sejak": 0}}}}
+
+        def call(ag, system, user):
+            if ag["slug"] == "d":                                                                # agent uji memilih B6 sangat yakin
+                return out(bot="B6-BOUNCE", skor={b: (100 if b == "B6-BOUNCE" else -100) for b in meja2.BOTS}, ins=(("SOLUSDT", 100),))
+            return out(ins=(("SOLUSDT", 80), ("WIFUSDT", 70)))
+        snap = {"sha": "0xabc", "fitur_aset": {"SOLUSDT": {"r_1j": 0.01}}, "fitur_bot": {}}
+        rek, _ = meja2.siklus2(1_791_200_100, agents, books, {}, call, snap, FakePasar(), get=get, log=lambda m: None)
+        by = {r["agent"]: r for r in rek}
+        self.assertEqual(by["v2:d"]["kursi"], "uji")
+        self.assertEqual(by["v2:d"]["status"], "ok")                                             # rekamannya tetap ada + di-hash
+        self.assertEqual((by["v2"]["bot"], by["v2"]["masuk"]), ("B1-TREND", ["a", "b", "c"]))   # SK-M20: suara uji tidak dihitung
+        self.assertEqual(by["kursi"]["peristiwa"], [{"agent": "d", "dari": None, "ke": "uji", "alasan": "agent baru"}])
+        self.assertEqual(by["kursi"]["hash"], meja.sha({k: v for k, v in by["kursi"].items() if k != "hash"}))
 
 
 class GateTests(unittest.TestCase):

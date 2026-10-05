@@ -385,6 +385,7 @@ class Gate:
         cut = int(self.now()) - 86_400
         out_books = []
         v2 = sorted(b for b in books if b.startswith("v2"))
+        kursi = {s: v["status"] for s, v in ((books.get("_v2_kursi") or {}).get("kursi") or {}).items()}       # P160: aktif / uji / antre
         for name in [meja.KONSENSUS] + sorted(b for b in books if b != meja.KONSENSUS and not b.startswith(("_", "v2"))) + v2:
             b = books.get(name)
             if not b:
@@ -400,6 +401,7 @@ class Gate:
             out_books.append({"agent": name, "nama": nama, "versi": 2 if name.startswith("v2") else 1,
                               # P159: penampilan pekerja 3D dari config/agents.json (opsional; web membuatnya dari slug bila kosong)
                               "npc": next((a.get("npc") for a in an.AGENTS if a["slug"] == slug), None) if not kons else None,
+                              "kursi": kursi.get(slug) if name.startswith("v2:") else None,
                               "ekuitas": round(e, 2), "hasil_pct": round((e / meja.PARAMS["modal_awal"] - 1) * 100, 3),
                               "biaya": round(b.get("biaya", 0), 2), "n_trade": b.get("n_trade", 0),
                               # posisi yang BENAR-BENAR terisi (qty x harga / ekuitas), bukan target: target < ambang 2 % tidak ditransaksikan
@@ -415,6 +417,8 @@ class Gate:
                                                       | {"ringkasan": last.get("dasar")}) if last else None)})
         import meja2
         out = {"t": time.time(), "params": meja.PARAMS, "params_sha": meja.params_sha(), "params_v2": meja2.PARAMS2, "params_v2_sha": meja.sha(meja2.PARAMS2),
+               "params_kursi": meja2.PARAMS_KURSI, "params_kursi_sha": meja.sha(meja2.PARAMS_KURSI), "kursi": kursi,
+               "ambang_v2": meja2.ambang(sum(1 for x in kursi.values() if x == "aktif") or 3),
                "anchor": self.data.cfg_raw().get("contracts", {}).get("DeskAnchor"), "buku": out_books, "rekaman": rek[-40:],
                "siklus_terakhir": ({k: sik[-1].get(k) for k in ("siklus", "root", "tx", "status", "n")} if sik else None),
                "siklus_12": [{k: x.get(k) for k in ("siklus", "root", "tx", "status", "n")} for x in sik[-12:]],
