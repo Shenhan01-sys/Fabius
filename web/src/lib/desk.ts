@@ -31,7 +31,11 @@ export type Buku = {
   deret: [number, number][];
   status_terakhir: string | null;
   keputusan_terakhir: Keputusan | null;
+  siklus_terakhir?: number | null;
+  isi_terakhir?: number;
 };
+export type Isi = { aset: string; dari: number; ke: number; harga: number; fee: number };
+export type Siklus = { siklus: number; root: string; tx: string | null; status: string; n: number };
 export type Rekaman = {
   siklus: number;
   agent: string;
@@ -41,7 +45,7 @@ export type Rekaman = {
   ekuitas: number;
   keputusan?: Keputusan;
   dasar?: string;
-  isi?: { aset: string; dari: number; ke: number; harga: number; fee: number }[];
+  isi?: Isi[];
 };
 export type Desk = {
   t: number;
@@ -52,7 +56,8 @@ export type Desk = {
   anchor?: string;
   buku: Buku[];
   rekaman: Rekaman[];
-  siklus_terakhir: { siklus: number; root: string; tx: string | null; status: string; n: number } | null;
+  siklus_terakhir: Siklus | null;
+  siklus_12?: Siklus[];
   siklus_24j: number;
   komit_24j: number;
 };
@@ -60,6 +65,21 @@ export type Desk = {
 export async function desk(): Promise<Desk> {
   const r = await fetch(`${GATE}/desk`, { cache: "no-store" });
   if (!r.ok) throw new Error(`/desk HTTP ${r.status}`);
+  return r.json();
+}
+
+// P158: rincian satu buku untuk modal lantai /desk (`GET /desk/agent/<nama>`, Gate.meja_agent)
+export type AgentDetail = {
+  buku: Buku;
+  statistik: { siklus_24j: number; ok: number; gagal: number; terlambat: number; siklus_bertransaksi: number; isi_24j: number; biaya_24j: number; bot_pilihan: Record<string, number> };
+  riwayat: { siklus: number; status: string; galat?: string | null; ringkasan?: string | null; bot?: string | null; target: Record<string, Target>; isi: Isi[]; ekuitas: number; hash: string }[];
+  model: string | null;
+  agent_id: number | null;
+};
+
+export async function agentDetail(name: string): Promise<AgentDetail> {
+  const r = await fetch(`${GATE}/desk/agent/${encodeURIComponent(name)}`, { cache: "no-store" });
+  if (!r.ok) throw new Error(`/desk/agent HTTP ${r.status}`);
   return r.json();
 }
 

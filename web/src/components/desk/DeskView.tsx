@@ -9,7 +9,8 @@ import { useEffect, useState } from "react";
 import Nav from "@/components/Nav";
 import { LangProvider, useLang } from "@/components/lang";
 import { LINKS } from "@/lib/copy";
-import { dataHealth, desk, hhmm, type Buku, type DataHealth, type Desk, type Rekaman } from "@/lib/desk";
+import { dataHealth, desk, hhmm, type Buku, type DataHealth, type Desk } from "@/lib/desk";
+import Floor from "./floor/Floor";
 
 export default function DeskView() {
   return (
@@ -94,7 +95,7 @@ function Body() {
             ))}
           </div>
         )}
-        {d && d.rekaman.length > 0 && <Feed rows={d.rekaman} names={Object.fromEntries(d.buku.map((b) => [b.agent, b.nama]))} />}
+        {d && d.buku.length > 0 && <Floor d={d} />}
         <Health />
         {d && <Rules d={d} />}
       </div>
@@ -313,32 +314,6 @@ function AgentCard({ b }: { b: Buku }) {
         <Weights pos={b.posisi} max={0.25} />
       </div>
     </article>
-  );
-}
-
-function Feed({ rows, names }: { rows: Rekaman[]; names: Record<string, string> }) {
-  const { t } = useLang();
-  const v = t.desk;
-  return (
-    <div className={panel}>
-      <p className={label}>{v.feed}</p>
-      <ul className="mt-3 divide-y divide-ink/5 text-sm">
-        {[...rows].reverse().slice(0, 24).map((r) => (
-          <li key={r.hash} className="grid gap-1 py-2 sm:grid-cols-[4rem_11rem_1fr]">
-            <span className="font-mono text-xs text-ink/50">{hhmm(r.siklus)}</span>
-            <span className="text-xs">
-              {names[r.agent] ?? r.agent}
-              {r.status && r.status !== "ok" && <span className="ml-1 text-ink/50">· {stat(v.status, r.status)}</span>}
-            </span>
-            <span className="min-w-0 text-xs text-ink/70">
-              {r.keputusan?.ringkasan ?? r.dasar ?? r.galat ?? ""}
-              {(r.isi?.length ?? 0) > 0 && <span className="text-violet"> · {r.isi!.length} {v.fills}</span>}
-              <span className="block truncate font-mono text-[10px] text-ink/40">{r.hash}</span>
-            </span>
-          </li>
-        ))}
-      </ul>
-    </div>
   );
 }
 
