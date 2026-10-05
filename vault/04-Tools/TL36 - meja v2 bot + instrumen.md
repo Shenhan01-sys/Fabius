@@ -53,8 +53,8 @@ kosong = aktif (agent awal), agent baru = uji, kursi uji penuh = `antre` (tidak 
 di-hash + dikomit dan bukunya hidup, tetapi suaranya tidak masuk konsensus (SK-M20). `kursi_catat` menyimpan jendela 288 siklus (jawaban sah 1/0 +
 ekuitas buku v2). `kursi_evaluasi` hanya di siklus 00:00 UTC (SK-M21): turun bila sah < 80 % (SK-M22); naik bila >= 288 siklus di kursi uji, sah >= 95 %
 dan hasil jendela >= median aktif; bila 7 aktif penuh, tukar dengan aktif terburuk (yang sudah >= 288 siklus) hanya bila unggul >= 0,5 pp. Tiap
-perubahan = rekaman `kursi` (peristiwa + kursi sekarang + `params_kursi_sha`) di Merkle root siklus itu. `PARAMS_KURSI.status = "usulan"` sampai
-dikunci atas kata builder. Ambang konsensus `ambang(n_aktif)`: kuorum max(2, ceil(n/2)), instrumen + veto max(2, ceil(n/3)) agent, skor instrumen
+perubahan = rekaman `kursi` (peristiwa + kursi sekarang + `params_kursi_sha`) di Merkle root siklus itu. `PARAMS_KURSI` DIKUNCI 5 Okt malam
+(sha `0xf370c011…`, Decisions F-D113). Ambang konsensus `ambang(n_aktif)`: kuorum max(2, ceil(n/2)), instrumen + veto max(2, ceil(n/3)) agent, skor instrumen
 0,4 n - untuk n = 3 sama persis dengan nilai v1 (2 / 2 / 1,2). Lantai `/desk`: meja uji berlabel TRIAL / UJI, kursi lav-2, kabel ke hub redup tanpa
 denyut (suaranya belum mengalir); Rules menampilkan ambang untuk n aktif sekarang + aturan kursi.
 
