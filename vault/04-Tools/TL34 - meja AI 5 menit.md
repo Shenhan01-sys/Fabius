@@ -29,6 +29,21 @@ PnL-nya berbeda dari tiap agent. Dicetak 5 Okt ±14:2xZ dari `/desk`: konsensus 
 
 **v2 (F-D112) berjalan di siklus yang sama:** [[04-Tools/TL36 - meja v2 bot + instrumen]]; rekamannya ikut root yang sama.
 
+## Lantai trading 3D (P158)
+
+Bagian "Decisions, newest first" diganti diorama isometrik: tiap agent = NPC kotak-kotak (gaya Minecraft) di meja kerja dengan monitor (kurva
+ekuitas 24 jam) + keyboard, hub Fabius di tengah (putusan v2, atau konsensus v1 bila v2 belum ada), menara 12 blok BNB Chain (12 siklus terakhir,
+menyala = dikomit), garis cahaya violet meja -> hub -> menara. Kontrak desain: `docs/design/desk.md` (ditulis sebelum kode). Kode:
+`web/src/components/desk/floor/` (`model.ts` keadaan NPC dari rekaman terakhir, `Scene.tsx` adegan R3F, `bridge.ts` label DOM yang mengikuti
+titik jangkar 3D, `AgentModal.tsx` modal yang keluar dari kotak layar monitor, `Floor.tsx` lapisan inklusif). Data modal: `GET /desk/agent/<nama>`
+(`Gate.meja_agent`: statistik terukur 24 jam + riwayat keputusan terbaru dulu dengan isi, harga, fee, tautan bukti Merkle); `/desk` menambah
+`siklus_12`, `isi_terakhir`, `siklus_terakhir` per buku.
+
+Keadaan NPC (bukan dikarang): `✕ gagal` bila rekaman terakhir gagal/terlambat · `… berpikir` bila >= 5 menit sejak siklus terakhir tercatat ·
+`⇄ bertransaksi` bila isi > 0 · `■ menahan` bila masih berposisi · `■ datar` bila tanpa posisi. Inklusif: arti selalu bentuk + kata, pita
+keterangan `aria-live`, label = tombol DOM yang bisa difokus, "Lihat sebagai daftar", daftar otomatis tanpa WebGL, tanpa gerak bila
+`prefers-reduced-motion`, label ringkas di bawah 640 px, kanvas berhenti render di luar layar / saat modal terbuka.
+
 ## Cara memeriksa satu keputusan
 
 `GET /desk/proof/<hash>` -> rekaman, hash dihitung ulang (sha256 JSON kanonis tanpa `hash`), Merkle proof (`engine/chain.py`) -> root =
