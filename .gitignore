@@ -51,3 +51,5 @@ qwen-code-export-*.md
 .validator.env
 # kunci fasilitator x402 per sinyal (P138a)
 .x402.env
+# kunci dompet agent analis (P142)
+.analis.env

@@ -1,5 +1,27 @@
 {
  "agent": "0x4bb30E3b3bc22082c1935fE3bE7c07448e69c862",
+ "analis": {
+  "agents": {
+   "glm": {
+    "agent_id": 2558,
+    "effort": "low",
+    "model": "glm-5.3",
+    "provider": "qwencloud",
+    "tx": "0x559a39ffab8c18abbbccefd2211a95e9ba23e969c7764df9c7cc906b1c5ac891",
+    "uri": "https://raw.githubusercontent.com/Shenhan01-sys/Fabius/master/docs/analis/glm.json",
+    "wallet": "0x8e0E6a1053FE14e7bb0ec37EFD21f2e44d88a8A8"
+   },
+   "qwen": {
+    "agent_id": 2559,
+    "effort": "xhigh",
+    "model": "qwen3.8-flash",
+    "provider": "qwencloud",
+    "tx": "0x213b02d147a025e69656cdefaea778af5ee7757f9820ccb8d1d905edf629990c",
+    "uri": "https://raw.githubusercontent.com/Shenhan01-sys/Fabius/master/docs/analis/qwen.json",
+    "wallet": "0x8B1649138F4F7FA8a696B7E135DAe5c44e4F9FA2"
+   }
+  }
+ },
  "chainId": 97,
  "contracts": {
   "DecisionAnchor": "0xDD162AFB5F5f92d5092f845A93660e3B38259330",
@@ -12,6 +34,7 @@
   "FabiusCredit": "0xc7b6d5cdbdc881daae0dbcc095d4f184b70ec881",
   "LockRegistry": "0xcF6fBF95fc04DEd8d670512CEc0723a2246Fbb0C",
   "Permit2": "0x000000000022D473030F116dDEE9F6B43aC78BA3",
+  "SelectionAnchor": "0xc0c16337e6c286ec54902d8de7aadf232587f3b1",
   "SignalAnchor": "0x9B78200beFbbBe836585d31bd5b6dB32587064f3",
   "x402ExactPermit2Proxy": "0x402085c248EeA27D92E8b30b2C58ed07f9E20001"
  },
@@ -19,6 +42,13 @@
   "agent_id": 2494,
   "identity": "0x8004A818BFB912233c491871b3d84c89A494BD9e",
   "reputation": "0x8004B663056A597Dffe9eCcC1965A193B7388713",
+  "selection": {
+   "address": "0xc0c16337e6c286ec54902d8de7aadf232587f3b1",
+   "block": 134940475,
+   "deployed_utc": "2026-10-05T03:16:17Z",
+   "deployer": "0xCA9c7322210E9a7F7d0953c862d4Ef60cC0D64A4",
+   "tx": "0x338bd913e25ce10426e902c1941135c11f7d60fea38ada20236b50d2b5ec6ebc"
+  },
   "tag": "fabius-komit-ungkap-v1",
   "validation": "0x8004Cb1BF31DAf7788923b405b754f57acEB4272",
   "validator": "0x2d9A2f165D6d5B96717a0d95B5C59D7872d0a423",

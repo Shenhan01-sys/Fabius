@@ -21,6 +21,7 @@ from __future__ import annotations
 
 import argparse
 import base64
+import datetime as dt
 import hashlib
 import hmac
 import json
@@ -32,7 +33,7 @@ import time
 import urllib.parse
 import urllib.request
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
-from typing import Callable, Dict, Optional, Tuple
+from typing import Callable, Dict, List, Optional, Tuple
 
 for _s in (sys.stdout, sys.stderr):
     try:
@@ -49,6 +50,7 @@ from engine import book as bookmod, chain, data as datamod, harga, ledger, rinci
 from engine.spec import SPECS                                                 # noqa: E402
 import signal_commit as sc                                                    # noqa: E402
 import sinyal_gambar as sg                                                    # noqa: E402
+import analis as an                                                           # noqa: E402
 
 NETWORK = "eip155:97"
 PROXY = "0x402085c248EeA27D92E8b30b2C58ed07f9E20001"      # x402ExactPermit2Proxy kanonis (56 & 97)
@@ -212,6 +214,10 @@ class Data:
     def cfg(self) -> dict:
         return load_cfg(os.path.join(self.workdir, "deployments", "97.json"))
 
+    def cfg_raw(self) -> dict:
+        with open(os.path.join(self.workdir, "deployments", "97.json"), encoding="utf-8") as f:
+            return json.load(f)
+
     def active_bot(self) -> Optional[str]:
         """Bot yang sedang dipakai Fabius = penghuni buku slot (bot identitas dulu; `ledger/book/buku.jsonl`). Akan diganti aturan pemilihan agent
         analis yang dikunci (P141-P143); sampai itu, `/buy` tanpa argumen = bot ini."""
@@ -276,6 +282,10 @@ class Gate:
         self.faucet_seen: Dict[str, float] = {}
         self.faucet_day, self.faucet_count = "", 0
         self.tg_secret = hashlib.sha256(b"fabius-tg-link|" + (pk or "tanpa-kunci").encode()).digest()
+        self.analis_dir = os.environ.get("ANALIS_DIR") or ("/data/analis" if os.path.isdir("/data") else os.path.join(data.workdir, "data", "analis"))
+
+    def analis_dirs(self) -> List[str]:
+        return [self.analis_dir, os.path.join(self.data.workdir, "ledger", "analis")]
 
 
     # -- pembaca chain (None tanpa ev)
@@ -495,6 +505,14 @@ def make_handler(gate: Gate):
                     return self._send(200, {"nama": "Fabius x402 - paket sinyal terverifikasi (testnet 97)", "token": cfg["token"], "simbol": "FAB", "proxy": PROXY,
                                             "payTo": cfg["facilitator"], "network": NETWORK, "harga": prices, "harga_kunci": harga.status()["state"],
                                             "rute": ["/teaser/<bot>", "/sinyal/<bot>[/<bar>]", "POST /faucet"], "repo_head": gate.data.head})
+                if parts[0] == "analis" and len(parts) in (1, 2):
+                    recs = an.records(gate.analis_dirs(), int(parts[1]) if len(parts) == 2 else None)
+                    last = max((r["alasan"]["bar_close"] for r in recs), default=None)
+                    show = recs if len(parts) == 2 else [r for r in recs if r["alasan"]["bar_close"] == last]
+                    return self._send(200, {"bar_close": last if len(parts) == 1 else int(parts[1]),
+                                            "selection_anchor": gate.data.cfg_raw().get("contracts", {}).get("SelectionAnchor"),
+                                            "catatan": "reasonHash on-chain = sha256 JSON 'alasan' kanonis (sort_keys, tanpa spasi); pilihan dikomit SEBELUM bar_close",
+                                            "pilihan": show})
                 if parts[0] == "teaser" and len(parts) == 2:
                     gate.data.refresh()
                     q = quote(gate.data.ledgers(), parts[1])
@@ -532,9 +550,11 @@ def make_handler(gate: Gate):
 HELP = ("Fabius - verified trading signals, paid per signal with x402 on BNB testnet (chain 97). FAB is a test token with no value.\n\n"
         "/buy - the signal of the bot Fabius is trading now (or /buy <BOT>): pay with x402 in the Fabius app inside Telegram, no gas\n"
         "/signal - free teaser of the active bot (or /signal <BOT>; no assets, no direction)\n/bots - all bots, prices, confidence\n"
+        "/analysts - which bot each AI analyst agent picked today, and why (committed on-chain before the bar closes)\n"
         "/wallet - your wallet (same wallet as on the Fabius website when you link Google)\n\n"
         "Every signal is committed on-chain before the market moves; anyone can verify it.")
-COMMANDS = [("buy", "signal of the bot Fabius trades now (x402)"), ("signal", "free teaser of the active bot"), ("bots", "all bots, prices, confidence"),
+COMMANDS = [("buy", "signal of the bot Fabius trades now (x402)"), ("signal", "free teaser of the active bot"), ("analysts", "today's AI analyst picks"),
+            ("bots", "all bots, prices, confidence"),
             ("wallet", "your wallet"), ("help", "how it works")]
 
 
@@ -578,6 +598,17 @@ def tg_reply(gate: "Gate", chat_id: int, text: str, private: bool = True) -> Tup
             return head + f"\n\nBuy in a private chat with me, or on the web: {gate.web_url}/beli/{bot}", None
         return head + "\n\nTap the button: sign in with Telegram (or Google), get free FAB, pay with x402 (no gas). The signal is also sent here.", \
             (f"Buy {bot} · {q['fab']:g} FAB", link)
+    if cmd == "/analysts":
+        recs = an.records(gate.analis_dirs())
+        if not recs:
+            return "No analyst picks yet.", None
+        last = max(r["alasan"]["bar_close"] for r in recs)
+        day = dt.datetime.fromtimestamp(last, dt.timezone.utc).strftime("%Y-%m-%d %H:%M UTC")
+        rows = [f"{r['alasan']['nama']} (agent {r['alasan']['agent_id']}): {r['bot']} · confidence {r['keyakinan']}%"
+                f"{' · committed on-chain' if r.get('status') == 'dikomit' else ''}\n  {r['alasan']['pilihan']['alasan'][:220]}"
+                for r in recs if r["alasan"]["bar_close"] == last]
+        return (f"Analyst agents' picks for the bar closing {day} (committed before the close, scored later from the public ledger):\n\n"
+                + "\n\n".join(rows) + f"\n\nFull reasoning + hashes: {gate.public_url}/analis"), None
     if cmd == "/wallet":
         b = sorted(led)[0] if led else "B1-TREND"
         return ("Your wallet lives in the Fabius app (Privy): open it below and sign in with Telegram. Link your Google account there and the "
@@ -614,6 +645,22 @@ def telegram_loop(gate: "Gate", stop: threading.Event) -> None:
                 gate.log(f"telegram balasan gagal: {type(e).__name__}: {str(e)[:120]}")
 
 
+def analis_loop(gate: "Gate", ev, stop: threading.Event, every_s: int = 600) -> None:
+    """Sekali per bar: antara 09:00 dan 22:00 UTC (tick bar sebelumnya sudah ada; jauh sebelum penutupan), tiap agent aktif yang belum memilih
+    untuk penutupan berikutnya dipanggil + dikomit. `run_round` membaca SelectionAnchor dulu -> tidak pernah memilih dua kali."""
+    while not stop.wait(every_s):
+        try:
+            if not 9 <= time.gmtime().tm_hour < 22:
+                continue
+            gate.data.refresh()
+            cfg = an.load_cfg(os.path.join(gate.data.workdir, "deployments", "97.json"))
+            if not cfg.get("selection") or not an.active_agents(cfg):
+                continue
+            an.run_round(gate.data.workdir, cfg, ev, int(time.time()), True, log=gate.log, out_dir=gate.analis_dir)
+        except Exception as e:  # noqa: BLE001 - analis gagal tidak boleh mengganggu penjualan sinyal
+            gate.log(f"analis gagal: {type(e).__name__}: {str(e)[:200]}")
+
+
 def main() -> int:
     ap = argparse.ArgumentParser(description="Gerbang x402 per sinyal Fabius (P138a).")
     ap.add_argument("--port", type=int, default=int(os.environ.get("PORT", "8050")))
@@ -640,6 +687,11 @@ def main() -> int:
     if pk and cfg["facilitator"] and evmmod.address_of(pk).lower() != cfg["facilitator"].lower():
         gate.log(f"PERINGATAN: kunci fasilitator {evmmod.address_of(pk)} != x402_sinyal.facilitator {cfg['facilitator']} - settle akan ditolak")
     stop = threading.Event()
+    acfg = an.load_cfg(os.path.join(data.workdir, "deployments", "97.json"))
+    aktif = an.active_agents(acfg) if acfg.get("selection") else []
+    gate.log(f"analis: {', '.join(a['slug'] + '#' + str(a['agent_id']) for a in aktif) or 'tidak ada agent aktif (kunci/pendaftaran belum ada)'} | arsip {gate.analis_dir}")
+    if aktif:
+        threading.Thread(target=analis_loop, args=(gate, ev, stop), daemon=True).start()
     if gate.tg_token:
         threading.Thread(target=telegram_loop, args=(gate, stop), daemon=True).start()
     ThreadingHTTPServer(("0.0.0.0", a.port), make_handler(gate)).serve_forever()
