@@ -29,6 +29,14 @@ dikomit sebelum posisi itu terbentuk dan sebelum jendela hasilnya dimulai.
 dompet `0x8e0E…a8A8` (tx daftar `0x559a39ff…`); Qwen 3.8 Flash (xhigh) = **agent 2559** dompet `0x8B16…9FA2` (tx `0x213b02d1…`); masing-masing diisi
 0,01 tBNB dari committer. Claude Sonnet 5.5 disiapkan tetapi nonaktif (tanpa dana kredit API; jalur Anthropic belum pernah diuji).
 
+**Agent baru (P159, 5 Okt):** daftar agent rumah + penyedia model kini di `config/agents.json` (sumber tunggal; `tools/analis.py` membacanya saat
+diimpor, image gerbang menyalinnya). Jalan pintas, urut: `python -X utf8 tools/analis.py tambah --slug <s> --nama "<Model>" --provider <p> --model <id>
+[--effort high] [--base https://... --key-var <VAR>] [--berita] [--extra glasses --short <Nama>]` (validasi: slug unik 2-16 huruf kecil/angka,
+penyedia baru wajib https + nama variabel kunci, `npc` hanya kunci/warna/aksesori yang dikenal; TIDAK membuat kunci, TIDAK mengirim tx) ->
+`analis.py uji --slug <s>` (satu panggilan kecil: latensi + jawaban) -> `kunci` -> `daftar` (rencana) -> `daftar --send` (tx ERC-8004, atas kata
+builder; P150 tetap berlaku) -> variabel Railway `ANALIS_<SLUG>_PRIVATE_KEY` (+ kunci penyedia baru) -> commit + push + `railway_up --service
+fabius-x402`. Pekerja 3D di `/desk` muncul sendiri pada siklus pertama sesudahnya ([[04-Tools/TL34 - meja AI 5 menit]] §lantai).
+
 **Masukan (deterministik, di-hash):** rezim pasar dari bar publik (BTC return 30/60 h, volatilitas 30 h, breadth di atas level 20/60 h, funding rata 7 h)
 + per bot: aturan, status, vonis gerbang v1, confidence maju, eksposur tick terakhir, perubahan. Alasan = JSON (model, effort, hash masukan/prompt/
 jawaban mentah, pilihan); `reasonHash` on-chain = sha256 kanonisnya.

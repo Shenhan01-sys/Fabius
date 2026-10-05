@@ -32,7 +32,7 @@ berbahaya dari alat yang gagal keras.
 - [[TL18 - worker_watch]] — penjaga LUAR worker Railway di rantai GitHub: tick tanpa komit >= 30 menit = WORKER DIAM (stdlib, tanpa kunci, P111)
 - [[TL19 - web landing]] — landing page tingkat 0: kristal komitmen 3D, perjalanan satu sinyal, kalender bukti, buku slot, dua pintu; data dari `tools/web_snapshot.py` (P113)
 - [[TL20 - server MCP]] — pintu agen tingkat 0: route `/mcp` di app `web/`, 8 alat hanya baca (sinyal live, periksa leaf/id vs ledger, rekam jejak, kunci); tanpa kunci, tingkat 1 tetap terkunci (P114)
-- [[TL33 - agent analis]] — P141/P142: SelectionAnchor + agent analis ERC-8004 (GLM 2558, Qwen 2559) memilih bot per bar sebelum penutupan
+- [[TL33 - agent analis]] — P141/P142: SelectionAnchor + agent analis ERC-8004 (GLM 2558, Qwen 2559) memilih bot per bar sebelum penutupan; P159: agent baru lewat `config/agents.json` + `analis.py tambah` / `uji`
 - [[TL34 - meja AI 5 menit]] — P152: tiga agent memutuskan tiap 5 menit, konsensus terkunci, Merkle root per siklus ke DeskAnchor; P158: lantai trading 3D di `/desk` (NPC di meja kerja, modal statistik dari monitor)
 - [[TL35 - data meja v2]] — P153 (F1): Binance, DexScreener, RugCheck, FOMO, berita -> fitur terukur per aset + per bot tiap 5 menit, registry alamat terkunci
 - [[TL36 - meja v2 bot + instrumen]] — P154/P155 (F-D112): AI memilih bot + instrumen, aturan bot terkunci menghitung arah pada candle harian, satu root bersama v1

@@ -44,6 +44,12 @@ Keadaan NPC (bukan dikarang): `✕ gagal` bila rekaman terakhir gagal/terlambat 
 keterangan `aria-live`, label = tombol DOM yang bisa difokus, "Lihat sebagai daftar", daftar otomatis tanpa WebGL, tanpa gerak bila
 `prefers-reduced-motion`, label ringkas di bawah 640 px, kanvas berhenti render di luar layar / saat modal terbuka.
 
+**Template pekerja (P159):** agent baru TIDAK didesain manual. `web/src/components/desk/floor/looks.ts` membuat penampilan deterministik dari
+slug (FNV-1a: kaus keluarga violet/ink Fabius, 6 warna kulit, 7 rambut, aksesori headset/topi/kacamata/beanie/hoodie, benda meja cangkir/koran/
+tanaman/buku), lalu ditimpa `npc` dari `config/agents.json` bila ada (gerbang meneruskannya di `/desk`). `model.ts::layout` menyusun N meja: <= 3
+agent di 180-360 derajat layar, lebih dari itu 150-390 derajat dengan jari-jari sampai 4,1 dan meja mengecil (skala dari jarak antarmeja, minimal
+0,6); label ringkas otomatis bila agent > 4 di layar sedang atau > 6. Diuji render 5 / 7 / 10 agent (Test Commands #80); 10 masih muat tetapi padat.
+
 ## Cara memeriksa satu keputusan
 
 `GET /desk/proof/<hash>` -> rekaman, hash dihitung ulang (sha256 JSON kanonis tanpa `hash`), Merkle proof (`engine/chain.py`) -> root =
