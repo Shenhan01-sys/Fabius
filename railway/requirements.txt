@@ -2,3 +2,5 @@
 # Versi = yang dipakai alat lokal (tools/anchor_lock.py) saat diuji 2 Okt 2026.
 eth-account==0.13.7
 eth-abi==5.2.0
+# Gambar tabel paket sinyal untuk Telegram (tools/sinyal_gambar.py, gerbang fabius-x402); font TrueType bawaan Pillow >= 10.1.
+Pillow==10.4.0

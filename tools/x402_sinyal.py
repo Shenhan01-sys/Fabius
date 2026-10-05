@@ -48,6 +48,7 @@ sys.path.insert(0, HERE)
 from engine import book as bookmod, chain, data as datamod, harga, ledger, rincian   # noqa: E402
 from engine.spec import SPECS                                                 # noqa: E402
 import signal_commit as sc                                                    # noqa: E402
+import sinyal_gambar as sg                                                    # noqa: E402
 
 NETWORK = "eip155:97"
 PROXY = "0x402085c248EeA27D92E8b30b2C58ed07f9E20001"      # x402ExactPermit2Proxy kanonis (56 & 97)
@@ -211,6 +212,17 @@ class Data:
     def cfg(self) -> dict:
         return load_cfg(os.path.join(self.workdir, "deployments", "97.json"))
 
+    def active_bot(self) -> Optional[str]:
+        """Bot yang sedang dipakai Fabius = penghuni buku slot (bot identitas dulu; `ledger/book/buku.jsonl`). Akan diganti aturan pemilihan agent
+        analis yang dikunci (P141-P143); sampai itu, `/buy` tanpa argumen = bot ini."""
+        try:
+            from engine import book_live
+            book = book_live.current_book(ledger.load(os.path.join(self.workdir, "ledger", "book", "buku.jsonl")))
+        except Exception:  # noqa: BLE001
+            return None
+        ids = [e.bot_id for e in book if getattr(e, "identity", False)] + [e.bot_id for e in book]
+        return ids[0] if ids else None
+
 
 def last_bar(recs) -> Optional[str]:
     ticks = [r for r in recs if r.get("type") == "tick"]
@@ -329,6 +341,29 @@ class Gate:
         except Exception as e:  # noqa: BLE001
             self.log(f"telegram sendMessage gagal: {type(e).__name__}")
 
+    def tg_send_photo(self, chat_id: int, png: bytes, caption: str) -> bool:
+        """Unggah PNG langsung (multipart) - tidak ada URL publik untuk isi berbayar. False = gagal (pemanggil kirim teks)."""
+        if not self.tg_token:
+            return False
+        b = "fabius" + hashlib.sha1(png).hexdigest()[:20]
+        parts = [f"--{b}\r\nContent-Disposition: form-data; name=\"{k}\"\r\n\r\n{v}\r\n".encode()
+                 for k, v in (("chat_id", str(chat_id)), ("caption", caption), ("parse_mode", "HTML"))]
+        parts.append(f"--{b}\r\nContent-Disposition: form-data; name=\"photo\"; filename=\"fabius-signal.png\"\r\nContent-Type: image/png\r\n\r\n".encode() + png + b"\r\n")
+        parts.append(f"--{b}--\r\n".encode())
+        req = urllib.request.Request(f"https://api.telegram.org/bot{self.tg_token}/sendPhoto", data=b"".join(parts),
+                                     headers={"Content-Type": f"multipart/form-data; boundary={b}"})
+        try:
+            urllib.request.urlopen(req, timeout=30).read()
+            return True
+        except Exception as e:  # noqa: BLE001
+            self.log(f"telegram sendPhoto gagal: {type(e).__name__}")
+            return False
+
+    def deliver_tg(self, chat_id: int, body: dict) -> None:
+        png = sg.render_png(body, RULE_EN.get(body["bot"]))
+        if not (png and self.tg_send_photo(chat_id, png, sg.caption_html(body))):
+            self.tg_send(chat_id, fmt_package(body))
+
     def handle_signal(self, path_bot: str, path_bar: Optional[str], hdr: Optional[str], tg: Optional[str]) -> Tuple[int, dict, dict]:
         self.data.refresh()
         led, cfg = self.data.ledgers(), self.data.cfg()
@@ -367,7 +402,7 @@ class Gate:
         if tg:
             t = tg_parse(self.tg_secret, tg, int(self.now()))
             if t and t["b"] == q["bot"]:
-                self.tg_send(int(t["c"]), fmt_package(body))
+                self.deliver_tg(int(t["c"]), body)
         resp = {"success": True, "transaction": res["tx"], "network": NETWORK, "payer": res["payer"]}
         b64 = base64.b64encode(json.dumps(resp, sort_keys=True).encode()).decode()
         return 200, body, {"PAYMENT-RESPONSE": b64, "X-PAYMENT-RESPONSE": b64}
@@ -495,11 +530,11 @@ def make_handler(gate: Gate):
 # paket juga dikirim ke chat sesudah settle. Beli otomatis dari chat (session signer Privy) = tahap berikutnya.
 
 HELP = ("Fabius - verified trading signals, paid per signal with x402 on BNB testnet (chain 97). FAB is a test token with no value.\n\n"
-        "/bots - bots, prices, confidence\n/signal <BOT> - free teaser (no assets, no direction)\n"
-        "/buy <BOT> - open the Fabius app inside Telegram and pay with x402 (sign in with Telegram or Google, no gas)\n"
+        "/buy - the signal of the bot Fabius is trading now (or /buy <BOT>): pay with x402 in the Fabius app inside Telegram, no gas\n"
+        "/signal - free teaser of the active bot (or /signal <BOT>; no assets, no direction)\n/bots - all bots, prices, confidence\n"
         "/wallet - your wallet (same wallet as on the Fabius website when you link Google)\n\n"
         "Every signal is committed on-chain before the market moves; anyone can verify it.")
-COMMANDS = [("bots", "bots, prices, confidence"), ("signal", "free teaser: /signal B1-TREND"), ("buy", "buy with x402: /buy B1-TREND"),
+COMMANDS = [("buy", "signal of the bot Fabius trades now (x402)"), ("signal", "free teaser of the active bot"), ("bots", "all bots, prices, confidence"),
             ("wallet", "your wallet"), ("help", "how it works")]
 
 
@@ -531,6 +566,8 @@ def tg_reply(gate: "Gate", chat_id: int, text: str, private: bool = True) -> Tup
             except KeyError:
                 continue
         return "Bots with a forward clock (latest bar):\n" + "\n".join(rows) + "\n\n/signal <BOT> for the teaser, /buy <BOT> to buy.", None
+    if cmd in ("/signal", "/buy") and not bot:
+        bot = gate.data.active_bot() or ""
     if cmd in ("/signal", "/buy"):
         if bot not in led:
             return f"Usage: {cmd} <BOT>. Bots: {', '.join(sorted(led))}", None

@@ -225,5 +225,49 @@ class GateTests(unittest.TestCase):
         self.assertEqual(xs.tg_reply(g, 7, "/help")[0], xs.HELP)
 
 
+class TelegramTableTests(unittest.TestCase):
+    def pkg(self):
+        sys.path.insert(0, os.path.join(ROOT, "tools"))
+        d = xs.Data(ROOT)
+        led = d.ledgers()
+        bar = [r["asof_date"] for r in led["B1-TREND"] if r.get("type") == "tick"][-1]
+        p = xs.package(led, "B1-TREND", bar, d.cfg(), None, None, d.series("B1-TREND"))
+        p["pembayaran"] = {"tx": "0x" + "ab" * 32, "atomic": 10000, "payer": PAYER}
+        return p
+
+    def test_the_table_has_entry_and_exit_columns_sorted_closest_to_exit_first(self):
+        import sinyal_gambar as sg
+        cols, rows = sg.rows_of(self.pkg())
+        self.assertEqual(cols[0], "Asset")
+        self.assertIn("Exit next bar if close <=", cols)
+        dist = [float(r[-1].split("(")[1].rstrip("%)")) for r in rows]
+        self.assertEqual(dist, sorted(dist, reverse=True))
+        self.assertEqual(sg.rows_of({"targets": {}, "rincian": None})[1], [["-", "FLAT", "0.00%"]])
+
+    def test_the_table_is_a_real_png_and_the_caption_is_escaped_html(self):
+        import sinyal_gambar as sg
+        p = self.pkg()
+        png = sg.render_png(p, xs.RULE_EN["B1-TREND"])
+        if png is None:
+            self.skipTest("Pillow tidak terpasang")
+        self.assertTrue(png.startswith(bytes([0x89]) + b"PNG"))
+        p["bot"] = "B1-<x>&"
+        cap = sg.caption_html(p)
+        self.assertIn("B1-&lt;x&gt;&amp;", cap)
+        self.assertLessEqual(len(cap), 1024)
+
+    def test_buy_without_a_bot_uses_the_bot_fabius_trades_now_and_a_failed_photo_falls_back_to_text(self):
+        g = xs.Gate(xs.Data(ROOT), "0xkunci", "https://g.example", "https://web.example", tg_token="t", log=lambda m: None, now=lambda: NOW)
+        g.data.active_bot = lambda: "B1-TREND"
+        txt, button = xs.tg_reply(g, 7, "/buy")
+        self.assertIn("B1-TREND", txt)
+        self.assertIn("/beli/B1-TREND?tg=", button[1])
+        sent = []
+        g.tg_send_photo = lambda chat, png, cap: False
+        g.tg_send = lambda chat, text, button=None: sent.append(text)
+        g.deliver_tg(7, self.pkg())
+        self.assertTrue(sent and "Fabius B1-TREND" in sent[0])
+
+
 if __name__ == "__main__":
     unittest.main()

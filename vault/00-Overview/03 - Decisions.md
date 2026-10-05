@@ -3007,3 +3007,25 @@ dipasang builder sendiri di variabel Railway `fabius-x402` (`PRIVY_APP_SECRET`),
 5. App ID ditanam di kode web sebagai konstanta publik; App secret hanya di Railway.
 
 **Terkait:** F-D98 · F-D99 · F-D100 · [[04-Tools/TL32 - gerbang x402 per sinyal]] · [[09-Inbox/Session-2026-10-02]] §82
+
+## F-D102 — Fabius = platform agent analis terbuka (ERC-8004): agent memilih bot per bar, pilihan dikomit on-chain, dinilai + reputasi; tiga analis rumah · 5 Okt 2026 (WIB)
+
+Builder (atas /buy di chat): *"menidng /buy aja dan berikan bot yg sedang dipakai trading Fabius ... itulah kenapa saya minta ada LLM itu, untuk bantu
+decision making bot maa yg dipakai"*. Jawaban AskUserQuestion: peran = **"Pemilih, dikomit on-chain"**; kandidat = **"Keenam bot berjam maju"**; lalu
+*"Rencana saya mau bikin ini seperti bot, jadi org bisa register agent mereka untuk melakukan analisis ... fomoapi ... GMGN ... Bubblemaps ... RugCheck"*,
+*"Fabius menyediakan platform DexScreener, Fomo, GMGN, Bubblemaps, RugCheck, tapi kalau agent lain punya analisisnya sendiri mah gas aja"*, model:
+*"sonnet 5.5 effort xhigh, glm 5.3 effort medium/low, qwen 3.8 flash effort xhigh"* (GLM/Qwen lewat provider qwencloud di opencode.json builder).
+
+1. **Agent analis** (identitas ERC-8004 masing-masing) memilih SATU bot dari keenam bot berjam maju tiap bar; pilihan (bot, keyakinan, hash alasan)
+   ditandatangani dompet agent dan DIKOMIT on-chain sebelum batas waktu. Agent tidak pernah membuat trade sendiri (F-D70, F-D11 tetap).
+2. **Penilaian** dari ledger publik (return paper bot pilihan vs patokan) -> ReputationRegistry ERC-8004; papan peringkat publik.
+3. **Bot aktif** Fabius (dijual oleh `/buy` tanpa argumen) = aturan pemilihan yang DIKUNCI sebelum dipakai (usulan: mayoritas analis sampai ada yang
+   punya >= 20 pilihan terskor, sesudah itu agent berreputasi terbaik). Sebelum aturan itu hidup: penghuni buku slot (B1).
+4. **Tiga analis rumah** sebagai pendaftar pertama, bersaing: Claude Sonnet 5.5 (effort xhigh, Anthropic API), GLM 5.3 (medium) dan Qwen 3.8 Flash
+   (xhigh) lewat qwencloud (OpenAI-compatible, `reasoning_effort`). Service Railway terpisah `fabius-analis` (worker utama tidak ikut redeploy -> IP
+   whitelist canary tidak putus). Kunci: `ANTHROPIC_API_KEY` dibuat builder di console.anthropic.com; kunci qwencloud dipindah dari opencode.json ke
+   Railway lewat `--stdin` tanpa ditampilkan.
+5. **Platform data untuk agent:** alat MCP DexScreener, Fomo, GMGN, Bubblemaps, RugCheck. Dicatat jujur: alat-alat itu untuk memecoin/dompet DEX,
+   relevansinya rendah untuk 16 perp mayor (paling relevan: B4 listing baru); catatan lama: Fomo API 8 trader, GMGN route privat butuh kunci bertanda.
+
+**Terkait:** F-D11 · F-D70 · F-D71 · F-D98 · [[05-Ecosystem/01 - ERC-8004 Identity]] · [[09-Inbox/Session-2026-10-02]] §84
