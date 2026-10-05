@@ -11,12 +11,13 @@ name: validasi
 #
 # Pemicu: rantai `paper-ledger` (workflow_dispatch) begitu penjaga luar selesai menilai tick hari itu, bersama web-snapshot. Tanpa `schedule:` (F-D78).
 # Tanpa secret: hanya rencana (estimasi), tidak ada tx. ALARM dari pemeriksa = job merah.
+# P143: juga mengarsip alasan agent analis ke ledger/analis/ (hanya yang sha256-nya = reasonHash on-chain) dan meng-commit-nya.
 
 on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
 
 concurrency:
   group: validasi
@@ -50,3 +51,17 @@ jobs:
       - name: ringkas (baca ulang dari chain)
         if: always()
         run: python -u -X utf8 tools/erc8004_validasi.py ringkas || true
+
+      - name: arsip alasan agent analis (P143) - hanya yang hash-nya = reasonHash on-chain SelectionAnchor
+        if: always()
+        run: |
+          set +e
+          python -u -X utf8 tools/analis.py arsip
+          if [ -n "$(git status --porcelain ledger/analis)" ]; then
+            git config user.name "analis-arsip"
+            git config user.email "analis-arsip@users.noreply.github.com"
+            git add ledger/analis
+            git commit -q -m "arsip alasan agent analis $(date -u +%Y-%m-%dT%H:%M:%SZ) [skip ci]"
+            for i in 1 2 3; do git pull -q --rebase origin "$GITHUB_REF_NAME" && git push -q origin "HEAD:$GITHUB_REF_NAME" && break; sleep 5; done
+          fi
+          exit 0

@@ -287,6 +287,35 @@ class Gate:
     def analis_dirs(self) -> List[str]:
         return [self.analis_dir, os.path.join(self.data.workdir, "ledger", "analis")]
 
+    def analis_view(self, max_age_s: int = 600) -> dict:
+        """Pilihan ON-CHAIN (SelectionAnchor) + skor (ledger final / provisional) + papan; disimpan 10 menit. Tanpa chain = kosong (bukan karangan)."""
+        st = getattr(self, "_analis", None)
+        if st and time.time() - st["t"] < max_age_s:
+            return st
+        out = {"t": time.time(), "picks": [], "skor": [], "papan": []}
+        try:
+            acfg = an.load_cfg(os.path.join(self.data.workdir, "deployments", "97.json"))
+            if self.ev is not None and acfg.get("selection") and acfg.get("agents"):
+                from paper_tick import Views
+                out["picks"] = an.onchain_picks(self.ev, acfg["selection"], acfg["agents"])
+                out["skor"] = an.skor(self.data.workdir, out["picks"], Views(os.path.join(self.data.workdir, "ledger", "bars")).get("provisional"))
+                out["papan"] = an.papan(out["skor"])
+        except Exception as e:  # noqa: BLE001
+            self.log(f"analis_view gagal: {type(e).__name__}: {str(e)[:160]}")
+        self._analis = out
+        return out
+
+    def aktif_now(self) -> dict:
+        """Bot yang dijual `/buy` tanpa argumen: aturan TERKUNCI engine/pemilih.py untuk penutupan bar tick terakhir bot identitas."""
+        ident = self.data.active_bot() or bookmod.IDENTITY_BOT_ID
+        led = self.data.ledgers()
+        ticks = [r for r in led.get(ident, []) if r.get("type") == "tick"]
+        if not ticks:
+            return {"bot": ident, "alasan": "belum ada tick bot identitas", "alasan_en": "no tick yet", "bar_close": None, "pilihan": {}}
+        close = sc.asof_s_of(max(ticks, key=lambda r: r["asof"]))
+        v = self.analis_view()
+        return an.bot_aktif(v["picks"], v["skor"], close, ident)
+
 
     # -- pembaca chain (None tanpa ev)
     def views(self, cfg):
@@ -505,6 +534,13 @@ def make_handler(gate: Gate):
                     return self._send(200, {"nama": "Fabius x402 - paket sinyal terverifikasi (testnet 97)", "token": cfg["token"], "simbol": "FAB", "proxy": PROXY,
                                             "payTo": cfg["facilitator"], "network": NETWORK, "harga": prices, "harga_kunci": harga.status()["state"],
                                             "rute": ["/teaser/<bot>", "/sinyal/<bot>[/<bar>]", "POST /faucet"], "repo_head": gate.data.head})
+                if parts[0] == "analis" and len(parts) == 2 and parts[1] == "skor":
+                    v = gate.analis_view()
+                    return self._send(200, {"papan": v["papan"], "pilihan_terskor": v["skor"], "aturan_bot_aktif": "engine/pemilih.py",
+                                            "kunci_pemilih": an.pemilih.status()["state"],
+                                            "catatan": "selisih = net paper bot pilihan - net bot identitas, bar yang sama; provisional = funding estimasi, final = settle ledger"})
+                if parts[0] == "aktif" and len(parts) == 1:
+                    return self._send(200, gate.aktif_now())
                 if parts[0] == "analis" and len(parts) in (1, 2):
                     recs = an.records(gate.analis_dirs(), int(parts[1]) if len(parts) == 2 else None)
                     last = max((r["alasan"]["bar_close"] for r in recs), default=None)
@@ -587,7 +623,7 @@ def tg_reply(gate: "Gate", chat_id: int, text: str, private: bool = True) -> Tup
                 continue
         return "Bots with a forward clock (latest bar):\n" + "\n".join(rows) + "\n\n/signal <BOT> for the teaser, /buy <BOT> to buy.", None
     if cmd in ("/signal", "/buy") and not bot:
-        bot = gate.data.active_bot() or ""
+        bot = gate.aktif_now().get("bot") or ""
     if cmd in ("/signal", "/buy"):
         if bot not in led:
             return f"Usage: {cmd} <BOT>. Bots: {', '.join(sorted(led))}", None
@@ -607,8 +643,14 @@ def tg_reply(gate: "Gate", chat_id: int, text: str, private: bool = True) -> Tup
         rows = [f"{r['alasan']['nama']} (agent {r['alasan']['agent_id']}): {r['bot']} · confidence {r['keyakinan']}%"
                 f"{' · committed on-chain' if r.get('status') == 'dikomit' else ''}\n  {r['alasan']['pilihan']['alasan'][:220]}"
                 for r in recs if r["alasan"]["bar_close"] == last]
-        return (f"Analyst agents' picks for the bar closing {day} (committed before the close, scored later from the public ledger):\n\n"
-                + "\n\n".join(rows) + f"\n\nFull reasoning + hashes: {gate.public_url}/analis"), None
+        ak = gate.aktif_now()
+        board = gate.analis_view()["papan"]
+        lb = [f"{i + 1}. agent {b['agent_id']} ({b['agent']}): {b['terskor']}/{b['pilihan']} scored · excess vs B1 {b['jumlah_selisih_bps']:+.1f} bps"
+              for i, b in enumerate(board)]
+        return (f"Bot Fabius trades now (locked rule): {ak.get('bot')} — {ak.get('alasan_en') or ak.get('alasan')}\n\n"
+                f"Analyst agents' picks for the bar closing {day} (committed before the close, scored later from the public ledger):\n\n"
+                + "\n\n".join(rows) + ("\n\nLeaderboard:\n" + "\n".join(lb) if lb else "")
+                + f"\n\nFull reasoning + hashes: {gate.public_url}/analis · scores: {gate.public_url}/analis/skor"), None
     if cmd == "/wallet":
         b = sorted(led)[0] if led else "B1-TREND"
         return ("Your wallet lives in the Fabius app (Privy): open it below and sign in with Telegram. Link your Google account there and the "
@@ -657,6 +699,10 @@ def analis_loop(gate: "Gate", ev, stop: threading.Event, every_s: int = 600) -> 
             if not cfg.get("selection") or not an.active_agents(cfg):
                 continue
             an.run_round(gate.data.workdir, cfg, ev, int(time.time()), True, log=gate.log, out_dir=gate.analis_dir)
+            v = gate.analis_view(max_age_s=0)
+            rep = (gate.data.cfg_raw().get("erc8004") or {}).get("reputation")
+            if rep and gate.pk:
+                an.reputasi(ev, gate.pk, rep, v["skor"], os.path.join(gate.analis_dir, "reputasi.json"), gate.public_url, log=gate.log)
         except Exception as e:  # noqa: BLE001 - analis gagal tidak boleh mengganggu penjualan sinyal
             gate.log(f"analis gagal: {type(e).__name__}: {str(e)[:200]}")
 

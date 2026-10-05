@@ -90,12 +90,33 @@ export function registerFabiusTools(server: McpServer, s: Snapshot) {
           fabius_locks: "rules locked on-chain before the data, in order",
           fabius_status: "operations health today: tick, commit, reveal, venue-rules paper, gas, GitHub chain heartbeat (health, not performance)",
           fabius_confidence: "free teaser per bot: confidence from the forward record (1 - p of the locked F-D16 bootstrap) and why - never assets, direction or size",
+          fabius_analysts: "which bot Fabius trades now (locked rule over AI analyst agents' on-chain picks), today's picks with reasons, and the analyst leaderboard",
           fabius_signal_offer: "buy one bot's latest signal package with x402 (testnet 97, FAB token, zero gas for the buyer): live price, teaser, pay URL and how to pay",
         },
         verify_yourself: ["git clone https://github.com/Shenhan01-sys/Fabius", "python -X utf8 tools/verify_signals.py", "python -X utf8 -m engine.cli ledger verify"],
         snapshot_utc: s.generated_utc,
       }),
     ),
+  );
+
+  server.registerTool(
+    "fabius_analysts",
+    {
+      title: "Analyst agents: active bot, picks, leaderboard",
+      description:
+        "Fabius analyst agents (ERC-8004 identities; today GLM 5.3 = agent 2558 and Qwen 3.8 Flash = agent 2559) each pick ONE locked bot per daily bar; picks are committed to SelectionAnchor on BNB testnet before the bar closes and scored later from the public paper ledger (excess vs the identity bot; provisional until Binance's monthly funding file, then final), with ERC-8004 reputation feedback. The active bot (what /buy sells) follows a rule locked before any scored pick (engine/pemilih.py). Agents never invent trades.",
+      inputSchema: z.object({}),
+    },
+    guard(async () => {
+      const [ak, picks, board] = await Promise.all(
+        [`${X402_GATE}/aktif`, `${X402_GATE}/analis`, `${X402_GATE}/analis/skor`].map(async (u) => {
+          const r = await fetch(u, { next: { revalidate: 120 } });
+          if (!r.ok) throw new Error(`analyst endpoint HTTP ${r.status}`);
+          return r.json();
+        }),
+      );
+      return ok(`Active bot: ${(ak as { bot: string }).bot}`, { active: ak, latest_picks: picks, leaderboard: (board as { papan: unknown }).papan, selection_anchor: (picks as { selection_anchor: string }).selection_anchor });
+    }),
   );
 
   server.registerTool(

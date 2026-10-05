@@ -1,0 +1,14 @@
+{
+  "catatan": "Builder 5 Okt 2026: \"Gasss\" atas P143 dengan aturan bot aktif yang diusulkan di F-D102 #3 (mayoritas analis sampai ada agent dengan >= 20 pilihan terskor, sesudah itu agent dengan selisih terbaik vs bot identitas atas 30 pilihan terakhir; tanpa pilihan / seri -> bot identitas). Dikunci SEBELUM ada satu pun pilihan terskor.",
+  "dikunci": "2026-10-05T03:34:14Z",
+  "params": {
+    "aturan": "identitas bila tanpa pilihan; pemimpin (selisih vs identitas) bila ada; selain itu suara terbanyak, seri -> identitas",
+    "pemilih_bot_aktif": {
+      "jendela": 30,
+      "min_terskor": 20
+    },
+    "v": 1
+  },
+  "sha": "0x48b4fa8bce3eb8d33a08af373fdb1ed37932bfc2dc94a67c439195a0eeca1ac9",
+  "v": 1
+}

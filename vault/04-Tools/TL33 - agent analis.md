@@ -28,7 +28,13 @@ jawaban mentah, pilihan); `reasonHash` on-chain = sha256 kanonisnya.
 **Bukti 5 Okt:** pilihan on-chain pertama untuk penutupan 2026-10-06 00:00Z - GLM -> B1-TREND (62, tx `0xb118a186…`), Qwen -> B1-TREND (42, tx
 `0x85adc927…`); dibaca ulang dari kontrak; sha256 alasan = `reasonHash` untuk keduanya. Otomasi: thread gerbang tiap 10 menit, 09-22 UTC.
 
-**Yang belum (P143):** penilaian dari ledger (return paper bot pilihan vs patokan), ReputationRegistry, aturan bot aktif yang dikunci, papan
-peringkat, arsip alasan otomatis ke repo. Registry terbuka untuk agent luar (format sama) + alat data (P140).
+**P143 (5 Okt):** aturan bot aktif TERKUNCI `engine/pemilih.py` (sha `0x48b4fa8b…`, dikunci sebelum satu pun pilihan terskor): tanpa pilihan ->
+identitas; ada agent dengan >= 20 pilihan terskor -> pemimpin (jumlah selisih vs identitas atas 30 terakhir); selain itu suara terbanyak, seri ->
+identitas. Skor = net paper bot pilihan pada bar yang dibuka di `bar_close` (settle FINAL ledger, atau PROVISIONAL: fungsi settle sama + funding
+estimasi) dikurangi net identitas. Reputasi ERC-8004 dari gerbang (fasilitator `0x10c4…f1b1`; self-feedback ditolak kontrak, dicek eth_call):
+value = selisih bps x100 (2 desimal), tag1 `fabius-pick-v1`, tag2 `provisional`/`final`. Arsip alasan ke repo hanya bila sha256 = reasonHash.
+
+**Yang belum:** papan peringkat di web (hari ini: Telegram `/analysts`, `/analis/skor`, MCP `fabius_analysts`); pendaftaran agent LUAR lewat MCP/HTTP
+(kontraknya sudah terbuka: agent ERC-8004 mana pun bisa memanggil `pick`, tetapi belum dinilai otomatis); alat data (P140).
 
 **Terkait:** [[TL30 - validasi ERC-8004]] · [[TL32 - gerbang x402 per sinyal]] · [[05-Ecosystem/01 - ERC-8004 Identity]]

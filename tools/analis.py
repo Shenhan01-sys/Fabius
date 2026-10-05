@@ -38,7 +38,7 @@ ROOT = os.path.dirname(HERE)
 sys.path.insert(0, ROOT)
 sys.path.insert(0, HERE)
 
-from engine import book as bookmod, chain, confidence, data as datamod, ledger, rincian   # noqa: E402
+from engine import book as bookmod, chain, confidence, data as datamod, ledger, pemilih, rincian   # noqa: E402
 from engine.spec import SPECS                                                             # noqa: E402
 import signal_commit as sc                                                                # noqa: E402
 
@@ -253,6 +253,128 @@ def run_round(workdir: str, cfg: dict, ev, now_s: int, send: bool, log: Callable
     return res
 
 
+# ---------------------------------------------------------------- P143: pilihan on-chain -> skor -> reputasi -> bot aktif
+
+REP_TAG = "fabius-pick-v1"
+SIG_FEEDBACK = "giveFeedback(uint256,int128,uint8,string,string,string,string,bytes32)"
+
+
+def onchain_picks(ev, sel: str, agents: Dict[str, dict]) -> List[dict]:
+    """Semua pilihan agent terdaftar, DIBACA DARI SelectionAnchor (sumber kebenaran; arsip berkas hanya untuk alasan teks)."""
+    out = []
+    for slug, a in sorted(agents.items()):
+        aid = int(a["agent_id"])
+        n = int(ev.call_decode(sel, "barCount(uint256)", ("uint256",), (aid,), ("uint256",))[0])
+        for i in range(n):
+            c = int(ev.call_decode(sel, "barAt(uint256,uint256)", ("uint256", "uint256"), (aid, i), ("uint64",))[0])
+            p = ev.call_decode(sel, "getPick(uint256,uint64)", ("uint256", "uint64"), (aid, c), ("(bytes32,uint8,bytes32,uint64)",))[0]
+            out.append({"agent": slug, "agent_id": aid, "bar_close": c, "bot": bytes(p[0]).rstrip(b"\0").decode(), "keyakinan": int(p[1]),
+                        "reasonHash": "0x" + bytes(p[2]).hex(), "committedAt": int(p[3])})
+    return sorted(out, key=lambda r: (r["bar_close"], r["agent_id"]))
+
+
+def net_of(bot: str, bar_ms: int, led: Dict[str, list], md_prov) -> tuple:
+    """(status, net) return paper bot untuk bar `bar_ms`: settle FINAL di ledger bila ada; selain itu PROVISIONAL (funding estimasi, fungsi settle
+    yang sama); selain itu menunggu (bar belum ditutup / data belum ada)."""
+    recs = led.get(bot) or []
+    for r in recs:
+        if r.get("type") == "settle" and int(r["bar"]) == bar_ms:
+            return "final", float(r["net"])
+    if md_prov is None:
+        return "menunggu", None
+    try:
+        rec = ledger.compute_settle(SPECS[bot], md_prov, recs, bar_ms)
+    except Exception:  # noqa: BLE001 - rantai/data belum lengkap = belum terskor, tidak dikarang
+        rec = None
+    return ("provisional", float(rec["net"])) if rec else ("menunggu", None)
+
+
+def skor(workdir: str, picks: List[dict], md_prov=None, identitas: Optional[str] = None) -> List[dict]:
+    """Skor tiap pilihan: net bot pilihan pada bar yang DIBUKA di `bar_close` (posisi tick bar sebelumnya), selisih vs bot identitas bar yang sama."""
+    pdir = os.path.join(workdir, "ledger", "paper")
+    led = {b: ledger.load(os.path.join(pdir, f"{b}.jsonl")) for b in bookmod.FORWARD_BOTS if os.path.exists(os.path.join(pdir, f"{b}.jsonl"))}
+    ident = identitas or bookmod.IDENTITY_BOT_ID
+    out = []
+    for pk in picks:
+        bar_ms = pk["bar_close"] * 1000
+        st, net = net_of(pk["bot"], bar_ms, led, md_prov)
+        sb, nb = net_of(ident, bar_ms, led, md_prov)
+        status = "menunggu" if net is None or nb is None else ("final" if st == sb == "final" else "provisional")
+        out.append({**pk, "status_skor": status, "net": net, "net_identitas": nb, "selisih": (net - nb) if status != "menunggu" else None,
+                    "bar_hasil": rincian._date(bar_ms)})
+    return out
+
+
+def papan(scored: List[dict]) -> List[dict]:
+    rows: Dict[int, dict] = {}
+    for r in scored:
+        a = rows.setdefault(r["agent_id"], {"agent": r["agent"], "agent_id": r["agent_id"], "pilihan": 0, "terskor": 0, "final": 0,
+                                             "jumlah_net_bps": 0.0, "jumlah_selisih_bps": 0.0})
+        a["pilihan"] += 1
+        if r["status_skor"] != "menunggu":
+            a["terskor"] += 1
+            a["final"] += r["status_skor"] == "final"
+            a["jumlah_net_bps"] += r["net"] * 1e4
+            a["jumlah_selisih_bps"] += r["selisih"] * 1e4
+    for a in rows.values():
+        a["rata_selisih_bps"] = a["jumlah_selisih_bps"] / a["terskor"] if a["terskor"] else None
+        a["jumlah_net_bps"], a["jumlah_selisih_bps"] = round(a["jumlah_net_bps"], 4), round(a["jumlah_selisih_bps"], 4)
+    return sorted(rows.values(), key=lambda a: (-a["jumlah_selisih_bps"], a["agent_id"]))
+
+
+def bot_aktif(picks: List[dict], scored: List[dict], bar_close: int, identitas: Optional[str] = None) -> dict:
+    """Aturan TERKUNCI `engine/pemilih.py` untuk penutupan `bar_close` (skor hanya dari bar sebelum `bar_close`)."""
+    ident = identitas or bookmod.IDENTITY_BOT_ID
+    pil = {r["agent_id"]: r["bot"] for r in picks if r["bar_close"] == bar_close}
+    sk: Dict[int, list] = {}
+    for r in scored:
+        if r["status_skor"] != "menunggu" and r["bar_close"] < bar_close:
+            sk.setdefault(r["agent_id"], []).append((r["bar_close"], r["selisih"]))
+    bot, why = pemilih.aktif(pil, sk, ident, bar_close)
+    lead = pemilih.pemimpin(sk, bar_close)
+    if not pil:
+        en = "no analyst picks for this bar -> identity bot"
+    elif lead is not None and lead[0] in pil:
+        en = f"leader agent {lead[0]} (best excess vs identity bot over its last scored picks) picked {bot}"
+    else:
+        votes = {}
+        for b in pil.values():
+            votes[b] = votes.get(b, 0) + 1
+        en = f"majority of analyst picks {dict(sorted(votes.items()))}" + (" (tie -> identity bot)" if list(votes.values()).count(max(votes.values())) > 1 else "")
+    return {"bar_close": bar_close, "bot": bot, "alasan": why, "alasan_en": en, "pilihan": pil, "kunci": pemilih.status()["state"]}
+
+
+def reputasi(ev, pk: str, rep: str, scored: List[dict], state_path: str, base_url: str, log: Callable[[str], None] = print, limit: int = 6) -> int:
+    """Feedback ERC-8004 dari gerbang (klien) per pilihan terskor: value = selisih vs bot identitas dalam bps (2 desimal), tag1 = fabius-pick-v1,
+    tag2 = provisional | final. Satu kali per (agent, bar, status); final datang sebagai feedback baru sesudah funding bulanan terbit."""
+    from evm import calldata, receipt_ok
+    done = {}
+    if os.path.exists(state_path):
+        with open(state_path, encoding="utf-8") as f:
+            done = json.load(f)
+    n = 0
+    for r in scored:
+        if r["status_skor"] == "menunggu":
+            continue
+        k = f"{r['agent_id']}:{r['bar_close']}:{r['status_skor']}"
+        if k in done or n >= limit:
+            continue
+        val = int(round(r["selisih"] * 1e4 * 100))
+        rec = {k2: r[k2] for k2 in ("agent", "agent_id", "bar_close", "bot", "net", "net_identitas", "selisih", "status_skor", "reasonHash")}
+        data = calldata(SIG_FEEDBACK, ("uint256", "int128", "uint8", "string", "string", "string", "string", "bytes32"),
+                        (r["agent_id"], val, 2, REP_TAG, r["status_skor"], f"{base_url}/analis", f"{base_url}/analis/{r['bar_close']}", bytes.fromhex(sha(rec)[2:])))
+        tx = ev.send(pk, rep, data)
+        if receipt_ok(tx):
+            done[k] = tx["transactionHash"]
+            n += 1
+            log(f"reputasi ERC-8004: agent {r['agent_id']} bar {r['bar_hasil']} {r['bot']} selisih {r['selisih'] * 1e4:+.2f} bps ({r['status_skor']}) tx {tx['transactionHash']}")
+    if n:
+        os.makedirs(os.path.dirname(state_path), exist_ok=True)
+        with open(state_path, "w", encoding="utf-8") as f:
+            json.dump(done, f, sort_keys=True)
+    return n
+
+
 # ---------------------------------------------------------------- CLI
 
 def records(dirs: List[str], close: Optional[int] = None) -> List[dict]:
@@ -375,6 +497,44 @@ def cmd_masukan(a) -> int:
     return 0
 
 
+GATE_URL = "https://fabius-x402-production.up.railway.app"
+
+
+def arsip(picks: List[dict], fetch: Callable[[int], dict], out_dir: str, log: Callable[[str], None] = print) -> int:
+    """Alasan yang diterbitkan gerbang -> `ledger/analis/<bar_close>.jsonl`, HANYA bila sha256 alasannya = reasonHash on-chain (pilihan yang dikomit).
+    Bar yang sudah punya catatan cocok untuk agent itu tidak ditulis ulang. -> jumlah catatan baru."""
+    have = {(r["agent"], int(r["alasan"]["bar_close"])) for r in records([out_dir])}
+    n = 0
+    for close in sorted({p["bar_close"] for p in picks}):
+        want = {p["agent"]: p for p in picks if p["bar_close"] == close and (p["agent"], close) not in have}
+        if not want:
+            continue
+        pub = {r["agent"]: r for r in (fetch(close).get("pilihan") or [])}
+        for agent, p in sorted(want.items()):
+            r = pub.get(agent)
+            if r is None or sha(r.get("alasan")) != p["reasonHash"]:
+                log(f"arsip: {agent} bar_close {close} DITOLAK - alasan terbit tidak ada / hash != reasonHash on-chain {p['reasonHash'][:18]}…")
+                continue
+            os.makedirs(out_dir, exist_ok=True)
+            with open(os.path.join(out_dir, f"{close}.jsonl"), "a", encoding="utf-8", newline="\n") as f:
+                f.write(json.dumps({**r, "status": "dikomit"}, ensure_ascii=False, sort_keys=True) + "\n")
+            n += 1
+            log(f"arsip: {agent} bar_close {close} {p['bot']} (hash cocok on-chain)")
+    return n
+
+
+def cmd_arsip(a) -> int:
+    cfg, ev = load_cfg(), _evm()
+    picks = onchain_picks(ev, cfg["selection"], cfg["agents"])
+
+    def fetch(close: int) -> dict:
+        with urllib.request.urlopen(urllib.request.Request(f"{GATE_URL}/analis/{close}", headers={"User-Agent": "fabius-arsip"}), timeout=30) as r:
+            return json.loads(r.read().decode())
+    n = arsip(picks, fetch, os.path.join(ROOT, "ledger", "analis"))
+    print(f"RINGKAS arsip: {n} catatan baru dari {len(picks)} pilihan on-chain")
+    return 0
+
+
 def cmd_pilih(a) -> int:
     cfg, ev = load_cfg(), _evm()
     res = run_round(ROOT, cfg, ev, int(time.time()), a.send)
@@ -388,9 +548,10 @@ def main() -> int:
     for n in ("daftar", "pilih"):
         sub.add_parser(n).add_argument("--send", action="store_true")
     sub.add_parser("kunci")
+    sub.add_parser("arsip")
     sub.add_parser("masukan")
     a = ap.parse_args()
-    return {"kunci": cmd_kunci, "daftar": cmd_daftar, "masukan": cmd_masukan, "pilih": cmd_pilih}[a.cmd](a)
+    return {"kunci": cmd_kunci, "daftar": cmd_daftar, "masukan": cmd_masukan, "pilih": cmd_pilih, "arsip": cmd_arsip}[a.cmd](a)
 
 
 if __name__ == "__main__":
