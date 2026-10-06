@@ -249,6 +249,25 @@ class KursiTests(unittest.TestCase):
         self.assertEqual(by["kursi"]["hash"], meja.sha({k: v for k, v in by["kursi"].items() if k != "hash"}))
 
 
+class LiveBookTests(unittest.TestCase):
+    def test_live_book_stats_band_and_per_bot_attribution(self):
+        def r(t, bot, eq, fees=(), target=True):
+            return {"siklus": t, "bot": bot, "ekuitas": eq, "isi": [{"aset": "X", "dari": 0, "ke": 0.1, "harga": 1, "fee": f} for f in fees],
+                    "target": {"X": {"w": 0.1}} if target else {}, "masuk": ["a", "b"], "hash": f"0x{t}"}
+        recs = [r(300, "B2-RS", 9_990.0, (10.0,)), r(600, "B2-RS", 9_900.0, (5.0,)), r(900, "B1-TREND", 9_950.0, (2.0,)), r(1200, "B1-TREND", 10_050.0, (), False)]
+        h = meja2.buku_hidup(list(reversed(recs)), agen=[{"agent": "v2:a", "status": "ok", "kursi": "aktif", "keputusan": {"bot": "B1-TREND"}}],
+                             sik={"root": "0xr", "tx": "0xt", "status": "dikomit"})
+        self.assertEqual((h["ekuitas"], h["hasil_pct"], h["fee"], h["transaksi"], h["siklus"], h["siklus_berposisi"]), (10_050.0, 0.5, 17.0, 3, 4, 3))
+        self.assertEqual(h["drawdown_maks_pct"], -1.0)                                            # 10.000 -> 9.900
+        self.assertEqual([(p["bot"], p["n"]) for p in h["pita"]], [("B2-RS", 2), ("B1-TREND", 2)])
+        # pasar siklus i ke bot siklus i-1, fee ke bot siklus i: B2 = (9.900-9.990+5) + (9.950-9.900+2) - fee(10+5) = -48; B1 = (10.050-9.950+0) - 2 = 98
+        self.assertEqual({b: x["hasil"] for b, x in h["per_bot"].items()}, {"B2-RS": -48.0, "B1-TREND": 98.0})
+        self.assertAlmostEqual(sum(x["hasil"] for x in h["per_bot"].values()), 10_050.0 - 9_990.0 + 0 - 10.0 + (9_990.0 - 10_000.0) + 10.0)
+        self.assertEqual(h["pita_keputusan"][0]["siklus"], 1200)                                  # terbaru dulu
+        self.assertEqual((h["pipa"]["bot"], h["pipa"]["rumus"], h["pipa"]["tx"], h["pipa"]["agen"][0]["status"]), ("B1-TREND", "r3", "0xt", "ok"))
+        self.assertEqual(meja2.buku_hidup([]), {"kosong": True})
+
+
 class GateTests(unittest.TestCase):
     def setUp(self):
         import x402_sinyal as xs
@@ -276,6 +295,19 @@ class GateTests(unittest.TestCase):
         self.assertEqual(by["v2"]["keputusan_terakhir"]["instrumen"], ["WIFUSDT"])
         self.assertFalse(by["v2:glm"]["nama"].startswith("v2"))
         self.assertEqual(v["params_v2"], meja2.PARAMS2)
+
+    def test_live_book_endpoint_reads_every_day_file_and_only_fabius_records(self):
+        t0 = 1_791_200_100
+        rows = [{"siklus": t0 - 86_400, "agent": "v2", "ekuitas": 9_990.0, "bot": "B2-RS", "hash": "0xa"},
+                {"siklus": t0 - 86_400, "agent": "konsensus", "ekuitas": 1.0, "hash": "0xk"},
+                {"siklus": t0, "agent": "v2", "ekuitas": 9_980.0, "bot": "B1-TREND", "masuk": ["glm"], "hash": "0xb"},
+                {"siklus": t0, "agent": "v2:glm", "status": "ok", "kursi": "aktif", "keputusan": {"bot": "B1-TREND"}, "hash": "0xc"}]
+        for r in rows:
+            self.g.meja_simpan([r], {"siklus": r["siklus"], "daun": [r["hash"]], "harga": {}, "root": "0xroot", "status": "dikomit", "tx": "0xtx", "n": 1}, {}, {})
+        h = self.g.meja_fabius()
+        self.assertEqual((h["siklus"], h["ekuitas"], h["mulai"]), (2, 9_980.0, t0 - 86_400))      # dua hari, v1 tidak ikut
+        self.assertEqual(h["pipa"]["agen"], [{"slug": "glm", "status": "ok", "kursi": "aktif", "bot": "B1-TREND"}])
+        self.assertEqual((h["pipa"]["root"], h["pipa"]["tx"]), ("0xroot", "0xtx"))
 
     def test_agent_detail_counts_measured_24h_stats_and_lists_history_newest_first(self):
         t0 = 1_791_200_100

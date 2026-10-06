@@ -452,6 +452,35 @@ class Gate:
         return 200, {"buku": buku, "statistik": stat, "riwayat": riwayat, "model": next((r.get("model") for r in reversed(mine) if r.get("model")), None),
                      "agent_id": next((r.get("agent_id") for r in reversed(mine) if r.get("agent_id")), None)}
 
+    def meja_fabius(self, max_age_s: int = 30) -> dict:
+        """P164 Fabius Live Book: semua rekaman buku Fabius (agent "v2") sejak siklus pertama. Cache per berkas harian (berkas lama tidak berubah,
+        hanya berkas hari ini yang dibaca ulang); baris disaring dengan teks sebelum diurai supaya rekaman agent/v1 tidak di-JSON-kan."""
+        import glob
+        import meja2
+        st = getattr(self, "_fabius", None)
+        if st and time.time() - st["t_view"] < max_age_s:
+            return st
+        cache = self.__dict__.setdefault("_fabius_berkas", {})
+        recs: List[dict] = []
+        files = sorted(glob.glob(os.path.join(self.meja_dir, "rekaman", "*.jsonl")))
+        for path in files:
+            m = (os.path.getmtime(path), os.path.getsize(path))
+            if cache.get(path, (None, None))[0] != m:
+                with open(path, encoding="utf-8") as f:
+                    rows = [json.loads(ln) for ln in f if '"agent": "v2",' in ln]
+                keep = ("siklus", "ekuitas", "bot", "nilai_bot", "dasar", "instrumen", "target", "isi", "masuk", "aktif", "hash")
+                cache[path] = (m, [{k: r.get(k) for k in keep} for r in rows])
+            recs += cache[path][1]
+        agen, sik = [], None
+        if recs and files:
+            last = max(r["siklus"] for r in recs)
+            with open(files[-1], encoding="utf-8") as f:
+                agen = [r for r in (json.loads(ln) for ln in f if '"agent": "v2:' in ln) if r["siklus"] == last]
+            sik = next((x for x in reversed(self._meja_baca("siklus", 1)) if x["siklus"] == last), None)
+        out = {"t_view": time.time(), **meja2.buku_hidup(recs, agen, sik)}
+        self._fabius = out
+        return out
+
     def data_simpan(self, snap: dict) -> None:
         """P153 (F1): snapshot data luas meja v2 -> /data/meja/fitur/<tgl>.jsonl (sha atas isi tanpa `durasi_s`)."""
         with self.meja_lock:
@@ -884,6 +913,8 @@ def make_handler(gate: Gate):
                 if parts[0] == "desk" and len(parts) == 3 and parts[1] == "proof":
                     code, body = gate.meja_proof(parts[2])
                     return self._send(code, body)
+                if parts[0] == "desk" and len(parts) == 2 and parts[1] == "fabius":
+                    return self._send(200, gate.meja_fabius())
                 if parts[0] == "desk" and len(parts) == 3 and parts[1] == "agent":
                     code, body = gate.meja_agent(urllib.parse.unquote(parts[2]))
                     return self._send(code, body)

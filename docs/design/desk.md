@@ -61,3 +61,22 @@ Garis cahaya di lantai menyambung tiap meja ke hub (keputusan mengalir ke rumus)
 
 Satu adegan utuh di dalam bagian "Decisions", lebar = kontainer `max-w-6xl`, tinggi `clamp(340px, 52vw, 560px)`. Tidak ada scroll di dalam
 adegan; modal maksimal 92 % kontainer, isinya boleh scroll.
+
+## Fabius Live Book (P164, 6 Okt) - menggantikan panel "Fabius v2"
+
+Judul disetujui builder: **"Fabius Live Book"** / ID **"Buku Hidup Fabius"**, tagline *Real decisions · paper money · every cycle sealed on BNB
+Chain* (bukan "real trade": uangnya paper; keputusan + buktinya yang nyata).
+
+Proses yang diwakili: satu siklus pipeline = agent memberi keputusan -> rumus r3 menggabung -> aturan bot terkunci menghitung arah -> buku Fabius
+diisi -> root disegel ke DeskAnchor. Objek inti: **jalur produksi** (beda metafora dari lantai): platform-platform tersambung garis cahaya violet,
+seperti referensi.
+
+- **Strip pipeline 3D (atas):** (1) platform agent = NPC pekerja yang SAMA dengan lantai, pose BERDIRI, satu per kursi aktif, tanda ✓/✕ per jawaban;
+  (2) **mesin rumus** = inti kubus kaca dengan cincin berputar + layar "r3" + bot pemenang + selisih skor (sebagus NPC: bentuk + gerak bermakna);
+  (3) **bot** = robot kotak bermata cahaya membawa ID bot di dadanya, lengannya menunjuk arah; (4) **buku** = batang posisi (tinggi = bobot, ▲ violet /
+  ▼ ink); (5) **chain** = tumpukan blok + ✓. Titik cahaya mengalir dari kiri ke kanan tiap siklus baru. Label = tombol DOM (bridge), ringkasan
+  `aria-live`, tanpa gerak bila `prefers-reduced-motion`, versi 2D bila tanpa WebGL.
+- **Kurva ekuitas sejak awal** + **pita bot** di bawahnya (warna/label per bot, sumbu waktu sama) + statistik jujur: ekuitas, hasil, drawdown maks,
+  fee (dan porsinya terhadap rugi), transaksi, siklus berposisi.
+- **Hasil per bot** (siklus dominan, perubahan ekuitas saat bot itu memegang, fee) + **pita keputusan** terbaru dulu (bot, agent sah, isi, bukti ↗).
+- Data: `GET /desk/fabius` (semua rekaman buku Fabius sejak siklus pertama).

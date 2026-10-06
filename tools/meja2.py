@@ -486,5 +486,61 @@ def siklus2(t0: int, agents: List[dict], books: Dict[str, dict], ring: Dict[str,
     return rek, harga
 
 
+def buku_hidup(recs: List[dict], agen: Optional[List[dict]] = None, sik: Optional[dict] = None, maks_titik: int = 600, n_pita: int = 60) -> dict:
+    """P164 Fabius Live Book: ringkasan SELURUH riwayat buku Fabius dari rekaman konsensus (agent "v2"), urut waktu.
+    Atribusi per bot (dinyatakan jujur): perubahan ekuitas siklus i = pasar (posisi yang diputuskan di siklus i-1) - fee isi siklus i; bagian pasar
+    dicatat ke bot siklus i-1, fee ke bot siklus i. `agen` = rekaman agent siklus terakhir (strip pipeline), `sik` = root/tx/status siklus terakhir."""
+    recs = sorted(recs, key=lambda r: r["siklus"])
+    if not recs:
+        return {"kosong": True}
+    awal = meja.PARAMS["modal_awal"]
+    eq = [float(r["ekuitas"]) for r in recs]
+    puncak, dd = awal, 0.0
+    for e in eq:
+        puncak = max(puncak, e)
+        dd = min(dd, e / puncak - 1)
+    fee_i = [sum(float(f.get("fee", 0)) for f in r.get("isi") or []) for r in recs]
+    per_bot: Dict[str, dict] = {}
+    for i, r in enumerate(recs):
+        b = r.get("bot") or "-"
+        x = per_bot.setdefault(b, {"siklus": 0, "pasar": 0.0, "fee": 0.0, "isi": 0})
+        x["siklus"] += 1
+        x["fee"] += fee_i[i]
+        x["isi"] += len(r.get("isi") or [])
+        if i:
+            pb = recs[i - 1].get("bot") or "-"
+            per_bot.setdefault(pb, {"siklus": 0, "pasar": 0.0, "fee": 0.0, "isi": 0})["pasar"] += eq[i] - eq[i - 1] + fee_i[i]
+    pita: List[dict] = []
+    for r in recs:
+        b = r.get("bot") or "-"
+        if pita and pita[-1]["bot"] == b:
+            pita[-1].update(sampai=r["siklus"], n=pita[-1]["n"] + 1)
+        else:
+            pita.append({"bot": b, "dari": r["siklus"], "sampai": r["siklus"], "n": 1})
+    k = max(1, -(-len(recs) // maks_titik))
+    seri = [[r["siklus"], round(float(r["ekuitas"]), 2)] for r in recs[::k]]
+    if seri[-1][0] != recs[-1]["siklus"]:
+        seri.append([recs[-1]["siklus"], round(eq[-1], 2)])
+    akhir = recs[-1]
+    nilai = akhir.get("nilai_bot") or {}
+    return {
+        "mulai": recs[0]["siklus"], "siklus_terakhir": akhir["siklus"], "modal_awal": awal, "ekuitas": round(eq[-1], 2),
+        "hasil_pct": round((eq[-1] / awal - 1) * 100, 3), "drawdown_maks_pct": round(dd * 100, 3), "fee": round(sum(fee_i), 2),
+        "transaksi": sum(len(r.get("isi") or []) for r in recs), "siklus": len(recs), "siklus_berposisi": sum(1 for r in recs if r.get("target")),
+        "seri": seri, "pita": pita,
+        "per_bot": {b: {"siklus": x["siklus"], "hasil": round(x["pasar"] - x["fee"], 2), "fee": round(x["fee"], 2), "isi": x["isi"]}
+                    for b, x in sorted(per_bot.items(), key=lambda kv: -kv[1]["siklus"])},
+        "pipa": {"siklus": akhir["siklus"], "rumus": f"r{PARAMS2['v']}", "bot": akhir.get("bot"), "skor_bot": nilai.get(akhir.get("bot")) if akhir.get("bot") else None,
+                 "dasar": akhir.get("dasar"), "instrumen": akhir.get("instrumen") or [], "target": {a: t.get("w") for a, t in (akhir.get("target") or {}).items()},
+                 "isi": len(akhir.get("isi") or []), "masuk": akhir.get("masuk") or [], "aktif": akhir.get("aktif") or akhir.get("masuk") or [],
+                 "agen": [{"slug": a["agent"].split(":", 1)[-1], "status": a.get("status", "ok"), "kursi": a.get("kursi"),
+                           "bot": (a.get("keputusan") or {}).get("bot")} for a in (agen or [])],
+                 "root": (sik or {}).get("root"), "tx": (sik or {}).get("tx"), "status": (sik or {}).get("status")},
+        "pita_keputusan": [{"siklus": r["siklus"], "bot": r.get("bot"), "dasar": r.get("dasar"), "instrumen": r.get("instrumen") or [],
+                            "masuk": len(r.get("masuk") or []), "isi": r.get("isi") or [], "ekuitas": r.get("ekuitas"), "hash": r.get("hash")}
+                           for r in reversed(recs[-n_pita:])],
+    }
+
+
 def kursi_now(kst: dict) -> Dict[str, str]:
     return {s: v["status"] for s, v in kst.get("kursi", {}).items()}
