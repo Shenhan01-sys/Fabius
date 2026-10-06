@@ -50,6 +50,10 @@ tanaman/buku), lalu ditimpa `npc` dari `config/agents.json` bila ada (gerbang me
 agent di 180-360 derajat layar, lebih dari itu 150-390 derajat dengan jari-jari sampai 4,1 dan meja mengecil (skala dari jarak antarmeja, minimal
 0,6); label ringkas otomatis bila agent > 4 di layar sedang atau > 6. Diuji render 5 / 7 / 10 agent (Test Commands #80); 10 masih muat tetapi padat.
 
+## Fabius Live Book (P164)
+
+Bagian utama `/desk` (menggantikan panel "Fabius v2"): rekam jejak SELURUH buku Fabius dari `GET /desk/fabius` (`Gate.meja_fabius` -> `meja2.buku_hidup`; cache per berkas harian, hanya berkas hari ini dibaca ulang). Strip pipeline 3D `web/src/components/desk/floor/PipelineScene.tsx`: agent = NPC pekerja yang sama dengan lantai (`parts.tsx`, pose berdiri, ✓ kubus / ✕ silang), mesin rumus (6 kubus mengorbit = 6 bot, ukuran = skor, pemenang menyala), robot aturan bot (ID bot di dada), buku (batang posisi), tumpukan blok BNB Chain. `LiveBook.tsx`: statistik (termasuk porsi fee terhadap rugi), kurva ekuitas sejak siklus pertama + pita bot, hasil per bot (pasar ke bot yang posisinya dipegang, fee ke bot yang memicu transaksi), pita keputusan + bukti; tanda rem rugi harian bila aktif. Inklusif: label DOM (bridge), ringkasan `aria-live`, tanpa gerak, label ringkas di HP.
+
 ## Cara memeriksa satu keputusan
 
 `GET /desk/proof/<hash>` -> rekaman, hash dihitung ulang (sha256 JSON kanonis tanpa `hash`), Merkle proof (`engine/chain.py`) -> root =
