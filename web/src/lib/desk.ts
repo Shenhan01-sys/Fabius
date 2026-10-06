@@ -90,6 +90,48 @@ export async function agentDetail(name: string): Promise<AgentDetail> {
   return r.json();
 }
 
+// P164 Fabius Live Book: seluruh riwayat buku Fabius (`GET /desk/fabius`, Gate.meja_fabius -> meja2.buku_hidup)
+export type LiveAgent = { slug: string; status: string; kursi: string | null; bot: string | null };
+export type LiveBook = {
+  kosong?: boolean;
+  mulai: number;
+  siklus_terakhir: number;
+  modal_awal: number;
+  ekuitas: number;
+  hasil_pct: number;
+  drawdown_maks_pct: number;
+  fee: number;
+  transaksi: number;
+  siklus: number;
+  siklus_berposisi: number;
+  seri: [number, number][];
+  pita: { bot: string; dari: number; sampai: number; n: number }[];
+  per_bot: Record<string, { siklus: number; hasil: number; fee: number; isi: number }>;
+  pipa: {
+    siklus: number;
+    rumus: string;
+    bot: string | null;
+    skor_bot: number | null;
+    dasar: string | null;
+    instrumen: string[];
+    target: Record<string, number>;
+    isi: number;
+    masuk: string[];
+    aktif: string[];
+    agen: LiveAgent[];
+    root: string | null;
+    tx: string | null;
+    status: string | null;
+  };
+  pita_keputusan: { siklus: number; bot: string | null; dasar: string | null; instrumen: string[]; masuk: number; isi: Isi[]; ekuitas: number; hash: string }[];
+};
+
+export async function liveBook(): Promise<LiveBook> {
+  const r = await fetch(`${GATE}/desk/fabius`, { cache: "no-store" });
+  if (!r.ok) throw new Error(`/desk/fabius HTTP ${r.status}`);
+  return r.json();
+}
+
 export type DataHealth = {
   snapshot_24j: number;
   durasi_maks_s: number | null;

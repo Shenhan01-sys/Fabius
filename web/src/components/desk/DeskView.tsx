@@ -11,6 +11,7 @@ import { LangProvider, useLang } from "@/components/lang";
 import { LINKS } from "@/lib/copy";
 import { dataHealth, desk, hhmm, type Buku, type DataHealth, type Desk } from "@/lib/desk";
 import Floor from "./floor/Floor";
+import LiveBook from "./floor/LiveBook";
 
 export default function DeskView() {
   return (
@@ -55,7 +56,6 @@ function Body() {
     };
   }, []);
 
-  const v2 = d?.buku.find((b) => b.agent === "v2");
   const agents2 = d?.buku.filter((b) => b.agent.startsWith("v2:") && b.kursi !== "keluar") ?? [];
   return (
     <section className="relative overflow-hidden rounded-[30px] bg-gradient-to-b from-lav via-lav to-white px-6 pb-20 pt-32 sm:px-12 sm:pt-40 lg:px-16">
@@ -71,7 +71,7 @@ function Body() {
         {err && d && <p className="text-center text-xs text-ink/50">{v.stale.replace("{t}", hhmm(d.t))}</p>}
         {!d && !err && <p className="text-center text-ink/50">{v.loading}</p>}
         {d && !d.buku.length && <p className="text-center text-ink/60">{v.empty}</p>}
-        {v2 && <V2Panel b={v2} d={d!} />}
+        {d && d.buku.length > 0 && <LiveBook d={d} />}
         {agents2.length > 0 && (
           <div>
             <p className={label}>{v.reports}</p>
@@ -127,98 +127,6 @@ function Weights({ pos, max }: { pos: Record<string, number>; max: number }) {
 
 const aset = (x: string | { aset: string }) => (typeof x === "string" ? x : x.aset);
 const tkr = (a: string) => a.replace("USDT", "");
-
-function V2Panel({ b, d }: { b: Buku; d: Desk }) {
-  const { t } = useLang();
-  const v = t.desk;
-  const k = b.keputusan_terakhir;
-  const s = d.siklus_terakhir;
-  const veto = new Set((k?.veto ?? []).map(aset));
-  const nilai = Object.entries(k?.nilai_bot ?? {}).sort((a, b2) => b2[1] - a[1]);
-  const flat = Object.entries(k?.arah_alasan ?? {});
-  return (
-    <div className={panel}>
-      <p className={label}>{v.v2Title}</p>
-      <p className="mt-1 text-xs text-ink/50">{v.v2Sub}</p>
-      <div className="mt-4 grid gap-6 lg:grid-cols-[1fr_1.2fr]">
-        <div>
-          <p className="font-display text-4xl font-[300]">
-            {b.ekuitas.toLocaleString("en-US", { maximumFractionDigits: 2 })} <span className="text-base text-ink/50">USDT</span>
-          </p>
-          <p className={`mt-1 text-sm ${b.hasil_pct >= 0 ? "text-violet" : "text-ink/60"}`}>
-            {pct(b.hasil_pct)} · {b.n_trade} {v.trades} · {v.fees} {b.biaya.toFixed(2)}
-          </p>
-          <Spark pts={b.deret} />
-          <p className={`${label} mt-3`}>{v.dominant}</p>
-          <p className="mt-1 font-display text-2xl">{k?.bot ?? "-"}</p>
-          {k?.ringkasan && <p className="mt-1 text-xs text-ink/60">{k.ringkasan}</p>}
-          {s && (
-            <p className="mt-2 text-xs text-ink/60">
-              {v.lastCycle} {hhmm(s.siklus)} · {stat(v.status, s.status)}
-              {s.tx && (
-                <>
-                  {" · "}
-                  <a className="underline" href={LINKS.tx + s.tx} target="_blank" rel="noreferrer">
-                    {v.anchored}
-                  </a>
-                </>
-              )}
-            </p>
-          )}
-          {nilai.length > 0 && (
-            <div className="mt-4">
-              <p className={label}>{v.botScores}</p>
-              <div className="mt-2 space-y-1.5">
-                {nilai.map(([bot, x]) => (
-                  <div key={bot} className="grid grid-cols-[8.5rem_1fr_3rem] items-center gap-2 text-xs">
-                    <span className={`font-mono ${bot === k?.bot ? "text-violet" : ""}`}>{bot}</span>
-                    <div className="relative h-2 rounded-full bg-ink/5">
-                      <span className="absolute inset-y-0 left-1/2 w-px bg-ink/30" />
-                      <span className={`absolute inset-y-0 rounded-full ${x >= 0 ? "bg-violet" : "bg-ink/40"}`}
-                        style={x >= 0 ? { left: "50%", width: `${Math.min(Math.abs(x), 100) / 2}%` } : { right: "50%", width: `${Math.min(Math.abs(x), 100) / 2}%` }} />
-                    </div>
-                    <span className="text-right font-mono">{x.toFixed(1)}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-        </div>
-        <div>
-          <p className={label}>
-            {v.instruments}
-            {k?.eksposur != null && <span className="ml-2 normal-case text-ink/45">· {v.exposure} {Math.round(k.eksposur * 100)}%</span>}
-          </p>
-          <div className="mt-2 flex flex-wrap gap-1.5">
-            {(k?.instrumen ?? []).map(aset).map((a) => (
-              <span key={a} className={`rounded-full border px-2 py-0.5 font-mono text-xs ${veto.has(a) ? "border-ink/15 text-ink/40 line-through" : "border-violet/40 text-violet"}`}>
-                {tkr(a)} {k?.skor_instrumen?.[a] != null && <span className="text-ink/45">{k.skor_instrumen[a].toFixed(2)}</span>}
-              </span>
-            ))}
-            {[...veto].filter((a) => !(k?.instrumen ?? []).map(aset).includes(a)).map((a) => (
-              <span key={a} className="rounded-full border border-ink/15 px-2 py-0.5 font-mono text-xs text-ink/40 line-through">
-                {tkr(a)} · {v.vetoed}
-              </span>
-            ))}
-          </div>
-          {flat.length > 0 && (
-            <ul className="mt-2 space-y-0.5 text-xs text-ink/55">
-              {flat.map(([a, why]) => (
-                <li key={a}>
-                  {v.flatWhy}: <span className="font-mono">{tkr(a)}</span> ({why})
-                </li>
-              ))}
-            </ul>
-          )}
-          <p className={`${label} mt-4`}>{v.positions}</p>
-          <div className="mt-3">
-            <Weights pos={b.posisi} max={d.params.maks_per_aset} />
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
 
 function AgentCard({ b }: { b: Buku }) {
   const { t } = useLang();
