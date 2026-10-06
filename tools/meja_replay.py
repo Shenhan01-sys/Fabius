@@ -33,12 +33,13 @@ ALASAN_R4 = {"open": "buka slot", "SL": "SL", "TP": "TP", "daily loss brake": "r
 SETIA_USDT = 0.01
 
 
-def muat(dari: str, sampai: str, gerbang: str = GERBANG) -> Tuple[List[dict], Dict[int, Dict[str, float]]]:
+def muat(dari: str, sampai: str, gerbang: str = GERBANG, token: Optional[str] = None) -> Tuple[List[dict], Dict[int, Dict[str, float]]]:
+    """P165: tanpa `token` (token akses Privy anggota) arsip publik hanya memuat rekaman >= 24 jam lalu - replay siapa pun berlaku sesudah jeda itu."""
     recs, harga = [], {}
     d0, d1 = dt.date.fromisoformat(dari), dt.date.fromisoformat(sampai)
     while d0 <= d1:
         try:
-            req = urllib.request.Request(f"{gerbang}/desk/archive/{d0}", headers={"User-Agent": "fabius-replay"})
+            req = urllib.request.Request(f"{gerbang}/desk/archive/{d0}", headers={"User-Agent": "fabius-replay", **({"Authorization": f"Bearer {token}"} if token else {})})
             with urllib.request.urlopen(req, timeout=120) as r:
                 a = json.loads(r.read().decode())
             recs += a["records"]
@@ -412,11 +413,12 @@ def main() -> int:
     ap.add_argument("--dari", required=True)
     ap.add_argument("--sampai", required=True)
     ap.add_argument("--gerbang", default=GERBANG)
+    ap.add_argument("--token", default=os.environ.get("FABIUS_PRIVY_TOKEN"), help="token akses Privy anggota (P165); tanpa ini hanya rekaman >= 24 jam")
     ap.add_argument("--json", action="store_true", help="cetak laporan sebagai JSON")
     ap.add_argument("--kepekaan", action="store_true", help="tambah tetangga parameter kebijakan (uji kepekaan)")
     ap.add_argument("--slot", action="store_true", help="replay usulan r4 slot posisi (F-D116); candle harian perp dari Binance Vision")
     a = ap.parse_args()
-    recs, harga = muat(a.dari, a.sampai, a.gerbang)
+    recs, harga = muat(a.dari, a.sampai, a.gerbang, a.token)
     if not recs:
         print("tidak ada rekaman")
         return 1

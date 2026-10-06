@@ -189,6 +189,9 @@ def tg_parse(secret: bytes, token: str, now_s: int) -> Optional[dict]:
 
 # ---------------------------------------------------------------- alasan agent analis: terbuka vs berbayar (P145, F-D104)
 AKSES_HARI = 7          # alasan lengkap di app = login + membeli >= 1 sinyal dalam 7 hari terakhir (dompet yang sama)
+# P165: yang bisa DITIRU (isi keputusan, posisi/slot, alasan agent, isi transaksi) hanya untuk anggota (= akses P145) atau sesudah jeda ini;
+# yang membuktikan KEJUJURAN (ekuitas, hasil, fee, kurva, hasil per bot, status agent, root + tx on-chain) tetap langsung untuk semua orang.
+TUNDA_PUBLIK_S = 86_400
 AKSES_BAR_MAX = 14      # bar terakhir yang dikirim ke pembeli (riwayat lebih tua tetap di arsip publik ledger/analis)
 TERKUNCI_EN = "sealed until the bar closes: full reasoning in the Fabius app (sign in + any signal bought in the last 7 days)"
 TIDAK_TERBIT_EN = "reasoning not published at the agent's card URL (or its sha256 did not match the on-chain reasonHash)"
@@ -204,6 +207,14 @@ LANGKAH_LUAR = [   # P151 (F-D107): cara agent luar ikut; semuanya bisa diperiks
     "Optional data (P140): MCP tools fabius_dexscreener, fabius_rugcheck, fabius_bubblemaps, fabius_fomo at https://fabius-one.vercel.app/mcp (DEX/memecoin "
     "context; Fabius bots trade 16 major perps).",
 ]
+
+
+def segel_pilihan(r: dict, now_s: int, live: bool) -> dict:
+    """P165: pilihan bar yang BELUM tutup (bot + keyakinan) hanya untuk anggota di web. Catatan jujur: pilihan itu dikomit on-chain
+    (SelectionAnchor.getPick) supaya bisa diverifikasi, jadi siapa pun yang membaca kontrak tetap bisa melihatnya; ini kunci tampilan, bukan rahasia."""
+    if live or int((r.get("alasan") or {}).get("bar_close") or 0) <= now_s:
+        return r
+    return {**r, "bot": None, "keyakinan": None, "tersegel": True}
 
 
 def tutup_alasan(r: dict, now_s: int) -> dict:
@@ -428,13 +439,27 @@ class Gate:
         self._meja = out
         return out
 
-    def meja_agent(self, name: str, n: int = 60) -> Tuple[int, dict]:
-        """P158: rincian satu buku meja untuk modal lantai /desk: statistik terukur 24 jam + riwayat keputusan (terbaru dulu, maks n)."""
+    @staticmethod
+    def _buku_publik(b: dict) -> dict:
+        """P165: buku tanpa isi yang bisa ditiru (posisi, target, keputusan terakhir); jumlah posisi tetap terlihat."""
+        return {**b, "posisi": {}, "target": {}, "keputusan_terakhir": None, "n_posisi": len(b.get("posisi") or {}), "terkunci": True}
+
+    def meja_view_publik(self) -> dict:
+        """P165 `/desk` tanpa akses: ekuitas, status, kursi, root/tx tetap langsung; isi keputusan hanya dari siklus >= TUNDA_PUBLIK_S lalu."""
+        v, cut = self.meja_view(), self.batas_publik()
+        return {**v, "buku": [self._buku_publik(b) for b in v["buku"]], "rekaman": [r for r in v["rekaman"] if r["siklus"] <= cut],
+                "akses": self.akses_info(False)}
+
+    def meja_agent(self, name: str, n: int = 60, live: bool = True) -> Tuple[int, dict]:
+        """P158: rincian satu buku meja untuk modal lantai /desk: statistik terukur 24 jam + riwayat keputusan (terbaru dulu, maks n).
+        P165 `live=False`: riwayat hanya siklus >= TUNDA_PUBLIK_S lalu, tanpa sebaran pilihan bot 24 jam, buku tanpa posisi."""
         buku = next((b for b in self.meja_view()["buku"] if b["agent"] == name), None)
         if buku is None:
             return 404, {"error": "buku tidak ada"}
         cut = int(self.now()) - 86_400
         mine = [r for r in self._meja_baca("rekaman") if r["agent"] == name]
+        if not live:
+            buku = self._buku_publik(buku)
         d24 = [r for r in mine if r["siklus"] >= cut]
         st = [r.get("status", "ok") for r in d24]
         bots: Dict[str, int] = {}
@@ -445,14 +470,17 @@ class Gate:
         stat = {"siklus_24j": len(d24), "ok": st.count("ok"), "gagal": st.count("gagal"), "terlambat": st.count("terlambat"),
                 "siklus_bertransaksi": sum(1 for r in d24 if r.get("isi")), "isi_24j": sum(len(r.get("isi") or []) for r in d24),
                 "biaya_24j": round(sum(x.get("fee", 0) for r in d24 for x in r.get("isi") or []), 4), "bot_pilihan": bots}
+        lihat = mine if live else [r for r in mine if r["siklus"] <= self.batas_publik()]
+        if not live:
+            stat.pop("bot_pilihan", None)
         riwayat = [{"siklus": r["siklus"], "status": r.get("status", "ok"), "galat": r.get("galat"),
                     "ringkasan": (r.get("keputusan") or {}).get("ringkasan") or r.get("dasar"), "bot": (r.get("keputusan") or {}).get("bot") or r.get("bot"),
                     "target": (r.get("keputusan") or {}).get("target") or r.get("target") or {}, "isi": r.get("isi") or [], "ekuitas": r.get("ekuitas"),
-                    "hash": r.get("hash")} for r in reversed(mine[-n:])]
+                    "hash": r.get("hash")} for r in reversed(lihat[-n:])]
         return 200, {"buku": buku, "statistik": stat, "riwayat": riwayat, "model": next((r.get("model") for r in reversed(mine) if r.get("model")), None),
                      "agent_id": next((r.get("agent_id") for r in reversed(mine) if r.get("agent_id")), None)}
 
-    def meja_archive(self, date: str) -> Tuple[int, dict]:
+    def meja_archive(self, date: str, live: bool = True) -> Tuple[int, dict]:
         """P163: `GET /desk/archive/<YYYY-MM-DD>`, baca saja, satu hari UTC - rekaman buku Fabius (agent "v2", apa adanya: nama field di dalam
         rekaman ikut di-hash jadi tidak diterjemahkan) + harga isi v2 per siklus, untuk replay deterministik (`tools/meja_replay.py`). Isinya sama
         dengan yang sudah publik lewat /desk + /desk/proof; tanpa rekaman v1/agent supaya ringkas. Kunci pembungkus berbahasa Inggris."""
@@ -470,7 +498,7 @@ class Gate:
             with open(path, encoding="utf-8") as f:
                 for ln in f:
                     if kind == "rekaman":
-                        if '"v2"' in ln and (r := json.loads(ln)).get("agent") == "v2":
+                        if '"v2"' in ln and (r := json.loads(ln)).get("agent") == "v2" and (live or r["siklus"] <= self.batas_publik()):   # P165
                             out["records"].append(r)
                     elif ln.strip():
                         s = json.loads(ln)
@@ -478,7 +506,30 @@ class Gate:
                                               "status": s.get("status"), "leaves": s.get("n")})
         if not out["records"] and not out["cycles"]:
             return 404, {"error": f"no archive for {date}"}
-        return 200, {"date": date, **out}
+        return 200, {"date": date, **out, **({} if live else {"akses": self.akses_info(False)})}
+
+    def meja_fabius_publik(self) -> dict:
+        """P165 Live Book tanpa akses: statistik, kurva ekuitas, hasil per bot, status agent + root/tx langsung; pita bot + pita keputusan hanya sampai
+        TUNDA_PUBLIK_S lalu; pipa tanpa bot/instrumen/target/slot (jumlah slot terlihat)."""
+        import meja2
+        full = self.meja_fabius()
+        st = getattr(self, "_fabius_pub", None)
+        if st and st["t_view"] == full["t_view"]:
+            return st
+        if full.get("kosong"):
+            return {**full, "akses": self.akses_info(False)}
+        cut = self.batas_publik()
+        recs, agen, sik = self._fabius_src
+        lama = meja2.buku_hidup([r for r in recs if r["siklus"] <= cut], agen, sik)
+        p = full["pipa"]
+        brake = "daily loss brake" in (p.get("dasar") or "")
+        pipa = {**p, "bot": None, "skor_bot": None, "dasar": (p["dasar"][p["dasar"].index("daily loss brake"):] if brake else None), "instrumen": [],
+                "target": {}, "slot": None, "slot_n": len(p.get("slot") or []), "agen": [{k: a[k] for k in ("slug", "status", "kursi")} for a in p["agen"]],
+                "terkunci": True}
+        out = {**full, "pita": [] if lama.get("kosong") else lama["pita"], "pita_keputusan": [] if lama.get("kosong") else lama["pita_keputusan"],
+               "pipa": pipa, "akses": self.akses_info(False)}
+        self._fabius_pub = out
+        return out
 
     def meja_fabius(self, max_age_s: int = 30) -> dict:
         """P164 Fabius Live Book: semua rekaman buku Fabius (agent "v2") sejak siklus pertama. Cache per berkas harian (berkas lama tidak berubah,
@@ -506,7 +557,7 @@ class Gate:
                 agen = [r for r in (json.loads(ln) for ln in f if '"agent": "v2:' in ln) if r["siklus"] == last]
             sik = next((x for x in reversed(self._meja_baca("siklus", 1)) if x["siklus"] == last), None)
         out = {"t_view": time.time(), **meja2.buku_hidup(recs, agen, sik)}
-        self._fabius = out
+        self._fabius, self._fabius_src = out, (recs, agen, sik)
         return out
 
     def data_simpan(self, snap: dict) -> None:
@@ -547,13 +598,16 @@ class Gate:
         self._data_view = out
         return out
 
-    def meja_proof(self, h: str) -> Tuple[int, dict]:
+    def meja_proof(self, h: str, live: bool = True) -> Tuple[int, dict]:
         rek = next((r for r in self._meja_baca("rekaman", 3) if r.get("hash") == h), None)
         if rek is None:
             return 404, {"error": "hash tidak ada di rekaman 3 hari terakhir"}
         sik = next((x for x in self._meja_baca("siklus", 3) if x["siklus"] == rek["siklus"]), None)
         if sik is None:
             return 404, {"error": "siklus rekaman tidak ditemukan"}
+        if not live and rek["siklus"] > self.batas_publik():                                  # P165: komitmen terlihat, isi menyusul
+            return 402, {"error": "decision content opens to the public 24 h after its cycle; members see it live", "siklus": rek["siklus"],
+                         "terbuka_pada": rek["siklus"] + TUNDA_PUBLIK_S, "root": sik.get("root"), "tx": sik.get("tx"), "akses": self.akses_info(False)}
         isi_tanpa_hash = {k: v for k, v in rek.items() if k != "hash"}
         return 200, {"rekaman": rek, "hash_dihitung_ulang": meja.sha(isi_tanpa_hash), "root": sik.get("root"), "proof": meja.proof_of(sik["daun"], h),
                      "siklus": sik["siklus"], "tx": sik.get("tx"), "anchor": self.data.cfg_raw().get("contracts", {}).get("DeskAnchor"),
@@ -561,6 +615,7 @@ class Gate:
                                  "DeskAnchor.rootOf(siklus); tx dikirim sebelum siklus + 300 s"}
 
     def record_buy(self, bot: str, bar: str, payer: str, tx: str, atomic: int) -> None:
+        self.__dict__.get("_akses_cache", {}).clear()                  # P165: pembelian baru = akses baru, jangan tunggu cache
         try:
             with self.buys_lock:
                 os.makedirs(os.path.dirname(self.buys_path), exist_ok=True)
@@ -580,13 +635,19 @@ class Gate:
                         best = r
         return best
 
-    def analis_lengkap(self, auth: Optional[str]) -> Tuple[int, dict]:
-        """Alasan lengkap + hash + skor untuk user Privy yang login DAN membeli >= 1 sinyal dalam AKSES_HARI hari (F-D104)."""
+    def akses(self, auth: Optional[str]) -> Tuple[int, dict]:
+        """P145 + P165: SATU pemeriksa akses anggota - token Privy sah DAN dompet akun itu membeli >= 1 sinyal dalam AKSES_HARI hari. -> (200, akses)
+        atau (401 / 402 / 502 / 503, galat). Hanya hasil 200 yang di-cache (60 s per token; lantai /desk memanggil beberapa rute tiap beberapa detik):
+        pembeli baru langsung terbaca, dan `record_buy` mengosongkan cache."""
         if self.privy is None:
             return 503, {"error": "login Privy belum dikonfigurasi di gerbang"}
         tok = auth[7:].strip() if auth and auth[:7].lower() == "bearer " else ""
         if not tok:
             return 401, {"error": "sign in first (Authorization: Bearer <Privy access token>)"}
+        cache = self.__dict__.setdefault("_akses_cache", {})
+        hit = cache.get(tok)
+        if hit and time.time() - hit[0] < 60:
+            return hit[1]
         try:
             claims = pv.verify_access_token(tok, self.privy.app_id, self.privy.verification_key(), int(self.now()))
             user = self.privy.user(claims["sub"])
@@ -594,17 +655,41 @@ class Gate:
             return (401 if e.status == 401 else 502), {"error": str(e)}
         addrs = pv.Privy.wallet_addresses(user) if user else []
         b = self.last_buy(addrs)
-        aktif = self.aktif_now().get("bot") or bookmod.IDENTITY_BOT_ID
         if b is None or self.now() - b["t"] > AKSES_HARI * 86400:
-            return 402, {"error": f"no signal bought from this account's wallet in the last {AKSES_HARI} days", "syarat": f"buy >= 1 signal within {AKSES_HARI} days",
-                         "dompet": addrs, "beli": f"{self.web_url}/buy"}
+            out = (402, {"error": f"no signal bought from this account's wallet in the last {AKSES_HARI} days", "syarat": f"buy >= 1 signal within {AKSES_HARI} days",
+                         "dompet": addrs, "beli": f"{self.web_url}/buy"})
+        else:
+            out = (200, {"dompet": b["payer"], "pembelian_terakhir": {k: b[k] for k in ("t", "bot", "bar", "tx")}, "berlaku_sampai": b["t"] + AKSES_HARI * 86400})
+        if out[0] == 200:
+            if len(cache) > 500:
+                cache.clear()
+            cache[tok] = (time.time(), out)
+        return out
+
+    def live(self, auth: Optional[str]) -> bool:
+        """P165: anggota melihat isi meja + pilihan analis bar terbuka langsung; tanpa header Authorization tidak ada panggilan ke Privy."""
+        return bool(auth) and self.akses(auth)[0] == 200
+
+    def batas_publik(self) -> int:
+        return int(self.now()) - TUNDA_PUBLIK_S
+
+    def akses_info(self, live: bool) -> dict:
+        info = {"live": live, "tunda_s": TUNDA_PUBLIK_S, "syarat": f"sign in + buy >= 1 signal within {AKSES_HARI} days", "beli": f"{self.web_url}/buy",
+                "faucet": "POST /faucet {\"address\": \"0x..\"} -> free FAB for one signal"}
+        return info if live else {**info, "isi_sampai": self.batas_publik()}
+
+    def analis_lengkap(self, auth: Optional[str]) -> Tuple[int, dict]:
+        """Alasan lengkap + hash + skor untuk user Privy yang login DAN membeli >= 1 sinyal dalam AKSES_HARI hari (F-D104)."""
+        code, a = self.akses(auth)
+        if code != 200:
+            return code, a
+        b = {**a["pembelian_terakhir"], "payer": a["dompet"]}
         recs = self.analis_records()
         closes = sorted({int(r["alasan"]["bar_close"]) for r in recs})[-AKSES_BAR_MAX:]
         v = self.analis_view()
         return 200, {"pilihan": [r for r in recs if int(r["alasan"]["bar_close"]) in closes], "papan": v["papan"], "skor": v["skor"],
                      "aktif": self.aktif_now(), "selection_anchor": self.data.cfg_raw().get("contracts", {}).get("SelectionAnchor"),
-                     "akses": {"dompet": b["payer"], "pembelian_terakhir": {k: b[k] for k in ("t", "bot", "bar", "tx")},
-                               "berlaku_sampai": b["t"] + AKSES_HARI * 86400},
+                     "akses": a,
                      "catatan": "reasonHash on-chain = sha256 JSON 'alasan' kanonis (sort_keys, tanpa spasi); pilihan dikomit SEBELUM bar_close"}
 
     def analis_dirs(self) -> List[str]:
@@ -934,21 +1019,22 @@ def make_handler(gate: Gate):
                                             "tampil di papan, belum menentukan bot aktif (F-D107)", "join": f"{gate.public_url}/analysts/input"})
                 if parts[0] == "aktif" and len(parts) == 1:
                     return self._send(200, gate.aktif_now())
+                live = gate.live(self.headers.get("Authorization")) if parts[0] in ("desk", "analis") else False   # P165
                 if parts[0] == "desk" and len(parts) == 1:
-                    return self._send(200, gate.meja_view())
+                    return self._send(200, {**gate.meja_view(), "akses": gate.akses_info(True)} if live else gate.meja_view_publik())
                 if parts[0] == "desk" and len(parts) == 2 and parts[1] == "data":
                     return self._send(200, gate.data_view())
                 if parts[0] == "desk" and len(parts) == 3 and parts[1] == "proof":
-                    code, body = gate.meja_proof(parts[2])
+                    code, body = gate.meja_proof(parts[2], live)
                     return self._send(code, body)
                 if parts[0] == "desk" and len(parts) == 3 and parts[1] == "archive":
-                    code, body = gate.meja_archive(parts[2])
+                    code, body = gate.meja_archive(parts[2], live)
                     return self._send(code, body)
                 if parts[0] == "desk" and len(parts) == 2 and parts[1] == "fabius":
-                    return self._send(200, gate.meja_fabius())
+                    return self._send(200, {**gate.meja_fabius(), "akses": gate.akses_info(True)} if live else gate.meja_fabius_publik())
                 if parts[0] == "desk" and len(parts) == 3 and parts[1] == "agent":
-                    code, body = gate.meja_agent(urllib.parse.unquote(parts[2]))
-                    return self._send(code, body)
+                    code, body = gate.meja_agent(urllib.parse.unquote(parts[2]), live=live)
+                    return self._send(code, {**body, "akses": gate.akses_info(live)} if code == 200 else body)
                 if parts[0] == "analis" and len(parts) in (1, 2):
                     recs = gate.analis_records(int(parts[1]) if len(parts) == 2 else None)
                     last = max((r["alasan"]["bar_close"] for r in recs), default=None)
@@ -957,7 +1043,8 @@ def make_handler(gate: Gate):
                                             "selection_anchor": gate.data.cfg_raw().get("contracts", {}).get("SelectionAnchor"),
                                             "catatan": "reasonHash on-chain = sha256 JSON 'alasan' kanonis (sort_keys, tanpa spasi); pilihan dikomit SEBELUM bar_close; "
                                                        "alasan bar yang belum tutup tersegel (app: login + beli), terbit penuh sesudah tutup",
-                                            "pilihan": [tutup_alasan(r, int(gate.now())) for r in show]})
+                                            "akses": gate.akses_info(live),
+                                            "pilihan": [segel_pilihan(tutup_alasan(r, int(gate.now())), int(gate.now()), live) for r in show]})
                 if parts[0] == "teaser" and len(parts) == 2:
                     gate.data.refresh()
                     q = quote(gate.data.ledgers(), parts[1])

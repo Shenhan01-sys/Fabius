@@ -3347,3 +3347,20 @@ tetap tersimpan dan tetap bisa dibuktikan lewat `/desk/proof`. Alasan: v1 sudah 
 (batas laju penyedia gratis), dan pembanding r4 kini = bayangan r3 dari target aturan yang sama (P163 kriteria 4).
 
 **Terkait:** F-D109 · F-D115 · F-D116 · [[04-Tools/TL34 - meja AI 5 menit]]
+
+## F-D118 — Halaman alpha berbayar (P165): yang bisa ditiru dikunci, yang membuktikan kejujuran terbuka · 6 Okt 2026 (WIB)
+
+Builder (6 Okt): `/desk`, `/analysts`, dan halaman lain yang berisi alpha Fabius hanya untuk yang login + bayar; lalu "kerjakan A dulu, kalau udh saya
+akan cek" atas usulan pembagian (alpha berbayar, rekam jejak tertunda + bukti gratis - F-D72 tingkat 0).
+
+1. **Anggota** = akses P145 yang sama: login Privy + dompet akun membeli >= 1 sinyal dalam 7 hari (`Gate.akses`, satu pemeriksa untuk semua rute;
+   juri: login -> FAB uji gratis lewat faucet di halaman beli -> beli 1 sinyal).
+2. **Dikunci (bisa ditiru):** isi keputusan siklus (bot, instrumen, target aturan, slot/posisi, isi transaksi), alasan/ringkasan agent, riwayat
+   keputusan per agent, pilihan analis untuk bar yang belum tutup. Publik melihatnya **24 jam kemudian** (`TUNDA_PUBLIK_S = 86.400`).
+3. **Terbuka langsung (membuktikan kejujuran):** ekuitas, hasil, fee, drawdown, kurva, hasil per bot, status agent + kursi, jumlah posisi terbuka,
+   root + tx on-chain tiap siklus. Bukti per rekaman (`/desk/proof`) terbuka untuk semua orang sesudah 24 jam; sebelum itu 402 dengan komitmennya.
+4. **Batas yang dinyatakan:** pilihan analis dikomit on-chain dalam bentuk terbaca (SelectionAnchor) supaya bisa diverifikasi, jadi menyegelnya di
+   web adalah kunci tampilan, bukan rahasia. Meja (DeskAnchor) hanya menyimpan root, jadi isi keputusannya memang tidak terbaca sebelum dibuka.
+   Alat replay P163 tanpa token anggota hanya memuat rekaman >= 24 jam.
+
+**Terkait:** F-D72 · F-D104 · P145 · P165 · [[04-Tools/TL34 - meja AI 5 menit]]

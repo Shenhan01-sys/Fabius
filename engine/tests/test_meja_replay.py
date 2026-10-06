@@ -122,7 +122,8 @@ class ArsipHTTP(unittest.TestCase):
         old, os.environ["ANALIS_DIR"] = os.environ.get("ANALIS_DIR"), os.path.join(self.tmp, "analis")
         self.addCleanup(lambda: os.environ.pop("ANALIS_DIR") if old is None else os.environ.update(ANALIS_DIR=old))
         self.addCleanup(shutil.rmtree, self.tmp, True)
-        self.g = xs.Gate(xs.Data(ROOT), "0xk", "https://g", "https://w", log=lambda m: None, now=lambda: self.T0 + 18 * 300)
+        # P165: jam gerbang sudah lewat TUNDA_PUBLIK_S sesudah siklus terakhir -> arsip publik (tanpa token) memuat semua rekaman tes
+        self.g = xs.Gate(xs.Data(ROOT), "0xk", "https://g", "https://w", log=lambda m: None, now=lambda: self.T0 + 18 * 300 + xs.TUNDA_PUBLIK_S)
         self.srv = ThreadingHTTPServer(("127.0.0.1", 0), xs.make_handler(self.g))
         threading.Thread(target=self.srv.serve_forever, daemon=True).start()
         self.addCleanup(self.srv.server_close)
@@ -182,7 +183,8 @@ class ArchiveReplayIntegrationTests(ArsipHTTP):
     def test_archive_route_is_english_and_serves_the_hashed_fabius_records_and_cycle_prices(self):
         code, a = self._get(f"/desk/archive/{self.date}")
         self.assertEqual(code, 200)
-        self.assertEqual(sorted(a), ["cycles", "date", "records"])
+        self.assertEqual(sorted(a), ["akses", "cycles", "date", "records"])                                   # publik: akses.live = false
+        self.assertFalse(a["akses"]["live"])
         self.assertEqual(len(a["records"]), 17)                                                              # 18 siklus - 1 terlambat, v1 tidak ikut
         self.assertEqual({r["agent"] for r in a["records"]}, {"v2"})
         for r in a["records"]:
