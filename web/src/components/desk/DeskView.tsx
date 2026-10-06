@@ -258,6 +258,8 @@ function Rules({ d }: { d: Desk }) {
             .replace("{up}", String(Math.round(d.params_kursi.naik_sah_min * 100)))
             .replace("{swap}", String(d.params_kursi.tukar_unggul_min * 100))
             .replace("{down}", String(Math.round(d.params_kursi.turun_sah_maks * 100)))
+            .replace("{tdown}", String(Math.round((d.params_kursi.uji_turun_sah_maks ?? d.params_kursi.turun_sah_maks) * 100)))
+            .replace("{tmin}", String(d.params_kursi.uji_amati_min ?? d.params_kursi.jendela_siklus / 2))
             .replace("{status}", v.floor.seatStatus[d.params_kursi.status] ?? d.params_kursi.status)}
         </p>
       )}

@@ -78,7 +78,7 @@ export type Desk = {
   params_v2?: { universe_top: number; maks_instrumen: number; likuiditas_min_usd: number; rugi_harian_maks: number };
   // P160 (F-D113): ambang konsensus untuk jumlah kursi aktif sekarang + aturan kursi
   ambang_v2?: { kuorum: number; min_agent_instrumen: number; veto_min_agent: number; ambang_instrumen: number };
-  params_kursi?: { status: string; maks_aktif: number; maks_uji: number; jendela_siklus: number; naik_sah_min: number; tukar_unggul_min: number; turun_sah_maks: number };
+  params_kursi?: { status: string; maks_aktif: number; maks_uji: number; jendela_siklus: number; naik_sah_min: number; tukar_unggul_min: number; turun_sah_maks: number; uji_turun_sah_maks?: number; uji_amati_min?: number; uji_gagal_keluar?: number };
   kursi?: Record<string, "aktif" | "uji" | "antre" | "keluar">;
   params_v2_sha?: string;
   anchor?: string;

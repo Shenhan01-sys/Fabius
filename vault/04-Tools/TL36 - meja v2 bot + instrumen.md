@@ -64,6 +64,8 @@ instrumennya BTC + PAXG pilihan agent B5 -> aturan B2 (butuh >= 8 aset) datar, b
 
 **Koreksi 6 Okt (PARAMS2 v3 `0x7e3b37f1…`):** bot akhir dengan `min_aset` (B2-RS: 8) diisi skor tertinggi pemilih bot itu sampai minimum; pilihan agent B2 dengan < 8 instrumen dicatat di `ditolak`. Ditemukan di siklus produksi 16:55Z ([[00-Overview/05 - Corrections]]).
 
+**Kursi uji yang terus gagal (F-D119, PARAMS_KURSI v2 `0x47f1c058…`):** di evaluasi 00:00 UTC agent uji dengan sah < 80 % dari >= 144 siklus kembali ke belakang antrean (riwayat diulang, tunggu satu evaluasi harian), kedua kali `keluar` permanen; kursinya langsung diisi antrean.
+
 **Agent dinonaktifkan + keputusan kursi builder (6 Okt):** agent `nonaktif` di config kehilangan kursinya (`keluar`, SK-M23) dan antrean naik; `analis.py kursi --slug <s> --ke aktif|uji|antre --alasan "..."` menulis keputusan builder ke `kursi_builder` yang diterapkan sekali oleh gerbang dan dikomit sebagai peristiwa `kursi` (SK-M24). Dipakai pertama untuk F-D114.
 
 **Penamaan (F-D115):** di web meja ini = "Fabius" (tanpa "v2"), revisi rumus ditulis r1/r2/r3 (= `PARAMS2.v`); buku per agent = "Rapor agent". Meja v1 tidak ditampilkan (`V1_TAMPIL = False`), mesinnya masih berjalan sampai builder memutuskan.

@@ -3365,3 +3365,18 @@ akan cek" atas usulan pembagian (alpha berbayar, rekam jejak tertunda + bukti gr
 5. **Satu login (revisi builder 6 Okt):** *"di page /analysts itu juga ada login cardnya mending dijadiin satu deh, di navbar dikasih untuk login nanti dibikinin login page sendiri via privy"*. PrivyProvider dipasang SEKALI di root layout web (skrip Telegram `beforeInteractive`); navbar punya chip Sign in / Signed in / Member menuju `/login?next=<halaman>`; halaman `/login` = login Privy + akun, dompet, status anggota (gerbang `GET /access`), beli 1 sinyal bila belum anggota, kembali ke halaman asal. Kartu login di `/analysts` dan bilah login di `/desk` diganti satu baris status (`AccessLine`). **Revisi kedua (builder: "mending login pagenya popup aja deh lalu dikasih transisi ... login page ala web2 ... button google redirect ke privy yg lgsg ke google ... button login lewat telegram"):** halaman `/login` dihapus; login = popup `LoginModal` (dipasang Nav, dibuka dari chip navbar + "Sign in" di halaman alpha) dengan transisi (latar pudar + blur, kartu naik dengan pegas, langkah bergeser; reduced-motion dihormati): "Continue with Google" = Privy headless `useLoginWithOAuth` langsung ke Google, "Continue with Telegram" = `useLoginWithTelegram`, email = kode 6 digit di dalam popup (`useLoginWithEmail`); sudah login = kartu akun (dompet + salin, status anggota, beli 1 sinyal, keluar).
 
 **Terkait:** F-D72 · F-D104 · P145 · P165 · [[04-Tools/TL34 - meja AI 5 menit]]
+
+## F-D119 — Kursi uji yang terus gagal: kembali ke antrean, dua kali = keluar (PARAMS_KURSI v2) · 6 Okt 2026 (WIB)
+
+Builder memilih (6 Okt, urutan kerja C1 -> B1 -> C2 -> B2): *"< 80 % sah -> antre, 2x -> keluar"*. Menutup celah yang dicatat sejak §110: aturan F-D113
+hanya menurunkan kursi AKTIF; agent di kursi uji yang terus gagal (mis. slot 2568, 503/429 tiap siklus) menahan kursi uji selamanya sehingga antrean
+macet, dan selama ini diselesaikan manual (`nonaktif`, F-D114).
+
+1. Di evaluasi harian 00:00 UTC (SK-M21), agent di kursi **uji** dengan >= 144 siklus teramati dan jawaban sah < 80 % dalam jendela 288 siklus
+   (ambang yang sama dengan turun kursi aktif) kembali ke **belakang antrean**, riwayatnya diulang dari nol, dan baru boleh naik ke kursi uji lagi
+   sesudah evaluasi harian berikutnya (antrean lain didahulukan).
+2. Gagal di kursi uji untuk kedua kalinya -> **keluar** permanen (tidak masuk otomatis lagi; hanya keputusan builder baru).
+3. Tiap perpindahan = peristiwa `kursi` yang di-hash + dikomit, seperti aturan kursi lain. `PARAMS_KURSI` v2 DIKUNCI sha `0x47f1c0587a8cf60b3c68cf8098850018b4ff11aa25c4e44685de16209a77ea40` (v1 `0xf370c011…` tetap di F-D113). Perilaku yang ikut terkunci: agent yang baru turun dari aktif ke uji di evaluasi yang sama dapat masa uji dulu; kursi uji yang dilepas langsung diisi antrean yang lebih lama di siklus 00:00 yang sama.
+
+**Terkait:** F-D113 · F-D114 · P160 · [[04-Tools/TL36 - meja v2 bot + instrumen]]
+

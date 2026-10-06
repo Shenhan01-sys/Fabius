@@ -34,8 +34,10 @@ PARAMS2 = {"v": 4, "maks_instrumen": 8, "universe_top": 50, "hysteresis_poin": 1
            "eksekusi": "slot posisi meja_slot.PARAMS_SLOT; buka hanya dari konsensus sah (kuorum tercapai); aturan keluar gagal dibaca -> posisi tetap",
            "slot": ms.PARAMS_SLOT}
 # P160 (F-D113): kursi agent LLM, kriteria DIKUNCI atas kata builder 5 Okt ("Gas"); sha di Decisions F-D113. Kursi hanya berubah di evaluasi harian 00:00 UTC.
-PARAMS_KURSI = {"v": 1, "status": "terkunci", "maks_aktif": 7, "maks_uji": 3, "jendela_siklus": 288, "naik_sah_min": 0.95, "tukar_unggul_min": 0.005,
-                "turun_sah_maks": 0.80}
+PARAMS_KURSI = {"v": 2, "status": "terkunci", "maks_aktif": 7, "maks_uji": 3, "jendela_siklus": 288, "naik_sah_min": 0.95, "tukar_unggul_min": 0.005,
+                "turun_sah_maks": 0.80,
+                # v2 (F-D119, builder 6 Okt "< 80 % sah -> antre, 2x -> keluar"): kursi UJI yang terus gagal tidak lagi menahan antrean
+                "uji_turun_sah_maks": 0.80, "uji_amati_min": 144, "uji_gagal_keluar": 2, "antre_tunggu_s": 86_400}
 
 
 def ambang(n_aktif: int) -> dict:
@@ -304,7 +306,7 @@ def kursi_daftar(st: dict, slugs: List[str], t0: int, keluar: Optional[List[str]
             ev.append({"agent": s, "dari": k[s]["status"], "ke": "keluar", "alasan": "agent dinonaktifkan builder"})
             k[s] = {"status": "keluar", "sejak": t0}
     for s in slugs:
-        if s in k and k[s]["status"] != "keluar":
+        if s in k and (k[s]["status"] != "keluar" or k[s].get("gagal")):            # F-D119: keluar karena gagal = tidak masuk otomatis lagi
             continue
         if awal and n("aktif") < P["maks_aktif"]:
             ke, why = "aktif", "agent awal meja v2"
@@ -315,7 +317,7 @@ def kursi_daftar(st: dict, slugs: List[str], t0: int, keluar: Optional[List[str]
         k[s] = {"status": ke, "sejak": t0}
         ev.append({"agent": s, "dari": None, "ke": ke, "alasan": why})
     for s in sorted((x for x, v in k.items() if v["status"] == "antre"), key=lambda x: k[x]["sejak"]):
-        if n("uji") < P["maks_uji"]:
+        if n("uji") < P["maks_uji"] and k[s].get("tunggu_sampai", 0) <= t0:
             k[s] = {"status": "uji", "sejak": t0}
             ev.append({"agent": s, "dari": "antre", "ke": "uji", "alasan": "kursi uji kosong"})
     return ev
@@ -372,6 +374,20 @@ def kursi_evaluasi(st: dict, t0: int) -> List[dict]:
         n, sah, _ = stat(s)
         if n >= w and sah < P["turun_sah_maks"]:
             pindah(s, "uji", f"valid answers {sah:.0%} < {P['turun_sah_maks']:.0%} over {n} cycles")
+    # F-D119 (PARAMS_KURSI v2): kursi uji yang terus gagal -> belakang antrean (riwayat diulang, tunggu satu evaluasi harian); kedua kali -> keluar
+    gagal = st.setdefault("gagal_uji", {})
+    for s in sorted(x for x, v in k.items() if v["status"] == "uji" and v["sejak"] < t0):     # yang baru turun dari aktif dapat masa uji dulu
+        n, sah, _ = stat(s)
+        if n >= P["uji_amati_min"] and sah < P["uji_turun_sah_maks"]:
+            gagal[s] = gagal.get(s, 0) + 1
+            why = f"trial seat: valid answers {sah:.0%} < {P['uji_turun_sah_maks']:.0%} over {n} cycles (failure {gagal[s]} of {P['uji_gagal_keluar']})"
+            r.pop(s, None)
+            if gagal[s] >= P["uji_gagal_keluar"]:
+                pindah(s, "keluar", why, {"gagal": True})
+                k[s]["gagal"] = True
+            else:
+                pindah(s, "antre", why)
+                k[s]["tunggu_sampai"] = t0 + P["antre_tunggu_s"]
     aktif = [x for x, v in k.items() if v["status"] == "aktif"]
     rets = sorted(stat(x)[2] for x in aktif)
     median = rets[len(rets) // 2] if len(rets) % 2 else (sum(rets[len(rets) // 2 - 1:len(rets) // 2 + 1]) / 2 if rets else 0.0)
@@ -427,6 +443,7 @@ def siklus2(t0: int, agents: List[dict], books: Dict[str, dict], ring: Dict[str,
         ev_kursi += ev_paksa + kursi_daftar(kst, [ag["slug"] for ag in agents], t0)           # kursi uji yang kosong diisi antrean
     if t0 % 86_400 == 0:                                                                     # SK-M21: kursi hanya berubah di siklus 00:00 UTC
         ev_kursi += kursi_evaluasi(kst, t0)
+        ev_kursi += kursi_daftar(kst, [ag["slug"] for ag in agents], t0)                     # F-D119: kursi uji yang dilepas langsung diisi antrean
     kursi = {s: v["status"] for s, v in kst["kursi"].items()}
     agents = [ag for ag in agents if kursi.get(ag["slug"]) in ("aktif", "uji")]               # SK-M19: antre tidak dijalankan
     uni, tk = p.universe(), p.tick()

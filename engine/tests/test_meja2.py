@@ -247,6 +247,38 @@ class KursiTests(unittest.TestCase):
         moves = [(e["agent"], e["ke"]) for e in meja2.kursi_evaluasi(st2, t0)]
         self.assertEqual(moves, [("a0", "uji"), ("u1", "aktif")])                                 # tukar dengan aktif terburuk
 
+    def test_a_failing_trial_seat_goes_to_the_back_of_the_queue_then_out_and_frees_the_seat(self):
+        t0 = 1_791_244_800                                                                        # 00:00 UTC
+        lama = t0 - 300 * 300
+
+        def hist(sah_rate, n):
+            k = round(n * sah_rate)
+            return {"sah": [1] * k + [0] * (n - k), "eq": [10_000.0] * (n + 1)}
+        st = {"kursi": {"a1": {"status": "aktif", "sejak": lama}, "a2": {"status": "aktif", "sejak": lama}, "u1": {"status": "uji", "sejak": lama},
+                        "u2": {"status": "uji", "sejak": lama}, "u3": {"status": "uji", "sejak": lama}, "q1": {"status": "antre", "sejak": lama}},
+              "riwayat": {"a1": hist(1.0, 288), "a2": hist(0.5, 288), "u1": hist(0.1, 288), "u2": hist(0.1, 100), "u3": hist(0.9, 288)}}
+        ev = meja2.kursi_evaluasi(st, t0)
+        moves = {(e["agent"], e["ke"]) for e in ev}
+        self.assertIn(("u1", "antre"), moves)                                                     # sah 10 % dari 288 siklus -> antre
+        self.assertNotIn(("u2", "antre"), moves)                                                  # baru 100 siklus teramati (< 144): belum dinilai
+        self.assertIn(("a2", "uji"), moves)                                                       # aktif gagal -> uji (aturan lama)
+        self.assertNotIn(("a2", "antre"), moves)                                                  # baru turun: dapat masa uji dulu, tidak langsung antre
+        self.assertNotIn("u1", st["riwayat"])                                                     # riwayat diulang
+        semua = ["a1", "a2", "u1", "u2", "u3", "q1"]
+        self.assertEqual(meja2.kursi_daftar(st, semua, t0), [])                                   # kursi uji penuh lagi (a2 masuk dari aktif)
+        semua.remove("u3")
+        self.assertEqual([(e["agent"], e["ke"]) for e in meja2.kursi_daftar(st, semua, t0 + 300, keluar=["u3"])][-1], ("q1", "uji"))   # antrean lama dulu
+        semua.remove("u2")
+        self.assertEqual([(e["agent"], e["ke"]) for e in meja2.kursi_daftar(st, semua, t0 + 600, keluar=["u2"])], [("u2", "keluar")])  # u1 masih menunggu
+        self.assertEqual([(e["agent"], e["ke"]) for e in meja2.kursi_daftar(st, semua, t0 + 86_400)], [("u1", "uji")])
+        st["kursi"]["u1"] = {"status": "uji", "sejak": t0 + 86_400}
+        st["riwayat"]["u1"] = hist(0.2, 200)
+        ev3 = meja2.kursi_evaluasi(st, t0 + 2 * 86_400)
+        self.assertIn(("u1", "keluar"), {(e["agent"], e["ke"]) for e in ev3})                     # gagal kedua kali -> keluar
+        self.assertTrue(st["kursi"]["u1"]["gagal"])
+        self.assertEqual([e for e in meja2.kursi_daftar(st, ["u1"], t0 + 2 * 86_400 + 300) if e["agent"] == "u1"], [])   # tidak masuk otomatis lagi
+        self.assertEqual(meja2.PARAMS_KURSI["v"], 2)
+
     def test_seats_change_only_in_the_midnight_cycle(self):
         def get(url):
             return [{"symbol": a, "markPrice": "100", "lastFundingRate": "0"} for a in UNI]
