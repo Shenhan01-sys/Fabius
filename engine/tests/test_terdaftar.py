@@ -72,6 +72,22 @@ class TerdaftarTests(unittest.TestCase):
         self.assertIn("P161", g["note"])
 
 
+class BayanganTests(unittest.TestCase):
+    """P161 B1e: status pipa di gerbang - hari bayangan sejak genesis ledger maju bot penerbit + apakah sudah di slot."""
+
+    def test_shadow_days_come_from_the_forward_ledger_genesis(self):
+        import pengajuan as pj
+        tmp = tempfile.mkdtemp()
+        self.addCleanup(shutil.rmtree, tmp, True)
+        pasang(tmp)
+        self.assertEqual(pj.bayangan_dari(tmp, T)["TREND-ETH-30"], {"days": 0, "of": 60, "slot": False, "started": False})
+        os.makedirs(os.path.join(tmp, "ledger", "paper"))
+        g = ledger.seal({"type": "genesis", "bot_id": "TREND-ETH-30", "first_asof": (T // 86_400 - 12) * 86_400_000}, ledger.ZERO)
+        with open(os.path.join(tmp, "ledger", "paper", "TREND-ETH-30.jsonl"), "w", encoding="utf-8") as f:
+            f.write(json.dumps(g, sort_keys=True) + "\n")
+        self.assertEqual(pj.bayangan_dari(tmp, T)["TREND-ETH-30"]["days"], 12)
+
+
 class PembunuhPenerbitTests(unittest.TestCase):
     """P161 B1d: pembunuh terstruktur kiriman ditegakkan di epoch buku dari ledger maju penerbit."""
 

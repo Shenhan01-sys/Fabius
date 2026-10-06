@@ -1028,7 +1028,8 @@ def make_handler(gate: Gate):
                 if parts[0] == "bots" and len(parts) in (2, 3) and parts[1] == "submissions":
                     gate.data.refresh()
                     rows = gate.antrean.daftar(gate.registri_bot(), parts[2] if len(parts) == 3 else None,
-                                               pj.baca_status(os.path.join(gate.data.workdir, "ledger", "pengajuan", "status.json")))
+                                               pj.baca_status(os.path.join(gate.data.workdir, "ledger", "pengajuan", "status.json")),
+                                               pj.bayangan_dari(gate.data.workdir, int(gate.now())))
                     if len(parts) == 3 and not rows:
                         return self._send(404, {"error": "no such submission"})
                     return self._send(200, rows[0] if len(parts) == 3 else {"submissions": rows, "review": "daily public review run on the repo (P161)"})

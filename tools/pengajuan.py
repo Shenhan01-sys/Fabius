@@ -89,7 +89,8 @@ class Antrean:
         return 201, {"id": sha, "status": "received", "received_t": now, "bot_id": rec["bot_id"], "spec_sha": rec["spec_sha"],
                      "next": "reviewed by the daily public review run (gates G1-G11 + KPI on the repo's daily bars); status at /bots/submissions/" + sha}
 
-    def daftar(self, registri: Iterable[dict] = (), sha: Optional[str] = None, status: Optional[Dict[str, dict]] = None) -> List[dict]:
+    def daftar(self, registri: Iterable[dict] = (), sha: Optional[str] = None, status: Optional[Dict[str, dict]] = None,
+               bayangan: Optional[Dict[str, dict]] = None) -> List[dict]:
         """Antrean publik + status dari repo: registri (vonis, laporan) atau `status.json` peninjau (tertahan masa tunggu / ditolak sebelum
         gerbang). Tanpa kontak."""
         by, st = {r.get("submission_sha"): r for r in registri}, status or {}
@@ -99,8 +100,11 @@ class Antrean:
                 continue
             g, x = by.get(r["submission_sha"]), st.get(r["submission_sha"])
             label = "reviewed" if g else ("rejected" if x and x.get("final") else "queued" if x else "waiting for review")
+            sh = (bayangan or {}).get(r["bot_id"]) if g and g.get("vonis") == "LOLOS_SHADOW" else None
+            if sh:
+                label = "in slot" if sh.get("slot") else "shadow"
             out.append({**r, "status": label, "review": {k: g.get(k) for k in ("vonis", "report_sha", "k", "alpha", "t_utc")} if g else None,
-                        "note": (x or {}).get("alasan") if not g else None})
+                        "note": (x or {}).get("alasan") if not g else None, "shadow": sh})
         return out
 
 
@@ -121,4 +125,28 @@ def baca_registri(path: str) -> List[dict]:
 def info_tanda_tangan() -> Dict[str, object]:
     """Untuk formulir web: cara membangun pesan EIP-712 (sama dengan `submission.typed_data`)."""
     return {"eip712_name": submission.EIP712_NAME, "version": str(submission.SCHEMA_V), "chain_id": CHAIN_ID, "primary_type": "Submission",
-            "max_ttl_s": 3600, "templates": sorted(k for k in SPECS), "schema": submission.schema_json()}
+            "max_ttl_s": 3600, "templates": {k: {"param_nama": v.param_nama, "param": v.param, "metode": v.metode} for k, v in sorted(SPECS.items())
+                                              if k in submission.REGISTRY},
+            "symbols": sorted(submission.KNOWN_SYMBOLS), "kill_bounds": submission.KILL_BOUNDS, "shadow_days": 60,
+            "schema": submission.schema_json()}
+
+
+def bayangan_dari(workdir: str, now_s: int) -> Dict[str, dict]:
+    """Progres bot penerbit sesudah lolos: hari bayangan sejak genesis ledger maju + apakah sudah di slot buku hidup (B1e)."""
+    from engine import book_live, ledger, terdaftar
+    out: Dict[str, dict] = {}
+    try:
+        luar = terdaftar.penerbit(workdir)[0]
+        buku_path = os.path.join(workdir, "ledger", "book", "buku.jsonl")
+        di_buku = {e.bot_id for e in book_live.current_book(ledger.load(buku_path))} if os.path.exists(buku_path) else set()
+    except Exception:  # noqa: BLE001 - status tampilan saja; jalur resminya di repo
+        return out
+    for b in luar:
+        p = os.path.join(workdir, "ledger", "paper", f"{b}.jsonl")
+        try:
+            g = ledger.load(p)[0] if os.path.exists(p) else None
+        except Exception:  # noqa: BLE001
+            g = None
+        hari = max(0, (now_s * 1000 - int(g["first_asof"])) // 86_400_000) if g and g.get("first_asof") is not None else 0
+        out[b] = {"days": int(hari), "of": 60, "slot": b in di_buku, "started": bool(g)}
+    return out
