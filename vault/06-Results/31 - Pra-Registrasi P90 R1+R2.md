@@ -14,7 +14,7 @@ tags: [results, pra-registrasi, "P90"]
 **sha protokol:** `0xce2f814e334244f8e43c3d9d862b8e654896f3ba1772d20c9e4397e89f2820bd` (`python -X utf8 tools/riset_p90.py protokol`). Cap waktu yang tidak bisa
 kami atur = waktu push commit halaman ini ke GitHub.
 
-**Builder:** *"P90 udh mantap ... Gas eksekusi"* (3 Okt malam) - F-D90.
+**Builder:** *"P90 udh mantap ... Gas eksekusi"* (3 Okt malam; nomor keputusan aslinya dicabut 6 Okt, lihat F-D126).
 
 ## Apa yang diukur, dengan bahasa biasa
 
@@ -159,4 +159,4 @@ konfigurasi) tidak di gelombang ini; dunia sintetik = tidak ada klaim tentang pa
 }
 ```
 
-**Terkait:** [[08-Backlog/08 - Riset Optimasi Ambang]] · [[00-Overview/03 - Decisions]] F-D88 / F-D90 · [[04-Tools/TL8 - engine]]
+**Terkait:** [[08-Backlog/08 - Riset Optimasi Ambang]] · [[00-Overview/03 - Decisions]] F-D88 / F-D126 · [[04-Tools/TL8 - engine]]

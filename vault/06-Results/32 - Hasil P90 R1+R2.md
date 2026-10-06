@@ -67,4 +67,4 @@ TIDAK naik dari s 1,5 ke 2,0.
   atas <= 5 % di kelima dunia sambil memaksimalkan daya.
 - Batas: dunia sintetik; B1/B6/B2 saja; G10 tidak diuji; keunggulan R2 berbentuk drift bersyarat untuk B1 (bentuk lain belum diuji).
 
-**Terkait:** [[08-Backlog/08 - Riset Optimasi Ambang]] · [[06-Results/31 - Pra-Registrasi P90 R1+R2]] · [[00-Overview/03 - Decisions]] F-D88 / F-D90
+**Terkait:** [[08-Backlog/08 - Riset Optimasi Ambang]] · [[06-Results/31 - Pra-Registrasi P90 R1+R2]] · [[00-Overview/03 - Decisions]] F-D88 / F-D126

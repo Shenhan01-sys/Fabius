@@ -7,7 +7,7 @@ tags: [backlog, epik, prd, eksekusi, venue]
 **Bagian dari:** [[08-Backlog/00 - Hub Backlog]]
 **Dibuka:** 4 Okt 2026 (WIB) oleh builder: *"Binance Agent OS + Aster gas + Tokocrypto, kita implementasikan, tapi prioritas no1 itu binance agent OS dulu, lalu aster,
 baru kalau sempet itu Tokocrypto, gas buat planningnya di vault, workflownya sesuaikan di vault juga agar PRDnya jelas + terukur"* -> [[00-Overview/03 - Decisions]] F-D91.
-**Bahan:** [[08-Backlog/05 - Epik Enam Bot]] §6 (venue, leverage) dan §7 (biaya per jalur) · F-D90 (venue lokal, compliance ditunda) · [[07-Testing/T8 - Semantik Kegagalan Operator]]
+**Bahan:** [[08-Backlog/05 - Epik Enam Bot]] §6 (venue, leverage) dan §7 (biaya per jalur) · venue lokal + compliance ditunda (F-D126) · [[07-Testing/T8 - Semantik Kegagalan Operator]]
 
 > **STATUS: RENCANA (PRD v1).** Belum ada kode eksekusi, belum ada akun venue, belum ada kunci. Angka ambang di §6 adalah **usulan** sampai builder
 > menyetujui PRD ini; sesudah itu ia dikunci seperti ambang lain (mengubahnya = keputusan baru yang terlihat). **Uang nyata hanya atas kata builder per venue**
@@ -69,7 +69,7 @@ diskresioner; model bahasa di jalur order (eksekutor deterministik, sama seperti
 |---|---|---|---|---|
 | 1 | **Binance Agent OS** (sub-akun Agentic) | USDⓈ-M futures + spot | **B1** (perp long/flat = persis basis harga paper); **B3** (spot long + perp short, keduanya di satu sub-akun) | lingkungan `prod/testnet/demo` ada (`binance-cli`, skill resmi); min notional TESTNET: BTC 50, ETH 20, lainnya 5 USDT -> modal B1 penuh >= ±800 USDT (prod diukur di E1); domain prod terblokir dari jaringan builder |
 | 2 | **Aster** (API V3, agent wallet) | perp (+ spot) | **B1**; B3 setelah likuiditas spot Aster diukur | min notional 5 USDT semua aset B1 (dibaca 4 Okt) -> modal B1 penuh >= ±80 USDT; agent wallet `canPerpTrade` tanpa `canWithdraw`; testnet ada |
-| 3 | **Tokocrypto** (bila sempat) | spot | **B1** saja (long/flat) | 16/16 aset B1 punya pasangan USDT (F-D90); tanpa testnet: dry-run lalu canary kecil; selisih harga spot vs perp paper harus diukur |
+| 3 | **Tokocrypto** (bila sempat) | spot | **B1** saja (long/flat) | 16/16 aset B1 punya pasangan USDT (API publik Tokocrypto, 3 Okt); tanpa testnet: dry-run lalu canary kecil; selisih harga spot vs perp paper harus diukur |
 
 Bot lain (B2, B4, B5, B6) tidak di epik ini.
 
@@ -160,7 +160,7 @@ Aturan naik modal: sesudah 20 hari bursa `live` di dalam semua ambang, builder B
 
 | ID | langkah | dibutuhkan untuk |
 |---|---|---|
-| H1 | pastikan akun Binance bisa dipakai dari Indonesia + Agent OS tersedia untuk akunmu (aplikasi; tanpa VPN, F-D90) | E4 |
+| H1 | pastikan akun Binance bisa dipakai dari Indonesia + Agent OS tersedia untuk akunmu (aplikasi) | E4 |
 | H2 | buat sub-akun Agentic: Futures + Spot, **tanpa izin tarik**; transfer modal canary | E4 |
 | H3 | buat kunci API sub-akun; pasang di variabel Railway `fabius-exec` lewat dashboard (JANGAN lewat chat) | E2 (testnet) / E4 (prod) |
 | H3a | **kunci UJI (4 Okt):** web testnet futures kini dialihkan ke Binance **Demo Trading** (`demo.binance.com`, butuh akun Binance; dari perangkat builder lewat WARP). Buat kunci API di halaman API Key Management Demo Trading `https://demo.binance.com/en/my/settings/api-management` (dokumen resmi `binance-spot-api-docs/demo-mode/general-info.md`, commit 2026-01-29) -> `BINANCE_API_ENV=demo`. Akar `https://demo-fapi.binance.com` membalas 403 di peramban = wajar (host API); `.../fapi/v1/time` membalas 200 | E2 |
@@ -184,6 +184,6 @@ Aturan naik modal: sesudah 20 hari bursa `live` di dalam semua ambang, builder B
   dibuka = bukan B1 lagi (jangan diam-diam memotong universe).
 - **Perubahan bobot kecil** (B1 sama rata 1/n) memicu order kecil di bawah min notional: dilewati (R-E4) dan dihitung sebagai tracking error.
 - **Biaya Railway gratis** (restart ON_FAILURE x10) untuk service ketiga; upgrade sebelum ±1 Nov sudah direncanakan.
-- **Hukum:** ditunda atas kata builder (F-D90 #5); uang nyata pribadi builder, bukan penjualan sinyal.
+- **Hukum:** ditunda atas kata builder (F-D126); uang nyata pribadi builder, bukan penjualan sinyal.
 
-**Terkait:** [[00-Overview/03 - Decisions]] F-D90 / F-D91 · [[08-Backlog/01 - Backlog]] P116-P123 · [[08-Backlog/06 - Epik Gerbang Sinyal]] · [[04-Tools/TL18 - worker_watch]]
+**Terkait:** [[00-Overview/03 - Decisions]] F-D91 / F-D126 · [[08-Backlog/01 - Backlog]] P116-P123 · [[08-Backlog/06 - Epik Gerbang Sinyal]] · [[04-Tools/TL18 - worker_watch]]
