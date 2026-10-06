@@ -35,6 +35,7 @@ from engine import book as bookmod, ledger, locks      # noqa: E402
 from engine.data import load_csv_dir                   # noqa: E402
 from engine.series import DAY_MS                       # noqa: E402
 from engine.spec import PERP_UNIVERSE, SPECS           # noqa: E402
+from engine import terdaftar                             # noqa: E402  P161 B1c: bot penerbit LOLOS_SHADOW ikut jam maju
 
 DATA_SYMBOLS = list(PERP_UNIVERSE) + ["PAXGUSDT", "XAUUSDT"]
 ANCHORS_DIR = os.path.join(locks.LOCK_DIR, "anchors")
@@ -67,10 +68,11 @@ def anchor_info(lock: dict):
 
 
 def init_bot(bot: str, ledger_dir: str, now_ms: int, dry: bool) -> int:
-    if bot not in SPECS:
+    specs = terdaftar.semua(ROOT)
+    if bot not in specs:
         print(f"{bot}: bot tidak dikenal")
         return 3
-    if bot not in bookmod.FORWARD_BOTS:                     # F-D95: semua bot Fabius; bot luar (penerbit) tetap lewat gerbang -> bayangan -> slot
+    if bot not in bookmod.FORWARD_BOTS and bot not in terdaftar.penerbit(ROOT)[0]:                     # F-D95: semua bot Fabius; bot luar (penerbit) tetap lewat gerbang -> bayangan -> slot
         print(f"{bot}: DITOLAK - bukan bot yang boleh punya jam maju (boleh: {', '.join(bookmod.FORWARD_BOTS)}). "
               "Bot luar lewat gerbang -> shadow -> slot seperti penerbit (engine/book.py).")
         return 3
@@ -88,8 +90,9 @@ def init_bot(bot: str, ledger_dir: str, now_ms: int, dry: bool) -> int:
     last = ledger.last_closed_bar(now_ms)
     lag_s = (now_ms - (last + DAY_MS)) // 1000
     first = last if lag_s <= ledger.MAX_LAG_S else last + DAY_MS
-    g = ledger.make_genesis(SPECS[bot], lock["sha"], anc, first, now_ms,
-                            "ledger paper maju; kunci ambang v1 (sementara); paper penuh, bukan uang nyata, bukan klaim edge")
+    g = ledger.make_genesis(specs[bot], lock["sha"], anc, first, now_ms,
+                            "ledger paper maju; kunci ambang v1 (sementara); paper penuh, bukan uang nyata, bukan klaim edge"
+                            + ("" if bot in SPECS else "; bot penerbit LOLOS_SHADOW (P161): bayangan maju 60 hari sebelum boleh masuk slot"))
     sealed = ledger.seal(g, ledger.ZERO)
     print(f"{bot}: genesis bar pertama {g['first_asof_date']}  spec {g['spec_sha'][:14]}…  kunci {g['lock_sha'][:14]}…  "
           f"{'ter-anchor ' + str(anc['tx'])[:14] + '… @ ' + str(anc['anchoredAt_utc']) if anc else 'kunci TIDAK ter-anchor'}")
@@ -115,7 +118,7 @@ def tick_bot(bot: str, ledger_dir: str, views: "Views", now_ms: int, dry: bool) 
         for p in problems[:10]:
             print("  -", p)
         return 3
-    spec = SPECS.get(bot)
+    spec = terdaftar.semua(ROOT).get(bot)
     if spec is None or records[0].get("spec_sha") != spec.sha():
         print(f"{bot}: spesifikasi di kode tidak sama dengan genesis (pivot = ledger baru). Tidak menulis apa pun.")
         return 3
@@ -162,20 +165,28 @@ def main() -> int:
         return 3
     if a.init:
         return max([init_bot(b, a.ledger, now_ms, a.dry_run) for b in bots] or [3])
+    if not a.bots:                                          # P161 B1c: bot penerbit yang baru lolos gerbang mendapat genesis otomatis (sekali)
+        baru, masalah = terdaftar.penerbit(ROOT)
+        for m in masalah:
+            print(f"  ! bot penerbit: {m}")
+        for b in sorted(set(baru) - set(bots)):
+            if init_bot(b, a.ledger, now_ms, a.dry_run) == 0 and not a.dry_run:
+                bots.append(b)
+    specs = terdaftar.semua(ROOT)
     if a.feed:
         import feed_bars
         today = feed_bars.day_start(now_ms)
-        need_spot = a.spot or any(SPECS[b].method in ("B3-CARRY", "B5-CORE-RWA") for b in bots if b in SPECS)    # B3 = long spot + short perp
+        need_spot = a.spot or any(specs[b].method in ("B3-CARRY", "B5-CORE-RWA") for b in bots if b in specs)    # B3 = long spot + short perp
         reps = feed_bars.update_all(a.bars, list(PERP_UNIVERSE), today, spot=need_spot, funding=True, dry_run=a.dry_run)
         # P129 (F-D95): kejadian listing perp baru untuk B4 (+ deret perp koin barunya). Gagal = TUNDA untuk B4 saja (lihat tick_bot).
-        if any(SPECS[b].method == "B4-LISTING-FADE" for b in bots if b in SPECS) and not a.dry_run:
+        if any(specs[b].method == "B4-LISTING-FADE" for b in bots if b in specs) and not a.dry_run:
             import listing_events
             try:
                 listing_events.update(a.bars, today)
             except feed_bars.FeedError as e:
                 print(f"  ! listing: {e} (B4 TUNDA sampai pemindaian sukses hari ini)")
         # P128 (F-D95): emas spot untuk B5-CORE-RWA (kandidat yang berkasnya sudah ditanam `tools/seed_bars.py`; perpanjang saja, tidak menanam)
-        if any(SPECS[b].method == "B5-CORE-RWA" for b in bots if b in SPECS):
+        if any(specs[b].method == "B5-CORE-RWA" for b in bots if b in specs):
             for g in SPECS["B5-CORE-RWA"].konstanta["emas_kandidat"]:
                 if os.path.exists(os.path.join(a.bars, f"spot_{g}_1d.csv")):
                     reps.append(feed_bars.update_klines(a.bars, "spot", g, today, dry_run=a.dry_run))

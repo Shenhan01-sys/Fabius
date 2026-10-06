@@ -35,6 +35,7 @@ berbahaya dari alat yang gagal keras.
 - [[TL33 - agent analis]] — P141/P142: SelectionAnchor + agent analis ERC-8004 (GLM 2558, Qwen 2559) memilih bot per bar sebelum penutupan; P159: agent baru lewat `config/agents.json` + `analis.py tambah` / `uji`
 - [[TL34 - meja AI 5 menit]] — P152: tiga agent memutuskan tiap 5 menit, konsensus terkunci, Merkle root per siklus ke DeskAnchor; P158: lantai trading 3D di `/desk` (NPC di meja kerja, modal statistik dari monitor)
 - [[TL35 - data meja v2]] — P153 (F1): Binance, DexScreener, RugCheck, FOMO, berita -> fitur terukur per aset + per bot tiap 5 menit, registry alamat terkunci
+- [[TL37 - jalur pengajuan bot]] — P161 (F-D120): kiriman penerbit -> gerbang -> tinjauan publik GitHub -> pin spec -> jam maju -> epoch buku, tanpa langkah manual
 - [[TL36 - meja v2 bot + instrumen]] — P154/P155 (F-D112): AI memilih bot + instrumen, aturan bot terkunci menghitung arah pada candle harian, satu root bersama v1
 - [[TL32 - gerbang x402 per sinyal]] — P138a: FAB testnet, harga dari confidence (terkunci), gerbang publik Railway, faucet relay, pembelian publik terbukti
 - [[TL31 - teaser confidence]] — P137: 1 - p bootstrap F-D16 atas settle maju, gratis sebelum bayar; tanpa aset/arah/ukuran

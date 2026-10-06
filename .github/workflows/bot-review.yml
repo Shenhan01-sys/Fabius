@@ -1,0 +1,46 @@
+name: bot-review
+
+# P161 B1b: peninjau pengajuan bot penerbit. Dipicu rantai paper-ledger sekali sehari (cron GitHub tidak andal, F-D78) + manual.
+# Mengambil antrean publik gerbang (GET /bots/submissions), meninjau tiap kiriman baru dengan gerbang G1-G11 + KPI pada bar harian repo
+# (identitas EIP-712 diverifikasi ulang pada waktu terima), lalu meng-commit registri P83 + laporan + spesifikasi lolos ke repo publik.
+# Pin spec_sha ke LockRegistry dikerjakan worker Railway (tools/pin_spec.py lewat operator_loop).
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: bot-review
+  cancel-in-progress: false
+
+jobs:
+  review:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Pustaka tanda tangan (verifikasi ulang EIP-712)
+        run: pip install -q eth-account==0.13.7
+      - name: Tinjau kiriman baru
+        run: python -u -X utf8 tools/tinjau_pengajuan.py
+      - name: Commit registri + laporan + spesifikasi
+        run: |
+          git config user.name "bot-review"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          if [ -d ledger/pengajuan ]; then git add ledger/pengajuan; fi
+          if git diff --cached --quiet; then echo "tidak ada perubahan"; exit 0; fi
+          python -u -X utf8 -c "import sys; sys.path.insert(0,'.'); from engine import registri; import os; p='ledger/pengajuan/registri.jsonl'; e=registri.load(p) if os.path.exists(p) else []; m=registri.verify(e); print('registri', len(e), 'catatan', 'SAH' if not m else m[:3]); sys.exit(1 if m else 0)"
+          git commit -q -m "pengajuan bot: tinjauan $(date -u +%Y-%m-%dT%H:%M:%SZ) [skip ci]"
+          for t in 1 2 3 4 5; do
+            if git pull --rebase -q origin "$GITHUB_REF_NAME" && git push -q; then echo "push OK (percobaan $t)"; exit 0; fi
+            git rebase --abort 2>/dev/null || true
+            sleep 12
+          done
+          echo "::error::push tinjauan gagal 5x"; exit 1

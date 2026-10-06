@@ -211,7 +211,9 @@ BOOK_FILE = os.path.join(REPO_ROOT, "ledger", "book", "buku.jsonl")
 
 
 def _verified_ledgers(ledger_dir: str, view) -> dict:
-    """Ledger maju yang SAH saja (rantai + hitung ulang dari bar); yang lain dicetak dan tidak dipakai."""
+    """Ledger maju yang SAH saja (rantai + hitung ulang dari bar); yang lain dicetak dan tidak dipakai. P161 B1c: bot penerbit LOLOS_SHADOW ikut."""
+    from . import terdaftar
+    specs = terdaftar.semua()
     ok = {}
     for path in sorted(glob.glob(os.path.join(ledger_dir, "*.jsonl"))):
         try:
@@ -219,7 +221,7 @@ def _verified_ledgers(ledger_dir: str, view) -> dict:
         except ledgermod.LedgerError as e:
             print(f"  {os.path.basename(path)}: RUSAK ({e}) - tidak dipakai")
             continue
-        spec = SPECS.get(recs[0].get("bot_id")) if recs else None
+        spec = specs.get(recs[0].get("bot_id")) if recs else None
         probs = ledgermod.verify_chain(recs)
         if spec is not None and not probs:
             probs = ledgermod.verify_against_data(spec, recs, view("targets" if spec.method == "B3-CARRY" else "actual"), view("actual"))
@@ -233,11 +235,20 @@ def _verified_ledgers(ledger_dir: str, view) -> dict:
 def _book_killers(book, ok: dict, view, end_ms: int) -> dict:
     """Status pembunuh penghuni untuk catatan epoch (P107). Bot Fabius: terjemahan terstruktur (`engine/pembunuh.py`) HANYA bila kuncinya TERKUNCI
     dan ledgernya sah -> YA / BELUM / TIDAK; selain itu "TEKS" (kalimat spesifikasi, dinilai manusia). Penerbit luar belum ada -> "TIDAK"."""
-    from . import pembunuh
+    from . import pembunuh, terdaftar
+    from .slots import killer_triggered
     locked = pembunuh.status()["state"] == "TERKUNCI"
+    luar = terdaftar.rincian()[0]
     out = {}
     for e in book:
-        if e.bot_id not in SPECS:
+        if e.bot_id in luar:                                   # P161 B1d: pembunuh terstruktur kiriman penerbit, ditegakkan kode
+            if e.bot_id not in ok:
+                out[e.bot_id] = "TEKS"
+                continue
+            k = luar[e.bot_id]["pembunuh"]
+            pnl, n = terdaftar.pnl_sejak_sinyal(ok[e.bot_id], int(k["window_sinyal"]))
+            out[e.bot_id] = "YA" if killer_triggered(k, pnl, n) else ("BELUM" if n < int(k["window_sinyal"]) else "TIDAK")
+        elif e.bot_id not in SPECS:
             out[e.bot_id] = "TIDAK"
         elif locked and e.bot_id in pembunuh.USULAN and e.bot_id in ok:
             out[e.bot_id] = pembunuh.evaluate(e.bot_id, ok[e.bot_id], view("actual"), end_ms)["vonis"]
@@ -286,10 +297,12 @@ def _book_epoch(a) -> int:
     bsha = slots_book_sha(book)
     in_book = {e.bot_id for e in book}
     challengers = []
-    for bot in bookmod.SHADOW_ELIGIBLE:
+    from . import terdaftar
+    luar = terdaftar.rincian()[0]                              # P161 B1d: penantang penerbit dari registri (LOLOS_SHADOW + ledger maju sah)
+    for bot in list(bookmod.SHADOW_ELIGIBLE) + sorted(luar):
         if bot in in_book or bot not in ok:
             continue
-        spec = SPECS[bot]
+        spec = luar[bot]["spec"] if bot in luar else SPECS[bot]
         if a.no_gates:
             v, rsha = "TIDAK_DIJALANKAN", "0x" + "00" * 32
         else:
@@ -310,8 +323,10 @@ def _book_epoch(a) -> int:
                 with open(rp, "w", encoding="utf-8", newline="\n") as f:
                     json.dump(rep, f, indent=1, sort_keys=True, ensure_ascii=False)
                     f.write("\n")
-        challengers.append(Challenger(bot_id=bot, issuer=FABIUS, spec_sha=spec.sha(), fingerprint=spec.fingerprint(), gate_verdict=v, report_sha=rsha,
-                                      book_sha=bsha, payout="", **forward.challenger_fields(bot, ok, [e.bot_id for e in book], end, p)))
+        challengers.append(Challenger(bot_id=bot, issuer=luar[bot]["issuer"] if bot in luar else FABIUS, spec_sha=spec.sha(),
+                                      fingerprint=spec.fingerprint(), gate_verdict=v, report_sha=rsha, book_sha=bsha,
+                                      payout=luar[bot]["payout"] if bot in luar else "",
+                                      **forward.challenger_fields(bot, ok, [e.bot_id for e in book], end, p)))
     rec = book_live.build_epoch(book, now_s, end, scores, challengers, killers, p)
     print(book_live.fmt_epoch(rec))
     if not a.write:

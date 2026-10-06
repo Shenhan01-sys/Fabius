@@ -54,6 +54,7 @@ import sinyal_gambar as sg                                                    # 
 import analis as an                                                           # noqa: E402
 import privy_server as pv                                                     # noqa: E402
 import meja                                                                   # noqa: E402
+import pengajuan as pj                                                        # noqa: E402
 
 NETWORK = "eip155:97"
 PROXY = "0x402085c248EeA27D92E8b30b2C58ed07f9E20001"      # x402ExactPermit2Proxy kanonis (56 & 97)
@@ -328,6 +329,7 @@ class Gate:
         self.tg_secret = hashlib.sha256(b"fabius-tg-link|" + (pk or "tanpa-kunci").encode()).digest()
         self.analis_dir = os.environ.get("ANALIS_DIR") or ("/data/analis" if os.path.isdir("/data") else os.path.join(data.workdir, "data", "analis"))
         self.buys_path = os.path.join(os.path.dirname(self.analis_dir), "pembelian.jsonl")     # P145: pembeli -> akses alasan lengkap
+        self.antrean = pj.Antrean(os.path.join(os.path.dirname(self.analis_dir), "pengajuan"), now=self.now)   # P161 B1a: pengajuan bot
         self.buys_lock = threading.Lock()
         self.luar_dir = os.path.join(self.analis_dir, "luar")                                # P151: alasan agent luar yang hash + skemanya cocok
         self._disc: dict = {}                                                                # kursor pemindaian event Picked
@@ -634,6 +636,10 @@ class Gate:
                     if r.get("payer") in want and (best is None or r["t"] > best["t"]):
                         best = r
         return best
+
+    def registri_bot(self) -> List[dict]:
+        """P161: registri pengajuan P83 dari klon repo publik (ditulis rantai peninjau GitHub)."""
+        return pj.baca_registri(os.path.join(self.data.workdir, "ledger", "pengajuan", "registri.jsonl"))
 
     def akses(self, auth: Optional[str]) -> Tuple[int, dict]:
         """P145 + P165: SATU pemeriksa akses anggota - token Privy sah DAN dompet akun itu membeli >= 1 sinyal dalam AKSES_HARI hari. -> (200, akses)
@@ -1017,6 +1023,15 @@ def make_handler(gate: Gate):
                             for i, c in sorted(v.get("kartu", {}).items())]
                     return self._send(200, {"agents": rumah + luar, "catatan": "agent luar ditemukan dari event Picked di SelectionAnchor; dinilai + "
                                             "tampil di papan, belum menentukan bot aktif (F-D107)", "join": f"{gate.public_url}/analysts/input"})
+                if parts[0] == "bots" and len(parts) == 2 and parts[1] == "schema":                  # P161 B1a: formulir web
+                    return self._send(200, pj.info_tanda_tangan())
+                if parts[0] == "bots" and len(parts) in (2, 3) and parts[1] == "submissions":
+                    gate.data.refresh()
+                    rows = gate.antrean.daftar(gate.registri_bot(), parts[2] if len(parts) == 3 else None,
+                                               pj.baca_status(os.path.join(gate.data.workdir, "ledger", "pengajuan", "status.json")))
+                    if len(parts) == 3 and not rows:
+                        return self._send(404, {"error": "no such submission"})
+                    return self._send(200, rows[0] if len(parts) == 3 else {"submissions": rows, "review": "daily public review run on the repo (P161)"})
                 if parts[0] == "aktif" and len(parts) == 1:
                     return self._send(200, gate.aktif_now())
                 if parts[0] == "access" and len(parts) == 1:                 # P165: status anggota untuk navbar + halaman /login web
@@ -1064,7 +1079,30 @@ def make_handler(gate: Gate):
                 return self._send(500, {"error": f"{type(e).__name__}"})
 
         def do_POST(self):
-            if urllib.parse.urlparse(self.path).path.rstrip("/") != "/faucet":
+            path = urllib.parse.urlparse(self.path).path.rstrip("/")
+            if path in ("/bots/submit", "/bots/typed-data"):                   # P161 B1a: pengajuan bot (formulir bertanda tangan)
+                try:
+                    n = int(self.headers.get("Content-Length") or 0)
+                    if n > pj.MAX_BODY:
+                        return self._send(413, {"error": f"body larger than {pj.MAX_BODY} bytes"})
+                    body = json.loads(self.rfile.read(n) or b"{}")
+                    if path == "/bots/typed-data":
+                        sub = (body or {}).get("submission")
+                        masalah = pj.submission.validate(sub) if isinstance(sub, dict) else ["submission must be an object"]
+                        if masalah:
+                            return self._send(400, {"error": "form rejected", "problems": masalah})
+                        return self._send(200, pj.submission.typed_data(sub, pj.CHAIN_ID, int(body["nonce"]), int(body["deadline"])))
+                    gate.data.refresh()
+                    code, out = gate.antrean.terima(body, gate.registri_bot())
+                    if code == 201:
+                        gate.log(f"pengajuan bot diterima {out['bot_id']} {out['id'][:18]}")
+                    return self._send(code, out)
+                except (ValueError, KeyError, TypeError) as e:
+                    return self._send(400, {"error": f"bad request: {type(e).__name__}"})
+                except Exception as e:  # noqa: BLE001
+                    gate.log(f"GALAT pengajuan {type(e).__name__}: {str(e)[:200]}")
+                    return self._send(500, {"error": f"{type(e).__name__}"})
+            if path != "/faucet":
                 return self._send(404, {"error": "rute tidak dikenal"})
             try:
                 n = min(int(self.headers.get("Content-Length") or 0), 4096)

@@ -3380,3 +3380,17 @@ macet, dan selama ini diselesaikan manual (`nonaktif`, F-D114).
 
 **Terkait:** F-D113 · F-D114 · P160 · [[04-Tools/TL36 - meja v2 bot + instrumen]]
 
+## F-D120 — Jalur seleksi bot otomatis (P161 B1): siapa menjalankan apa · 6 Okt 2026 (WIB)
+
+Builder: urutan C1 -> B1 -> C2 -> B2, lalu "Lanjut" atas rencana B1a-B1e. Pilihan rancangan yang saya ambil (mengikat sampai builder mengubah):
+
+1. **Gerbang hanya menerima** (`POST /bots/submit`): skema + tanda tangan EIP-712 diperiksa saat masuk karena tanda tangan berlaku <= 1 jam; waktu
+   terima dicatat publik. **Tinjauan dijalankan di repo publik** (GitHub `bot-review.yml`, dipicu rantai paper-ledger sekali sehari) pada bar harian
+   repo dengan `now = waktu terima`, jadi siapa pun bisa mengulang verifikasi tanda tangan, gerbang, dan vonisnya.
+2. **Kontak penerbit tidak pernah publik**: tidak ikut hash (sudah begitu sejak F-D71), disimpan privat di gerbang; repo memuat formulir tanpa kontak.
+3. **Spesifikasi yang lolos di-pin on-chain** (LockRegistry, label = `bot_id`) oleh worker yang sama dengan pin buku; satu transaksi per putaran.
+4. **Jam maju untuk bot penerbit menyusun `BotSpec` ulang dari formulir publik** yang cocok dengan registri; berkas ringkasan tidak dipercaya mentah.
+5. **Epoch buku** membaca penantang dari registri; pembunuh penerbit ditegakkan kode (`slots.killer_triggered`) dari `theory.pembunuh` terstruktur.
+6. Batas: sinyal bot penerbit yang masuk slot belum dikomit / dijual worker (berikutnya); kanal hanya bar harian sampai B2.
+
+**Terkait:** P161 · P83 · F-D71 · F-D85 · F-D87 · F-D88 · [[04-Tools/TL37 - jalur pengajuan bot]]

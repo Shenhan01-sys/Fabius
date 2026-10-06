@@ -1,0 +1,25 @@
+---
+title: TL37 - jalur pengajuan bot (P161)
+tags: [tools, P161, pengajuan, gerbang-seleksi]
+---
+
+# TL37 - jalur pengajuan bot penerbit (P161, F-D120)
+
+Satu jalur otomatis dari kiriman penerbit sampai slot buku, tanpa langkah manual. Komponen lama (formulir EIP-712 `engine/submission.py`, registri
+P83 `engine/registri.py`, peninjau `engine/review.py`, `engine/slots.py`, buku hidup `engine/book_live.py`) disambung oleh lima bagian:
+
+| Tahap | Di mana | Apa |
+|---|---|---|
+| B1a terima | gerbang `fabius-x402` (`tools/pengajuan.py`) | `POST /bots/submit` {submission, signature, nonce, deadline[, payout_signature]}: skema tertutup + tanda tangan EIP-712 (TTL <= 1 jam) + nonce per penerbit; <= 2 menunggu per penerbit, <= 50/hari. `POST /bots/typed-data` = pesan yang harus ditandatangani (sha kanonis dihitung gerbang). `GET /bots/submissions[/<sha>]` antrean publik + status; `GET /bots/schema` |
+| B1b tinjau | GitHub `bot-review.yml` (dipicu rantai paper-ledger sekali sehari) -> `tools/tinjau_pengajuan.py` | gerbang G1-G11 + KPI pada `ledger/bars` dengan identitas diverifikasi ULANG pada `now = t terima`; registri hash-berantai + `laporan/<sha>.json` + salinan formulir `masuk/<sha>.json` + `spec/<bot_id>.json` (lolos) + `status.json` (tertahan / ditolak sebelum gerbang) di-commit ke repo publik |
+| B1b pin | worker `fabius-engine` (`operator_loop.spec_pin` -> `tools/pin_spec.py`) | `spec_sha` spesifikasi yang LOLOS_SHADOW di-pin ke LockRegistry, label = `bot_id`, satu transaksi per putaran; tidak cocok registri = tidak di-pin |
+| B1c jam maju | `tools/paper_tick.py` + `engine/terdaftar.py` | bot penerbit lolos mendapat genesis otomatis di putaran harian pertamanya; `BotSpec` disusun ulang dari formulir publik yang cocok dengan registri (berkas spec tidak dipercaya mentah) |
+| B1d buku | `engine.cli book epoch` | penantang = `SHADOW_ELIGIBLE` + penerbit dari registri (gerbang terhadap buku sekarang, 60 hari bayangan); pembunuh penerbit = `theory.pembunuh` terstruktur lewat `slots.killer_triggered` pada PnL sejak sinyal ke-n terakhir |
+
+**Kontak penerbit** tidak ikut hash dan tidak pernah publik: gerbang menyimpannya di `kontak.jsonl` (volume), antrean publik dan repo hanya memuat
+formulir tanpa kontak (peninjau memakai pengganti "disimpan privat"; sha + tanda tangan tidak berubah).
+
+**Belum (berikutnya):** B1e web (formulir + status pipa); sinyal bot penerbit yang masuk slot belum dikomit/dijual worker (FABIUS_BOTS); bot intraday
+(B2). Semantik kegagalan: [[07-Testing/T8 - Semantik Kegagalan Operator]] SK-J1..J6.
+
+**Terkait:** [[00-Overview/03 - Decisions]] F-D120 · F-D71 · F-D72 · F-D85 · F-D88 · [[TL36 - meja v2 bot + instrumen]]

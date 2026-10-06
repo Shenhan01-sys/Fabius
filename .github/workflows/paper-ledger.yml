@@ -190,6 +190,12 @@ jobs:
                 else
                   echo "::warning::gagal memicu validasi - jawaban validasi tertunda; rantai ledger tetap jalan"
                 fi
+                # P161 B1b: peninjau pengajuan bot penerbit (antrean gerbang -> gerbang G1-G11 + KPI -> registri publik)
+                if printf '{"ref":"%s"}' "$GITHUB_REF_NAME" | gh api -X POST "repos/$GITHUB_REPOSITORY/actions/workflows/bot-review.yml/dispatches" --input -; then
+                  echo "peninjau pengajuan bot dipicu"
+                else
+                  echo "::warning::gagal memicu bot-review - tinjauan pengajuan tertunda; rantai ledger tetap jalan"
+                fi
               fi
             fi
             # P119 (F-D94): ledger eksekusi. Runner tidak bisa membaca Binance (451), jadi eksekutor Railway menaruh laporannya di Gist publik;

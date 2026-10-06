@@ -257,6 +257,59 @@ class WorkerBookPinTests(unittest.TestCase):
 
 
 @unittest.skipUnless(HAVE_ETH, "eth-abi tidak terpasang")
+class WorkerSpecPinTests(unittest.TestCase):
+    """P161 B1b: worker mem-pin spec_sha bot penerbit yang LOLOS_SHADOW di registri; yang tidak cocok registri tidak di-pin."""
+
+    def setUp(self):
+        import json
+        import operator_loop as ol
+        from engine import anggaran, registri
+        self.ol = ol
+        self.tmp = tempfile.mkdtemp()
+        d = os.path.join(self.tmp, "ledger", "pengajuan")
+        os.makedirs(os.path.join(d, "spec"))
+        e = {"type": "pengajuan", "t_s": 1_791_000_000, "t_utc": "-", "issuer": "0x" + "a" * 40, "payout": "0x" + "a" * 40, "bot_id": "TREND-ETH-30",
+             "submission_sha": "0x" + "11" * 32, "spec_sha": "0x" + "22" * 32, "fingerprint": "0x3", "report_sha": "0x4", "vonis": registri.LOLOS, "k": 1,
+             "alpha": anggaran.alpha_for(1), "n_trials": 1}
+        with open(os.path.join(d, "registri.jsonl"), "w", encoding="utf-8") as f:
+            f.write(json.dumps(ledger.seal(e, ledger.head([])), sort_keys=True) + "\n")
+        self.spec = os.path.join(d, "spec", "TREND-ETH-30.json")
+        with open(self.spec, "w", encoding="utf-8") as f:
+            json.dump({"bot_id": "TREND-ETH-30", "submission_sha": e["submission_sha"], "spec_sha": e["spec_sha"], "t_lolos": e["t_s"]}, f)
+        self.logs = []
+        self.orig = ol.log
+        ol.log = self.logs.append
+        self.w = ol.Worker(workdir=self.tmp)
+
+    def tearDown(self):
+        self.ol.log = self.orig
+        shutil.rmtree(self.tmp, ignore_errors=True)
+
+    def pin(self, ev, pk=DEV_PK1, pin=True):
+        return self.w.spec_pin(ev, "0x" + "33" * 20, COMMITTER, pk, "f" * 40, pin=pin)
+
+    def test_a_registered_spec_is_pinned_once_under_its_bot_id(self):
+        ev = FakeRegistry()
+        self.assertEqual(self.pin(ev), "kirim")
+        self.assertIn(b"TREND-ETH-30", ev.sent[0])
+        self.assertIn(bytes.fromhex("22" * 32), ev.sent[0])
+        ev.locked = 1_791_000_100
+        self.assertEqual(self.pin(ev), "ok")
+        self.assertEqual(len(ev.sent), 1)
+
+    def test_a_spec_that_does_not_match_the_registry_is_never_pinned(self):
+        import json
+        with open(self.spec, "w", encoding="utf-8") as f:
+            json.dump({"bot_id": "TREND-ETH-30", "submission_sha": "0x" + "11" * 32, "spec_sha": "0x" + "99" * 32, "t_lolos": 1}, f)
+        ev = FakeRegistry()
+        self.assertEqual(self.pin(ev), "kosong")
+        self.assertEqual(ev.sent, [])
+
+    def test_unreadable_lock_state_waits(self):
+        self.assertEqual(self.pin(FakeRegistry(fail_read=True)), "tunda")
+
+
+@unittest.skipUnless(HAVE_ETH, "eth-abi tidak terpasang")
 class VerifierReadTests(unittest.TestCase):
     def test_rejected_log_range_is_halved_then_raised_never_read_as_no_reveals(self):
         import evm

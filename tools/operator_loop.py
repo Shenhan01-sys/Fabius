@@ -191,6 +191,37 @@ class Worker:
         log(f"pin buku {name}: tx {r.get('transactionHash')} {'blok ' + str(ev.num(r.get('blockNumber'))) if ok else 'STATUS 0'} | uri {pb.book_uri(head)}")
         return "kirim" if ok else "gagal"
 
+    def spec_pin(self, ev, registry: str, committer: str, pk, head: str, pin: bool = None) -> str:
+        """P161 B1b: pin sha spesifikasi bot penerbit yang LOLOS_SHADOW (ditulis rantai peninjau GitHub) ke LockRegistry, satu per putaran.
+        Sama dengan `book_pin`: gagal baca = TUNDA (bukan "belum di-pin"); spesifikasi yang tidak cocok registri tidak di-pin. -> keadaan."""
+        import pin_spec as ps
+        pin = PIN_BOOK if pin is None else pin
+        try:
+            specs, masalah = ps.sah(self.workdir)
+            for m in masalah[:1]:
+                self.note_book(f"pin spesifikasi: {m}")
+            belum = [s for s in specs if not ps.locked_at(ev, registry, committer, s)]
+        except Exception as e:  # noqa: BLE001 - gagal baca != belum di-pin
+            self.note_book(f"pin spesifikasi GAGAL dibaca ({type(e).__name__}: {str(e)[:120]}); dicoba lagi putaran berikutnya")
+            return "tunda"
+        if not belum:
+            return "ok" if specs else "kosong"
+        s = belum[0]
+        if not pk or not pin:
+            self.note_book(f"spesifikasi {s['bot_id']} PERLU pin (spec_sha {s['spec_sha'][:14]}…): {'tanpa kunci' if not pk else 'PIN_BOOK=0'}")
+            return "perlu"
+        if ev.has_pending(committer):
+            return "tunda"
+        from evm import RpcError, error_name, receipt_ok
+        try:
+            r = ev.send(pk, registry, ps.lock_calldata(s, ps.spec_uri(head, s["bot_id"])))
+        except RpcError as e:
+            self.note_book(f"pin spesifikasi {s['bot_id']} DITOLAK sebelum kirim ({error_name(e.data, sc.ERRORS) or e}); nol gas terbakar")
+            return "tolak"
+        ok = receipt_ok(r)
+        log(f"pin spesifikasi {s['bot_id']}: tx {r.get('transactionHash')} {'OK' if ok else 'STATUS 0'} | spec_sha {s['spec_sha'][:18]}…")
+        return "kirim" if ok else "gagal"
+
     def exec_step(self, cv, committer: str) -> str:
         """P118 (epik 10): eksekutor venue, DIBUNGKUS SENDIRI - galatnya dicatat (+ alert sesudah 3 kali berturut) dan TIDAK PERNAH menggagalkan
         putaran komit/ungkap (T8 SK-E10)."""
@@ -313,6 +344,10 @@ class Worker:
         pin = self.book_pin(ev, addrs["registry"], committer, pk, head)
         if pin in ("tolak", "gagal"):
             self.alert.send(f"pin-buku:{pin}", f"pin book_sha {pin.upper()}: {self.last_book}")
+        if pin != "kirim":                                         # satu transaksi pin per putaran (nonce committer)
+            sp = self.spec_pin(ev, addrs["registry"], committer, pk, head)
+            if sp in ("tolak", "gagal"):
+                self.alert.send(f"pin-spesifikasi:{sp}", f"pin spec_sha {sp.upper()}: {self.last_book}")
         self.exec_step(cv, committer)
         self.canary_step(cv, committer, ev, pk)
         self.validation_step(ev, cv, committer, pk)
