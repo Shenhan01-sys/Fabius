@@ -54,6 +54,8 @@ agent di 180-360 derajat layar, lebih dari itu 150-390 derajat dengan jari-jari 
 
 Bagian utama `/desk` (menggantikan panel "Fabius v2"): rekam jejak SELURUH buku Fabius dari `GET /desk/fabius` (`Gate.meja_fabius` -> `meja2.buku_hidup`; cache per berkas harian, hanya berkas hari ini dibaca ulang). Strip pipeline 3D `web/src/components/desk/floor/PipelineScene.tsx`: agent = NPC pekerja yang sama dengan lantai (`parts.tsx`, pose berdiri, ✓ kubus / ✕ silang), mesin rumus (6 kubus mengorbit = 6 bot, ukuran = skor, pemenang menyala), robot aturan bot (ID bot di dada), buku (batang posisi), tumpukan blok BNB Chain. `LiveBook.tsx`: statistik (termasuk porsi fee terhadap rugi), kurva ekuitas sejak siklus pertama + pita bot, hasil per bot (pasar ke bot yang posisinya dipegang, fee ke bot yang memicu transaksi), pita keputusan + bukti; tanda rem rugi harian bila aktif. Sejak r4 (F-D116): panel **slot posisi** n/5 - tiap slot = aset + arah, bot pemilik, margin x leverage, untung/rugi belum direalisasi, dan batang stop-loss -> masuk -> take-profit dengan titik harga sekarang; slot kosong digambar putus-putus; pita keputusan menulis alasan tiap isi; hasil per bot = per posisi milik bot pembukanya. Inklusif: label DOM (bridge), ringkasan `aria-live`, tanpa gerak, label ringkas di HP.
 
+**Mesin v1 dihentikan 6 Okt (F-D117):** `V1_JALAN = False`; root siklus = rekaman meja v2 saja (`rakit_siklus`), siklus tanpa daun tidak dikomit. Rekaman v1 lama tetap bisa dibuktikan.
+
 ## Cara memeriksa satu keputusan
 
 `GET /desk/proof/<hash>` -> rekaman, hash dihitung ulang (sha256 JSON kanonis tanpa `hash`), Merkle proof (`engine/chain.py`) -> root =

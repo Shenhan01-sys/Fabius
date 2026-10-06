@@ -1222,6 +1222,9 @@ def telegram_loop(gate: "Gate", stop: threading.Event) -> None:
 V1_AGEN = ("glm", "qwen", "berita")
 # F-D115: v1 tidak ditampilkan di /desk (builder: "yg v1 hilangkan saja biar ga menuh-in"); mesinnya masih jalan sampai builder memutuskan.
 V1_TAMPIL = False
+# F-D117 (6 Okt, builder: "Stop v1 skrg juga"): mesin meja v1 DIHENTIKAN - tidak ada panggilan model / buku / rekaman v1 baru; root siklus hanya
+# rekaman v2. Buku + rekaman v1 lama tetap tersimpan dan tetap bisa dibuktikan lewat /desk/proof. Pembanding sekarang = bayangan r3 (P163).
+V1_JALAN = False
 
 
 def kursi_aktif(gate: "Gate") -> Optional[set]:
@@ -1267,6 +1270,21 @@ def gabung_v2(rek: List[dict], sik: dict, books: Dict[str, dict], ring: Dict[str
     return True
 
 
+def rakit_siklus(t0: int, v1: Optional[Tuple[List[dict], dict]], h2: dict, books: Dict[str, dict], ring: Dict[str, str],
+                 log: Callable[[str], None] = print) -> Tuple[List[dict], dict]:
+    """Satu siklus meja siap dikomit: rekaman v1 (bila `V1_JALAN`) + v2 yang selesai -> daun + root. F-D117: tanpa v1 dan v2 terlambat = tanpa daun,
+    status "kosong", tidak dikomit (kontrak tidak diberi root kosong)."""
+    rek, sik = v1 if v1 is not None else ([], {"siklus": t0, "daun": [], "harga": {}, "selesai": int(time.time())})
+    if not gabung_v2(rek, sik, books, ring, h2):
+        log(f"meja v2 {time.strftime('%H:%M', time.gmtime(t0))}Z: tidak selesai sebelum komit - tidak masuk root siklus ini")
+    if not sik["daun"]:
+        sik.update(root=None, n=0, status="kosong (v2 tidak selesai, v1 dihentikan)", tx=None)
+        log(f"meja {time.strftime('%H:%M', time.gmtime(t0))}Z kosong - tidak dikomit")
+    else:
+        sik.update(root=meja.root_of(sik["daun"]), n=len(sik["daun"]), status="tidak dikomit", tx=None)
+    return rek, sik
+
+
 def meja_loop(gate: "Gate", ev, stop: threading.Event) -> None:
     """P152 (F-D109): tiap batas 5 menit UTC (+8 s supaya candle tutup) satu siklus meja; Merkle root dikomit ke DeskAnchor SELAMA siklus berjalan.
     Komit gagal / terlambat dicatat di rekaman siklus (status), tidak pernah diulang sesudah siklus berakhir (kontrak menolak TooLate)."""
@@ -1307,15 +1325,18 @@ def meja_loop(gate: "Gate", ev, stop: threading.Event) -> None:
             agents = an.active_agents(acfg) if acfg.get("selection") else []
             if not (desk and agents and gate.pk):
                 continue
-            judul = gate.kabar_cache() if any(a.get("berita") for a in agents) else None
             h2: dict = {}
             th = threading.Thread(target=v2, args=(t0, agents, h2), daemon=True)
             th.start()
-            rek, sik = meja.siklus(t0, [a for a in agents if a["slug"] in V1_AGEN], books, ring, call, judul=judul, log=gate.log)
+            v1 = None
+            if V1_JALAN:
+                judul = gate.kabar_cache() if any(a.get("berita") for a in agents) else None
+                v1 = meja.siklus(t0, [a for a in agents if a["slug"] in V1_AGEN], books, ring, call, judul=judul, log=gate.log)
             th.join(timeout=max(0.0, t0 + meja.PARAMS["siklus_s"] - 25 - time.time()))
-            if not gabung_v2(rek, sik, books, ring, h2):
-                gate.log(f"meja v2 {time.strftime('%H:%M', time.gmtime(t0))}Z: tidak selesai sebelum komit - tidak masuk root siklus ini")
-            sik.update(root=meja.root_of(sik["daun"]), n=len(sik["daun"]), status="tidak dikomit", tx=None)
+            rek, sik = rakit_siklus(t0, v1, h2, books, ring, gate.log)
+            if not sik["daun"]:
+                gate.meja_simpan(rek, sik, books, ring)
+                continue
             if time.time() < t0 + meja.PARAMS["siklus_s"] - 12:
                 data = calldata("commit(uint64,bytes32,uint16)", ("uint64", "bytes32", "uint16"), (t0, bytes.fromhex(sik["root"][2:]), sik["n"]))
                 with gate.tx_lock:

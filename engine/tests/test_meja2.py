@@ -351,6 +351,20 @@ class GateTests(unittest.TestCase):
         self.assertFalse(by["v2:glm"]["nama"].startswith("v2"))
         self.assertEqual(v["params_v2"], meja2.PARAMS2)
 
+    def test_with_v1_stopped_the_cycle_root_holds_only_v2_records_and_a_late_v2_commits_nothing(self):
+        import x402_sinyal as xs
+        self.assertFalse(xs.V1_JALAN)                                                            # F-D117: mesin v1 dihentikan
+        r = {"siklus": 1_791_200_100, "agent": "v2", "ekuitas": 10_000.0, "hash": "0x" + "ab" * 32}
+        books, ring = {}, {}
+        rek, sik = xs.rakit_siklus(1_791_200_100, None, {"rek": [r], "harga": {"X": 1.0}, "books": {"v2": meja.buku_baru()}, "ring": {}}, books, ring,
+                                   log=lambda m: None)
+        self.assertEqual((rek, sik["daun"], sik["n"], sik["harga_v2"]), ([r], [r["hash"]], 1, {"X": 1.0}))
+        self.assertEqual(sik["root"], meja.root_of([r["hash"]]))
+        self.assertIn("v2", books)
+        rek, sik = xs.rakit_siklus(1_791_200_400, None, {}, books, ring, log=lambda m: None)    # v2 terlambat, tanpa v1
+        self.assertEqual((rek, sik["daun"], sik["root"], sik["n"]), ([], [], None, 0))
+        self.assertTrue(sik["status"].startswith("kosong"))
+
     def test_live_book_endpoint_reads_every_day_file_and_only_fabius_records(self):
         t0 = 1_791_200_100
         rows = [{"siklus": t0 - 86_400, "agent": "v2", "ekuitas": 9_990.0, "bot": "B2-RS", "hash": "0xa"},

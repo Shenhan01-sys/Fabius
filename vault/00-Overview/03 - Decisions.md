@@ -3337,3 +3337,13 @@ tidak bisa membuka posisi di siklus yang tercatat datar karena rem r3 (target at
 **DIKUNCI 6 Okt (builder: "Gas")** - PARAMS2 r4 sha `0x6f613e503e5fe377f024571baad56dd9c639a1ec363b4ceba1c5dc7ffbad9f85` (memuat `PARAMS_SLOT` sha `0xbe529db6807df27919367e931d6435829c4e10ceb1e504ff6631d58b25d1a6f8`, `tools/meja_slot.py`). Rincian implementasi yang ikut terkunci: (a) posisi hanya dibuka dari konsensus SAH siklus itu (kuorum tercapai; SK-M29); (b) aturan keluar yang tidak terbaca - galat, atau candle satu aset universe gagal - TIDAK menutup posisi (SK-M27; bug ini ditemukan tes sebelum deploy: `arah` menangkap galat candle per aset lalu memberi bobot kosong yang terbaca sebagai "keluar"); (c) harga isi selalu mencakup aset yang dipegang (SK-M28); (d) posisi r3 di buku ditutup sekali dengan alasan `r4 start` (SK-M30), saldo/fee/riwayat Fabius berlanjut; (e) rem rugi menutup semua slot tetapi target aturan tetap direkam utuh supaya bayangan r3 bisa dihitung (P163 kriteria 4); (f) tiap isi mencatat `alasan`, `bot`, `pnl`, tiap rekaman `slot` (ikut di-hash). Rem rugi 6 Okt (-3,22 %) masih berlaku saat r4 mulai, jadi r4 baru bisa membuka posisi sesudah 00:00 UTC 7 Okt.
 
 **Terkait:** P163 · F-D112 · F-D115 · [[04-Tools/TL36 - meja v2 bot + instrumen]]
+
+## F-D117 — Mesin meja v1 dihentikan · 6 Okt 2026 (WIB)
+
+Builder: *"Stop v1 skrg juga"* (sesudah r4 hidup; dicatat ke builder bahwa v1 = meja lama -0,20 %, sedangkan yang rugi besar adalah rumus r3 meja v2).
+`V1_JALAN = False` di `tools/x402_sinyal.py`: tidak ada lagi panggilan model, buku, atau rekaman v1; Merkle root tiap siklus hanya berisi rekaman
+meja v2 (`rakit_siklus`). Siklus tanpa daun (v2 tidak selesai sebelum komit) berstatus "kosong" dan tidak dikomit (SK-M32). Buku + rekaman v1 lama
+tetap tersimpan dan tetap bisa dibuktikan lewat `/desk/proof`. Alasan: v1 sudah tidak tampil (F-D115), menggandakan panggilan model per siklus
+(batas laju penyedia gratis), dan pembanding r4 kini = bayangan r3 dari target aturan yang sama (P163 kriteria 4).
+
+**Terkait:** F-D109 · F-D115 · F-D116 · [[04-Tools/TL34 - meja AI 5 menit]]
