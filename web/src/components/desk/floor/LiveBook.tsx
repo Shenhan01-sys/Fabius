@@ -8,7 +8,7 @@ import dynamic from "next/dynamic";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useLang } from "@/components/lang";
 import { LINKS } from "@/lib/copy";
-import { hhmm, liveBook, type Desk, type LiveBook as LB } from "@/lib/desk";
+import { hhmm, liveBook, type Desk, type Isi, type LiveBook as LB, type Slot } from "@/lib/desk";
 import { GATE } from "@/lib/x402-buy";
 import { Bridge } from "./bridge";
 import { fmtPct, seats as toSeats } from "./model";
@@ -27,6 +27,74 @@ const BOT_COLOR: Record<string, string> = {
 const tkr = (a: string) => a.replace("USDT", "");
 const usd = (x: number) => x.toLocaleString("en-US", { maximumFractionDigits: 2 });
 const day = (s: number) => new Date(s * 1000).toISOString().slice(0, 16).replace("T", " ") + "Z";
+
+const price = (x: number) => (x >= 100 ? x.toFixed(2) : x >= 1 ? x.toFixed(4) : x.toPrecision(4));
+type F = ReturnType<typeof useLang>["t"]["desk"]["live"];
+const why = (x: Isi, f: F) => (x.alasan ? (f.reasons[x.alasan] ?? (x.alasan.startsWith("exit rule") ? f.reasons.exit : x.alasan)) : "");
+
+// r4 (F-D116): slot posisi. Batang = jarak stop-loss -> take-profit (masuk di 1/3 karena TP = 2 x jarak SL), titik = harga siklus terakhir
+function Slots({ slot, max, f }: { slot: Slot[]; max: number; f: F }) {
+  return (
+    <div className="mt-4 rounded-xl border border-ink/10 p-3">
+      <p className="text-sm uppercase tracking-wide text-ink/50">{f.slots.replace("{n}", String(slot.length)).replace("{m}", String(max))}</p>
+      <ul className="mt-2 grid gap-2 sm:grid-cols-2 xl:grid-cols-5">
+        {slot.map((x) => {
+          const span = x.sl != null && x.tp != null ? x.tp - x.sl : 0;
+          const at = (v: number) => Math.min(1, Math.max(0, (v - (x.sl ?? 0)) / span)) * 100;
+          const pnl = Math.abs(x.pnl) < 0.005 ? 0 : x.pnl;
+          const up = pnl >= 0;
+          return (
+            <li key={x.aset} className="rounded-lg border border-ink/10 px-2 py-1.5">
+              <div className="flex items-baseline justify-between gap-2 font-mono text-[12px]">
+                <span className={`whitespace-nowrap ${x.arah > 0 ? "text-violet" : "text-ink"}`}>
+                  {x.arah > 0 ? "▲" : "▼"} {tkr(x.aset)}
+                </span>
+                <span className={`whitespace-nowrap ${up ? "text-violet" : "text-ink"}`}>
+                  {pnl > 0 ? "+" : ""}
+                  {usd(pnl)}
+                </span>
+              </div>
+              <p className="mt-0.5 flex items-center gap-1.5 whitespace-nowrap font-mono text-[10px] text-ink/55">
+                <span className="inline-block h-2 w-2 shrink-0 rounded-sm" style={{ background: BOT_COLOR[x.bot] ?? "#8b86a6" }} aria-hidden />
+                {x.bot} · {((x.margin ?? 0) * 100).toFixed(1)}% × {(x.leverage ?? 1).toFixed(1)}x
+              </p>
+              {span ? (
+                <div
+                  className="relative mt-1.5 h-1.5 rounded-full"
+                  style={{ background: "linear-gradient(90deg, rgb(21 18 43 / 0.18) 0 33.3%, rgb(110 75 255 / 0.25) 33.3% 100%)" }}
+                  role="img"
+                  aria-label={`SL ${price(x.sl!)} · ${f.entry} ${price(x.masuk)} · TP ${price(x.tp!)} · ${f.now} ${price(x.harga)}`}
+                >
+                  <span className="absolute top-1/2 h-3 w-px -translate-y-1/2 bg-ink/50" style={{ left: `${at(x.masuk)}%` }} aria-hidden />
+                  <span
+                    className={`absolute top-1/2 h-2.5 w-2.5 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-white ${up ? "bg-violet" : "bg-ink"}`}
+                    style={{ left: `${at(x.harga)}%` }}
+                    aria-hidden
+                  />
+                </div>
+              ) : null}
+              <p className="mt-1 flex justify-between gap-2 whitespace-nowrap font-mono text-[10px] text-ink/45">
+                <span>{x.sl != null ? `SL ${price(x.sl)}` : f.noStop}</span>
+                <span>{x.tp != null ? `TP ${price(x.tp)}` : ""}</span>
+              </p>
+              <p className="whitespace-nowrap font-mono text-[10px] text-ink/55">
+                {f.entry} {price(x.masuk)} · {f.now} {price(x.harga)}
+              </p>
+            </li>
+          );
+        })}
+        {Array.from({ length: Math.max(0, max - slot.length) }, (_, i) => (
+          <li key={`kosong${i}`} className="grid place-items-center rounded-lg border border-dashed border-ink/15 px-2 py-3 text-[11px] text-ink/40">
+            {f.slotEmpty}
+          </li>
+        ))}
+      </ul>
+      <p className="mt-2 text-[11px] leading-snug text-ink/50">
+        {f.slotNote.replace("{m}", String(max))} {slot.some((x) => x.sl != null) ? `(${f.slotBar})` : ""}
+      </p>
+    </div>
+  );
+}
 
 function webgl() {
   try {
@@ -224,6 +292,7 @@ export default function LiveBook({ d }: { d: Desk }) {
               {sub && <p className="truncate font-mono text-[10px] text-ink/45">{sub}</p>}
             </div>
           ))}
+          {!p.slot && (
           <div className="col-span-2 rounded-xl border border-ink/10 px-3 py-2">
             <p className="text-[10px] uppercase tracking-wide text-ink/45">{f.nowPos}</p>
             <div className="mt-1 flex flex-wrap gap-1">
@@ -237,8 +306,11 @@ export default function LiveBook({ d }: { d: Desk }) {
                 ))}
             </div>
           </div>
+          )}
         </div>
       </div>
+
+      {p.slot && <Slots slot={p.slot} max={p.maks_slot ?? 5} f={f} />}
 
       <div className="mt-4 rounded-xl border border-ink/10 p-3">
         <p className={label}>{f.perBot}</p>
@@ -288,7 +360,7 @@ export default function LiveBook({ d }: { d: Desk }) {
                   <span className="text-ink/45">■ {f.hold} · {r.dasar}</span>
                 ) : (
                   <span className="text-ink/75">
-                    {r.isi.map((x) => `${x.ke > x.dari ? "▲" : "▼"}${tkr(x.aset)} ${(x.dari * 100).toFixed(0)}→${(x.ke * 100).toFixed(0)}%`).join("  ")}
+                    {r.isi.map((x) => `${x.ke > x.dari ? "▲" : "▼"}${tkr(x.aset)} ${(x.dari * 100).toFixed(0)}→${(x.ke * 100).toFixed(0)}%${x.alasan ? ` (${why(x, f)})` : ""}`).join("  ")}
                     <span className="text-ink/45"> · fee {usd(r.isi.reduce((s, x) => s + x.fee, 0))}</span>
                   </span>
                 )}

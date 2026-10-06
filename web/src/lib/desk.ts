@@ -37,7 +37,25 @@ export type Buku = {
   kursi?: "aktif" | "uji" | "antre" | "keluar" | null; // P160: kursi agent di meja v2 (keluar = dinonaktifkan builder)
   npc?: { shirt?: string; hair?: string; skin?: string; extra?: "headset" | "cap" | "glasses" | "beanie" | "hood" | "none"; prop?: "mug" | "paper" | "plant" | "books"; short?: string } | null;
 };
-export type Isi = { aset: string; dari: number; ke: number; harga: number; fee: number };
+// r4 (F-D116): isi membawa alasan (open / SL / TP / exit rule <bot> / daily loss brake / r4 start), bot pemilik posisi, dan pnl yang direalisasi
+export type Isi = { aset: string; dari: number; ke: number; harga: number; fee: number; alasan?: string; bot?: string | null; pnl?: number };
+// r4 slot posisi terbuka: bobot = notional bertanda / ekuitas, pnl = belum direalisasi, sl/tp = harga (null = bot tanpa stop, mis. B4)
+export type Slot = {
+  aset: string;
+  bot: string;
+  arah: number;
+  qty: number;
+  masuk: number;
+  harga: number;
+  w: number;
+  pnl: number;
+  margin: number | null;
+  leverage: number | null;
+  sl: number | null;
+  tp: number | null;
+  atr: number | null;
+  t: number | null;
+};
 export type Siklus = { siklus: number; root: string; tx: string | null; status: string; n: number };
 export type Rekaman = {
   siklus: number;
@@ -122,6 +140,8 @@ export type LiveBook = {
     root: string | null;
     tx: string | null;
     status: string | null;
+    slot?: Slot[] | null;
+    maks_slot?: number;
   };
   pita_keputusan: { siklus: number; bot: string | null; dasar: string | null; instrumen: string[]; masuk: number; isi: Isi[]; ekuitas: number; hash: string }[];
 };
