@@ -2,15 +2,15 @@
 tags: [backlog, epik, pengajuan, llm, peninjau, "p167", "p168"]
 ---
 
-# 12 - Epik Pengajuan Terbuka + Peninjau LLM (PRD usulan): metode dari pengguna, dua tahap tinjauan
+# 12 - Epik Pengajuan Terbuka + Peninjau LLM (PRD, DISETUJUI builder 6 Okt malam): metode dari pengguna, dua tahap tinjauan
 
 **Bagian dari:** [[08-Backlog/00 - Hub Backlog]]
 **Dibuka:** 6 Okt 2026 (WIB) oleh builder, kata-katanya:
 - *"methodnya biar mereka yg bikin sendiri dong, kok malah suruh milih yg udh ada, nanti ga bervariasi, biarkan semua input itu dari user, kan bot user, kita tidak perlu menentukannya"*
 - *"semua opsi digabung, karena kode function pun jg sangat penting, nanti pakai bot untuk bagian teknis apakah semua udh memenuhi standar Fabius? Kalau udh baru lanjut analisis agent owner Fabius pakai LLM dari provider xkiro (GLM 5.3, effort default) + kasih brief dulu ... jgn bikin agentnya hanya iyaiyaiya aja, hrs deep analyze + critical judge ... sama halnya untuk agent"*
 
-**Status:** ARAH MENGIKAT = [[00-Overview/03 - Decisions]] F-D122 (builder). **Semua rincian di bawah = USULAN SAYA yang menunggu persetujuan builder** (aturan kerja: spesifikasi disetujui sebelum dikunci dan dibangun).
-Backlog P167 (pengajuan v2), P168 (peninjau LLM). Status per item hanya di [[08-Backlog/01 - Backlog]]. Catatan sementara asal: [[09-Inbox/Session-2026-10-02]] §130.
+**Status:** ARAH MENGIKAT = [[00-Overview/03 - Decisions]] F-D122 (builder). **Rincian di bawah DISETUJUI builder 6 Okt malam** (*"saya acc semua decision epik12 mu"*, [[00-Overview/03 - Decisions]] F-D125) dengan satu perubahan: **kode pengguna PRIVAT** (§3.2). Label [USULAN] pada judul bagian = rancangan yang kini disetujui. Tidak ada label versi (v1/v0) di dokumen ini: kosakata, brief, dan skema diidentifikasi dengan sha / tanggal (builder: *"kita hanya pakai v2"*).
+Backlog P167 (pengajuan terbuka), P168 (peninjau LLM). Status per item hanya di [[08-Backlog/01 - Backlog]]. Catatan sementara asal: [[09-Inbox/Session-2026-10-02]] §130.
 **Bahan:** F-D120 jalur seleksi bot ([[04-Tools/TL37 - jalur pengajuan bot]]) · F-D121 agent luar ([[04-Tools/TL38 - agent luar di meja (pull)]]) · F-D71/F-D88 anggaran percobaan · `engine/gates.py` G1-G11 ·
 [[05-Ecosystem/00 - Hub BNB Ecosystem]] · [[07-Testing/T8 - Semantik Kegagalan Operator]].
 
@@ -22,11 +22,11 @@ Backlog P167 (pengajuan v2), P168 (peninjau LLM). Status per item hanya di [[08-
 **Tujuan:** (1) metode SEPENUHNYA dari pengguna; (2) standar Fabius tetap ditegakkan MESIN (bukan niat baik); (3) setelah tahap teknis lolos, agent LLM milik Fabius menganalisis dengan KRITIS (bukan setuju-saja) supaya
 pengajuan tidak merugikan Fabius dan justru meningkatkannya; (4) alur yang sama berlaku untuk AGENT. **Bukan tujuan:** menjanjikan keuntungan; membuka uang nyata (F-D124); mengubah gerbang G1-G11 untuk bot Fabius sendiri.
 
-## 2. Jalur dua tahap [USULAN]
+## 2. Jalur dua tahap [DISETUJUI]
 
 ```
 pengajuan (gerbang, bertanda tangan EIP-712 untuk bot / EIP-191 untuk agent)
-   -> TAHAP 1 "bot teknis": otomatis + deterministik + bisa diulang siapa pun (repo publik)
+   -> TAHAP 1 "bot teknis": otomatis + deterministik + bisa diulang siapa pun (repo publik; jenis `code` PRIVAT: tidak bisa diulang publik, lihat §3.2)
         skema, tanda tangan, nonce, batas; analisis kode (jenis code); gerbang G1-G11 + KPI pada data publik; kausalitas; biaya; kapasitas; korelasi dengan bot yang ada
    -> LOLOS -> TAHAP 2 "agent pemilik Fabius": LLM xkiro GLM 5.3 (effort bawaan) + BRIEF kritis -> laporan terstruktur publik (vonis LANJUT / TAHAN / TOLAK + keberatan berbukti + saran perbaikan)
    -> keputusan: aturan deterministik yang ada (60 hari bayangan maju -> aturan slot); agent LLM hanya bisa MENAHAN / MENOLAK, tidak pernah meloloskan
@@ -35,7 +35,7 @@ pengajuan (gerbang, bertanda tangan EIP-712 untuk bot / EIP-191 untuk agent)
 Prinsip: (a) **bot teknis menang atas LLM** - gagal teknis tetap gagal, LLM tidak bisa membalikkannya; (b) **LLM hanya membatasi** - `LANJUT` artinya "tidak ada keberatan yang menahan", BUKAN izin slot; (c) **semua jejak publik**: sha brief,
 sha masukan, jawaban mentah, vonis; (d) pengecualian hanya keputusan builder tertulis.
 
-## 3. Tiga jenis bot [USULAN]
+## 3. Tiga jenis bot [DISETUJUI]
 
 Semua jenis berbagi: ID bot unik, universe dari daftar simbol yang diizinkan (data tersedia di `ledger/bars`), bar harian (intraday = B2), identitas penerbit + dompet bagi hasil (EIP-712), teori + bukti + pernyataan
 (`submission.py` yang ada), `evidence.percobaan` (jumlah varian yang dicoba sebelum memilih ini; naikkan bar Sharpe) dan `theory.pembunuh` terstruktur.
@@ -44,7 +44,7 @@ Semua jenis berbagi: ID bot unik, universe dari daftar simbol yang diizinkan (da
 
 **Kenapa:** paling dekat dengan standar Fabius (deterministik, bisa diulang, bisa di-hash dan di-pin, tanpa kode asing), sepenuhnya milik pengguna (kombinasi blok bebas).
 
-Draf kosakata v1 (JSON; semua nilai dihitung dari bar <= t, titik-waktu, tanpa kemampuan mengintip masa depan oleh konstruksi):
+Kosakata aturan (disetujui; JSON; semua nilai dihitung dari bar <= t, titik-waktu, tanpa kemampuan mengintip masa depan oleh konstruksi):
 
 ```
 rule  = { "mode": "per_aset" | "peringkat", "params": {nama: angka}, ...mode, "bobot": {"skema": "sama" | "inv_vol", "gross_maks": <= 1.0} }
@@ -60,11 +60,13 @@ Batas validator: <= 64 simpul, kedalaman <= 8, jendela 2..365, `lag` <= 30, <= 6
 posisi berlaku untuk bar i+1 (konvensi mesin), biaya + funding seperti bot lain. `spec.konstanta["rule"]` memuat aturan; `fingerprint` (dedupe) ikut menghitungnya.
 
 **Bukti ekuivalensi (kriteria penerimaan DSL):** B1-TREND, B6-BOUNCE, B2-RS dinyatakan ulang sebagai `rule` dan menghasilkan target IDENTIK (bit-ke-bit pada bobot) dengan bot template di seluruh riwayat. B5 (inv_vol, universe tetap) kemungkinan
-bisa; B4 butuh fitur umur-listing; B3 (carry) butuh funding + spot -> DI LUAR kosakata v1 (dicatat jujur).
+bisa; B4 butuh fitur umur-listing; B3 (carry) butuh funding + spot -> DI LUAR kosakata aturan (dicatat jujur).
 
-**Tidak termasuk v1:** data funding / on-chain / berita, intraday (B2 epik ini), pembelajaran mesin. Untuk itu ada jenis `code` dan `feed`.
+**Tidak termasuk tahap ini:** data funding / on-chain / berita, intraday (B2 epik ini), pembelajaran mesin. Untuk itu ada jenis `code` dan `feed`.
 
-### 3.2 `code` - fungsi kode pengguna di sandbox [USULAN; dibangun KEDUA]
+**Publik:** salinan formulir `rule` (tanpa kontak) ikut `ledger/pengajuan/masuk/` seperti formulir template, supaya siapa pun bisa mengulang replay. Penerbit yang butuh kerahasiaan memakai `code` (privat) atau `feed`.
+
+### 3.2 `code` - fungsi kode pengguna di sandbox [DISETUJUI; kode PRIVAT; urutan di §7]
 
 Kontrak: `PARAMS = {"N": 60}` (angka bernama yang boleh digeser G5) dan `def target(bars, params) -> {aset: bobot}`. **Kausalitas oleh konstruksi:** mesin memanggil `target` sekali per bar i dengan data DIPOTONG <= i (tuple tak
 bisa diubah), jadi kode tidak pernah menerima masa depan; uji kausalitas tambahan (hitung ulang di sampel bar dengan data dipotong, bobot harus sama) menangkap kebocoran lewat keadaan global.
@@ -74,18 +76,21 @@ Pagar eksekusi (lapis demi lapis, karena kode asing = risiko terbesar epik ini):
    dunder, tanpa `global/nonlocal` ke modul, ukuran <= 16 KB.
 2. **Proses anak** dengan batas CPU, memori, waktu dinding, jumlah panggilan; tanpa jaringan; builtins terbatas.
 3. **Dijalankan DUA kali** pada data sama: keluaran harus identik (deterministik); bobot terhingga, gross <= 1.
-4. **Pekerjaan GitHub TERPISAH** tanpa rahasia dan tanpa izin tulis (`permissions: contents: read`); kode asing hanya berjalan di sana. Yang diserahkan ke pekerjaan tepercaya hanya DATA (bobot per bar per varian, JSON
-   ber-batas ukuran) yang kemudian dijalankan melalui gerbang + komit. Siapa pun bisa mengulang pekerjaan itu pada kode dan data publik yang sama.
+4. **Pelari terisolasi dengan kode PRIVAT** (keputusan builder 6 Okt malam). Selama repo publik, kode pengguna TIDAK pernah masuk repo atau GitHub Actions publik; salinan publik hanya memuat sha kode + ukuran. Kode disimpan di volume privat gerbang
+   dan dijalankan oleh pelari terpisah tanpa rahasia (layanan Railway sendiri yang hanya menerima kode + bar publik dan mengembalikan DATA berbatas: bobot per bar per varian); gerbang G1-G11 + komit dijalankan oleh pihak tepercaya. Setelah repo menjadi privat
+   (builder: *"kalau production ready nanti kubuat private reponya"*), kode boleh disimpan di repo dan pekerjaan GitHub terpisah tanpa rahasia (`permissions: contents: read`) menjadi pilihan.
 
-**Pertanyaan builder:** kode publik (bisa disalin = alpha bocor) atau tersegel? Rekomendasi: publik (konsisten dengan semua yang lain di Fabius; perlindungan penerbit = bagi hasil + penanda waktu pra-registrasi), sampai ada kebutuhan lain.
+**Keputusan builder (6 Okt malam): kode pengguna PRIVAT** (*"jgn publik krn repo publik dan hackathon, kalau production ready nanti kubuat private reponya jd ya aman aja"*). Akibatnya: (a) bot `code` ber-label kepercayaan lebih rendah ("kode privat, tidak bisa diulang publik") seperti `feed`,
+kecuali repo menjadi privat; (b) jenis `code` baru dibuka untuk pengguna luar setelah repo privat ATAU setelah jalur penyimpanan + pelari privat di atas dirancang dan disetujui builder (itu sebabnya `code` dibangun belakangan, §7); (c) peninjau LLM (xkiro, pihak ketiga) MEMBACA kode, dan formulir
+menyatakannya ("kode dikirim ke penyedia model peninjau"); (d) laporan peninjau yang publik tidak mengutip kode secara utuh.
 
-### 3.3 `feed` - program pengguna menerbitkan sinyalnya sendiri [USULAN; dibangun KETIGA]
+### 3.3 `feed` - program pengguna menerbitkan sinyalnya sendiri [DISETUJUI; dibangun terakhir]
 
 Untuk metode yang tidak bisa dideklarasikan atau dijalankan kita (ML, data on-chain, kode besar). **Tidak bisa direplay**, jadi gerbang berbasis replay (G1-G8) tidak berlaku. Yang berlaku: **bukti maju**: bobot target bertanda tangan dikomit SEBELUM
-penutupan bar (pola `SelectionAnchor`: komit sebelum `barClose`, satu per bar, hash di rantai), dinilai maju di ledger paper yang sama. Karena tidak ada bukti historis: jendela bayangan lebih panjang (usulan 2x = 120 hari), tanpa slot sampai terbukti,
+penutupan bar (pola `SelectionAnchor`: komit sebelum `barClose`, satu per bar, hash di rantai), dinilai maju di ledger paper yang sama. Karena tidak ada bukti historis: jendela bayangan lebih panjang (disetujui 2x = 120 hari), tanpa slot sampai terbukti,
 dan label kepercayaan lebih rendah ("tidak bisa diverifikasi ulang") di semua tampilan. Tahap LLM tetap berlaku (menilai teori, kejujuran klaim, risiko).
 
-## 4. Gerbang untuk jenis baru [USULAN]
+## 4. Gerbang untuk jenis baru [DISETUJUI]
 
 | Gerbang | `template` (sekarang) | `rule` / `code` | `feed` |
 |---|---|---|---|
@@ -93,18 +98,20 @@ dan label kepercayaan lebih rendah ("tidak bisa diverifikasi ulang") di semua ta
 | **G5 plateau** | param x0,5..x1,5 (SATU parameter) | tiap **parameter bernama** x0,5..x1,5 satu per satu + semua bersama; plateau seperti sekarang; **tanpa parameter bernama = G5 GAGAL** (tidak ada klaim kekokohan) | tidak berlaku |
 | G8 placebo | hipotesis nol per metode (`NULL_KIND`) | bawaan "waktu" (pergeseran melingkar) pada eksposur yang sama; `alokasi` bila bobot nyaris konstan | tidak berlaku |
 | hitungan percobaan keluarga (P83) | k dari registri | jumlah varian G5 + `evidence.percobaan` ikut dihitung supaya kebebasan tidak jadi pintu overfit murah | bukti maju saja |
-| bayangan maju | 60 hari | 60 hari | 120 hari (usulan) |
+| bayangan maju | 60 hari | 60 hari | 120 hari (disetujui) |
 
-## 5. Peninjau LLM "agent pemilik Fabius" (P168) [USULAN]
+## 5. Peninjau LLM "agent pemilik Fabius" (P168) [DISETUJUI]
 
 ### 5.1 Peran, batas, model
 
 - **Peran:** peninjau permusuhan + due diligence yang bekerja untuk pemilik Fabius. Dua tugas berurutan: (1) MELINDUNGI Fabius (pengguna, rekam jejak, modal slot, posisi hukum), (2) MENINGKATKAN Fabius (kontribusi marjinal, saran konkret).
 - **Batas:** hanya MEMBATASI (vonis `LANJUT`/`TAHAN`/`TOLAK`); tidak bisa meloloskan yang gagal teknis, tidak mengubah ambang/slot/anggaran; tanpa alat, tanpa jaringan.
-- **Model:** penyedia xkiro (OpenAI-compatible `https://api.xkiro.com/v1`, kunci `XKIRO_API_KEY` yang sudah ada di Railway `fabius-x402`), model **GLM 5.3**, **effort bawaan** (parameter `reasoning_effort` DIHILANGKAN; `analis.call_model` sekarang selalu
-  mengirimnya, jadi perlu cabang baru). **Id model persis di xkiro BELUM terverifikasi** (kunci tidak ada di laptop; daftar model dibaca lewat gerbang atau builder memberi id-nya).
-- **Tempat panggilan:** rekomendasi pekerjaan kedua `bot-review.yml` (repo publik; laporan + jejak ikut rantai hash repo; butuh rahasia repo `XKIRO_API_KEY` yang builder tambahkan). Alternatif: gerbang menjalankan dan menyajikan laporan (tanpa rahasia
-  baru; tidak ikut repo publik).
+- **Model (id terverifikasi 6 Okt lewat Railway):** penyedia xkiro (OpenAI-compatible `https://api.xkiro.com/v1`, kunci `XKIRO_API_KEY` di Railway `fabius-x402`), model **`z-ai/glm-5.3`** (konteks 1.000.000 token; $1,40 per sejuta token masuk, $4,40 keluar; ada juga
+  `z-ai/glm-5.3-flash` $0,15/$0,50), **effort bawaan** (parameter `reasoning_effort` DIHILANGKAN; `analis.call_model` sekarang selalu mengirimnya, jadi perlu cabang baru). BUKAN model `:free`: butuh saldo xkiro (builder mengizinkan satu uji panggilan kecil < $0,01).
+  Perkiraan biaya (ASUMSI, belum diukur): 40 ribu token masuk + 8 ribu keluar ≈ $0,09 per tinjauan.
+- **Tempat panggilan (keputusan builder 6 Okt malam): gerbang = layanan Railway `fabius-x402`**, bukan GitHub Actions: tidak ada kunci yang dipindah. Alur: gerbang membaca status tinjauan teknis dari repo (sudah dilakukan untuk status pengajuan), memanggil peninjau untuk
+  pengajuan yang BARU lolos tahap teknis, menyimpan laporan (sha brief + sha masukan + jawaban mentah + vonis) di volumenya dan menyajikannya di endpoint publik; tinjauan harian GitHub mengambilnya ke `ledger/pengajuan/analisis/` (jejak publik tanpa rahasia baru;
+  laporan jenis `code` diringkas, tidak mengutip kode).
 
 ### 5.2 Keamanan masukan tak tepercaya
 
@@ -112,7 +119,7 @@ Seluruh isi pengajuan (teori, alasan, kode, nama, teks bebas) dibungkus `<submis
 yang tidak lolos skema = dianggap gagal (`TAHAN` otomatis + dicatat). Tidak ada alat, tidak ada jaringan, tidak ada akses ke rahasia. Teks dari LLM yang tampil di web diperlakukan sebagai teks biasa (bukan HTML). Sha brief + sha masukan + jawaban mentah
 disimpan (jejak; jawaban LLM tidak bisa diulang persis, tetapi bisa diperiksa).
 
-### 5.3 BRIEF peninjau BOT (draf v0, bahasa Inggris = prompt sistem)
+### 5.3 BRIEF peninjau BOT (DISETUJUI 6 Okt malam; bahasa Inggris = prompt sistem)
 
 ```
 You are the Fabius Owner Agent for BOT REVIEW. Fabius is a verifiable signal operator on BNB Chain testnet: every claim it makes must be reproducible from public data and public code, and it never promises profit.
@@ -149,7 +156,9 @@ duplicate of an incumbent). When torn between LANJUT and TAHAN choose TAHAN. Whe
 Output exactly one JSON object matching the schema given with the input, nothing else. Plain English, short sentences, no filler. At least three objections unless no_objection_reason explains why fewer are honest.
 ```
 
-Skema keluaran (draf; `tag` dari kosakata tetap supaya set kalibrasi bisa dinilai otomatis):
+sha256 teks brief bot (UTF-8, isi blok di atas tanpa pagar): `0xb72e1e772887338458a05b44f58fc80338818909b20a8fcf53254e43f04ed331`. Teks persis ini disalin ke berkas kode saat P168a; mengubahnya = sha baru + set kalibrasi diulang.
+
+Skema keluaran (disetujui bersama brief; `tag` dari kosakata tetap supaya set kalibrasi bisa dinilai otomatis):
 
 ```
 { "verdict": "LANJUT|TAHAN|TOLAK", "confidence": 0-100, "one_line": "<=200 chars", "restated_strategy": "", "case_for": "", "case_against": "",
@@ -162,7 +171,7 @@ Skema keluaran (draf; `tag` dari kosakata tetap supaya set kalibrasi bisa dinila
   "monitoring": [], "data_gaps": [], "injection_findings": [{"quote": ""}] }
 ```
 
-### 5.4 BRIEF peninjau AGENT (draf v0)
+### 5.4 BRIEF peninjau AGENT (DISETUJUI 6 Okt malam)
 
 ```
 You are the Fabius Owner Agent for AGENT REVIEW. An external AI agent sits at Fabius' 5-minute desk in a trial seat. Each cycle it answers with a JSON decision; trial answers are recorded and anchored on-chain but not counted in the
@@ -189,7 +198,9 @@ Verdicts. LANJUT = no objection to promotion once the locked numeric rules are m
 Output the same JSON schema; objection tags add HERDING, MANIPULATION, BOILERPLATE, HALLUCINATION, OVERCONFIDENCE, INSTABILITY.
 ```
 
-### 5.5 Set kalibrasi = kriteria penerimaan peninjau [USULAN]
+sha256 teks brief agent (UTF-8, isi blok di atas tanpa pagar): `0xe66fb05aca4420f30d08caca12b9e1da18a1bd0c8245d662235d5e02c0e92702`. Teks persis ini disalin ke berkas kode saat P168a; mengubahnya = sha baru + set kalibrasi diulang.
+
+### 5.5 Set kalibrasi = kriteria penerimaan peninjau [DISETUJUI]
 
 Peninjau tidak masuk jalur sebelum lulus set kasus buatan (fixture; dijalankan terhadap model sungguhan, hasilnya dicatat; dinilai otomatis dari `tag` + `verdict`):
 
@@ -215,36 +226,39 @@ Peninjau tidak masuk jalur sebelum lulus set kasus buatan (fixture; dijalankan t
 
 Kriteria lulus: semua kasus buruk ditahan/ditolak dengan tag yang benar, kasus baik tidak ditolak, tidak ada angka karangan (setiap `evidence_key` ada di masukan), 3 kali jalan konsisten pada vonis.
 
-## 6. Agent: dua tahap [USULAN]
+## 6. Agent: dua tahap [DISETUJUI]
 
-Tahap 1 = identitas ERC-8004 + tanda tangan + uji kering jawaban + aturan kursi (C1/F-D121, sudah ada). Tahap 2 = agent LLM menganalisis N siklus pertama (usulan N = 288) dan boleh MENAHAN kenaikan ke kursi aktif; aturan numerik F-D113 tetap berlaku.
+Tahap 1 = identitas ERC-8004 + tanda tangan + uji kering jawaban + aturan kursi (C1/F-D121, sudah ada). Tahap 2 = agent LLM menganalisis N siklus pertama (disetujui N = 288) dan boleh MENAHAN kenaikan ke kursi aktif; aturan numerik F-D113 tetap berlaku.
 Berlaku untuk agent luar; agent rumah tidak ditinjau ulang kecuali builder meminta. Halaman terpisah: [[00-Overview/03 - Decisions]] F-D123 (`/submit-agent`, P169, selesai).
 
-## 7. Fase dan kriteria keluar [USULAN; kriteria rinci di baris backlog P167/P168]
+## 7. Fase dan kriteria keluar [DISETUJUI; kriteria rinci di baris backlog P167/P168]
 
-| Fase | Isi | Bergantung pada |
-|---|---|---|
-| P167a | skema `kind=rule` + validator + evaluator + bukti ekuivalensi B1/B6/B2 + G5 atas parameter bernama + pembangun aturan di `/submit` | persetujuan kosakata DSL |
-| P168a | peninjau BOT: brief disetujui, panggilan xkiro GLM 5.3, skema ketat, set kalibrasi, laporan publik, integrasi sesudah tahap teknis | persetujuan brief, id model, tempat panggilan |
-| P167b | jenis `code`: analisis statis, sandbox, pekerjaan terpisah, kausalitas; editor kode di `/submit` | keputusan kode publik/tersegel |
-| P168b | peninjau AGENT + brief agent + penahanan kenaikan kursi | P168a |
-| P167c | jenis `feed`: endpoint komit bertanda tangan, bukti maju 120 hari, label kepercayaan | jendela bayangan |
+| Urutan | Fase | Isi | Syarat |
+|---|---|---|---|
+| 1 | P167a | skema `kind=rule` + validator + evaluator + bukti ekuivalensi B1/B6/B2 + G5 atas parameter bernama + pembangun aturan di `/submit` (skema pengajuan naik ke v2) | disetujui |
+| 2 | P168a | peninjau BOT: brief bot, panggilan xkiro `z-ai/glm-5.3` lewat gerbang, skema ketat, set kalibrasi, laporan publik, integrasi sesudah tahap teknis | disetujui; uji satu panggilan kecil |
+| 3 | P168b | peninjau AGENT + brief agent + penahanan kenaikan kursi (N = 288 siklus) | P168a |
+| 4 | P167b | jenis `code`: analisis statis, pelari terisolasi, kausalitas; editor kode di `/submit`; kode PRIVAT | repo privat atau jalur privat yang disetujui |
+| 5 | P167c | jenis `feed`: endpoint komit bertanda tangan, bukti maju 120 hari, label kepercayaan | disetujui |
+
+Urutan (builder: *"gas yg menurutmu paling oke"*): `rule` dulu karena deterministik dan fixture kalibrasi peninjau (aturan overfit / mengintip masa depan) paling alami ditulis sebagai aturan; peninjau bot sebelum agent karena bot adalah pintu utama; `code` dan `feed` belakangan.
 
 ## 8. Risiko dan pertanyaan terbuka
 
-1. **Kode asing** = risiko terbesar: tiga lapis (statis, proses anak ber-batas, pekerjaan terpisah tanpa rahasia). Bila ragu, jenis `code` ditunda sampai `rule` + peninjau LLM stabil.
+1. **Kode asing** = risiko terbesar: tiga lapis (statis, proses anak ber-batas, pelari terpisah tanpa rahasia). `code` dibangun belakangan dan baru dibuka untuk pengguna luar setelah repo privat atau jalur privat disetujui; bila ragu, ditunda sampai `rule` + peninjau LLM stabil.
 2. **Overfitting karena kebebasan:** G5 atas parameter bernama + hitungan percobaan keluarga + peninjau yang diuji; tanpa itu kebebasan = pintu masuk bot buruk.
 3. **LLM bisa dibujuk:** hanya membatasi, masukan = data, skema ketat, set kalibrasi termasuk injeksi.
-4. **Biaya + batas laju model `:free`:** peninjauan hanya setelah tahap teknis lolos (jarang, beberapa per hari); `TAHAN` otomatis bila panggilan gagal (tidak pernah lolos karena LLM mati).
+4. **Biaya + saldo:** `z-ai/glm-5.3` BUKAN `:free` (≈ $0,09 per tinjauan, asumsi); peninjauan hanya setelah tahap teknis lolos (jarang, beberapa per hari); `TAHAN` otomatis bila panggilan gagal atau saldo habis (tidak pernah lolos karena LLM mati).
 5. **Hukum:** bot penerbit + bagi hasil tetap di bawah F-D72 (telaah hukum sebelum tingkat 1); tidak berubah.
+6. **Privasi kode:** kode privat tidak mungkin disimpan di repo publik -> `code` menunggu repo privat atau jalur privat; peninjau LLM pihak ketiga membaca kode (diumumkan di formulir); laporan publik tidak mengutip kode.
 
-**Keputusan yang diminta dari builder (checklist):**
-- [ ] Kosakata DSL v1 (§3.1) cukup / tambah-kurangi apa?
-- [ ] Brief bot (§5.3) dan brief agent (§5.4): setuju / ubah? (sha dikunci sesudah setuju)
-- [ ] Kode pengguna publik atau tersegel? (rekomendasi: publik)
-- [ ] Panggilan LLM: pekerjaan `bot-review.yml` (butuh rahasia repo `XKIRO_API_KEY`) atau gerbang?
-- [ ] Id model GLM 5.3 di xkiro (atau izin saya membacanya lewat gerbang)
-- [ ] Jendela bayangan `feed` (usulan 120 hari) dan N siklus untuk agent (usulan 288)
-- [ ] Urutan fase (§7) boleh dimulai dari P167a?
+**Keputusan builder 6 Okt malam (checklist selesai; [[00-Overview/03 - Decisions]] F-D125):**
+- [x] Kosakata aturan (§3.1): disetujui; tanpa label versi.
+- [x] Brief bot (§5.3) dan brief agent (§5.4): *"Gas aja"*; sha tercatat di bawah tiap brief.
+- [x] Kode pengguna: **PRIVAT** (repo publik + hackathon; repo dibuat privat saat production ready).
+- [x] Panggilan LLM: **gerbang (Railway)**.
+- [x] Id model: dibaca lewat Railway: **`z-ai/glm-5.3`**.
+- [x] Jendela bayangan `feed` 120 hari; N agent 288 (ikut *"saya acc semua decision epik12"*).
+- [x] Urutan fase: P167a -> P168a -> P168b -> P167b -> P167c.
 
 **Terkait:** [[00-Overview/03 - Decisions]] F-D122 · F-D123 · F-D121 · [[08-Backlog/07 - Epik Kolaborasi Bot Terbuka]] · [[04-Tools/TL37 - jalur pengajuan bot]] · [[04-Tools/TL38 - agent luar di meja (pull)]]

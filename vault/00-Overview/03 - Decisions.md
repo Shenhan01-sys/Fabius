@@ -3463,7 +3463,7 @@ tepercaya · jenis `feed`: hanya bukti maju (jendela bayangan lebih panjang, tan
 **Fakta pendukung (6 Okt):** xkiro = `https://api.xkiro.com/v1` (OpenAI-compatible), kunci `XKIRO_API_KEY` ada di Railway `fabius-x402` dan tidak di laptop; id persis "GLM 5.3" di xkiro belum terverifikasi;
 `analis.call_model` selalu mengirim `reasoning_effort` (effort bawaan = parameter dihilangkan).
 
-**Terkait:** F-D120 · F-D121 · F-D71 · F-D72 · F-D88 · P161 · P166 · P167 · P168 · [[04-Tools/TL37 - jalur pengajuan bot]] · [[09-Inbox/Session-2026-10-02]] §130 · [[08-Backlog/12 - Epik Pengajuan Terbuka dan Peninjau LLM]] (spesifikasi + draf brief)
+**Terkait:** F-D120 · F-D121 · F-D71 · F-D72 · F-D88 · P161 · P166 · P167 · P168 · [[04-Tools/TL37 - jalur pengajuan bot]] · [[09-Inbox/Session-2026-10-02]] §130 · [[08-Backlog/12 - Epik Pengajuan Terbuka dan Peninjau LLM]] (spesifikasi + draf brief; DISETUJUI di F-D125)
 
 ## F-D123 - Halaman Submit Agent terpisah dari Submit Bot · 6 Okt 2026 (WIB)
 
@@ -3490,4 +3490,37 @@ Builder: *"Canary -> nanti dulu, ini fokus hackathon jd blom brani duit asli"*. 
    terdokumentasi di [[04-Tools/TL29 - canary uang nyata]].
 
 **Terkait:** F-D92 · F-D96 · F-D97 · F-D90 · P133 · P120 · P122 · P123 · [[04-Tools/TL29 - canary uang nyata]]
+
+## F-D125 - Epik 12 disetujui (pengajuan terbuka + peninjau LLM); kode pengguna PRIVAT; tanpa label v1 · 6 Okt 2026 (WIB, malam)
+
+Builder (6 Okt malam): *"saya acc semua decision epik12 mu"*, dengan jawaban atas tujuh pertanyaan: kosakata aturan *"v1 kan udh ga dipake ... kita hanya pakai v2"*; brief bot + agent *"Gas aja"*; kode pengguna *"jgn publik krn repo publik dan hackathon, kalau
+production ready nanti ku buat private reponya jd ya aman aja"* (jawaban ringkas: *private*); peninjau lewat gerbang *"boleh"* (gerbang = Railway `fabius-x402`); id model *"gas baca aja via railway"*; jendela `feed` *"gas 120 hr"*; urutan fase *"gas yg menurutmu paling oke"*.
+Mengikat (menggantikan label USULAN di F-D122 dan [[08-Backlog/12 - Epik Pengajuan Terbuka dan Peninjau LLM]]):
+
+1. **Semua rancangan epik 12 disetujui:** jenis `rule` / `code` / `feed`; jalur dua tahap (bot teknis, lalu agent LLM yang hanya MEMBATASI); G5 atas parameter bernama; kosakata aturan + batas validator; sandbox kode; `feed` dengan bukti maju; set kalibrasi sebagai kriteria penerimaan
+   peninjau; N = 288 siklus untuk peninjauan agent.
+2. **Kode pengguna PRIVAT.** Selama repo publik, kode pengguna tidak boleh masuk repo / GitHub Actions publik (hanya sha + ukuran publik). Jenis `code` dibuka untuk pengguna luar setelah repo privat, atau lewat jalur penyimpanan + pelari privat yang dirancang di P167b dan
+   disetujui builder. Bot `code` ber-label kepercayaan lebih rendah selama kodenya privat. Peninjau LLM pihak ketiga membaca kode (diumumkan di formulir); laporan publik tidak mengutip kode. `rule` tetap publik (replay publik) kecuali builder mengubah.
+3. **Peninjau LLM lewat gerbang (Railway `fabius-x402`)**, bukan GitHub Actions; model **`z-ai/glm-5.3`** di xkiro (dibaca lewat Railway 6 Okt: konteks 1.000.000, $1,40 / $4,40 per sejuta token masuk / keluar; BUKAN `:free`), effort bawaan (parameter `reasoning_effort` dihilangkan);
+   uji satu panggilan kecil (< $0,01) diizinkan.
+4. **Brief bot + brief agent disetujui**; sha tercatat di epik 12 §5.3 / §5.4 (bot `0xb72e1e772887338458a05b44f58fc80338818909b20a8fcf53254e43f04ed331`, agent `0xe66fb05aca4420f30d08caca12b9e1da18a1bd0c8245d662235d5e02c0e92702`); perubahan = sha baru + set kalibrasi diulang.
+5. **Jendela bayangan `feed` 120 hari.**
+6. **Urutan fase:** P167a (rule) -> P168a (peninjau bot) -> P168b (peninjau agent) -> P167b (code) -> P167c (feed).
+7. **Tanpa label v1/v0:** hal baru tidak diberi nomor versi (diidentifikasi sha / tanggal); skema pengajuan naik ke v2 saat jenis baru dibuka (P167a), karena skema lama `SCHEMA_V = 1` hanya untuk template.
+
+**Terkait:** F-D122 · F-D123 · F-D121 · P167 · P168 · [[08-Backlog/12 - Epik Pengajuan Terbuka dan Peninjau LLM]]
+
+## F-D126 - Rapikan: F-D90 dicabut (nisan); P90 gelombang 2 gas; PARAMS_KURSI satu v2 · 6 Okt 2026 (WIB, malam)
+
+Builder (6 Okt malam): *"Hapus F-D90, P90 gas, P170 di rebrand ke v2"* + *"F-D90 -> nisan"* + *"A, tapi kalau di codebase km bikin v3, dimigrate dan gabungkan ke v2 biar ga terpisah"*. Mengikat:
+
+1. **F-D90 dicabut, tinggal nisan** (nomor tetap supaya rujukan lama tidak menggantung). Vault ada di repo publik: riwayat git tetap menyimpan teks lama; yang berubah hanya keadaan vault sekarang. Dua hal dari F-D90 yang masih berlaku dipindah ke sini (butir 2 dan 3).
+2. **P90 gelombang 2 DISETUJUI ("P90 gas"):** setel `placebo_max_p` (G8) dan mungkin `min_calmar` (K2) pada benih setel, konfirmasi pada benih baru; target positif-palsu batas atas Wilson <= 5 % di kelima dunia sambil memaksimalkan daya; protokol pra-registrasi ditulis dan di-push SEBELUM lari;
+   tidak ada ambang berubah sebelum keputusan builder (kunci v2 atau tetap v1). R3-R11 tetap menunggu.
+3. **P75 / P80 tetap ditunda** (telaah hukum ToS sebelum uang nyata; telaah hukum menjual sinyal): tidak dikerjakan selama hackathon (bersama F-D124); syarat telaah hukum F-D72 tidak dicabut.
+4. **`PARAMS_KURSI` satu v2:** tidak ada v3. Aturan F-D121 #9 (kursi uji maks 2016 siklus; agent luar maks 2 dari 7 kursi aktif) DIGABUNG ke v2, `v` di kode = 2. Riwayat sha (tetap tercatat, tidak ditulis ulang): revisi pertama v2 (F-D119) `0x47f1c0587a8cf60b3c68cf8098850018b4ff11aa25c4e44685de16209a77ea40`
+   hidup 6 Okt ±11:00Z - 15:20Z; "v3" `0x76f7196a92a419cee466250a84dcc2cd08bb181dc3d7b6e334fac3248d255e00` hidup 15:20Z - migrasi; v2 sekarang: sha dicatat di sini sesudah migrasi live. Evaluasi kursi hanya jalan 00:00 UTC dan belum ada yang berjalan di bawah aturan baru,
+   jadi tidak ada perubahan perilaku akibat penamaan.
+
+**Terkait:** F-D90 (nisan) · F-D113 · F-D119 · F-D121 · F-D124 · F-D125 · [[08-Backlog/08 - Riset Optimasi Ambang]]
 
