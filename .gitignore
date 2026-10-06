@@ -55,3 +55,6 @@ qwen-code-export-*.md
 .analis.env
 # kunci otorisasi Privy (P138e, session signer bot)
 .privy.env
+
+# Obsidian: pengaturan tampilan lokal builder (dibuat Obsidian saat vault dibuka), bukan isi vault
+vault/.obsidian/
