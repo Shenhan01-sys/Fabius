@@ -68,6 +68,10 @@ instrumennya BTC + PAXG pilihan agent B5 -> aturan B2 (butuh >= 8 aset) datar, b
 
 **Penamaan (F-D115):** di web meja ini = "Fabius" (tanpa "v2"), revisi rumus ditulis r1/r2/r3 (= `PARAMS2.v`); buku per agent = "Rapor agent". Meja v1 tidak ditampilkan (`V1_TAMPIL = False`), mesinnya masih berjalan sampai builder memutuskan.
 
+## Replay perputaran (P163)
+
+`GET /desk/arsip/<YYYY-MM-DD>` (`Gate.meja_arsip`, baca saja): rekaman konsensus Fabius (agent `v2`, lengkap: bot, target, isi, ekuitas, dasar) + harga isi v2 per siklus (`harga_v2` dari berkas siklus) untuk satu hari UTC - isinya sudah publik lewat `/desk` + `/desk/proof`, hanya dikumpulkan. `python -X utf8 tools/meja_replay.py --dari <tgl> --sampai <tgl>`: (1) fee TERCATAT dipecah per sebab tiap isi (ganti bot > rem rugi > instrumen masuk/keluar > balik arah > ubah ukuran); (2) replay `meja.isi` yang sama pada target aturan per siklus + harga tercatat; kebijakan r3 harus mengulang ekuitas tercatat (bukti replay setia) sebelum kebijakan lain dibandingkan. Kebijakan hanya mengubah target sebelum diisi (aturan bot tidak disentuh): `pita_ukuran` (posisi searah tidak diubah bila selisih < 50 % ukurannya), `lekat_instrumen` (instrumen yang hilang dari pilihan tetap dipegang n siklus, bot sama), `jeda` (ubah posisi tiap >= n siklus kecuali ganti bot / rem). Rem rugi harian (SK-M10) dihitung ulang dari ekuitas replay. **Batas replay:** siklus yang tercatat datar karena rem tidak menyimpan target aturan, jadi tetap datar di semua kebijakan; sampel ±1 hari - kebijakan dipilih menurut prinsip biaya, bukan dicocokkan ke sampel.
+
 ## Batas yang dicatat jujur
 
 Hasil meja v2 = strategi baru (universe pilihan AI + aturan terkunci), BUKAN rekam jejak bot harian; uji maju F-D16 tidak disentuh. Aturan harian

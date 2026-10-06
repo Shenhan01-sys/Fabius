@@ -309,6 +309,20 @@ class GateTests(unittest.TestCase):
         self.assertEqual(h["pipa"]["agen"], [{"slug": "glm", "status": "ok", "kursi": "aktif", "bot": "B1-TREND"}])
         self.assertEqual((h["pipa"]["root"], h["pipa"]["tx"]), ("0xroot", "0xtx"))
 
+    def test_archive_returns_only_fabius_records_and_cycle_prices(self):
+        t0 = 1_791_200_100
+        for r in ({"siklus": t0, "agent": "v2", "ekuitas": 9_990.0, "target": {"X": {"w": 0.1}}, "hash": "0xa"},
+                  {"siklus": t0, "agent": "konsensus", "ekuitas": 1.0, "hash": "0xk"}, {"siklus": t0, "agent": "v2:glm", "hash": "0xg"}):
+            self.g.meja_simpan([r], {"siklus": t0, "daun": [r["hash"]], "harga": {"BTCUSDT": 1.0}, "harga_v2": {"XUSDT": 2.0}, "root": "0xr", "status": "dikomit", "n": 1}, {}, {})
+        tgl = time.strftime("%Y-%m-%d", time.gmtime(t0))
+        code, a = self.g.meja_arsip(tgl)
+        self.assertEqual(code, 200)
+        self.assertEqual([r["hash"] for r in a["fabius"]], ["0xa"])                              # v1 + agent tidak ikut
+        self.assertEqual(a["siklus"][0]["harga_v2"], {"XUSDT": 2.0})
+        self.assertNotIn("harga", a["siklus"][0])
+        self.assertEqual(self.g.meja_arsip("../etc")[0], 400)
+        self.assertEqual(self.g.meja_arsip("2020-01-01")[0], 404)
+
     def test_agent_detail_counts_measured_24h_stats_and_lists_history_newest_first(self):
         t0 = 1_791_200_100
         rek = [{"siklus": t0 - 300, "agent": "v2:glm", "status": "ok", "agent_id": 2558, "model": "deepseek", "keputusan": {"bot": "B1-TREND", "ringkasan": "a", "target": {}},

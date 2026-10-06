@@ -452,6 +452,26 @@ class Gate:
         return 200, {"buku": buku, "statistik": stat, "riwayat": riwayat, "model": next((r.get("model") for r in reversed(mine) if r.get("model")), None),
                      "agent_id": next((r.get("agent_id") for r in reversed(mine) if r.get("agent_id")), None)}
 
+    def meja_arsip(self, tgl: str) -> Tuple[int, dict]:
+        """P163: arsip baca-saja satu hari UTC - rekaman buku Fabius (konsensus v2, lengkap) + harga isi v2 per siklus, untuk replay deterministik
+        (`tools/meja_replay.py`). Isinya sama dengan yang sudah publik lewat /desk + /desk/proof; tanpa rekaman v1/agent supaya ringkas."""
+        if not re.fullmatch(r"20\d\d-\d\d-\d\d", tgl or ""):
+            return 400, {"error": "format tanggal YYYY-MM-DD"}
+        out: Dict[str, list] = {"fabius": [], "siklus": []}
+        for kind, key in (("rekaman", "fabius"), ("siklus", "siklus")):
+            path = os.path.join(self.meja_dir, kind, f"{tgl}.jsonl")
+            if not os.path.exists(path):
+                continue
+            with open(path, encoding="utf-8") as f:
+                for ln in f:
+                    if kind == "rekaman" and '"agent": "v2",' not in ln:
+                        continue
+                    r = json.loads(ln)
+                    out[key].append(r if kind == "rekaman" else {k: r.get(k) for k in ("siklus", "harga_v2", "root", "tx", "status", "n")})
+        if not out["fabius"] and not out["siklus"]:
+            return 404, {"error": f"tidak ada arsip {tgl}"}
+        return 200, {"tanggal": tgl, **out}
+
     def meja_fabius(self, max_age_s: int = 30) -> dict:
         """P164 Fabius Live Book: semua rekaman buku Fabius (agent "v2") sejak siklus pertama. Cache per berkas harian (berkas lama tidak berubah,
         hanya berkas hari ini yang dibaca ulang); baris disaring dengan teks sebelum diurai supaya rekaman agent/v1 tidak di-JSON-kan."""
@@ -912,6 +932,9 @@ def make_handler(gate: Gate):
                     return self._send(200, gate.data_view())
                 if parts[0] == "desk" and len(parts) == 3 and parts[1] == "proof":
                     code, body = gate.meja_proof(parts[2])
+                    return self._send(code, body)
+                if parts[0] == "desk" and len(parts) == 3 and parts[1] == "arsip":
+                    code, body = gate.meja_arsip(parts[2])
                     return self._send(code, body)
                 if parts[0] == "desk" and len(parts) == 2 and parts[1] == "fabius":
                     return self._send(200, gate.meja_fabius())
