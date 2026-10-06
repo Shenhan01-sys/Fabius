@@ -158,7 +158,8 @@
    "key_var": "ANALIS_QWEN27B_PRIVATE_KEY",
    "npc": {
     "short": "Qwen 27B"
-   }
+   },
+   "nonaktif": "builder 6 Okt: diturunkan - Groq 413 Payload Too Large di semua siklus (prompt v2 ±4,6 ribu token melebihi batas paket)"
   }
  ],
  "kursi_builder": [
