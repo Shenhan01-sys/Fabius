@@ -1,5 +1,5 @@
-"""F-D116 (USULAN, belum dikunci): rumus r4 "slot posisi" untuk buku Fabius - fungsi murni, dipakai replay P163 sekarang dan meja hidup sesudah
-dikunci (supaya yang diuji = yang dijalankan).
+"""F-D116 (DIKUNCI 6 Okt atas kata builder "Gas"): rumus r4 "slot posisi" untuk buku Fabius - fungsi murni yang dipakai SAMA oleh meja hidup
+(`meja2.siklus2`) dan replay P163 (`meja_replay.replay_slot`), supaya yang diuji = yang dijalankan. `PARAMS_SLOT` ikut sha PARAMS2 r4.
 
 Per siklus 5 menit (`langkah`): rem rugi -> tutup semua; selain itu tiap posisi dicek SL / TP / aturan keluar bot pembukanya, ditutup pada harga
 siklus; siklus yang menutup posisi tidak membuka posisi baru (jeda 1 siklus); sisanya slot kosong (maks 5) diisi kandidat konsensus urut skor.
@@ -11,7 +11,7 @@ from typing import Callable, Dict, List, Optional
 
 import meja
 
-PARAMS_SLOT = {"v": "r4-usulan", "maks_posisi": 5, "margin_min": 0.03, "margin_maks": 0.05, "leverage_maks": 5.0, "maks_per_posisi": 0.25,
+PARAMS_SLOT = {"v": "r4", "maks_posisi": 5, "margin_min": 0.03, "margin_maks": 0.05, "leverage_maks": 5.0, "maks_per_posisi": 0.25,
                "maks_gross": 1.25, "atr_hari": 14, "sl_atr": 1.0, "tp_atr": 2.0, "sl_per_likuidasi": 0.5, "jeda_siklus": 1, "siklus_s": 300,
                "konstanta_bot": {"B4-LISTING-FADE": {"margin": 0.02, "leverage": 1.0, "stop": False}}}    # F-D116 #7: konstanta bot terkunci menang
 
@@ -69,13 +69,43 @@ def kandidat(rec: dict, atr: Callable[[str], Optional[float]]) -> List[dict]:
 
 def _isi(b: dict, a: str, qty_baru: float, p: float, e: float, alasan: str, bot: Optional[str]) -> dict:
     cur = b["posisi"].get(a, {"qty": 0.0, "masuk": p})
-    b["saldo"] += cur["qty"] * (p - cur["masuk"])
+    pnl = cur["qty"] * (p - cur["masuk"])                                                        # untung/rugi pasar yang direalisasi isi ini
+    b["saldo"] += pnl
     fee = meja.PARAMS["fee"] * abs(qty_baru - cur["qty"]) * p
     b["saldo"] -= fee
     b["biaya"] = round(b["biaya"] + fee, 6)
     b["n_trade"] += 1
     return {"aset": a, "dari": round(cur["qty"] * p / e, 6), "ke": round(qty_baru * p / e, 6), "harga": p, "fee": round(fee, 6), "alasan": alasan,
-            "bot": bot}
+            "bot": bot, "pnl": round(pnl, 6)}
+
+
+def aset_dipegang(b: Optional[dict]) -> List[str]:
+    """Harga isi meja hidup WAJIB mencakup aset ini walau sudah keluar dari universe (replay 6 Okt: SOXSUSDT tanpa harga 136 siklus)."""
+    return sorted((b or {}).get("posisi") or {})
+
+
+def migrasi(b: dict, harga: Dict[str, float], bot: Optional[str]) -> List[dict]:
+    """Sekali saat r4 mulai: posisi buku r3 (tanpa metadata slot) ditutup pada harga siklus, alasan "r4 start"; buku (saldo, biaya) berlanjut."""
+    b.setdefault("jeda_sampai", 0)
+    lama = [a for a, x in b["posisi"].items() if "arah" not in x and harga.get(a)]
+    e = ekuitas(b, harga)
+    out = [_isi(b, a, 0.0, harga[a], e, "r4 start", bot) for a in sorted(lama)]
+    for a in lama:
+        b["posisi"].pop(a)
+    return out
+
+
+def snapshot(b: dict, harga: Dict[str, float]) -> List[dict]:
+    """Slot terbuka untuk rekaman (ikut di-hash) + web: bobot = notional bertanda / ekuitas, pnl = untung/rugi belum direalisasi."""
+    e = ekuitas(b, harga) or 1.0
+    out = []
+    for a, x in sorted(b["posisi"].items(), key=lambda kv: (kv[1].get("t", 0), kv[0])):
+        p = harga.get(a, x["masuk"])
+        out.append({"aset": a, "bot": x.get("bot"), "arah": x.get("arah"), "qty": round(x["qty"], 8), "masuk": x["masuk"], "harga": p,
+                    "w": round(x["qty"] * p / e, 6), "pnl": round(x["qty"] * (p - x["masuk"]), 4), "margin": x.get("margin"), "leverage": x.get("leverage"),
+                    "sl": None if x.get("sl") is None else round(x["sl"], 8), "tp": None if x.get("tp") is None else round(x["tp"], 8),
+                    "atr": x.get("atr"), "t": x.get("t")})
+    return out
 
 
 def langkah(b: dict, t0: int, harga: Dict[str, float], kand: List[dict], keluar_bot: Callable[[dict], bool], rem: bool,
@@ -90,7 +120,7 @@ def langkah(b: dict, t0: int, harga: Dict[str, float], kand: List[dict], keluar_
         naik = pos["arah"] > 0
         if rem:
             why = "daily loss brake"
-        elif pos["sl"] is not None and (p <= pos["sl"] if naik else p >= pos["sl"]):
+        elif pos["sl"] is not None and (p <= pos["sl"] if naik else p >= pos["sl"]):              # SK-M31: ditutup pada harga siklus, bukan level SL
             why = "SL"
         elif pos["tp"] is not None and (p >= pos["tp"] if naik else p <= pos["tp"]):
             why = "TP"

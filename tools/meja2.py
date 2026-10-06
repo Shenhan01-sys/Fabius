@@ -17,18 +17,22 @@ from typing import Callable, Dict, List, Optional, Tuple
 
 import meja
 import meja_data as md
+import meja_slot as ms
 from engine.bots import REGISTRY as ATURAN
 from engine.data import ListingEvent, MarketData
 from engine.series import Series
 from engine.spec import SPECS
 
-PARAMS2 = {"v": 3, "maks_instrumen": 8, "universe_top": 50, "hysteresis_poin": 15, "pegang_min_siklus": 3, "harian_limit": 120,
+PARAMS2 = {"v": 4, "maks_instrumen": 8, "universe_top": 50, "hysteresis_poin": 15, "pegang_min_siklus": 3, "harian_limit": 120,
            "likuiditas_min_usd": 50_000, "rugi_harian_maks": 0.03,
            # F-D113 #3: ambang proporsional terhadap n kursi AKTIF (n = 3 -> kuorum 2, instrumen/veto >= 2 agent, skor instrumen >= 1,2 = nilai v1)
            "ambang": "kuorum max(2, ceil(n/2)); instrumen + veto max(2, ceil(n/3)) agent; skor instrumen 0,4 n",
            "instrumen_dari": "agent yang memilih bot akhir; tanpa pemilih + bot ditahan -> instrumen siklus lalu",
            # v3 (koreksi 6 Okt): aturan dengan jumlah aset minimum (B2-RS min_aset 8) diisi skor tertinggi pemilih bot akhir sampai minimum
-           "isi_minimum_aturan": "konstanta min_aset spesifikasi bot akhir"}
+           "isi_minimum_aturan": "konstanta min_aset spesifikasi bot akhir",
+           # r4 (F-D116, dikunci 6 Okt atas kata builder "Gas"): buku Fabius = slot posisi; target aturan tetap dihitung + direkam (pembanding r3)
+           "eksekusi": "slot posisi meja_slot.PARAMS_SLOT; buka hanya dari konsensus sah (kuorum tercapai); aturan keluar gagal dibaca -> posisi tetap",
+           "slot": ms.PARAMS_SLOT}
 # P160 (F-D113): kursi agent LLM, kriteria DIKUNCI atas kata builder 5 Okt ("Gas"); sha di Decisions F-D113. Kursi hanya berubah di evaluasi harian 00:00 UTC.
 PARAMS_KURSI = {"v": 1, "status": "terkunci", "maks_aktif": 7, "maks_uji": 3, "jendela_siklus": 288, "naik_sah_min": 0.95, "tukar_unggul_min": 0.005,
                 "turun_sah_maks": 0.80}
@@ -121,6 +125,16 @@ def arah(bot: str, instrumen: List[str], p: Pasar2) -> Tuple[Dict[str, float], D
         if a not in why and abs(w.get(a, 0.0)) < 1e-12:
             why[a] = "rule gives flat" if tg else "not enough daily bars for the lookback / rule condition"
     return w, why
+
+
+def aturan_terbaca(bot: str, instrumen: List[str], p: Pasar2) -> Optional[Dict[str, float]]:
+    """r4 aturan keluar (SK-M27): bobot aturan, atau None bila aturan tidak terbaca - galat, atau candle harian SATU aset universe gagal (`arah`
+    menangkapnya per aset dan menghitung pada universe yang bolong; datar karena data hilang BUKAN sinyal keluar). None -> posisi tetap, SL/TP menjaga."""
+    try:
+        w, why = arah(bot, instrumen, p)
+    except Exception:  # noqa: BLE001
+        return None
+    return None if any(str(v).startswith("daily candles failed") for v in why.values()) else w
 
 
 N1, N2, N6 = int(SPECS["B1-TREND"].param), int(SPECS["B2-RS"].param), int(SPECS["B6-BOUNCE"].param)
@@ -418,7 +432,7 @@ def siklus2(t0: int, agents: List[dict], books: Dict[str, dict], ring: Dict[str,
     uni, tk = p.universe(), p.tick()
     fitur = nama_fitur(snap)
     far = fitur_aturan(p, uni)
-    harga = meja.harga_isi(get, aset=uni)
+    harga = meja.harga_isi(get, aset=sorted(set(uni) | set(ms.aset_dipegang(books.get("v2")))))       # r4: aset dipegang selalu diberi harga
     batas = meja.PARAMS["batas_jawab_s"] if sampai is None else max(1.0, min(meja.PARAMS["batas_jawab_s"], sampai - time.time()))
     for ag in agents:
         books.setdefault(f"v2:{ag['slug']}", meja.buku_baru())
@@ -462,18 +476,42 @@ def siklus2(t0: int, agents: List[dict], books: Dict[str, dict], ring: Dict[str,
         rek.append(r)
     aktif = [ag["slug"] for ag in agents if kursi[ag["slug"]] == "aktif"]
     sah = {s: h["kep"] for s, h in hasil.items() if h and "kep" in h and s in aktif}             # SK-M20: kursi uji tidak dihitung
+    bot_lalu = state.get("bot")
     kk, why = konsensus2(sah, state, snap, n_aktif=len(aktif))
     tg, arah_why = posisi(kk.get("bot"), kk.get("instrumen", []), kk.get("eksposur", 0.0), kk.get("veto", []), p)
-    hari, e_now = time.strftime("%Y-%m-%d", time.gmtime(t0)), meja.ekuitas(books["v2"], harga)
+    buku = books["v2"]
+    hari, e_now = time.strftime("%Y-%m-%d", time.gmtime(t0)), meja.ekuitas(buku, harga)
     if state.get("hari") != hari:
         state.update(hari=hari, ekuitas_awal_hari=round(e_now, 4))
     rugi = e_now / max(state["ekuitas_awal_hari"], 1e-9) - 1
-    if rugi <= -PARAMS2["rugi_harian_maks"]:                                                 # SK-M10: rem rugi harian, datar sampai 00:00 UTC
-        tg, why = {}, f"{why}; daily loss brake {rugi:+.2%} -> flat until 00:00 UTC"
+    rem = rugi <= -PARAMS2["rugi_harian_maks"]
+    if rem:                                                                                  # SK-M10: rem rugi harian, datar sampai 00:00 UTC
+        why = f"{why}; daily loss brake {rugi:+.2%} -> flat until 00:00 UTC"
+    # r4 (F-D116): target aturan TIDAK diisi langsung; ia hanya sumber kandidat slot (dan tetap direkam utuh untuk pembanding r3)
     rk = {"v": 2, "siklus": t0, "agent": "v2", "rumus": f"v2 params {meja.sha(PARAMS2)[:18]}", "dasar": why, "masuk": sorted(sah), "aktif": sorted(aktif),
-          "ambang": ambang(len(aktif)), "data_sha": data_sha, "data_t": data_t,
-          **kk, "target": tg, "arah_alasan": arah_why, "harga_isi_sha": meja.sha(harga), "isi": meja.isi(books["v2"], tg, harga)}
-    rk["ekuitas"] = round(meja.ekuitas(books["v2"], harga), 4)
+          "ambang": ambang(len(aktif)), "data_sha": data_sha, "data_t": data_t, **kk, "target": tg, "arah_alasan": arah_why, "harga_isi_sha": meja.sha(harga)}
+
+    def atr(a: str) -> Optional[float]:
+        try:
+            return ms.atr_frac(p.harian(a), ms.PARAMS_SLOT["atr_hari"])
+        except Exception:  # noqa: BLE001 - tanpa candle harian: tidak dibuka (SK-M27)
+            return None
+    aturan_keluar: Dict[tuple, Dict[str, float]] = {}
+
+    def keluar(pos: dict) -> bool:
+        key = (pos["bot"], tuple(sorted(pos.get("uni") or [])))
+        if key not in aturan_keluar:
+            aturan_keluar[key] = aturan_terbaca(pos["bot"], list(pos.get("uni") or []), p)
+        w = aturan_keluar[key]
+        if w is None:
+            return False
+        x = w.get(pos["aset"], 0.0)
+        return (1 if x > 1e-12 else -1 if x < -1e-12 else 0) != pos["arah"]
+    kand = [] if rem or "skor_instrumen" not in kk else ms.kandidat(rk, atr)                # buka hanya dari konsensus sah siklus ini
+    rk["isi"] = ms.migrasi(buku, harga, bot_lalu) + ms.langkah(buku, t0, harga, kand, keluar, rem)
+    rk["slot"] = ms.snapshot(buku, harga)
+    buku["target"] = {x["aset"]: {"w": x["w"], "k": 1.0} for x in rk["slot"]}              # /desk "target" = slot terbuka, bukan target aturan
+    rk["ekuitas"] = round(meja.ekuitas(buku, harga), 4)
     rek.append(rk)
     if ev_kursi:                                                                             # SK-M21: tiap perubahan kursi ikut Merkle root siklus ini
         rek.append({"v": 2, "siklus": t0, "agent": "kursi", "peristiwa": ev_kursi, "kursi": dict(sorted(kursi_now(kst).items())),
@@ -488,8 +526,10 @@ def siklus2(t0: int, agents: List[dict], books: Dict[str, dict], ring: Dict[str,
 
 def buku_hidup(recs: List[dict], agen: Optional[List[dict]] = None, sik: Optional[dict] = None, maks_titik: int = 600, n_pita: int = 60) -> dict:
     """P164 Fabius Live Book: ringkasan SELURUH riwayat buku Fabius dari rekaman konsensus (agent "v2"), urut waktu.
-    Atribusi per bot (dinyatakan jujur): perubahan ekuitas siklus i = pasar (posisi yang diputuskan di siklus i-1) - fee isi siklus i; bagian pasar
-    dicatat ke bot siklus i-1, fee ke bot siklus i. `agen` = rekaman agent siklus terakhir (strip pipeline), `sik` = root/tx/status siklus terakhir."""
+    Atribusi per bot (dinyatakan jujur): rekaman r1-r3 - perubahan ekuitas siklus i = pasar (posisi yang diputuskan di siklus i-1) - fee isi siklus i;
+    bagian pasar dicatat ke bot siklus i-1, fee ke bot siklus i. Rekaman r4 (punya `slot`, F-D116) - per posisi: untung/rugi yang direalisasi + fee
+    tiap isi ke bot pembuka posisi itu, untung/rugi belum direalisasi slot terakhir ke bot pemiliknya; siklus per bot = siklus bot itu memegang slot.
+    `agen` = rekaman agent siklus terakhir (strip pipeline), `sik` = root/tx/status siklus terakhir."""
     recs = sorted(recs, key=lambda r: r["siklus"])
     if not recs:
         return {"kosong": True}
@@ -501,15 +541,28 @@ def buku_hidup(recs: List[dict], agen: Optional[List[dict]] = None, sik: Optiona
         dd = min(dd, e / puncak - 1)
     fee_i = [sum(float(f.get("fee", 0)) for f in r.get("isi") or []) for r in recs]
     per_bot: Dict[str, dict] = {}
+    def pb(b):
+        return per_bot.setdefault(b or "-", {"siklus": 0, "pasar": 0.0, "fee": 0.0, "isi": 0})
+    slot_akhir = None
     for i, r in enumerate(recs):
-        b = r.get("bot") or "-"
-        x = per_bot.setdefault(b, {"siklus": 0, "pasar": 0.0, "fee": 0.0, "isi": 0})
+        if "slot" in r:                                                                      # r4: per posisi
+            for f in r.get("isi") or []:
+                x = pb(f.get("bot"))
+                x["pasar"] += float(f.get("pnl", 0.0))
+                x["fee"] += float(f.get("fee", 0.0))
+                x["isi"] += 1
+            for b in {s_["bot"] for s_ in r["slot"]}:
+                pb(b)["siklus"] += 1
+            slot_akhir = r["slot"]
+            continue
+        x = pb(r.get("bot"))
         x["siklus"] += 1
         x["fee"] += fee_i[i]
         x["isi"] += len(r.get("isi") or [])
         if i:
-            pb = recs[i - 1].get("bot") or "-"
-            per_bot.setdefault(pb, {"siklus": 0, "pasar": 0.0, "fee": 0.0, "isi": 0})["pasar"] += eq[i] - eq[i - 1] + fee_i[i]
+            pb(recs[i - 1].get("bot"))["pasar"] += eq[i] - eq[i - 1] + fee_i[i]
+    for s_ in slot_akhir or []:                                                              # slot masih terbuka: untung/rugi belum direalisasi
+        pb(s_["bot"])["pasar"] += float(s_.get("pnl", 0.0))
     pita: List[dict] = []
     for r in recs:
         b = r.get("bot") or "-"
@@ -526,12 +579,16 @@ def buku_hidup(recs: List[dict], agen: Optional[List[dict]] = None, sik: Optiona
     return {
         "mulai": recs[0]["siklus"], "siklus_terakhir": akhir["siklus"], "modal_awal": awal, "ekuitas": round(eq[-1], 2),
         "hasil_pct": round((eq[-1] / awal - 1) * 100, 3), "drawdown_maks_pct": round(dd * 100, 3), "fee": round(sum(fee_i), 2),
-        "transaksi": sum(len(r.get("isi") or []) for r in recs), "siklus": len(recs), "siklus_berposisi": sum(1 for r in recs if r.get("target")),
+        "transaksi": sum(len(r.get("isi") or []) for r in recs), "siklus": len(recs),
+        "siklus_berposisi": sum(1 for r in recs if (r["slot"] if "slot" in r else r.get("target"))),
         "seri": seri, "pita": pita,
         "per_bot": {b: {"siklus": x["siklus"], "hasil": round(x["pasar"] - x["fee"], 2), "fee": round(x["fee"], 2), "isi": x["isi"]}
                     for b, x in sorted(per_bot.items(), key=lambda kv: -kv[1]["siklus"])},
         "pipa": {"siklus": akhir["siklus"], "rumus": f"r{PARAMS2['v']}", "bot": akhir.get("bot"), "skor_bot": nilai.get(akhir.get("bot")) if akhir.get("bot") else None,
-                 "dasar": akhir.get("dasar"), "instrumen": akhir.get("instrumen") or [], "target": {a: t.get("w") for a, t in (akhir.get("target") or {}).items()},
+                 "dasar": akhir.get("dasar"), "instrumen": akhir.get("instrumen") or [],
+                 # r4: "target" pipa = slot yang benar-benar terbuka (bobot notional bertanda), bukan target aturan
+                 "target": ({x["aset"]: x["w"] for x in akhir["slot"]} if "slot" in akhir else {a: t.get("w") for a, t in (akhir.get("target") or {}).items()}),
+                 "slot": akhir.get("slot"), "maks_slot": ms.PARAMS_SLOT["maks_posisi"],
                  "isi": len(akhir.get("isi") or []), "masuk": akhir.get("masuk") or [], "aktif": akhir.get("aktif") or akhir.get("masuk") or [],
                  "agen": [{"slug": a["agent"].split(":", 1)[-1], "status": a.get("status", "ok"), "kursi": a.get("kursi"),
                            "bot": (a.get("keputusan") or {}).get("bot")} for a in (agen or [])],

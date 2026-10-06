@@ -25,14 +25,14 @@ FIT = ["r_1j", "r_4j", "breadth_naik_1j", "rug_bahaya"]
 
 def seri(naik: bool, n: int = 100) -> Series:
     t0 = NOW_MS - (n + 1) * DAY
-    return Series.from_rows([(t0 + i * DAY, 1, 1, 1, (100 + i) if naik else (200 - i), 1e6) for i in range(n)])
+    return Series.from_rows([(t0 + i * DAY, c, c * 1.01, c * 0.99, c, 1e6) for i in range(n) for c in [(100 + i) if naik else (200 - i)]])
 
 
 class FakePasar(meja2.Pasar2):
     def __init__(self):
         super().__init__(get=None, now=lambda: NOW_MS / 1000)
         self.s = {"SOLUSDT": seri(True), "NEARUSDT": seri(False), "WIFUSDT": seri(True), "BTCUSDT": seri(True), "PAXGUSDT": seri(True),
-                  "NEWUSDT": Series.from_rows([(NOW_MS - 3 * DAY + i * DAY, 1, 1, 1, 10, 2e6) for i in range(2)])}
+                  "NEWUSDT": Series.from_rows([(NOW_MS - 3 * DAY + i * DAY, 10, 10.1, 9.9, 10, 2e6) for i in range(2)])}
 
     def universe(self):
         return list(UNI)
@@ -140,10 +140,49 @@ class CycleTests(unittest.TestCase):
         self.assertEqual(by["v2"]["data_sha"], "0xabc")
         for r in rek:
             self.assertEqual(r["hash"], meja.sha({k: v for k, v in r.items() if k != "hash"}))
+        self.assertEqual([(x["aset"], x["bot"], x["arah"]) for x in by["v2"]["slot"]], [("SOLUSDT", "B1-TREND", 1), ("WIFUSDT", "B1-TREND", 1)])
+        self.assertEqual({f["alasan"] for f in by["v2"]["isi"]}, {"open"})                       # r4: target aturan -> slot, bukan isi langsung
+        self.assertIn("slot", meja2.PARAMS2)
         books["v2"]["saldo"] = books["_v2_state"]["ekuitas_awal_hari"] * 0.96                     # SK-M10: rugi hari ini -4 %
         rek, _ = meja2.siklus2(1_791_200_400, agents, books, ring, call, snap, FakePasar(), get=get, log=lambda m: None)
-        self.assertEqual(rek[-1]["target"], {})
+        self.assertEqual(rek[-1]["slot"], [])                                                    # rem menutup semua slot
+        self.assertEqual({f["alasan"] for f in rek[-1]["isi"]}, {"daily loss brake"})
+        self.assertEqual(sorted(rek[-1]["target"]), ["SOLUSDT", "WIFUSDT"])                      # target aturan tetap direkam (pembanding r3)
         self.assertIn("daily loss brake", rek[-1]["dasar"])
+
+    def test_r4_prices_every_held_asset_closes_r3_positions_once_and_opens_only_on_a_valid_consensus(self):
+        def get(url):                                                                            # OLDUSDT tidak ada di universe, tetap ada di premiumIndex
+            return [{"symbol": a, "markPrice": "100", "lastFundingRate": "0"} for a in UNI + ["OLDUSDT"]]
+        agents = [{"slug": s, "agent_id": i, "model": "m"} for i, s in enumerate("abc")]
+        books = {"v2": meja.buku_baru()}
+        books["v2"]["posisi"] = {"OLDUSDT": {"qty": 10.0, "masuk": 90.0}}                         # posisi buku r3 (tanpa metadata slot)
+        snap = {"sha": "0xabc", "fitur_aset": {"SOLUSDT": {"r_1j": 0.01}}, "fitur_bot": {"B1-TREND": {"breadth_naik_1j": 0.9}}}
+        rek, harga = meja2.siklus2(1_791_200_100, agents, books, {}, lambda ag, s_, u: out(ins=(("SOLUSDT", 80), ("WIFUSDT", 70))), snap,
+                                   FakePasar(), get=get, log=lambda m: None)
+        v2 = rek[-1] if rek[-1]["agent"] == "v2" else next(r for r in rek if r["agent"] == "v2")
+        self.assertEqual(harga["OLDUSDT"], 100.0)
+        self.assertEqual([(f["aset"], f["alasan"], f["pnl"]) for f in v2["isi"] if f["alasan"] == "r4 start"], [("OLDUSDT", "r4 start", 100.0)])
+        self.assertEqual(sorted(x["aset"] for x in v2["slot"]), ["SOLUSDT", "WIFUSDT"])
+        for x in v2["slot"]:
+            self.assertLess(x["sl"], x["masuk"])
+            self.assertGreater(x["tp"], x["masuk"])
+            self.assertAlmostEqual(x["tp"] - x["masuk"], 2 * (x["masuk"] - x["sl"]))             # untung:rugi 2:1
+        self.assertEqual(books["v2"]["target"], {x["aset"]: {"w": x["w"], "k": 1.0} for x in v2["slot"]})
+        rek, _ = meja2.siklus2(1_791_200_400, agents, books, {}, lambda ag, s_, u: (_ for _ in ()).throw(RuntimeError("429")), snap,
+                               FakePasar(), get=get, log=lambda m: None)
+        v2 = next(r for r in rek if r["agent"] == "v2")
+        self.assertIn("quorum not reached", v2["dasar"])
+        self.assertEqual(v2["isi"], [])                                                          # tanpa konsensus sah: tidak membuka, slot tetap
+        self.assertEqual(len(v2["slot"]), 2)
+
+        class CandleRusak(FakePasar):                                                            # SK-M27: candle harian / aturan gagal dibaca
+            def harian(self, a):
+                raise OSError("klines 451")
+        rek, _ = meja2.siklus2(1_791_200_700, agents, books, {}, lambda ag, s_, u: out(ins=(("SOLUSDT", 80), ("NEARUSDT", 70))), snap,
+                               CandleRusak(), get=get, log=lambda m: None)
+        v2 = next(r for r in rek if r["agent"] == "v2")
+        self.assertEqual(v2["isi"], [])                                                          # tanpa konsensus sah: tidak membuka, slot tetap
+        self.assertEqual(len(v2["slot"]), 2)
 
 
 
@@ -264,8 +303,24 @@ class LiveBookTests(unittest.TestCase):
         self.assertEqual({b: x["hasil"] for b, x in h["per_bot"].items()}, {"B2-RS": -48.0, "B1-TREND": 98.0})
         self.assertAlmostEqual(sum(x["hasil"] for x in h["per_bot"].values()), 10_050.0 - 9_990.0 + 0 - 10.0 + (9_990.0 - 10_000.0) + 10.0)
         self.assertEqual(h["pita_keputusan"][0]["siklus"], 1200)                                  # terbaru dulu
-        self.assertEqual((h["pipa"]["bot"], h["pipa"]["rumus"], h["pipa"]["tx"], h["pipa"]["agen"][0]["status"]), ("B1-TREND", "r3", "0xt", "ok"))
+        self.assertEqual((h["pipa"]["bot"], h["pipa"]["rumus"], h["pipa"]["tx"], h["pipa"]["agen"][0]["status"]), ("B1-TREND", "r4", "0xt", "ok"))
         self.assertEqual(meja2.buku_hidup([]), {"kosong": True})
+
+    def test_r4_records_attribute_results_per_position_to_the_bot_that_opened_it(self):
+        def s(a, bot, pnl, w=0.1):
+            return {"aset": a, "bot": bot, "arah": 1, "w": w, "pnl": pnl}
+        recs = [{"siklus": 300, "bot": "B2-RS", "ekuitas": 9_990.0, "isi": [{"aset": "X", "dari": 0, "ke": 0.1, "fee": 1.0, "alasan": "open", "bot": "B2-RS", "pnl": 0.0}],
+                 "slot": [s("X", "B2-RS", 0.0)], "target": {"X": {"w": 0.2}}, "hash": "0x1"},
+                {"siklus": 600, "bot": "B1-TREND", "ekuitas": 10_020.0, "isi": [{"aset": "Y", "dari": 0, "ke": 0.1, "fee": 2.0, "alasan": "open", "bot": "B1-TREND", "pnl": 0.0}],
+                 "slot": [s("X", "B2-RS", 25.0), s("Y", "B1-TREND", 0.0)], "target": {}, "hash": "0x2"},
+                {"siklus": 900, "bot": "B1-TREND", "ekuitas": 10_040.0, "isi": [{"aset": "X", "dari": 0.1, "ke": 0.0, "fee": 1.5, "alasan": "TP", "bot": "B2-RS", "pnl": 40.0}],
+                 "slot": [s("Y", "B1-TREND", 5.0, 0.12)], "target": {}, "hash": "0x3"}]
+        h = meja2.buku_hidup(recs)
+        # B2: realisasi 40 - fee (1 + 1,5) = 37,5; B1: belum direalisasi 5 - fee 2 = 3; siklus = siklus bot itu memegang slot
+        self.assertEqual({b: (x["hasil"], x["siklus"], x["isi"]) for b, x in h["per_bot"].items()}, {"B2-RS": (37.5, 2, 2), "B1-TREND": (3.0, 2, 1)})
+        self.assertEqual(h["siklus_berposisi"], 3)
+        self.assertEqual(h["pipa"]["target"], {"Y": 0.12})                                      # pipa = slot terbuka, bukan target aturan
+        self.assertEqual((h["pipa"]["maks_slot"], [x["aset"] for x in h["pipa"]["slot"]]), (5, ["Y"]))
 
 
 class GateTests(unittest.TestCase):

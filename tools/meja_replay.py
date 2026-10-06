@@ -27,7 +27,9 @@ GERBANG = "https://fabius-x402-production.up.railway.app"
 REM = "daily loss brake"
 B2 = "B2-RS"
 SUMBER = ("ganti bot", "ganti instrumen", "ubah eksposur", "pembalikan peringkat B2", "rem rugi",        # lima sumber kriteria keluar P163 (1)
-          "aturan buka/tutup/balik (bot lain)", "geser bobot (harga/aturan)", "buka awal")              # sisa, supaya total fee utuh
+          "aturan buka/tutup/balik (bot lain)", "geser bobot (harga/aturan)", "buka awal",              # sisa, supaya total fee utuh
+          "buka slot", "SL", "TP", "aturan keluar bot", "r4 start")                                     # r4 (F-D116): sebab tercatat di isi
+ALASAN_R4 = {"open": "buka slot", "SL": "SL", "TP": "TP", "daily loss brake": "rem rugi", "r4 start": "r4 start"}
 SETIA_USDT = 0.01
 
 
@@ -137,13 +139,16 @@ KEPEKAAN: Dict[str, Policy] = {                                                 
 # ---------------------------------------------------------------- replay + diagnosis
 
 def replay(recs: List[dict], harga: Dict[int, Dict[str, float]], pol: Policy = r3, rugi_maks: float = 0.03) -> dict:
-    """Rem rugi harian (SK-M10) dihitung ulang dari ekuitas replay, sama dengan `meja2.siklus2`: ekuitas sebelum isi vs ekuitas awal hari UTC."""
+    """Rem rugi harian (SK-M10) dihitung ulang dari ekuitas replay, sama dengan `meja2.siklus2`: ekuitas sebelum isi vs ekuitas awal hari UTC.
+    Rekaman r4 (punya `slot`): target aturan direkam utuh dan rem di `dasar` milik buku slot, jadi diabaikan - bayangan r3 memakai remnya sendiri."""
     book, st, prev, hari = meja.buku_baru(), {}, None, {}
     eq, fee, isi, puncak, dd, kirim, rem = [], 0.0, 0, meja.PARAMS["modal_awal"], 0.0, [], 0
     for r in recs:
         h = harga.get(int(r["siklus"]))
         if not h:
             continue
+        if "slot" in r:
+            r = {**r, "dasar": (r.get("dasar") or "").replace(REM, "r4 slot brake")}
         e0 = meja.ekuitas(book, h)
         d = int(r["siklus"]) // 86_400
         hari.setdefault(d, e0)
@@ -167,13 +172,16 @@ def replay(recs: List[dict], harga: Dict[int, Dict[str, float]], pol: Policy = r
         ph[d] = round((akhir[d] / lalu - 1) * 100, 3)
         lalu = akhir[d]
     return {"ekuitas": round(eq[-1][1], 2) if eq else None, "fee": round(fee, 2), "isi": isi, "dd_pct": round(dd * 100, 3),
-            "rem_replay": rem, "per_hari_pct": ph, "seri": eq, "kirim": kirim}
+            "rem_replay": rem, "per_hari_pct": ph, "seri": eq, "kirim": kirim, "buku": book, "hari": hari}
 
 
 def sebab(x: dict, r: dict, prev: Optional[dict]) -> str:
     """Satu isi -> satu sebab (urutan = prioritas): rem rugi (tutup, atau buka lagi sesudah rem) > ganti bot > ganti instrumen (aset masuk/keluar
     daftar instrumen konsensus) > pembalikan peringkat B2 (B2-RS, aset tetap dipilih tetapi aturan membuka/menutup/membalik) > aturan bot lain >
     ubah eksposur (searah, eksposur konsensus berubah) > geser bobot (searah, eksposur sama: harga bergerak atau bobot aturan berubah)."""
+    al = x.get("alasan")
+    if al:                                                                                       # r4: sebab sudah tercatat di isi
+        return ALASAN_R4.get(al) or ("aturan keluar bot" if al.startswith("exit rule") else al)
     d0, d1 = x["dari"], x["ke"]
     if prev is None:
         return "buka awal"
@@ -221,15 +229,36 @@ def lama_pegang(recs: List[dict]) -> dict:
             "maks_n_siklus_pct": {k: round(sum(1 for v in lama if v <= k) / n * 100, 1) for k in (1, 2, 6, 12)}, "fee_posisi_maks_2_siklus": round(fee_pendek, 2)}
 
 
-def laporan(recs: List[dict], harga: Dict[int, Dict[str, float]], kepekaan: bool = False) -> dict:
-    """Seluruh keluaran P163 dalam satu dict (dipakai CLI + tes integrasi). `kepekaan` menambah tetangga parameter (KEPEKAAN)."""
-    tercatat = recs[-1]["ekuitas"]
-    pols = {**KEBIJAKAN, **(KEPEKAAN if kepekaan else {})}
-    hasil = {nama: {k: v for k, v in replay(recs, harga, pol).items() if k not in ("seri", "kirim")} for nama, pol in pols.items()}
-    base = hasil["r3 (sekarang)"]
-    return {"siklus": len(recs), "harga_siklus": sum(1 for r in recs if harga.get(int(r["siklus"]))), "ekuitas_tercatat": tercatat,
-            "fee_tercatat": round(sum(x["fee"] for r in recs for x in r.get("isi") or []), 6), "sumber": sumber_fee(recs), "lama_pegang": lama_pegang(recs),
-            "setia": base["ekuitas"] is not None and abs(base["ekuitas"] - tercatat) <= SETIA_USDT, "replay": hasil}
+def laporan(recs: List[dict], harga: Dict[int, Dict[str, float]], kepekaan: bool = False, store=None) -> dict:
+    """Seluruh keluaran P163 dalam satu dict (dipakai CLI + tes integrasi). Rekaman dibagi menurut rumus: r1-r3 (tanpa `slot`) = analisis perputaran
+    + kebijakan (replay r3 wajib SETIA); r4 (punya `slot`, F-D116) = buku slot tercatat vs BAYANGAN r3 (rumus r3 pada target aturan yang sama sejak
+    siklus pertama, rem sendiri) - kriteria keluar P163 (4). `store` (candle harian) -> replay slot dilanjutkan dari buku r3 wajib SETIA juga."""
+    r3s, r4s = [r for r in recs if "slot" not in r], [r for r in recs if "slot" in r]
+    out = {"siklus": len(recs), "harga_siklus": sum(1 for r in recs if harga.get(int(r["siklus"]))), "ekuitas_tercatat": recs[-1]["ekuitas"],
+           "fee_tercatat": round(sum(x["fee"] for r in recs for x in r.get("isi") or []), 6), "sumber": sumber_fee(recs),
+           "lama_pegang": lama_pegang(r3s), "lama_pegang_r4": lama_pegang(r4s), "setia": True, "replay": {}}
+    if r3s:
+        pols = {**KEBIJAKAN, **(KEPEKAAN if kepekaan else {})}
+        out["replay"] = {nama: {k: v for k, v in replay(r3s, harga, pol).items() if k not in ("seri", "kirim", "buku", "hari")} for nama, pol in pols.items()}
+        out["ekuitas_tercatat_r3"] = r3s[-1]["ekuitas"]
+        base = out["replay"]["r3 (sekarang)"]
+        out["setia"] = base["ekuitas"] is not None and abs(base["ekuitas"] - r3s[-1]["ekuitas"]) <= SETIA_USDT
+    if r4s:
+        bay = replay(recs, harga, r3)
+        r4 = {"siklus": len(r4s), "mulai": r4s[0]["siklus"], "ekuitas_tercatat": r4s[-1]["ekuitas"],
+              "fee": round(sum(x["fee"] for r in r4s for x in r.get("isi") or []), 4), "isi": sum(len(r.get("isi") or []) for r in r4s),
+              "slot_terbuka": len(r4s[-1]["slot"]), "bayangan_r3": {k: bay[k] for k in ("ekuitas", "fee", "isi", "dd_pct", "rem_replay")}}
+        e_bay_mulai = next((e for t, e in reversed(bay["seri"]) if t < r4s[0]["siklus"]), meja.PARAMS["modal_awal"])
+        r4["sejak_r4_pct"] = round((r4s[-1]["ekuitas"] / (r3s[-1]["ekuitas"] if r3s else meja.PARAMS["modal_awal"]) - 1) * 100, 3)
+        r4["bayangan_r3"]["sejak_r4_pct"] = round((bay["ekuitas"] / e_bay_mulai - 1) * 100, 3) if bay["ekuitas"] else None
+        if store is not None:
+            awal = replay(r3s, harga, r3) if r3s else None
+            x = replay_slot(r4s, harga, store, awal=(awal["buku"], awal["hari"]) if awal else None, bot_lalu=r3s[-1].get("bot") if r3s else None)
+            r4["replay_slot_ekuitas"] = x["ekuitas"]
+            r4["setia"] = x["ekuitas"] is not None and abs(x["ekuitas"] - r4s[-1]["ekuitas"]) <= SETIA_USDT
+            out["setia"] = out["setia"] and r4["setia"]
+        out["r4"] = r4
+    return out
 
 
 # ---------------------------------------------------------------- r4 slot posisi (F-D116, usulan): candle harian perp + replay
@@ -312,13 +341,17 @@ def _pasar_arsip(store, t: int, _cache: Dict[tuple, object] = {}):  # noqa: B006
     return PasarArsip(get=None, now=lambda: t)
 
 
-def replay_slot(recs: List[dict], harga: Dict[int, Dict[str, float]], store, P: Optional[dict] = None, rugi_maks: float = 0.03) -> dict:
-    """Replay r4 slot (F-D116) pada siklus + harga tercatat: kandidat dari target aturan tercatat, aturan keluar bot dijalankan ulang oleh
-    `meja2.arah` (kode terkunci) pada candle harian Vision, rem rugi dihitung dari ekuitas buku slot sendiri."""
+def replay_slot(recs: List[dict], harga: Dict[int, Dict[str, float]], store, P: Optional[dict] = None, rugi_maks: float = 0.03,
+                awal: Optional[tuple] = None, bot_lalu: Optional[str] = None) -> dict:
+    """Replay r4 slot (F-D116) pada siklus + harga tercatat, langkah yang sama dengan `meja2.siklus2`: migrasi posisi r3, kandidat dari target aturan
+    tercatat (hanya konsensus sah = ada `skor_instrumen`), aturan keluar bot dijalankan ulang oleh `meja2.arah` (kode terkunci) pada candle harian,
+    rem rugi dari ekuitas buku sendiri. `awal` = (buku, hari) hasil replay r3 sebelum r4 mulai (transisi produksi); tanpa itu buku baru 10.000."""
+    import copy
     import meja2
     import meja_slot as ms
     P = P or ms.PARAMS_SLOT
-    b, hari, aturan, terakhir = ms.buku_baru(), {}, {}, {}
+    b, hari = (copy.deepcopy(awal[0]), dict(awal[1])) if awal else (ms.buku_baru(), {})
+    aturan, terakhir = {}, {}
     eq, kirim, alasan, pegang, puncak, dd, maks_buka, tanpa_harga = [], [], {}, [], meja.PARAMS["modal_awal"], 0.0, 0, 0
     for r in recs:
         t = int(r["siklus"])
@@ -338,16 +371,19 @@ def replay_slot(recs: List[dict], harga: Dict[int, Dict[str, float]], store, P: 
             except Exception:  # noqa: BLE001
                 return None
 
-        def keluar(pos, p=p, t=t):
-            key = (pos["bot"], tuple(sorted(pos["uni"])), t // 86_400)
+        def keluar(pos, p=p, t=t):                                                              # sama dengan `meja2.siklus2.keluar`
+            key = (pos["bot"], tuple(sorted(pos.get("uni") or [])), t // 86_400)
             if key not in aturan:
-                aturan[key] = meja2.arah(pos["bot"], list(pos["uni"]), p)[0] if pos["uni"] or pos["bot"] == "B5-CORE-RWA" else {}
+                aturan[key] = meja2.aturan_terbaca(pos["bot"], list(pos.get("uni") or []), p)
+            if aturan[key] is None:
+                return False
             w = aturan[key].get(pos["aset"], 0.0)
             return (1 if w > 1e-12 else -1 if w < -1e-12 else 0) != pos["arah"]
-        buka_t ={a: x["t"] for a, x in b["posisi"].items()}
-        f = ms.langkah(b, t, h, [] if rem else ms.kandidat(r, atr), keluar, rem, P)
+        buka_t = {a: x.get("t", t) for a, x in b["posisi"].items()}
+        f = ms.migrasi(b, h, bot_lalu) + ms.langkah(b, t, h, [] if rem or "skor_instrumen" not in r else ms.kandidat(r, atr), keluar, rem, P)
+        bot_lalu = r.get("bot")
         for x in f:
-            if x["alasan"] != "open":
+            if x["alasan"] not in ("open", "r4 start"):
                 key = "TP" if x["alasan"] == "TP" else "SL" if x["alasan"] == "SL" else "rem rugi" if x["alasan"] == "daily loss brake" else "aturan keluar bot"
                 alasan[key] = alasan.get(key, 0) + 1
                 pegang.append((t - buka_t[x["aset"]]) // 300)
@@ -384,7 +420,8 @@ def main() -> int:
     if not recs:
         print("tidak ada rekaman")
         return 1
-    lp = laporan(recs, harga, a.kepekaan)
+    store = CandleVision((int(recs[-1]["siklus"]) // 86_400 + 1) * 86_400_000) if a.slot else None
+    lp = laporan(recs, harga, a.kepekaan, store if any("slot" in r for r in recs) else None)
     if a.json:
         print(json.dumps(lp, indent=1, ensure_ascii=False))
         return 0 if lp["setia"] else 2
@@ -394,23 +431,35 @@ def main() -> int:
     print(f"\nFEE TERCATAT per sumber (total {lp['fee_tercatat']:.2f} USDT):")
     for k, v in lp["sumber"].items():
         print(f"  {k:36s} {v['isi']:4d} isi  {v['fee']:8.2f} USDT  ({v['fee'] / tot * 100:5.1f} %)")
-    lp_ = lp["lama_pegang"]
-    print(f"\nLAMA PEGANG posisi tercatat: {lp_['posisi']} posisi, median {lp_['median_siklus']} siklus; ditutup <= 1/2/6/12 siklus: "
-          f"{' / '.join(f'{v} %' for v in lp_['maks_n_siklus_pct'].values())}; fee buka+tutup posisi <= 2 siklus {lp_['fee_posisi_maks_2_siklus']:.2f} USDT")
-    print("\nREPLAY (arah aturan bot sama, target diubah kebijakan):")
-    for nama, x in lp["replay"].items():
+    for judul, key in (("r1-r3", "lama_pegang"), ("r4", "lama_pegang_r4")):
+        lp_ = lp[key]
+        if lp_["posisi"]:
+            print(f"\nLAMA PEGANG posisi tercatat {judul}: {lp_['posisi']} posisi, median {lp_['median_siklus']} siklus; ditutup <= 1/2/6/12 siklus: "
+                  f"{' / '.join(f'{v} %' for v in lp_['maks_n_siklus_pct'].values())}; fee buka+tutup posisi <= 2 siklus {lp_['fee_posisi_maks_2_siklus']:.2f} USDT")
+    if lp["replay"]:
+        print("\nREPLAY r1-r3 (arah aturan bot sama, target diubah kebijakan):")
+        for nama, x in lp["replay"].items():
+            hari = "  ".join(f"{d[5:]} {v:+6.2f} %" for d, v in x["per_hari_pct"].items())
+            print(f"  {nama:26s} ekuitas {x['ekuitas']:9.2f}  fee {x['fee']:7.2f}  isi {x['isi']:4d}  dd {x['dd_pct']:6.2f} %  rem+{x['rem_replay']:<3d} {hari}")
+        base = lp["replay"]["r3 (sekarang)"]["ekuitas"]
+        print(f"  replay r3 vs tercatat (akhir r1-r3): {base - lp['ekuitas_tercatat_r3']:+.4f} USDT")
+    if "r4" in lp:
+        r4, bay = lp["r4"], lp["r4"]["bayangan_r3"]
+        print(f"\nR4 SLOT POSISI TERCATAT (F-D116, sejak {dt.datetime.fromtimestamp(r4['mulai'], dt.timezone.utc):%m-%d %H:%MZ}, {r4['siklus']} siklus): "
+              f"ekuitas {r4['ekuitas_tercatat']:.2f} ({r4['sejak_r4_pct']:+.3f} % sejak r4), fee {r4['fee']:.2f}, isi {r4['isi']}, slot terbuka {r4['slot_terbuka']}")
+        print(f"  BAYANGAN r3 (target aturan yang sama, rem sendiri): ekuitas {bay['ekuitas']:.2f} ({bay['sejak_r4_pct']:+.3f} % sejak r4), fee total {bay['fee']:.2f}, "
+              f"isi total {bay['isi']}, dd {bay['dd_pct']:.2f} %")
+        if "replay_slot_ekuitas" in r4:
+            print(f"  replay slot vs tercatat: {r4['replay_slot_ekuitas'] - r4['ekuitas_tercatat']:+.4f} USDT -> {'SETIA' if r4['setia'] else 'TIDAK SETIA'}")
+    if a.slot:                                                                                   # kontrafaktual: r4 seandainya jalan sejak siklus pertama
+        x = replay_slot(recs, harga, store)
         hari = "  ".join(f"{d[5:]} {v:+6.2f} %" for d, v in x["per_hari_pct"].items())
-        print(f"  {nama:26s} ekuitas {x['ekuitas']:9.2f}  fee {x['fee']:7.2f}  isi {x['isi']:4d}  dd {x['dd_pct']:6.2f} %  rem+{x['rem_replay']:<3d} {hari}")
-    if a.slot and lp["setia"]:
-        x = replay_slot(recs, harga, CandleVision((int(recs[-1]["siklus"]) // 86_400 + 1) * 86_400_000))
-        hari = "  ".join(f"{d[5:]} {v:+6.2f} %" for d, v in x["per_hari_pct"].items())
-        print(f"\nR4 SLOT POSISI (F-D116, usulan): ekuitas {x['ekuitas']:9.2f}  fee {x['fee']:7.2f}  isi {x['isi']:4d}  dd {x['dd_pct']:6.2f} %  {hari}")
+        print(f"\nKONTRAFAKTUAL r4 sejak siklus pertama: ekuitas {x['ekuitas']:9.2f}  fee {x['fee']:7.2f}  isi {x['isi']:4d}  dd {x['dd_pct']:6.2f} %  {hari}")
         print(f"  buka {x['buka']}, tutup per alasan {x['tutup_per_alasan']}, median lama pegang {x['pegang_median_siklus']} siklus, "
               f"maks terbuka {x['maks_posisi_terbuka']}, masih terbuka {x['masih_terbuka']}, siklus-posisi berharga basi {x['siklus_posisi_tanpa_harga']}")
         for aset, ps in sorted(x["buku"]["posisi"].items()):
             print(f"    terbuka {aset:14s} {ps['bot']:16s} arah {ps['arah']:+d}  margin {ps['margin']:.3f} x {ps['leverage']:.2f}  masuk {ps['masuk']}")
-    base = lp["replay"]["r3 (sekarang)"]["ekuitas"]
-    print(f"\nreplay r3 vs tercatat: {base - lp['ekuitas_tercatat']:+.4f} USDT -> {'SETIA' if lp['setia'] else 'TIDAK SETIA (kebijakan lain tidak boleh dibandingkan)'}")
+    print(f"\nPUTUSAN: {'SETIA' if lp['setia'] else 'TIDAK SETIA (kebijakan lain tidak boleh dibandingkan)'}")
     return 0 if lp["setia"] else 2
 
 

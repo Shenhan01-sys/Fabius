@@ -95,10 +95,25 @@ class ReplayTests(unittest.TestCase):
         self.assertAlmostEqual(lp["fee_posisi_maks_2_siklus"], 6.0)
 
 
+class PasarStore:
+    """Candle harian replay = candle `FakePasar` yang dipakai siklus hidup (supaya replay slot bisa SETIA ke buku tercatat)."""
+    def __init__(self):
+        self._rows = {a: list(zip(x.t, x.o, x.h, x.l, x.c, x.v)) for a, x in FakePasar().s.items()}
+        self.mulai = 0
+
+    def rows(self, a):
+        return self._rows.get(a, [])
+
+
 class ArsipHTTP(unittest.TestCase):
-    """Rantai produksi tanpa jaringan luar: `meja2.siklus2` (model + Binance dipalsukan) -> `gabung_v2` + `Gate.meja_simpan` (seperti
-    `meja_loop`) -> server HTTP gerbang (`make_handler`) -> `meja_replay.muat` lewat HTTP -> `meja_replay.laporan`."""
+    """Rantai produksi tanpa jaringan luar, TERMASUK transisi r3 -> r4 seperti 6 Okt: siklus 0-5 = rekaman r3 (target aturan diisi `meja.isi`),
+    siklus 6-17 = `meja2.siklus2` hidup (r4 slot, model + Binance dipalsukan) pada buku + state yang sama -> `gabung_v2` + `Gate.meja_simpan`
+    (seperti `meja_loop`) -> server HTTP gerbang (`make_handler`) -> `meja_replay.muat` lewat HTTP -> `meja_replay.laporan`."""
     T0 = 1_791_200_100                                                                                       # 11:35 UTC, 18 siklus tetap di hari yang sama
+    R3 = [("B1-TREND", 0.8, {"SOLUSDT": 0.2, "NEARUSDT": 0.1})] * 3 + [
+        ("B1-TREND", 0.8, {"SOLUSDT": 0.2, "NEARUSDT": 0.1, "WIFUSDT": 0.1}),                                 # WIF masuk = ganti instrumen
+        ("B1-TREND", 0.6, {"SOLUSDT": 0.15, "NEARUSDT": 0.075, "WIFUSDT": 0.075}),                            # eksposur 0,8 -> 0,6
+        ("B5-CORE-RWA", 0.7, {"BTCUSDT": 0.2, "PAXGUSDT": 0.1})]                                              # ganti bot
 
     def setUp(self):
         import x402_sinyal as xs
@@ -117,11 +132,10 @@ class ArsipHTTP(unittest.TestCase):
         self._run_cycles()
 
     def _run_cycles(self):
-        """18 siklus: B1 SOL+NEAR -> WIF masuk (ganti instrumen) -> eksposur 80 -> 60 -> agent beralih ke B5 (ganti bot sesudah hysteresis) ->
-        kembali ke B1; siklus ke-9 v2 terlambat (tidak digabung, tanpa harga v2) - persis jalur `meja_loop`."""
+        """r4: agent memilih B5 (BTC + PAXG) di siklus 6-11 lalu B1 (SOL, NEAR, WIF); siklus ke-9 v2 terlambat (tidak digabung, tanpa harga v2)."""
         agents = [{"slug": s, "agent_id": i + 1, "model": "m"} for i, s in enumerate("abc")]
         snap = {"sha": "0xabc", "fitur_aset": {"SOLUSDT": {"r_1j": 0.01}}, "fitur_bot": {"B1-TREND": {"breadth_naik_1j": 0.9}}}
-        books, ring = {}, {}
+        books, ring = {"v2": meja.buku_baru(), "_v2_state": {"hari": self.date, "ekuitas_awal_hari": 10_000.0}}, {}   # state hari dari era r3
         for i in range(18):
             t0 = self.T0 + i * 300
 
@@ -131,13 +145,22 @@ class ArsipHTTP(unittest.TestCase):
             def call(ag, system, user, i=i):
                 if 6 <= i < 12:
                     return out(bot="B5-CORE-RWA", ins=(("BTCUSDT", 80), ("PAXGUSDT", 70)), eks=70)
-                ins = (("SOLUSDT", 80), ("NEARUSDT", 60)) + ((("WIFUSDT", 70),) if i >= 3 else ())
-                return out(ins=ins, eks=80 if i < 4 else 60)
+                return out(ins=(("SOLUSDT", 80), ("NEARUSDT", 60), ("WIFUSDT", 70)), eks=60)
             rek = [{"v": 1, "siklus": t0, "agent": "konsensus", "ekuitas": 1.0}]                                # rekaman v1 di berkas yang sama
             rek[0]["hash"] = meja.sha(rek[0])
             sik = {"siklus": t0, "daun": [rek[0]["hash"]], "harga": {}, "root": f"0x{i:064x}", "status": "dikomit", "tx": "0xtx"}
             hasil = {}
-            if i != 8:
+            if i < len(self.R3):                                                                                # era r3: target aturan langsung diisi
+                bot, eks, w = self.R3[i]
+                h = meja.harga_isi(get, aset=UNI)
+                tg = {a: {"w": x, "k": 1.0} for a, x in w.items()}
+                rk = {"v": 2, "siklus": t0, "agent": "v2", "bot": bot, "eksposur": eks, "instrumen": sorted(w), "dasar": f"dominant bot {bot}",
+                      "target": tg, "isi": meja.isi(books["v2"], tg, h)}
+                rk["ekuitas"] = round(meja.ekuitas(books["v2"], h), 4)
+                rk["hash"] = meja.sha(rk)
+                books["_v2_state"]["bot"] = bot
+                hasil.update(rek=[rk], harga=h, books={}, ring={})
+            elif i != 8:
                 b2 = copy.deepcopy({k: v for k, v in books.items() if k.startswith(("v2", "_v2"))})
                 r2 = {k: v for k, v in ring.items() if k.startswith("v2")}
                 rk, harga = meja2.siklus2(t0, agents, b2, r2, call, snap, FakePasar(), get=get, log=lambda m: None)
@@ -172,62 +195,54 @@ class ArchiveReplayIntegrationTests(ArsipHTTP):
         self.assertEqual(self._get("/desk/archive/..%2Fetc")[0], 400)
         self.assertEqual(self._get("/desk/archive/2020-01-01"), (404, {"error": "no archive for 2020-01-01"}))
 
-    def test_replay_over_http_meets_the_p163_exit_criteria_1_and_2(self):
+    def test_replay_over_http_meets_the_p163_exit_criteria_across_the_r3_to_r4_switch(self):
         prev = time.strftime("%Y-%m-%d", time.gmtime(self.T0 - 86_400))
         recs, harga = mr.muat(prev, self.date, self.url)                                                      # hari tanpa arsip (404) dilewati
-        lp = mr.laporan(recs, harga)
-        # (1) fee dipecah per sumber dengan angka dari arsip; jumlah sumber = total fee tercatat = biaya buku Fabius
+        lp = mr.laporan(recs, harga, store=PasarStore())
+        # (1) fee dipecah per sumber dengan angka dari arsip; jumlah sumber = total fee tercatat = biaya buku Fabius (r3 + r4 satu buku)
         self.assertTrue(set(lp["sumber"]) <= set(mr.SUMBER), lp["sumber"])
-        self.assertGreaterEqual(set(lp["sumber"]), {"ganti bot", "ganti instrumen", "ubah eksposur"})
+        self.assertGreaterEqual(set(lp["sumber"]), {"ganti bot", "ganti instrumen", "ubah eksposur", "r4 start", "buka slot"})
         self.assertAlmostEqual(sum(v["fee"] for v in lp["sumber"].values()), lp["fee_tercatat"], places=4)
         self.assertAlmostEqual(lp["fee_tercatat"], self.book["biaya"], places=4)
-        # (2) replay deterministik pada siklus + harga yang sama: r3 SETIA ke ekuitas tercatat, tiap kebijakan melaporkan fee, transaksi, ekuitas
-        self.assertTrue(lp["setia"], (lp["replay"]["r3 (sekarang)"], lp["ekuitas_tercatat"]))
-        self.assertAlmostEqual(lp["ekuitas_tercatat"], meja.ekuitas(self.book, harga[max(harga)]), places=3)
+        # (2) replay deterministik pada siklus + harga yang sama: r3 SETIA ke ekuitas tercatat era r3, tiap kebijakan melaporkan fee/isi/ekuitas
+        self.assertAlmostEqual(lp["replay"]["r3 (sekarang)"]["ekuitas"], lp["ekuitas_tercatat_r3"], places=2)
         self.assertEqual(set(lp["replay"]), set(mr.KEBIJAKAN))
-        base = lp["replay"]["r3 (sekarang)"]
-        self.assertEqual(base["isi"], sum(len(r.get("isi") or []) for r in recs))
         for nama, x in lp["replay"].items():
             self.assertTrue({"ekuitas", "fee", "isi", "dd_pct", "per_hari_pct"} <= set(x), nama)
-            self.assertLessEqual(x["isi"], base["isi"], nama)
-        self.assertEqual(base["per_hari_pct"], {self.date: round((lp["ekuitas_tercatat"] / meja.PARAMS["modal_awal"] - 1) * 100, 3)})
         self.assertEqual(set(mr.laporan(recs, harga, kepekaan=True)["replay"]), set(mr.KEBIJAKAN) | set(mr.KEPEKAAN))
-
-
-class UniStore:
-    """Candle harian untuk replay slot, searah dengan `FakePasar` (SOL/WIF/BTC/PAXG naik, NEAR turun), high/low +/-1 % -> ATR ±2 %."""
-    def __init__(self, t):
-        d0 = (t // 86_400 - 101) * 86_400_000
-        naik = {"SOLUSDT", "WIFUSDT", "BTCUSDT", "PAXGUSDT"}
-        self._rows = {a: [(d0 + i * 86_400_000, c, c * 1.01, c * 0.99, c, 5e6) for i in range(100) for c in [(100 + i) if a in naik else (200 - i)]]
-                      for a in UNI if a != "NEWUSDT"}
-        self.mulai = d0 - 30 * 86_400_000
-
-    def rows(self, a):
-        return self._rows.get(a, [])
+        # (4) r4 tercatat vs bayangan r3; replay slot yang dilanjutkan dari buku r3 SETIA ke buku tercatat (yang diuji = yang dijalankan)
+        r4 = lp["r4"]
+        self.assertEqual(r4["siklus"], 11)                                                                     # 12 siklus r4 - 1 terlambat
+        self.assertTrue(r4["setia"], (r4["replay_slot_ekuitas"], r4["ekuitas_tercatat"]))
+        self.assertTrue(lp["setia"])
+        self.assertAlmostEqual(r4["ekuitas_tercatat"], meja.ekuitas(self.book, harga[max(harga)]), places=3)
+        self.assertTrue({"ekuitas", "fee", "isi", "dd_pct", "sejak_r4_pct"} <= set(r4["bayangan_r3"]))
 
 
 class SlotIntegrationTests(ArsipHTTP):
-    """F-D116 lewat rantai yang sama: arsip HTTP gerbang asli -> `replay_slot` (aturan keluar = `meja2.arah`, kandidat = target tercatat)."""
+    """F-D116 di rekaman yang DIHASILKAN meja hidup (dibaca lewat arsip HTTP gerbang asli)."""
 
-    def test_slot_replay_over_http_respects_the_f_d116_limits(self):
+    def test_recorded_r4_cycles_obey_the_f_d116_limits(self):
         import meja_slot as ms
         recs, harga = mr.muat(self.date, self.date, self.url)
-        x = mr.replay_slot(recs, harga, UniStore(self.T0))
-        self.assertGreater(x["buka"], 0)
-        self.assertLessEqual(x["maks_posisi_terbuka"], ms.PARAMS_SLOT["maks_posisi"])
-        for _, fs in x["kirim"]:
-            alasan = {f["alasan"] for f in fs}
-            self.assertTrue(alasan <= {"open", "SL", "TP", "daily loss brake"} | {f"exit rule {b}" for b in meja2.BOTS}, alasan)
-            if alasan - {"open"}:
-                self.assertNotIn("open", alasan)                                                # jeda: siklus yang menutup tidak membuka
-        b = x["buku"]
-        self.assertAlmostEqual(x["fee"], round(b["biaya"], 2))
-        self.assertAlmostEqual(sum(f["fee"] for _, fs in x["kirim"] for f in fs), b["biaya"], places=4)
-        self.assertEqual(x["isi"], b["n_trade"])
-        for a, p in b["posisi"].items():                                                       # ukuran dikunci: qty = notional saat buka / harga masuk
-            self.assertLessEqual(abs(p["qty"]) * p["masuk"], ms.PARAMS_SLOT["maks_per_posisi"] * 10_000 * 1.1)
-        self.assertEqual(mr.replay_slot(recs, harga, UniStore(self.T0))["ekuitas"], x["ekuitas"])   # deterministik
+        r4 = [r for r in recs if "slot" in r]
+        alasan_semua = set()
+        for r in r4:
+            self.assertLessEqual(len(r["slot"]), ms.PARAMS_SLOT["maks_posisi"])
+            alasan = {f["alasan"] for f in r["isi"]}
+            alasan_semua |= alasan
+            self.assertTrue(alasan <= {"open", "SL", "TP", "daily loss brake", "r4 start"} | {f"exit rule {b}" for b in meja2.BOTS}, alasan)
+            if alasan - {"open", "r4 start"}:
+                self.assertNotIn("open", alasan)                                                                # jeda: siklus yang menutup tidak membuka
+            for x in r["slot"]:
+                self.assertIn(x["aset"], harga[r["siklus"]])                                                    # aset dipegang selalu diberi harga
+                self.assertLessEqual(abs(x["qty"]) * x["masuk"], ms.PARAMS_SLOT["maks_per_posisi"] * 10_000 * 1.1)
+                self.assertIn(x["bot"], meja2.BOTS)
+        self.assertIn("r4 start", alasan_semua)                                                                # posisi r3 ditutup sekali saat r4 mulai
+        self.assertIn("open", alasan_semua)
+        bots = {x["bot"] for r in r4 for x in r["slot"]}
+        self.assertGreaterEqual(bots, {"B5-CORE-RWA"})
+        self.assertEqual(sum(1 for r in r4 for f in r["isi"] if f["alasan"] == "r4 start"), 2)                # BTC + PAXG era r3, sekali saja
 
 
 if __name__ == "__main__":

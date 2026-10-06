@@ -80,3 +80,10 @@ seperti referensi.
   fee (dan porsinya terhadap rugi), transaksi, siklus berposisi.
 - **Hasil per bot** (siklus dominan, perubahan ekuitas saat bot itu memegang, fee) + **pita keputusan** terbaru dulu (bot, agent sah, isi, bukti ↗).
 - Data: `GET /desk/fabius` (semua rekaman buku Fabius sejak siklus pertama).
+
+## Panel slot posisi (r4, F-D116)
+
+Sejak rumus r4 buku Fabius memegang maksimal 5 posisi. Panel baris penuh di bawah kurva: tiap slot = kartu (aset + arah, bot pemilik dengan
+warna pita bot, margin x leverage, untung/rugi belum direalisasi) dengan batang SL -> masuk -> TP; titik = harga siklus terakhir (ungu bila
+untung, tinta bila rugi), masuk di 1/3 karena TP = 2 x jarak SL. Slot kosong digambar putus-putus supaya kapasitas terlihat. 5 kolom di
+desktop lebar, 2 di tablet, 1 di HP. Pita keputusan menulis alasan tiap isi (buka / stop-loss / take-profit / aturan keluar bot / rem rugi).

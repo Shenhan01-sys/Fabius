@@ -497,7 +497,7 @@ class Gate:
                 with open(path, encoding="utf-8") as f:
                     rows = [json.loads(ln) for ln in f if '"agent": "v2",' in ln]
                 keep = ("siklus", "ekuitas", "bot", "nilai_bot", "dasar", "instrumen", "target", "isi", "masuk", "aktif", "hash")
-                cache[path] = (m, [{k: r.get(k) for k in keep} for r in rows])
+                cache[path] = (m, [{**{k: r.get(k) for k in keep}, **({"slot": r["slot"]} if "slot" in r else {})} for r in rows])   # r4: slot
             recs += cache[path][1]
         agen, sik = [], None
         if recs and files:
