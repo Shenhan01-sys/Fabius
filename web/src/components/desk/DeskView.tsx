@@ -55,8 +55,6 @@ function Body() {
     };
   }, []);
 
-  const kons = d?.buku.find((b) => b.agent === "konsensus");
-  const agents = d?.buku.filter((b) => b.agent !== "konsensus" && !b.agent.startsWith("v2")) ?? [];
   const v2 = d?.buku.find((b) => b.agent === "v2");
   const agents2 = d?.buku.filter((b) => b.agent.startsWith("v2:") && b.kursi !== "keluar") ?? [];
   return (
@@ -75,24 +73,14 @@ function Body() {
         {d && !d.buku.length && <p className="text-center text-ink/60">{v.empty}</p>}
         {v2 && <V2Panel b={v2} d={d!} />}
         {agents2.length > 0 && (
-          <div className="grid gap-6 lg:grid-cols-3">
-            {agents2.map((b) => (
-              <AgentCard key={b.agent} b={b} />
-            ))}
-          </div>
-        )}
-        {v2 && kons && (
-          <div className="pt-4">
-            <p className={label}>{v.v1Title}</p>
-            <p className="mt-1 text-sm text-ink/60">{v.v1Sub}</p>
-          </div>
-        )}
-        {kons && <Consensus b={kons} d={d!} />}
-        {agents.length > 0 && (
-          <div className="grid gap-6 lg:grid-cols-3">
-            {agents.map((b) => (
-              <AgentCard key={b.agent} b={b} />
-            ))}
+          <div>
+            <p className={label}>{v.reports}</p>
+            <p className="mt-1 text-sm text-ink/60">{v.reportsSub}</p>
+            <div className="mt-3 grid gap-6 lg:grid-cols-3">
+              {agents2.map((b) => (
+                <AgentCard key={b.agent} b={b} />
+              ))}
+            </div>
           </div>
         )}
         {d && d.buku.length > 0 && <Floor d={d} />}
@@ -133,48 +121,6 @@ function Weights({ pos, max }: { pos: Record<string, number>; max: number }) {
           <span className="text-right font-mono">{(w * 100).toFixed(1)}%</span>
         </div>
       ))}
-    </div>
-  );
-}
-
-function Consensus({ b, d }: { b: Buku; d: Desk }) {
-  const { t } = useLang();
-  const v = t.desk;
-  const s = d.siklus_terakhir;
-  return (
-    <div className={panel}>
-      <div className="grid gap-6 lg:grid-cols-[1fr_1.2fr]">
-        <div>
-          <p className={label}>{v.consensus}</p>
-          <p className="mt-2 font-display text-4xl font-[300]">
-            {b.ekuitas.toLocaleString("en-US", { maximumFractionDigits: 2 })} <span className="text-base text-ink/50">USDT</span>
-          </p>
-          <p className={`mt-1 text-sm ${b.hasil_pct >= 0 ? "text-violet" : "text-ink/60"}`}>
-            {pct(b.hasil_pct)} · {b.n_trade} {v.trades} · {v.fees} {b.biaya.toFixed(2)}
-          </p>
-          <Spark pts={b.deret} />
-          {s && (
-            <p className="mt-2 text-xs text-ink/60">
-              {v.lastCycle} {hhmm(s.siklus)} · {stat(v.status, s.status)}
-              {s.tx && (
-                <>
-                  {" · "}
-                  <a className="underline" href={LINKS.tx + s.tx} target="_blank" rel="noreferrer">
-                    {v.anchored}
-                  </a>
-                </>
-              )}
-              <span className="block font-mono text-[11px] text-ink/45">root {short(s.root)} · {d.komit_24j}/{d.siklus_24j} {v.committed24}</span>
-            </p>
-          )}
-        </div>
-        <div>
-          <p className={label}>{v.positions}</p>
-          <div className="mt-3">
-            <Weights pos={b.posisi} max={d.params.maks_per_aset} />
-          </div>
-        </div>
-      </div>
     </div>
   );
 }
@@ -367,13 +313,12 @@ function Rules({ d }: { d: Desk }) {
           .replace("{fee}", (p.fee * 100).toFixed(2))
           .replace("{per}", String(p.maks_per_aset * 100))
           .replace("{gross}", String(p.maks_gross))
-          .replace("{q}", String(p.kuorum))
-          .replace("{min}", String(p.ubah_min * 100))
-          .replace("{n}", String(p.aset.length))}
+          .replace("{min}", String(p.ubah_min * 100))}
       </p>
       {d.params_v2 && (
         <p className="mt-2 text-sm text-ink/70">
           {v.v2Rules
+            .replace("{r}", String((d.params_v2 as { v?: number }).v ?? ""))
             .replace("{top}", String(d.params_v2.universe_top))
             .replace("{reg}", "12")
             .replace("{max}", String(d.params_v2.maks_instrumen))
@@ -400,7 +345,7 @@ function Rules({ d }: { d: Desk }) {
       )}
       <p className="mt-2 font-mono text-[11px] text-ink/50">
         params {short(d.params_sha)}
-        {d.params_v2_sha && <> · v2 params {short(d.params_v2_sha)}</>}
+        {d.params_v2_sha && <> · formula r{String((d.params_v2 as { v?: number } | undefined)?.v ?? "")} {short(d.params_v2_sha)}</>}
         {d.anchor && (
           <>
             {" · "}
