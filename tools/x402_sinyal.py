@@ -452,25 +452,33 @@ class Gate:
         return 200, {"buku": buku, "statistik": stat, "riwayat": riwayat, "model": next((r.get("model") for r in reversed(mine) if r.get("model")), None),
                      "agent_id": next((r.get("agent_id") for r in reversed(mine) if r.get("agent_id")), None)}
 
-    def meja_arsip(self, tgl: str) -> Tuple[int, dict]:
-        """P163: arsip baca-saja satu hari UTC - rekaman buku Fabius (konsensus v2, lengkap) + harga isi v2 per siklus, untuk replay deterministik
-        (`tools/meja_replay.py`). Isinya sama dengan yang sudah publik lewat /desk + /desk/proof; tanpa rekaman v1/agent supaya ringkas."""
-        if not re.fullmatch(r"20\d\d-\d\d-\d\d", tgl or ""):
-            return 400, {"error": "format tanggal YYYY-MM-DD"}
-        out: Dict[str, list] = {"fabius": [], "siklus": []}
-        for kind, key in (("rekaman", "fabius"), ("siklus", "siklus")):
-            path = os.path.join(self.meja_dir, kind, f"{tgl}.jsonl")
+    def meja_archive(self, date: str) -> Tuple[int, dict]:
+        """P163: `GET /desk/archive/<YYYY-MM-DD>`, baca saja, satu hari UTC - rekaman buku Fabius (agent "v2", apa adanya: nama field di dalam
+        rekaman ikut di-hash jadi tidak diterjemahkan) + harga isi v2 per siklus, untuk replay deterministik (`tools/meja_replay.py`). Isinya sama
+        dengan yang sudah publik lewat /desk + /desk/proof; tanpa rekaman v1/agent supaya ringkas. Kunci pembungkus berbahasa Inggris."""
+        try:
+            if not re.fullmatch(r"\d{4}-\d\d-\d\d", date or ""):
+                raise ValueError
+            time.strptime(date, "%Y-%m-%d")
+        except ValueError:
+            return 400, {"error": "date must be YYYY-MM-DD"}
+        out: Dict[str, list] = {"records": [], "cycles": []}
+        for kind in ("rekaman", "siklus"):
+            path = os.path.join(self.meja_dir, kind, f"{date}.jsonl")
             if not os.path.exists(path):
                 continue
             with open(path, encoding="utf-8") as f:
                 for ln in f:
-                    if kind == "rekaman" and '"agent": "v2",' not in ln:
-                        continue
-                    r = json.loads(ln)
-                    out[key].append(r if kind == "rekaman" else {k: r.get(k) for k in ("siklus", "harga_v2", "root", "tx", "status", "n")})
-        if not out["fabius"] and not out["siklus"]:
-            return 404, {"error": f"tidak ada arsip {tgl}"}
-        return 200, {"tanggal": tgl, **out}
+                    if kind == "rekaman":
+                        if '"v2"' in ln and (r := json.loads(ln)).get("agent") == "v2":
+                            out["records"].append(r)
+                    elif ln.strip():
+                        s = json.loads(ln)
+                        out["cycles"].append({"cycle": s["siklus"], "prices": s.get("harga_v2") or {}, "root": s.get("root"), "tx": s.get("tx"),
+                                              "status": s.get("status"), "leaves": s.get("n")})
+        if not out["records"] and not out["cycles"]:
+            return 404, {"error": f"no archive for {date}"}
+        return 200, {"date": date, **out}
 
     def meja_fabius(self, max_age_s: int = 30) -> dict:
         """P164 Fabius Live Book: semua rekaman buku Fabius (agent "v2") sejak siklus pertama. Cache per berkas harian (berkas lama tidak berubah,
@@ -933,8 +941,8 @@ def make_handler(gate: Gate):
                 if parts[0] == "desk" and len(parts) == 3 and parts[1] == "proof":
                     code, body = gate.meja_proof(parts[2])
                     return self._send(code, body)
-                if parts[0] == "desk" and len(parts) == 3 and parts[1] == "arsip":
-                    code, body = gate.meja_arsip(parts[2])
+                if parts[0] == "desk" and len(parts) == 3 and parts[1] == "archive":
+                    code, body = gate.meja_archive(parts[2])
                     return self._send(code, body)
                 if parts[0] == "desk" and len(parts) == 2 and parts[1] == "fabius":
                     return self._send(200, gate.meja_fabius())

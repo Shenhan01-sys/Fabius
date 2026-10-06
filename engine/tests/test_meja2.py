@@ -314,14 +314,15 @@ class GateTests(unittest.TestCase):
         for r in ({"siklus": t0, "agent": "v2", "ekuitas": 9_990.0, "target": {"X": {"w": 0.1}}, "hash": "0xa"},
                   {"siklus": t0, "agent": "konsensus", "ekuitas": 1.0, "hash": "0xk"}, {"siklus": t0, "agent": "v2:glm", "hash": "0xg"}):
             self.g.meja_simpan([r], {"siklus": t0, "daun": [r["hash"]], "harga": {"BTCUSDT": 1.0}, "harga_v2": {"XUSDT": 2.0}, "root": "0xr", "status": "dikomit", "n": 1}, {}, {})
-        tgl = time.strftime("%Y-%m-%d", time.gmtime(t0))
-        code, a = self.g.meja_arsip(tgl)
+        date = time.strftime("%Y-%m-%d", time.gmtime(t0))
+        code, a = self.g.meja_archive(date)
         self.assertEqual(code, 200)
-        self.assertEqual([r["hash"] for r in a["fabius"]], ["0xa"])                              # v1 + agent tidak ikut
-        self.assertEqual(a["siklus"][0]["harga_v2"], {"XUSDT": 2.0})
-        self.assertNotIn("harga", a["siklus"][0])
-        self.assertEqual(self.g.meja_arsip("../etc")[0], 400)
-        self.assertEqual(self.g.meja_arsip("2020-01-01")[0], 404)
+        self.assertEqual([r["hash"] for r in a["records"]], ["0xa"])                             # v1 + agent tidak ikut
+        self.assertEqual(a["cycles"][0]["prices"], {"XUSDT": 2.0})
+        self.assertEqual(a["cycles"][0]["cycle"], t0)
+        self.assertNotIn("harga", a["cycles"][0])
+        self.assertEqual(self.g.meja_archive("../etc")[0], 400)
+        self.assertEqual(self.g.meja_archive("2020-01-01")[0], 404)
 
     def test_agent_detail_counts_measured_24h_stats_and_lists_history_newest_first(self):
         t0 = 1_791_200_100
