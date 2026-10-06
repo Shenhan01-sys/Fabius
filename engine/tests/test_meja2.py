@@ -277,7 +277,86 @@ class KursiTests(unittest.TestCase):
         self.assertIn(("u1", "keluar"), {(e["agent"], e["ke"]) for e in ev3})                     # gagal kedua kali -> keluar
         self.assertTrue(st["kursi"]["u1"]["gagal"])
         self.assertEqual([e for e in meja2.kursi_daftar(st, ["u1"], t0 + 2 * 86_400 + 300) if e["agent"] == "u1"], [])   # tidak masuk otomatis lagi
-        self.assertEqual(meja2.PARAMS_KURSI["v"], 2)
+        self.assertEqual(meja2.PARAMS_KURSI["v"], 3)
+
+    def test_a_trial_seat_held_past_the_limit_without_promotion_makes_room_only_when_someone_eligible_waits(self):
+        """F-D121 #9a (PARAMS_KURSI v3): >= 2016 siklus di kursi uji tanpa naik -> belakang antrean, tetapi HANYA bila ada agent lain di antrean yang boleh masuk dan kursi uji penuh."""
+        t0 = 1_791_244_800
+        lim = meja2.PARAMS_KURSI["uji_maks_siklus"]
+        tua, baru = t0 - (lim + 1) * 300, t0 - 10 * 300
+
+        def hist(n):                                                                             # sah 90 %: tidak naik (< 95 %) dan tidak gagal (>= 80 %)
+            return {"sah": [1] * round(n * 0.9) + [0] * (n - round(n * 0.9)), "eq": [10_000.0] * (n + 1)}
+
+        def dunia(antre):
+            return {"kursi": {"a1": {"status": "aktif", "sejak": tua}, "u1": {"status": "uji", "sejak": tua}, "u2": {"status": "uji", "sejak": tua},
+                              "u3": {"status": "uji", "sejak": baru}} | antre,
+                    "riwayat": {"u1": hist(288), "u2": hist(288), "u3": hist(50), "a1": hist(288)}}
+        st = dunia({"q1": {"status": "antre", "sejak": tua}, "q2": {"status": "antre", "sejak": tua, "tunggu_sampai": t0 + 3600}})
+        ev = meja2.kursi_evaluasi(st, t0)
+        self.assertEqual([(e["agent"], e["dari"], e["ke"]) for e in ev], [("u1", "uji", "antre")])    # satu agent menunggu dan boleh masuk (q2 masih masa tunggu) = satu kursi dibebaskan
+        self.assertIn("without promotion", ev[0]["alasan"])
+        self.assertEqual(st["kursi"]["u1"]["tunggu_sampai"], t0 + meja2.PARAMS_KURSI["antre_tunggu_s"])
+        self.assertNotIn("u1", st["riwayat"])                                                     # riwayat diulang
+        self.assertEqual(st.get("gagal_uji", {}), {})                                             # bukan kegagalan: tidak menambah hitungan keluar
+        self.assertEqual([(e["agent"], e["ke"]) for e in meja2.kursi_daftar(st, ["a1", "u1", "u2", "u3", "q1", "q2"], t0)], [("q1", "uji")])   # q1 mengambil kursinya
+        sepi = dunia({})                                                                          # tanpa antrean: tidak ada yang digeser
+        self.assertEqual(meja2.kursi_evaluasi(sepi, t0), [])
+        cool = dunia({"q2": {"status": "antre", "sejak": tua, "tunggu_sampai": t0 + 3600}})       # satu-satunya yang menunggu masih masa tunggu: tidak ada yang digeser
+        self.assertEqual(meja2.kursi_evaluasi(cool, t0), [])
+        longgar = dunia({"q1": {"status": "antre", "sejak": tua}})
+        del longgar["kursi"]["u3"]                                                                # kursi uji kosong: q1 masuk lewat kursi_daftar tanpa menggeser siapa pun
+        self.assertEqual(meja2.kursi_evaluasi(longgar, t0), [])
+        belum = dunia({"q1": {"status": "antre", "sejak": tua}})
+        belum["kursi"]["u1"]["sejak"] = belum["kursi"]["u2"]["sejak"] = t0 - (lim - 1) * 300       # belum mencapai batas
+        self.assertEqual(meja2.kursi_evaluasi(belum, t0), [])
+
+    def test_external_agents_hold_at_most_two_active_seats_and_may_only_swap_with_a_weaker_external(self):
+        """F-D121 #9b (PARAMS_KURSI v3): `maks_aktif_luar` kursi aktif untuk agent luar; kandidat luar ke-3 hanya bisa menukar agent luar aktif terlemah (unggul >= 0,5 pp)."""
+        t0 = 1_791_244_800
+        w = meja2.PARAMS_KURSI["jendela_siklus"]
+        lama = t0 - (w + 1) * 300
+
+        def hist(ret):
+            return {"sah": [1] * w, "eq": [10_000.0] * w + [10_000.0 * (1 + ret)]}
+
+        def dunia(x3):
+            return {"kursi": {"a1": {"status": "aktif", "sejak": lama}, "x1": {"status": "aktif", "sejak": lama}, "x2": {"status": "aktif", "sejak": lama},
+                              "x3": {"status": "uji", "sejak": lama}, "h1": {"status": "uji", "sejak": lama}},
+                    "riwayat": {"a1": hist(0.0), "x1": hist(0.001), "x2": hist(0.002), "x3": hist(x3), "h1": hist(0.03)}}
+        luar = {"x1", "x2", "x3"}
+        st = dunia(0.0015)                                                                        # x3 unggul hanya 0,05 pp dari x1 (< 0,5 pp)
+        ev = meja2.kursi_evaluasi(st, t0, luar)
+        self.assertEqual([(e["agent"], e["ke"]) for e in ev], [("h1", "aktif")])                  # kandidat rumah naik ke kursi kosong; x3 tetap uji walau ada kursi kosong
+        self.assertEqual(st["kursi"]["x3"]["status"], "uji")
+        st = dunia(0.05)                                                                          # x3 unggul 4,9 pp dari x1: boleh menukar agent LUAR terlemah
+        moves = [(e["agent"], e["ke"]) for e in meja2.kursi_evaluasi(st, t0, luar)]
+        self.assertIn(("x1", "uji"), moves)
+        self.assertIn(("x3", "aktif"), moves)
+        self.assertNotIn(("a1", "uji"), moves)                                                    # agent rumah tidak jadi korban penukaran
+        self.assertEqual(sum(1 for s in ("x1", "x2", "x3") if st["kursi"][s]["status"] == "aktif"), 2)
+        sama = dunia(0.05)                                                                        # tanpa daftar agent luar (aturan lama): x3 naik biasa
+        self.assertIn(("x3", "aktif"), [(e["agent"], e["ke"]) for e in meja2.kursi_evaluasi(sama, t0)])
+        paksa = dunia(0.0015)                                                                     # keputusan kursi builder tidak dibatasi (keputusan eksplisit)
+        ev = meja2.kursi_paksa(paksa, [{"id": "D1", "slug": "x3", "ke": "aktif", "alasan": "builder"}], t0)
+        self.assertEqual((ev[0]["agent"], ev[0]["ke"]), ("x3", "aktif"))
+
+    def test_the_midnight_cycle_passes_the_external_agents_to_the_seat_evaluation(self):
+        def get(url):
+            return [{"symbol": a, "markPrice": "100", "lastFundingRate": "0"} for a in UNI]
+        t0 = 1_791_244_800
+        w = meja2.PARAMS_KURSI["jendela_siklus"]
+        lama = t0 - (w + 1) * 300
+        hist = lambda ret: {"sah": [1] * w, "eq": [10_000.0] * w + [10_000.0 * (1 + ret)]}        # noqa: E731
+        agents = [{"slug": "a1", "agent_id": 1, "model": "m"}, {"slug": "x1", "agent_id": 11, "model": "m", "luar": True}, {"slug": "x2", "agent_id": 12, "model": "m", "luar": True},
+                  {"slug": "x3", "agent_id": 13, "model": "m", "luar": True}]
+        books = {"_v2_kursi": {"kursi": {"a1": {"status": "aktif", "sejak": lama}, "x1": {"status": "aktif", "sejak": lama}, "x2": {"status": "aktif", "sejak": lama},
+                                         "x3": {"status": "uji", "sejak": lama}},
+                               "riwayat": {"a1": hist(0.0), "x1": hist(0.001), "x2": hist(0.002), "x3": hist(0.0015)}}}
+        snap = {"sha": "0x1", "fitur_aset": {"SOLUSDT": {"r_1j": 0.01}}, "fitur_bot": {}}
+        rek, _ = meja2.siklus2(t0, agents, books, {}, lambda ag, sy, us: out(), snap, FakePasar(), get=get, log=lambda m: None)
+        self.assertEqual(books["_v2_kursi"]["kursi"]["x3"]["status"], "uji")                      # 2 kursi aktif luar sudah terisi: x3 tidak naik walau memenuhi syarat
+        self.assertEqual(sum(1 for r in rek if r["agent"] == "v2:x3" and r["kursi"] == "uji"), 1)
 
     def test_seats_change_only_in_the_midnight_cycle(self):
         def get(url):

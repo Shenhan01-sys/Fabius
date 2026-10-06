@@ -3432,6 +3432,11 @@ hanya menjawab "sudah terdaftar" (200); sekarang 403.
 **F-D121 #9 DISETUJUI (6 Okt, builder: *"F-D121 #9 -> saya sepakat"*):** (a) kursi uji yang >= 2016 siklus (7 hari) tanpa naik pindah ke belakang antrean bila ada yang mengantre; (b) agent
 luar paling banyak 2 dari 7 kursi aktif. Dikunci sebagai `PARAMS_KURSI` v3 saat kodenya hidup (P170); sha dicatat di sini ketika itu.
 
+**F-D121 #9 DIKUNCI sebagai `PARAMS_KURSI` v3 (6 Okt, P170):** v3 = v2 + `uji_maks_siklus` 2016 + `maks_aktif_luar` 2; sha `0x76f7196a92a419cee466250a84dcc2cd08bb181dc3d7b6e334fac3248d255e00` (dicetak `meja.sha(meja2.PARAMS_KURSI)`; v2 direkonstruksi dari v3
+dengan membuang dua kunci itu dan `v: 2` = `0x47f1c058…`, sama dengan yang tercatat di F-D119). Rancangan: (a) kursi uji yang >= 2016 siklus tanpa naik pindah ke belakang antrean HANYA bila ada agent lain di antrean yang boleh
+masuk dan kursi uji penuh (sebanyak yang dibutuhkan; `tunggu_sampai` +1 hari, riwayat diulang, bukan kegagalan); (b) kandidat luar tidak naik bila 2 kursi aktif luar terisi, kecuali menukar agent luar aktif terlemah (unggul
+>= 0,5 pp); keputusan kursi builder (SK-M24) tidak dibatasi. T8 SK-M34 + SK-M35.
+
 ## F-D122 - Pintu bot dibuka penuh (rule / code / feed) + tinjauan dua tahap: bot teknis, lalu agent LLM pemilik Fabius · 6 Okt 2026 (WIB)
 
 Builder (6 Okt) menolak form `/submit` yang memaksa memilih metode Fabius: *"biarkan semua input itu dari user, kan bot user, kita tidak perlu menentukannya"* ("nanti ga bervariasi"). Sesudah saya
@@ -3458,7 +3463,7 @@ tepercaya · jenis `feed`: hanya bukti maju (jendela bayangan lebih panjang, tan
 **Fakta pendukung (6 Okt):** xkiro = `https://api.xkiro.com/v1` (OpenAI-compatible), kunci `XKIRO_API_KEY` ada di Railway `fabius-x402` dan tidak di laptop; id persis "GLM 5.3" di xkiro belum terverifikasi;
 `analis.call_model` selalu mengirim `reasoning_effort` (effort bawaan = parameter dihilangkan).
 
-**Terkait:** F-D120 · F-D121 · F-D71 · F-D72 · F-D88 · P161 · P166 · P167 · P168 · [[04-Tools/TL37 - jalur pengajuan bot]] · [[09-Inbox/Session-2026-10-02]] §130
+**Terkait:** F-D120 · F-D121 · F-D71 · F-D72 · F-D88 · P161 · P166 · P167 · P168 · [[04-Tools/TL37 - jalur pengajuan bot]] · [[09-Inbox/Session-2026-10-02]] §130 · [[08-Backlog/12 - Epik Pengajuan Terbuka dan Peninjau LLM]] (spesifikasi + draf brief)
 
 ## F-D123 - Halaman Submit Agent terpisah dari Submit Bot · 6 Okt 2026 (WIB)
 

@@ -79,7 +79,7 @@ export type Desk = {
   params_v2?: { universe_top: number; maks_instrumen: number; likuiditas_min_usd: number; rugi_harian_maks: number };
   // P160 (F-D113): ambang konsensus untuk jumlah kursi aktif sekarang + aturan kursi
   ambang_v2?: { kuorum: number; min_agent_instrumen: number; veto_min_agent: number; ambang_instrumen: number };
-  params_kursi?: { status: string; maks_aktif: number; maks_uji: number; jendela_siklus: number; naik_sah_min: number; tukar_unggul_min: number; turun_sah_maks: number; uji_turun_sah_maks?: number; uji_amati_min?: number; uji_gagal_keluar?: number };
+  params_kursi?: { status: string; maks_aktif: number; maks_uji: number; jendela_siklus: number; naik_sah_min: number; tukar_unggul_min: number; turun_sah_maks: number; uji_turun_sah_maks?: number; uji_amati_min?: number; uji_gagal_keluar?: number; uji_maks_siklus?: number; maks_aktif_luar?: number };
   kursi?: Record<string, "aktif" | "uji" | "antre" | "keluar">;
   params_v2_sha?: string;
   anchor?: string;
@@ -194,5 +194,7 @@ export function seatRulesText(tpl: string, pk: ParamsKursi, statusLabel: string)
     .replace("{down}", String(Math.round(pk.turun_sah_maks * 100)))
     .replace("{tdown}", String(Math.round((pk.uji_turun_sah_maks ?? pk.turun_sah_maks) * 100)))
     .replace("{tmin}", String(pk.uji_amati_min ?? pk.jendela_siklus / 2))
+    .replace("{tmax}", String(Math.round(((pk.uji_maks_siklus ?? 2016) * 300) / 86_400)))
+    .replace("{xmax}", String(pk.maks_aktif_luar ?? 2))
     .replace("{status}", statusLabel);
 }
