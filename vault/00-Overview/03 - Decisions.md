@@ -3262,3 +3262,17 @@ Builder: *"saya setuju 7 aktif + 3 uji"*, *"yg penting tiap ada agent baru masuk
 **Slot agent 2568 ganti model (6 Okt dini hari UTC, builder: "Itu grok ganti ini aja gpt-6-luna", pola F-D105):** `grok-4.7-free` (KiosAPI, HTTP 503 dua siklus berturut) -> `gpt-6-luna` lewat penyedia baru VyceAI (`https://vyceai.com/v1`, OpenAI-compatible, kunci `VYCEAI_API_KEY` dipasang builder di Railway). Slug `grok`, agent_id 2568, dompet, URI kartu, dan kursi uji TETAP; model lama di `riwayat` config + `model_history` kartu. Jalan pintas baru `analis.py ganti` (tanpa kunci, tanpa tx).
 
 **Slot agent 2568 DITURUNKAN (6 Okt ±01Z, builder: "takedown dulu aja Agent itu, biar pakai 7 agent dulu aja"):** `nonaktif` di config (identitas ERC-8004 + dompet tetap, bisa `aktif` lagi), kursi uji dilepas (`keluar`) supaya antrean maju: GLM 5.3 Flash masuk kursi uji. Sesuai F-D113 dari 7 agent yang tersisa, 6 berjalan (3 aktif + 3 uji) dan Qwen 3.8 27B antre sampai ada kursi uji kosong.
+
+## F-D114 — Pengecualian F-D113 atas kata builder: GLM Flash diturunkan, Muse + Qwen 3.7 Plus + Qwen 3.8 27B langsung ke kursi aktif · 6 Okt 2026 (WIB)
+
+Builder: *"OKe turunkan dah, sialan kiosapi, naikin AI yg antre dan uji biar slotnya terisi"*. KiosAPI menjawab 503 untuk kedua modelnya (Grok 4.7,
+GLM 5.3 Flash), jadi:
+
+1. `glmflash` (agent 2569) `nonaktif`, kursinya dilepas (SK-M23) - identitas tetap, bisa `aktif` lagi bila KiosAPI pulih.
+2. **Pengecualian F-D113 #2:** `muse` (2566), `qwenplus` (2567), `qwen27b` (2570) naik ke kursi AKTIF tanpa jendela 288 siklus uji, lewat keputusan kursi
+   builder `2026-10-06-1..3` di `config/agents.json` (`kursi_builder`). Diterapkan SEKALI oleh gerbang dan tercatat sebagai peristiwa `kursi` yang dikomit
+   (SK-M24); batas 7 aktif / 3 uji tetap ditegakkan. Sesudahnya evaluasi harian biasa (turun ke uji bila sah < 80 %) berlaku.
+3. Akibat yang disadari: suara ketiganya langsung masuk konsensus v2 dan pilihan bot harian (kursi aktif memilih); ambang menjadi n = 6 (kuorum 3,
+   instrumen/veto >= 2 agent, skor instrumen >= 2,4). Kursi uji kosong sampai agent baru masuk.
+
+**Terkait:** F-D113 · [[04-Tools/TL36 - meja v2 bot + instrumen]] · [[04-Tools/TL33 - agent analis]]
