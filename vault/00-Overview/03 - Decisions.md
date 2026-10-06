@@ -3332,4 +3332,6 @@ tidak bisa membuka posisi di siklus yang tercatat datar karena rem r3 (target at
 
 **Replay pertama (6 Okt ±10Z, [[07-Testing/01 - Test Commands]] #96):** mekanisme jalan (fee 264,71 -> 1,59 pada siklus yang sama), tetapi kelima slot terisi B2-RS dalam satu siklus (5 Okt 17:00Z) dan belum ada yang tertutup 17 jam kemudian, jadi angka hasilnya = lima posisi, bukan penilaian r4. Ditemukan untuk implementasi hidup: aset yang dipegang bisa keluar dari universe harga v2 (SOXSUSDT sejak 18:45Z) -> harga isi meja hidup wajib mencakup semua aset yang sedang dipegang.
 
+**Timeframe (builder 6 Okt, sesudah melihat ATR harian QNT 22 % / MOVR 24 % pada koin pump pilihan B2):** *"Tidak ada batasan timeframe"*. Semua bot terkunci memakai candle harian (B1 60 hari, B2 28 hari + rotasi mingguan, B4 14 hari, B5 90 hari + rebalance bulanan, B6 z 10 hari; `BotSpec` tidak punya field timeframe, satuan parameternya hari). Ditafsirkan: Fabius tidak dikunci ke satu timeframe; tiap posisi hidup selama aturan + TP/SL bot pembukanya, dan **ATR untuk TP/SL diambil dari timeframe bot pembuka** (sekarang semua harian; bot intraday masa depan masuk lewat P161 dan memakai ATR timeframe-nya sendiri).
+
 **Terkait:** P163 · F-D112 · F-D115 · [[04-Tools/TL36 - meja v2 bot + instrumen]]
