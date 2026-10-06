@@ -1,0 +1,3 @@
+Gunakan remotion dengan resource ini, jgn gunakan hyperframes, tapi gunakan remotion :
+"C:\Users\hansg\HansProject\Bnb-Indonesia-Hackathon\app\vault\Video-Workspace\Reference-VideoPitchs\Motion-as-Code-Workflow-Guide.pdf"
+"C:\Users\hansg\HansProject\Bnb-Indonesia-Hackathon\app\vault\Video-Workspace\Reference-VideoPitchs\Motion_as_kit"
