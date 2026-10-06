@@ -1083,7 +1083,7 @@ def make_handler(gate: Gate):
                         wait = float((qs.get("wait") or ["0"])[0])
                     except ValueError:
                         return self._send(400, {"error": "agent_id and wait must be numbers"})
-                    code, body = gate.luar.tarik(aid, wait)
+                    code, body = gate.luar.tarik(aid, wait, (qs.get("ts") or [None])[0], (qs.get("signature") or [None])[0])
                     return self._send(code, body)
                 live = gate.live(self.headers.get("Authorization")) if parts[0] in ("desk", "analis") else False   # P165
                 if parts[0] == "desk" and len(parts) == 1:
@@ -1478,6 +1478,28 @@ def rakit_siklus(t0: int, v1: Optional[Tuple[List[dict], dict]], h2: dict, books
     return rek, sik
 
 
+def v2_siklus(gate: "Gate", books: Dict[str, dict], ring: Dict[str, str], pasar2, t0: int, agents: List[dict], hasil: dict) -> None:
+    """P154/P155 (F-D112): meja v2 di salinan buku v2 sendiri; digabung hanya kalau selesai sebelum komit (yang terlambat tidak menyentuh buku)."""
+    import copy
+    import meja2
+    try:
+        snap = gate.data_tunggu(t0, t0 + 75)
+        sampai = t0 + meja.PARAMS["siklus_s"] - 35                         # komit v1+v2 butuh ±10 s sebelum batas kontrak t0+300
+        b2 = copy.deepcopy({k: v for k, v in books.items() if k.startswith(("v2", "_v2"))})
+        r2 = {k: v for k, v in ring.items() if k.startswith("v2")}
+
+        def call2(ag, system, user):
+            if ag.get("luar"):                                             # P166: agent luar menjawab lewat PULL, bukan dipanggil Fabius
+                return gate.luar.minta(ag, system, user, ag["siklus"], ag["validasi"], ag.get("tenggat"))
+            return an.call_model({**ag, "effort": meja.PARAMS["effort"]}, system, user, timeout=max(20, int(sampai - time.time()) - 5))
+        rek, harga = meja2.siklus2(t0, agents + gate.luar.agents(), b2, r2, call2, snap, pasar2, log=gate.log, sampai=sampai, bukti=gate.luar.bukti,
+                                   keluar=[a["slug"] for a in an.AGENTS if a.get("nonaktif")],    # SK-M23: kursi agent nonaktif dilepas
+                                   paksa=an.muat_kursi_builder())                                 # SK-M24: keputusan kursi builder
+        hasil.update(rek=rek, harga=harga, books=b2, ring=r2)
+    except Exception as e:  # noqa: BLE001 - v2 gagal tidak boleh mengganggu v1 / komit
+        gate.log(f"meja v2 gagal: {type(e).__name__}: {str(e)[:200]}")
+
+
 def meja_loop(gate: "Gate", ev, stop: threading.Event) -> None:
     """P152 (F-D109): tiap batas 5 menit UTC (+8 s supaya candle tutup) satu siklus meja; Merkle root dikomit ke DeskAnchor SELAMA siklus berjalan.
     Komit gagal / terlambat dicatat di rekaman siklus (status), tidak pernah diulang sesudah siklus berakhir (kontrak menolak TooLate)."""
@@ -1491,23 +1513,7 @@ def meja_loop(gate: "Gate", ev, stop: threading.Event) -> None:
         return an.call_model({**ag, "effort": meja.PARAMS["effort"]}, system, user, timeout=meja.PARAMS["batas_jawab_s"] - 10)
 
     def v2(t0, agents, hasil):
-        """P154/P155 (F-D112): meja v2 di salinan buku v2 sendiri; digabung hanya kalau selesai sebelum komit (yang terlambat tidak menyentuh buku)."""
-        try:
-            snap = gate.data_tunggu(t0, t0 + 75)
-            sampai = t0 + meja.PARAMS["siklus_s"] - 35                         # komit v1+v2 butuh ±10 s sebelum batas kontrak t0+300
-            b2 = copy.deepcopy({k: v for k, v in books.items() if k.startswith(("v2", "_v2"))})
-            r2 = {k: v for k, v in ring.items() if k.startswith("v2")}
-
-            def call2(ag, system, user):
-                if ag.get("luar"):                                             # P166: agent luar menjawab lewat PULL, bukan dipanggil Fabius
-                    return gate.luar.minta(ag, system, user, ag["siklus"], ag["validasi"], ag.get("tenggat"))
-                return an.call_model({**ag, "effort": meja.PARAMS["effort"]}, system, user, timeout=max(20, int(sampai - time.time()) - 5))
-            rek, harga = meja2.siklus2(t0, agents + gate.luar.agents(), b2, r2, call2, snap, pasar2, log=gate.log, sampai=sampai, bukti=gate.luar.bukti,
-                                       keluar=[a["slug"] for a in an.AGENTS if a.get("nonaktif")],    # SK-M23: kursi agent nonaktif dilepas
-                                       paksa=an.muat_kursi_builder())                                 # SK-M24: keputusan kursi builder
-            hasil.update(rek=rek, harga=harga, books=b2, ring=r2)
-        except Exception as e:  # noqa: BLE001 - v2 gagal tidak boleh mengganggu v1 / komit
-            gate.log(f"meja v2 gagal: {type(e).__name__}: {str(e)[:200]}")
+        v2_siklus(gate, books, ring, pasar2, t0, agents, hasil)
     while True:
         now = time.time()
         t0 = int(now // meja.PARAMS["siklus_s"] * meja.PARAMS["siklus_s"]) + meja.PARAMS["siklus_s"]

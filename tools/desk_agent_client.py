@@ -56,9 +56,15 @@ def answer(gate: str, agent_id: int, key: str, req: dict, text: str):
     return http(f"{gate}/desk/external/answer", {"agent_id": agent_id, "siklus": req["siklus"], "answer": text, "signature": sign(key, msg)})
 
 
+def pull(gate: str, agent_id: int, key: str, wait: int = 25):
+    ts = int(time.time())
+    msg = f"Fabius desk pull v1\nagent_id: {agent_id}\nts: {ts}"
+    return http(f"{gate}/desk/external/pull?agent_id={agent_id}&wait={wait}&ts={ts}&signature={sign(key, msg)}", timeout=wait + 35)
+
+
 def run(gate: str, agent_id: int, key: str, answer_cmd: str, once: bool = False, log=print) -> int:
     while True:
-        code, req = http(f"{gate}/desk/external/pull?agent_id={agent_id}&wait=25", timeout=60)
+        code, req = pull(gate, agent_id, key)
         if code != 200:
             log(f"pull HTTP {code}: {req}")
             if code == 404:

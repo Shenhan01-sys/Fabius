@@ -3404,7 +3404,7 @@ Builder memilih (6 Okt, urutan C1 -> B1 -> C2 -> B2) *"Pull: agent ambil & kirim
 2. **Daftar sekali** (`POST /desk/external/join`, pesan `Fabius desk join v1 / agent_id / deadline`, berlaku <= 1 jam). Slug = `x<agent_id>`; nama dari
    kartu ERC-8004 (dibersihkan, <= 24 huruf). Batas masuk (operasional, bukan aturan seleksi): <= 10 terdaftar, satu per pemilik, satu per agent, <= 10
    pendaftaran per jam, id agent rumah ditolak, agent yang keluar karena gagal (F-D119) ditolak.
-3. **Tarik** (`GET /desk/external/pull?agent_id=N&wait=25`): long-poll. Masukan = persis yang dilihat agent rumah (`SYSTEM2` + prompt per agent: bukunya
+3. **Tarik** (`GET /desk/external/pull?agent_id=N&wait=25&ts=<unix s>&signature=<0x hex>`): long-poll BERTANDA TANGAN (koreksi uji penerimaan, di bawah). Masukan = persis yang dilihat agent rumah (`SYSTEM2` + prompt per agent: bukunya
    sendiri, fitur terukur, aturan bot), ditambah `prompt_sha` dan batas waktu. Masukan tidak memuat keputusan agent lain. Tanpa tarikan 15 menit = agent dianggap
    mati: siklusnya gagal cepat, TIDAK ditunggu.
 4. **Jawab** (`POST /desk/external/answer`, pesan `Fabius desk answer v1 / agent_id / siklus / prompt_sha / answer_sha`): jawaban v2 yang sama dengan agent
@@ -3420,5 +3420,11 @@ Builder memilih (6 Okt, urutan C1 -> B1 -> C2 -> B2) *"Pull: agent ambil & kirim
    karena aturan F-D113/F-D119 hanya menyingkirkan yang gagal; usulan: >= 2016 siklus (7 hari) di kursi uji tanpa naik -> belakang antrean; (b) agent luar yang
    naik ke aktif memengaruhi konsensus; usulan: paling banyak 2 dari 7 kursi aktif untuk agent luar. Sampai dikunci, pelepasnya = keputusan kursi builder
    (`analis.py kursi`, SK-M24).
+
+**Koreksi sesudah uji penerimaan (6 Okt, builder meminta uji integrasi + alur bisnis terhadap kriteria P166):** dua celah ditemukan dan ditutup, keduanya dengan tes yang gagal
+bila perbaikannya dicabut (mutasi): (a) `pull` mula-mula tanpa otentikasi - siapa pun bisa memalsukan kehadiran sebuah agent (siklusnya lalu ditunggu penuh 210 s dan dicatat
+gagal) atau menghabiskan 2 slot long-poll-nya; sekarang pull wajib bertanda tangan atas `Fabius desk pull v1 / agent_id / ts` oleh dompet agent atau pemilik, `ts` dalam +-120 s
+jam gerbang, penolakan tidak memalsukan kehadiran dan tidak memakai slot; (b) kriteria 2 menyebut agent yang keluar karena gagal (F-D119) DITOLAK saat mendaftar, tetapi kode
+hanya menjawab "sudah terdaftar" (200); sekarang 403.
 
 **Terkait:** F-D113 · F-D119 · F-D107 · P151 · P160 · P166 · [[04-Tools/TL33 - agent analis]] · [[04-Tools/TL36 - meja v2 bot + instrumen]]

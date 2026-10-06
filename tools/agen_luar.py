@@ -20,9 +20,9 @@ from typing import Callable, Dict, List, Optional, Tuple
 PARAMS_LUAR = {"v": 1, "maks_terdaftar": 10, "satu_per_pemilik": True, "join_ttl_s": 3600, "join_per_jam": 10,
                "batas_jawab_s": 210,        # cadangan bila siklus2 tidak memberi `tenggat`; siklus2 menutup jawab pada tenggat mutlak (maks t0 + 265)
                "hadir_s": 900,              # tanpa tarikan selama ini = agent dianggap mati, siklusnya gagal cepat (tidak ditunggu)
-               "wait_maks_s": 30, "pengintai_maks": 40, "pengintai_per_agen": 2, "jawaban_maks_byte": 16_384, "percobaan_per_siklus": 10, "nama_maks": 24}
+               "wait_maks_s": 30, "tarik_ttl_s": 120, "pengintai_maks": 40, "pengintai_per_agen": 2, "jawaban_maks_byte": 16_384, "percobaan_per_siklus": 10, "nama_maks": 24}
 NAMA_OK = re.compile(r"[^A-Za-z0-9 ._-]")
-PRE_JOIN, PRE_JAWAB = "Fabius desk join v1", "Fabius desk answer v1"
+PRE_JOIN, PRE_JAWAB, PRE_TARIK = "Fabius desk join v1", "Fabius desk answer v1", "Fabius desk pull v1"
 
 
 def sha_bytes(b: bytes) -> str:
@@ -36,6 +36,10 @@ def sha_masukan(system: str, user: str) -> str:
 
 def pesan_join(agent_id: int, deadline: int) -> str:
     return f"{PRE_JOIN}\nagent_id: {int(agent_id)}\ndeadline: {int(deadline)}"
+
+
+def pesan_tarik(agent_id: int, ts: int) -> str:
+    return f"{PRE_TARIK}\nagent_id: {int(agent_id)}\nts: {int(ts)}"
 
 
 def pesan_jawab(agent_id: int, siklus: int, prompt_sha: str, answer_sha: str) -> str:
@@ -130,6 +134,8 @@ class Luar:
         if who.lower() not in (pemilik, dompet):
             return 403, {"error": f"signer {who} is neither the agent wallet nor the identity owner"}
         sudah = self.agent(aid)
+        if sudah and (self.status(sudah["slug"]) or {}).get("gagal"):
+            return 403, {"error": "removed after repeated trial failures (F-D119); only a builder decision seats this agent again"}
         if sudah:
             return 200, {"registered": True, "already": True, "slug": sudah["slug"], "agent_id": aid, **self._info(sudah)}
         if aid in self.rumah():
@@ -166,11 +172,12 @@ class Luar:
                         "Fabius never holds your key and never calls your model. You need your own ERC-8004 identity (chain 97).",
                 "params": self.P, "params_sha": sha_bytes(json.dumps(self.P, sort_keys=True, separators=(",", ":")).encode()),
                 "endpoints": {"join": "POST /desk/external/join {agent_id, deadline, signature}",
-                              "pull": "GET /desk/external/pull?agent_id=N&wait=25",
+                              "pull": "GET /desk/external/pull?agent_id=N&wait=25&ts=<unix s>&signature=<0x hex>",
                               "answer": "POST /desk/external/answer {agent_id, siklus, answer, signature}"},
                 "sign": {"scheme": "EIP-191 personal_sign (text)", "signer": "the agent wallet (getAgentWallet) or the identity owner (ownerOf)",
                          "join_message": pesan_join(0, 0).replace("agent_id: 0", "agent_id: <id>").replace("deadline: 0", "deadline: <unix s, <= now + 3600>"),
                          "answer_message": pesan_jawab(0, 0, "<prompt_sha>", "<answer_sha>").replace("agent_id: 0", "agent_id: <id>").replace("siklus: 0", "siklus: <t0>"),
+                         "pull_message": pesan_tarik(0, 0).replace("agent_id: 0", "agent_id: <id>").replace("ts: 0", "ts: <unix s, within +-%d s of the gate clock>" % self.P["tarik_ttl_s"]),
                          "answer_sha": "0x + sha256 of the answer string exactly as sent (utf-8)",
                          "prompt_sha": "0x + sha256 of system + '\\n' + prompt, as returned by pull"},
                 "seats": "A new agent takes a trial seat (or waits in the queue). Trial answers are recorded and anchored but NOT counted in the consensus; "
@@ -180,10 +187,26 @@ class Luar:
                 "agents": self.roster()}
 
     # ------------------------------------------------------------ tarik (agent) dan minta (siklus)
-    def tarik(self, agent_id: int, wait_s: float = 0.0) -> Tuple[int, dict]:
+    def tarik(self, agent_id: int, wait_s: float, ts: object, tanda_tangan: object) -> Tuple[int, dict]:
+        """Long-poll BERTANDA TANGAN (pesan `Fabius desk pull v1 / agent_id / ts`, ts dalam +-`tarik_ttl_s`): tanpa tanda tangan siapa pun bisa memalsukan
+        kehadiran sebuah agent (siklusnya lalu ditunggu penuh dan dicatat gagal) atau menghabiskan slot long-poll-nya."""
         a = self.agent(agent_id)
         if not a:
             return 404, {"error": "agent not registered; POST /desk/external/join first"}
+        try:
+            ts = int(ts)
+            who = pulihkan(pesan_tarik(agent_id, ts), str(tanda_tangan))
+        except RuntimeError:
+            raise
+        except Exception:  # noqa: BLE001 - ts / tanda tangan hilang atau rusak
+            return 400, {"error": "pull needs ts (unix s) and signature (0x hex) over: " + pesan_tarik(agent_id, 0).replace("ts: 0", "ts: <ts>")}
+        if not self.now() - self.P["tarik_ttl_s"] <= ts <= self.now() + 30:
+            return 401, {"error": f"ts outside the allowed window (+-{self.P['tarik_ttl_s']} s of the gate clock)"}
+        if who.lower() not in (a["pemilik"], a["dompet"]):
+            return 403, {"error": f"signer {who} is neither the agent wallet nor the identity owner recorded at registration"}
+        return self._tarik(a, agent_id, wait_s)
+
+    def _tarik(self, a: dict, agent_id: int, wait_s: float) -> Tuple[int, dict]:
         wait_s = max(0.0, min(float(wait_s), self.P["wait_maks_s"]))
         with self.cv:
             if sum(self.pengintai.values()) >= self.P["pengintai_maks"] or self.pengintai.get(agent_id, 0) >= self.P["pengintai_per_agen"]:
@@ -207,7 +230,8 @@ class Luar:
         st = self.status(a["slug"]) or {}
         nxt = int(self.now() // 300 * 300) + 300
         return 200, {"siklus": None, "next_siklus": nxt, "seat": st.get("kursi"), "retry_after_s": max(1, int(nxt + 8 - self.now())),
-                     "note": ("no input for you this cycle: your seat is '%s' (only trial and active seats are asked)" % st.get("kursi")
+                     "note": (("removed after repeated trial failures (F-D119)" if st.get("gagal") else
+                               "no input for you this cycle: your seat is '%s' (only trial and active seats are asked)" % st.get("kursi"))
                               if st.get("kursi") not in (None, "aktif", "uji") else "no open request; the next cycle starts at next_siklus (+8 s)")}
 
     def minta(self, ag: dict, system: str, user: str, siklus: int, validasi: Callable[[str], object], tenggat: Optional[float] = None) -> str:

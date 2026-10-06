@@ -37,6 +37,22 @@ def addr(key: str) -> str:
     return Account.from_key(key).address
 
 
+def pulihkan_cek(aid, siklus, prompt_sha, answer_sha, tanda_tangan):
+    """Penanda tangan jawaban dipulihkan dari isi rekaman saja (yang dilakukan pihak ketiga)."""
+    return al.pulihkan(al.pesan_jawab(aid, siklus, prompt_sha, answer_sha), tanda_tangan)
+
+
+def tarik(lx, aid, wait=0, key=KEY_A, ts=None):
+    """Tarik bertanda tangan (pesan `Fabius desk pull v1`), seperti klien acuan."""
+    ts = int(lx.now()) if ts is None else ts
+    return lx.tarik(aid, wait, ts, tanda(key, al.pesan_tarik(aid, ts)))
+
+
+def url_tarik(aid, wait=0, key=KEY_A, ts=None):
+    ts = int(time.time()) if ts is None else ts
+    return f"/desk/external/pull?agent_id={aid}&wait={wait}&ts={ts}&signature={tanda(key, al.pesan_tarik(aid, ts))}"
+
+
 def identitas(peta):
     """resolve palsu: {agent_id: (pemilik_key, dompet_key|None, nama)}; id lain = tidak ada."""
     def resolve(aid):
@@ -123,7 +139,7 @@ class PullTests(unittest.TestCase):
                 hasil["raw"] = self.lx.minta({**self.ag}, "SYS", "USER", self.siklus, validasi or (lambda raw: json.loads(raw)), time.time() + tenggat_s)
             except Exception as e:  # noqa: BLE001
                 hasil["galat"] = e
-        self.lx.tarik(7, 0)                                                                      # kehadiran
+        tarik(self.lx, 7, 0)                                                                      # kehadiran
         th = threading.Thread(target=run, daemon=True)
         th.start()
         return th, hasil
@@ -134,7 +150,7 @@ class PullTests(unittest.TestCase):
 
     def test_pull_gives_the_cycle_input_and_only_a_signed_valid_answer_ends_the_wait(self):
         th, hasil = self.jalankan_minta()
-        code, req = self.lx.tarik(7, 3)
+        code, req = tarik(self.lx, 7, 3)
         self.assertEqual((code, req["siklus"], req["system"], req["prompt"]), (200, self.siklus, "SYS", "USER"))
         self.assertEqual(req["prompt_sha"], al.sha_masukan("SYS", "USER"))                       # sama dengan rumus `prompt_sha` di rekaman meja2
         self.assertEqual(self.kirim(req, "bukan json")[0], 422)                                  # salah format: ditolak SAAT ITU, boleh ulang
@@ -149,11 +165,11 @@ class PullTests(unittest.TestCase):
         self.assertEqual(al.pulihkan(al.pesan_jawab(7, self.siklus, req["prompt_sha"], ok["answer_sha"]), b["tanda_tangan"]), addr(KEY_A))   # pihak ketiga bisa memeriksa
         self.assertIsNone(self.lx.bukti("x7", self.siklus + 300))
         self.assertEqual(self.kirim(req, '{"a": 2}')[0], 410)                                    # siklus sudah ditutup: jawaban kedua tidak punya rumah
-        self.assertEqual(self.lx.tarik(7, 0)[1]["siklus"], None)
+        self.assertEqual(tarik(self.lx, 7, 0)[1]["siklus"], None)
 
     def test_a_signature_for_another_prompt_or_answer_is_refused(self):
         th, hasil = self.jalankan_minta()
-        _, req = self.lx.tarik(7, 3)
+        _, req = tarik(self.lx, 7, 3)
         salah = tanda(KEY_A, al.pesan_jawab(7, req["siklus"], "0x" + "00" * 32, al.sha_bytes(b"{}")))              # prompt lain
         self.assertEqual(self.lx.jawab({"agent_id": 7, "siklus": req["siklus"], "answer": "{}", "signature": salah})[0], 403)
         beda = tanda(KEY_A, al.pesan_jawab(7, req["siklus"], req["prompt_sha"], al.sha_bytes(b'{"x":1}')))        # jawaban lain
@@ -173,7 +189,7 @@ class PullTests(unittest.TestCase):
             self.lx.minta({**self.ag}, "S", "U", self.siklus, lambda r: r, time.time() + 30)
         self.assertIn("not polling", str(c.exception))
         self.assertLess(time.time() - t, 1.0)
-        self.lx.tarik(7, 0)
+        tarik(self.lx, 7, 0)
         t = time.time()
         with self.assertRaises(TimeoutError):                                                    # hadir tetapi diam: berhenti di tenggat, tidak lebih
             self.lx.minta({**self.ag}, "S", "U", self.siklus, lambda r: r, time.time() + 0.4)
@@ -183,21 +199,21 @@ class PullTests(unittest.TestCase):
         self.assertEqual(self.lx.jawab({"agent_id": 7, "siklus": self.siklus, "answer": "{}", "signature": sig})[0], 410)
 
     def test_unregistered_agents_get_404_and_queued_ones_are_told_their_seat(self):
-        self.assertEqual(self.lx.tarik(99, 0)[0], 404)
+        self.assertEqual(tarik(self.lx, 99, 0)[0], 404)
         self.lx.status = lambda slug: {"kursi": "antre"}
-        code, b = self.lx.tarik(7, 0)
+        code, b = tarik(self.lx, 7, 0)
         self.assertEqual((code, b["siklus"], b["seat"]), (200, None, "antre"))
         self.assertIn("antre", b["note"])
 
     def test_open_polls_are_limited_per_agent(self):
         hasil = []
-        th = threading.Thread(target=lambda: hasil.append(self.lx.tarik(7, 2)), daemon=True)
+        th = threading.Thread(target=lambda: hasil.append(tarik(self.lx, 7, 2)), daemon=True)
         th.start()
         time.sleep(0.3)
-        self.assertEqual(self.lx.tarik(7, 0)[0], 429)                                            # batas 1 long-poll terbuka per agent
+        self.assertEqual(tarik(self.lx, 7, 0)[0], 429)                                            # batas 1 long-poll terbuka per agent
         th.join(5)
         self.assertEqual(hasil[0][0], 200)
-        self.assertEqual(self.lx.tarik(7, 0)[0], 200)                                            # sesudah ditutup boleh lagi
+        self.assertEqual(tarik(self.lx, 7, 0)[0], 200)                                            # sesudah ditutup boleh lagi
 
 
 @unittest.skipUnless(HAVE_ETH, "butuh eth-account")
@@ -228,9 +244,9 @@ class CycleIntegrationTests(unittest.TestCase):
         hasil = {}
 
         def run():
-            self.lx.tarik(7, 0)
+            tarik(self.lx, 7, 0)
             for _ in range(40):
-                code, req = self.lx.tarik(7, 1)
+                code, req = tarik(self.lx, 7, 1)
                 if req.get("siklus"):
                     asha = al.sha_bytes(jawaban.encode())
                     hasil["jawab"] = self.lx.jawab({"agent_id": 7, "siklus": req["siklus"], "answer": jawaban,
@@ -273,9 +289,9 @@ class CycleIntegrationTests(unittest.TestCase):
         hasil = {}
 
         def run():
-            self.lx.tarik(7, 0)
+            tarik(self.lx, 7, 0)
             for _ in range(40):
-                _, req = self.lx.tarik(7, 1)
+                _, req = tarik(self.lx, 7, 1)
                 if req.get("siklus"):
                     for jawaban in ('{"bot": "NOPE"}', out()):
                         asha = al.sha_bytes(jawaban.encode())
@@ -325,8 +341,8 @@ class HttpTests(unittest.TestCase):
         code, j = self.http("/desk/external/join", {"agent_id": 7, "deadline": dl, "signature": sig})
         self.assertEqual((code, j["slug"]), (201, "x7"))
         self.assertEqual(self.http("/desk/external/pull?agent_id=abc")[0], 400)
-        self.assertEqual(self.http("/desk/external/pull?agent_id=8")[0], 404)
-        code, p = self.http("/desk/external/pull?agent_id=7&wait=0")
+        self.assertEqual(self.http(url_tarik(8))[0], 404)
+        code, p = self.http(url_tarik(7))
         self.assertEqual((code, p["siklus"]), (200, None))                                       # belum ada siklus terbuka
         self.assertEqual(self.http("/desk/external/answer", {"agent_id": 7, "siklus": 1, "answer": "{}", "signature": sig})[0], 410)
         self.assertEqual([a["slug"] for a in self.http("/desk/external")[1]["agents"]], ["x7"])
