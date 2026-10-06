@@ -146,7 +146,8 @@
    "key_var": "ANALIS_GLMFLASH_PRIVATE_KEY",
    "npc": {
     "short": "GLM Flash"
-   }
+   },
+   "nonaktif": "builder 6 Okt: diturunkan - KiosAPI 503 (sama dengan Grok di KiosAPI)"
   },
   {
    "slug": "qwen27b",
@@ -158,6 +159,26 @@
    "npc": {
     "short": "Qwen 27B"
    }
+  }
+ ],
+ "kursi_builder": [
+  {
+   "id": "2026-10-06-1",
+   "slug": "muse",
+   "ke": "aktif",
+   "alasan": "builder 6 Okt: naikkan supaya slot aktif terisi sesudah dua agent KiosAPI diturunkan (pengecualian F-D113, tanpa jendela 288 siklus)"
+  },
+  {
+   "id": "2026-10-06-2",
+   "slug": "qwenplus",
+   "ke": "aktif",
+   "alasan": "builder 6 Okt: naikkan supaya slot aktif terisi sesudah dua agent KiosAPI diturunkan (pengecualian F-D113, tanpa jendela 288 siklus)"
+  },
+  {
+   "id": "2026-10-06-3",
+   "slug": "qwen27b",
+   "ke": "aktif",
+   "alasan": "builder 6 Okt: naikkan supaya slot aktif terisi sesudah dua agent KiosAPI diturunkan (pengecualian F-D113, tanpa jendela 288 siklus)"
   }
  ]
 }

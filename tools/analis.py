@@ -759,6 +759,39 @@ def cmd_tambah(a) -> int:
     return 0
 
 
+def muat_kursi_builder(path: str = AGENTS_PATH) -> List[dict]:
+    with open(path, encoding="utf-8") as f:
+        return json.load(f).get("kursi_builder", [])
+
+
+def tambah_kursi_builder(path: str, slug: str, ke: str, alasan: str, hari: Optional[str] = None) -> dict:
+    """P162: keputusan kursi builder (pengecualian F-D113) -> `kursi_builder` di config; gerbang menerapkannya SEKALI pada siklus berikutnya."""
+    with open(path, encoding="utf-8") as f:
+        d = json.load(f)
+    if not any(a["slug"] == slug for a in d["agents"]):
+        raise ValueError(f"slug {slug!r} tidak ada")
+    if ke not in ("aktif", "uji", "antre"):
+        raise ValueError("--ke harus aktif / uji / antre")
+    if not alasan.strip():
+        raise ValueError("alasan wajib (keputusan builder tercatat on-chain)")
+    hari = hari or time.strftime("%Y-%m-%d", time.gmtime())
+    daftar = d.setdefault("kursi_builder", [])
+    e = {"id": f"{hari}-{sum(1 for x in daftar if x['id'].startswith(hari)) + 1}", "slug": slug, "ke": ke, "alasan": alasan.strip()}
+    daftar.append(e)
+    _tulis(path, d)
+    return e
+
+
+def cmd_kursi(a) -> int:
+    try:
+        e = tambah_kursi_builder(AGENTS_PATH, a.slug, a.ke, a.alasan)
+    except ValueError as ex:
+        print(f"DITOLAK: {ex}")
+        return 2
+    print(f"KEPUTUSAN {e['id']}: {e['slug']} -> {e['ke']} ({e['alasan']}) -> config/agents.json; diterapkan sekali pada siklus berikutnya sesudah deploy")
+    return 0
+
+
 def set_nonaktif(path: str, slug: str, alasan: Optional[str]) -> dict:
     """P162: nonaktifkan (alasan) atau aktifkan lagi (alasan None) satu agent. Identitas + dompet tetap; agent nonaktif tidak dijalankan dan kursi
     mejanya dilepas pada siklus berikutnya (SK-M23). Tanpa kunci, tanpa tx."""
@@ -911,12 +944,17 @@ def main() -> int:
     na.add_argument("--slug", required=True)
     na.add_argument("--alasan", required=True)
     sub.add_parser("aktif", help="P162: aktifkan lagi agent yang dinonaktifkan").add_argument("--slug", required=True)
+    kb = sub.add_parser("kursi", help="P162: keputusan kursi builder (pengecualian F-D113, tercatat on-chain, diterapkan sekali)")
+    kb.add_argument("--slug", required=True)
+    kb.add_argument("--ke", required=True)
+    kb.add_argument("--alasan", required=True)
     u = sub.add_parser("uji", help="P159: satu panggilan kecil ke model agent")
     u.add_argument("--slug", required=True)
     u.add_argument("--timeout", type=int, default=120)
     a = ap.parse_args()
     return {"kunci": cmd_kunci, "daftar": cmd_daftar, "masukan": cmd_masukan, "pilih": cmd_pilih, "arsip": cmd_arsip, "tambah": cmd_tambah,
-            "ganti": cmd_ganti, "uji": cmd_uji, "nonaktif": cmd_nonaktif, "aktif": cmd_nonaktif}[a.cmd](a)
+            "ganti": cmd_ganti, "uji": cmd_uji, "nonaktif": cmd_nonaktif, "aktif": cmd_nonaktif,
+            "kursi": cmd_kursi}[a.cmd](a)
 
 
 if __name__ == "__main__":

@@ -81,6 +81,15 @@ class RegistryTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             an.set_nonaktif(self.path, "tidakada", "x")
 
+    def test_builder_seat_decisions_are_validated_and_numbered_per_day(self):
+        e1 = an.tambah_kursi_builder(self.path, "muse", "aktif", "isi slot", hari="2026-01-01")
+        e2 = an.tambah_kursi_builder(self.path, "qwenplus", "aktif", "isi slot", hari="2026-01-01")
+        self.assertEqual((e1["id"], e2["id"]), ("2026-01-01-1", "2026-01-01-2"))
+        self.assertEqual([x["slug"] for x in an.muat_kursi_builder(self.path)][-2:], ["muse", "qwenplus"])
+        for bad in (("tidakada", "aktif", "x"), ("muse", "raja", "x"), ("muse", "aktif", " ")):
+            with self.assertRaises(ValueError, msg=str(bad)):
+                an.tambah_kursi_builder(self.path, *bad)
+
     def test_the_model_comes_from_config_not_from_the_registration_record(self):
         from unittest import mock
         ag = next(a for a in an.AGENTS if a["slug"] == "glm")

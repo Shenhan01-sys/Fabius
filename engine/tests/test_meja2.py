@@ -172,6 +172,18 @@ class KursiTests(unittest.TestCase):
         ev = meja2.kursi_daftar(st, ["a", "m", "q", "f", "w", "g"], 1_791_250_600)               # g diaktifkan lagi: masuk seperti agent baru
         self.assertEqual([(e["agent"], e["ke"]) for e in ev], [("g", "uji")])                         # w tetap antre (uji penuh)
 
+    def test_builder_seat_decisions_apply_once_within_the_seat_limits(self):
+        st = {"kursi": {f"a{i}": {"status": "aktif", "sejak": 0} for i in range(5)} | {"m": {"status": "uji", "sejak": 0}, "q": {"status": "uji", "sejak": 0},
+                                                                                     "w": {"status": "antre", "sejak": 0}, "g": {"status": "keluar", "sejak": 0}}}
+        paksa = [{"id": "d-1", "slug": "m", "ke": "aktif", "alasan": "isi slot"}, {"id": "d-2", "slug": "q", "ke": "aktif", "alasan": "isi slot"},
+                 {"id": "d-3", "slug": "w", "ke": "aktif", "alasan": "isi slot"}, {"id": "d-4", "slug": "g", "ke": "aktif", "alasan": "x"}]
+        ev = meja2.kursi_paksa(st, paksa, 1_791_250_000)
+        self.assertEqual([(e["agent"], e["ke"]) for e in ev], [("m", "aktif"), ("q", "aktif"), ("w", "antre"), ("g", "keluar")])   # SK-M24: maks 7 aktif
+        self.assertIn("kursi aktif penuh", ev[2]["alasan"])
+        self.assertIn("tidak punya kursi", ev[3]["alasan"])
+        self.assertEqual(meja2.kursi_paksa(st, paksa, 1_791_250_300), [])                           # sekali saja
+        self.assertEqual(meja2.kursi_daftar(st, ["m", "q", "w"], 1_791_250_300), [{"agent": "w", "dari": "antre", "ke": "uji", "alasan": "kursi uji kosong"}])
+
     def test_daily_evaluation_promotes_swaps_and_demotes_on_measured_history(self):
         w = meja2.PARAMS_KURSI["jendela_siklus"]
         t0 = 1_791_244_800                                                                        # 00:00 UTC

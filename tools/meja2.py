@@ -307,6 +307,30 @@ def kursi_daftar(st: dict, slugs: List[str], t0: int, keluar: Optional[List[str]
     return ev
 
 
+def kursi_paksa(st: dict, paksa: Optional[List[dict]], t0: int) -> List[dict]:
+    """Keputusan kursi BUILDER (`config/agents.json` `kursi_builder`, SK-M24): tiap entri {id, slug, ke, alasan} diterapkan SEKALI (id dicatat di
+    state) dan tercatat sebagai peristiwa `kursi` yang dikomit; batas 7 aktif / 3 uji tetap berlaku; agent tanpa kursi atau `keluar` ditolak. Sesudahnya
+    evaluasi harian berjalan biasa. -> peristiwa."""
+    P, k, ev = PARAMS_KURSI, st.setdefault("kursi", {}), []
+    selesai = st.setdefault("paksa_selesai", [])
+    n = lambda status: sum(1 for v in k.values() if v["status"] == status)  # noqa: E731
+    for e in paksa or []:
+        if e["id"] in selesai:
+            continue
+        selesai.append(e["id"])
+        s, ke = e["slug"], e["ke"]
+        cur = (k.get(s) or {}).get("status")
+        tolak = ("agent tidak punya kursi" if cur in (None, "keluar") else
+                 "kursi aktif penuh" if ke == "aktif" and cur != "aktif" and n("aktif") >= P["maks_aktif"] else
+                 "kursi uji penuh" if ke == "uji" and cur != "uji" and n("uji") >= P["maks_uji"] else None)
+        if tolak or cur == ke:
+            ev.append({"agent": s, "dari": cur, "ke": cur, "alasan": f"builder decision {e['id']} not applied: {tolak or 'already there'}"})
+            continue
+        ev.append({"agent": s, "dari": cur, "ke": ke, "alasan": f"builder decision {e['id']}: {e['alasan']}"})
+        k[s] = {"status": ke, "sejak": t0}
+    return ev
+
+
 def kursi_catat(st: dict, slug: str, sah: bool, ekuitas: float) -> None:
     """Riwayat bergulir per agent (jendela 288 siklus): jawaban sah 1/0 + ekuitas buku v2-nya - dasar evaluasi harian."""
     h = st.setdefault("riwayat", {}).setdefault(slug, {"sah": [], "eq": []})
@@ -376,7 +400,7 @@ def posisi(bot: Optional[str], ins: List[str], eks: float, veto: List[str], p: P
 
 def siklus2(t0: int, agents: List[dict], books: Dict[str, dict], ring: Dict[str, str], call: Callable[[dict, str, str], str], snap: Optional[dict],
             p: Pasar2, get: Callable = None, log: Callable[[str], None] = print, sampai: Optional[float] = None,
-            keluar: Optional[List[str]] = None) -> Tuple[List[dict], Dict[str, float]]:
+            keluar: Optional[List[str]] = None, paksa: Optional[List[dict]] = None) -> Tuple[List[dict], Dict[str, float]]:
     """-> (rekaman per agent v2 + konsensus v2, harga isi). `sampai` = waktu mutlak batas jawab model (gerbang memasangnya supaya komit siklus tetap
     sempat); dihitung SESUDAH data aturan + harga dibaca, jadi cache dingin tidak memakan jatah komit."""
     import concurrent.futures as cf
@@ -384,6 +408,9 @@ def siklus2(t0: int, agents: List[dict], books: Dict[str, dict], ring: Dict[str,
     state = books.setdefault("_v2_state", {})
     kst = books.setdefault("_v2_kursi", {})
     ev_kursi = kursi_daftar(kst, [ag["slug"] for ag in agents], t0, keluar)
+    ev_paksa = kursi_paksa(kst, paksa, t0)                                                   # SK-M24: keputusan builder, sekali, tercatat
+    if ev_paksa:
+        ev_kursi += ev_paksa + kursi_daftar(kst, [ag["slug"] for ag in agents], t0)           # kursi uji yang kosong diisi antrean
     if t0 % 86_400 == 0:                                                                     # SK-M21: kursi hanya berubah di siklus 00:00 UTC
         ev_kursi += kursi_evaluasi(kst, t0)
     kursi = {s: v["status"] for s, v in kst["kursi"].items()}
