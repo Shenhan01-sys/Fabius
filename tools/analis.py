@@ -759,6 +759,36 @@ def cmd_tambah(a) -> int:
     return 0
 
 
+def set_nonaktif(path: str, slug: str, alasan: Optional[str]) -> dict:
+    """P162: nonaktifkan (alasan) atau aktifkan lagi (alasan None) satu agent. Identitas + dompet tetap; agent nonaktif tidak dijalankan dan kursi
+    mejanya dilepas pada siklus berikutnya (SK-M23). Tanpa kunci, tanpa tx."""
+    with open(path, encoding="utf-8") as f:
+        d = json.load(f)
+    ag = next((a for a in d["agents"] if a["slug"] == slug), None)
+    if ag is None:
+        raise ValueError(f"slug {slug!r} tidak ada")
+    if alasan is not None and not alasan.strip():
+        raise ValueError("alasan nonaktif wajib")
+    if alasan is None:
+        if not ag.pop("nonaktif", None):
+            raise ValueError(f"{slug} memang sudah aktif")
+    else:
+        ag["nonaktif"] = alasan.strip()
+    _tulis(path, d)
+    return ag
+
+
+def cmd_nonaktif(a) -> int:
+    try:
+        ag = set_nonaktif(AGENTS_PATH, a.slug, None if a.cmd == "aktif" else a.alasan)
+    except ValueError as e:
+        print(f"DITOLAK: {e}")
+        return 2
+    print(f"{ag['slug']}: {'NONAKTIF (' + ag['nonaktif'] + ')' if ag.get('nonaktif') else 'AKTIF lagi'} -> config/agents.json")
+    print("  commit config/agents.json, push, lalu tools/railway_up.py --service fabius-x402 (tanpa tx); kursi meja berubah di siklus berikutnya")
+    return 0
+
+
 def cmd_ganti(a) -> int:
     try:
         ag = ganti_model(AGENTS_PATH, a.slug, a.nama, a.provider, a.model, a.effort, a.base, a.key_var, a.short)
@@ -877,12 +907,16 @@ def main() -> int:
     g.add_argument("--base")
     g.add_argument("--key-var")
     g.add_argument("--short")
+    na = sub.add_parser("nonaktif", help="P162: hentikan satu agent (identitas tetap, kursi meja dilepas)")
+    na.add_argument("--slug", required=True)
+    na.add_argument("--alasan", required=True)
+    sub.add_parser("aktif", help="P162: aktifkan lagi agent yang dinonaktifkan").add_argument("--slug", required=True)
     u = sub.add_parser("uji", help="P159: satu panggilan kecil ke model agent")
     u.add_argument("--slug", required=True)
     u.add_argument("--timeout", type=int, default=120)
     a = ap.parse_args()
     return {"kunci": cmd_kunci, "daftar": cmd_daftar, "masukan": cmd_masukan, "pilih": cmd_pilih, "arsip": cmd_arsip, "tambah": cmd_tambah,
-            "ganti": cmd_ganti, "uji": cmd_uji}[a.cmd](a)
+            "ganti": cmd_ganti, "uji": cmd_uji, "nonaktif": cmd_nonaktif, "aktif": cmd_nonaktif}[a.cmd](a)
 
 
 if __name__ == "__main__":

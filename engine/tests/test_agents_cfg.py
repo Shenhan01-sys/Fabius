@@ -70,6 +70,17 @@ class RegistryTests(unittest.TestCase):
         self.assertEqual(card["model_history"][0]["id"], "grok-4.7-free")
 
 
+    def test_nonaktif_and_aktif_toggle_an_agent_without_touching_its_identity(self):
+        ag = an.set_nonaktif(self.path, "grok", "VyceAI 429")
+        self.assertEqual((ag["nonaktif"], ag["key_var"]), ("VyceAI 429", "ANALIS_GROK_PRIVATE_KEY"))
+        with self.assertRaises(ValueError):
+            an.set_nonaktif(self.path, "grok", "  ")
+        self.assertNotIn("nonaktif", an.set_nonaktif(self.path, "grok", None))
+        with self.assertRaises(ValueError):
+            an.set_nonaktif(self.path, "grok", None)                                              # sudah aktif
+        with self.assertRaises(ValueError):
+            an.set_nonaktif(self.path, "tidakada", "x")
+
     def test_the_model_comes_from_config_not_from_the_registration_record(self):
         from unittest import mock
         ag = next(a for a in an.AGENTS if a["slug"] == "glm")

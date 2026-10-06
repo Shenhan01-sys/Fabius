@@ -134,7 +134,8 @@
      "effort": "high",
      "sampai_bar_close": 1791244800
     }
-   ]
+   ],
+   "nonaktif": "builder 6 Okt: diturunkan - KiosAPI 503 (Grok 4.7) lalu VyceAI 429 (GPT 6 Luna), 22/22 siklus gagal; pakai 7 agent dulu"
   },
   {
    "slug": "glmflash",

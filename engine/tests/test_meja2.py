@@ -161,6 +161,17 @@ class KursiTests(unittest.TestCase):
         self.assertEqual(meja2.ambang(3), {"kuorum": 2, "min_agent_instrumen": 2, "veto_min_agent": 2, "ambang_instrumen": 1.2})   # = nilai v1
         self.assertEqual(meja2.ambang(7), {"kuorum": 4, "min_agent_instrumen": 3, "veto_min_agent": 3, "ambang_instrumen": 2.8})
 
+    def test_a_deactivated_agent_releases_its_seat_and_the_queue_moves_up(self):
+        st = {"kursi": {"a": {"status": "aktif", "sejak": 0}, "m": {"status": "uji", "sejak": 0}, "q": {"status": "uji", "sejak": 0},
+                        "g": {"status": "uji", "sejak": 0}, "f": {"status": "antre", "sejak": 1}, "w": {"status": "antre", "sejak": 2}}}
+        ev = meja2.kursi_daftar(st, ["a", "m", "q", "f", "w"], 1_791_250_000, keluar=["g", "claude"])
+        self.assertEqual([(e["agent"], e["dari"], e["ke"]) for e in ev], [("g", "uji", "keluar"), ("f", "antre", "uji")])   # SK-M23
+        self.assertEqual(st["kursi"]["w"]["status"], "antre")                                      # kursi uji penuh lagi: tetap antre
+        self.assertEqual(meja2.kursi_daftar(st, ["a", "m", "q", "f", "w"], 1_791_250_300, keluar=["g"]), [])   # tidak diulang
+        st["kursi"]["m"]["status"] = "aktif"
+        ev = meja2.kursi_daftar(st, ["a", "m", "q", "f", "w", "g"], 1_791_250_600)               # g diaktifkan lagi: masuk seperti agent baru
+        self.assertEqual([(e["agent"], e["ke"]) for e in ev], [("g", "uji")])                         # w tetap antre (uji penuh)
+
     def test_daily_evaluation_promotes_swaps_and_demotes_on_measured_history(self):
         w = meja2.PARAMS_KURSI["jendela_siklus"]
         t0 = 1_791_244_800                                                                        # 00:00 UTC

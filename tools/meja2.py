@@ -278,14 +278,19 @@ def konsensus2(kep: Dict[str, dict], state: dict, snap: Optional[dict], n_aktif:
     return {"bot": top, "nilai_bot": nilai, "instrumen": ins, "skor_instrumen": {a: round(skor_i[a], 4) for a in ins if a in skor_i}, "eksposur": eks, "veto": veto}, why
 
 
-def kursi_daftar(st: dict, slugs: List[str], t0: int) -> List[dict]:
+def kursi_daftar(st: dict, slugs: List[str], t0: int, keluar: Optional[List[str]] = None) -> List[dict]:
     """P160: agent yang belum punya kursi -> aktif (hanya saat state kursi masih kosong = agent awal), lalu uji, lalu antre (SK-M19). Antre naik ke uji
-    begitu ada kursi uji kosong. -> peristiwa kursi (ikut rekaman `kursi` yang di-hash)."""
+    begitu ada kursi uji kosong. `keluar` = agent yang dinonaktifkan builder di config: kursinya dilepas (status `keluar`, SK-M23) supaya antrean maju;
+    bila diaktifkan lagi ia masuk seperti agent baru. -> peristiwa kursi (ikut rekaman `kursi` yang di-hash)."""
     P, k = PARAMS_KURSI, st.setdefault("kursi", {})
     awal, ev = not k, []
     n = lambda status: sum(1 for v in k.values() if v["status"] == status)  # noqa: E731
+    for s in sorted(set(keluar or []) & set(k)):
+        if k[s]["status"] != "keluar":
+            ev.append({"agent": s, "dari": k[s]["status"], "ke": "keluar", "alasan": "agent dinonaktifkan builder"})
+            k[s] = {"status": "keluar", "sejak": t0}
     for s in slugs:
-        if s in k:
+        if s in k and k[s]["status"] != "keluar":
             continue
         if awal and n("aktif") < P["maks_aktif"]:
             ke, why = "aktif", "agent awal meja v2"
@@ -370,14 +375,15 @@ def posisi(bot: Optional[str], ins: List[str], eks: float, veto: List[str], p: P
 # ---------------------------------------------------------------- satu siklus v2 (berjalan paralel dengan v1; rekaman ikut Merkle root siklus yang sama)
 
 def siklus2(t0: int, agents: List[dict], books: Dict[str, dict], ring: Dict[str, str], call: Callable[[dict, str, str], str], snap: Optional[dict],
-            p: Pasar2, get: Callable = None, log: Callable[[str], None] = print, sampai: Optional[float] = None) -> Tuple[List[dict], Dict[str, float]]:
+            p: Pasar2, get: Callable = None, log: Callable[[str], None] = print, sampai: Optional[float] = None,
+            keluar: Optional[List[str]] = None) -> Tuple[List[dict], Dict[str, float]]:
     """-> (rekaman per agent v2 + konsensus v2, harga isi). `sampai` = waktu mutlak batas jawab model (gerbang memasangnya supaya komit siklus tetap
     sempat); dihitung SESUDAH data aturan + harga dibaca, jadi cache dingin tidak memakan jatah komit."""
     import concurrent.futures as cf
     get = get or meja._get_json
     state = books.setdefault("_v2_state", {})
     kst = books.setdefault("_v2_kursi", {})
-    ev_kursi = kursi_daftar(kst, [ag["slug"] for ag in agents], t0)
+    ev_kursi = kursi_daftar(kst, [ag["slug"] for ag in agents], t0, keluar)
     if t0 % 86_400 == 0:                                                                     # SK-M21: kursi hanya berubah di siklus 00:00 UTC
         ev_kursi += kursi_evaluasi(kst, t0)
     kursi = {s: v["status"] for s, v in kst["kursi"].items()}
