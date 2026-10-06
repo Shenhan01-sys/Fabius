@@ -42,6 +42,14 @@ node scripts/stills.mjs --t 12.5,40.2 --sheet          # stills while editing (o
 npm run render                      # out/fabius-pitch.mp4 (h264, CRF 18)
 ```
 
+`render/fabius-pitch.mp4` (≈47 MB) is a two-pass H.264 copy of the master for the web and chat apps:
+
+```sh
+VF="scale=in_range=full:out_range=tv,format=yuv420p"
+ffmpeg -i out/fabius-pitch.mp4 -vf "$VF" -c:v libx264 -preset slow -b:v 2800k -pass 1 -an -f null /dev/null
+ffmpeg -i out/fabius-pitch.mp4 -vf "$VF" -c:v libx264 -preset slow -b:v 2800k -pass 2 -c:a aac -b:a 192k -movflags +faststart render/fabius-pitch.mp4
+```
+
 Remotion downloads its own headless Chrome on first render. Without network access to it, point it at any
 Chromium: `REMOTION_BROWSER_EXECUTABLE=/path/to/chrome npm run render`.
 
