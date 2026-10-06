@@ -75,7 +75,15 @@ export async function rugcheck(mint: string) {
 }
 
 /** Bubblemaps: API publik hanya menjawab apakah peta klaster pemegang tersedia; isi peta dibuka di app-nya. */
-export async function bubblemaps(chain: string, token: string) {
+// Id rantai Bubblemaps (diukur 6 Okt: `sol` 200, `solana` 400 "Invalid token parameter"); nama umum dipetakan supaya agent tidak kena 400 yang menyesatkan.
+const BUBBLEMAPS_CHAIN: Record<string, string> = {
+  eth: "eth", ethereum: "eth", bsc: "bsc", bnb: "bsc", binance: "bsc", sol: "sol", solana: "sol", base: "base", avax: "avax", avalanche: "avax",
+  arbi: "arbi", arbitrum: "arbi", poly: "poly", polygon: "poly", ftm: "ftm", fantom: "ftm", cro: "cro", cronos: "cro", sonic: "sonic",
+};
+
+export async function bubblemaps(chainName: string, token: string) {
+  const chain = BUBBLEMAPS_CHAIN[chainName.toLowerCase()];
+  if (!chain) throw new Error(`unknown chain '${chainName}'; use one of: eth, bsc, sol, base, avax, arbi, poly, ftm, cro, sonic`);
   const d = (await getJson(`https://api-legacy.bubblemaps.io/map-availability?chain=${chain}&token=${token}`, 3600)) as { availability?: boolean; status?: string };
   return {
     available: !!d.availability,
