@@ -8,8 +8,9 @@ export type Pilihan = { bot: string; keyakinan: number; alasan: string; risiko?:
 export type AnalisRec = {
   agent: string;
   luar?: boolean;
-  bot: string;
-  keyakinan: number;
+  bot: string | null; // P165: null = pilihan bar terbuka tersegel untuk publik (anggota melihatnya; tetap terbaca on-chain)
+  keyakinan: number | null;
+  tersegel?: boolean;
   reasonHash: string;
   status?: string;
   tx?: string;

@@ -34,7 +34,7 @@ export function pose(b: Buku, lastCycle: number | undefined, now: number): Pose 
   if (b.status_terakhir && b.status_terakhir !== "ok") return "fail";
   if (lastCycle && now - lastCycle >= 300) return "think"; // siklus berikutnya sedang berjalan, rekamannya belum tercatat
   if ((b.isi_terakhir ?? 0) > 0) return "trade";
-  return Object.keys(b.posisi).length ? "hold" : "flat";
+  return (b.n_posisi ?? Object.keys(b.posisi).length) ? "hold" : "flat"; // P165 publik: posisi tersembunyi, jumlahnya tidak
 }
 
 /** Susunan meja untuk n agent: sudut layar dari kiri lewat depan ke kanan (n > 3: sampai belakang-samping), skala meja dari jarak antarmeja. */

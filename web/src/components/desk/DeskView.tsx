@@ -5,11 +5,13 @@
 // dan masuk Merkle root yang dikomit ke DeskAnchor sebelum siklus berakhir. Data dimuat ulang tiap 30 detik.
 // v2 (P154/P155, F-D112): AI memilih bot + instrumen; panel v2 = bot dominan, skor bot, instrumen + veto, alasan datar dari aturan terkunci.
 
+import Link from "next/link";
 import { useEffect, useState } from "react";
 import Nav from "@/components/Nav";
+import { AksesProvider, useAkses } from "@/components/akses";
 import { LangProvider, useLang } from "@/components/lang";
 import { LINKS } from "@/lib/copy";
-import { dataHealth, desk, hhmm, type Buku, type DataHealth, type Desk } from "@/lib/desk";
+import { dataHealth, desk, hhmm, type Akses, type Buku, type DataHealth, type Desk } from "@/lib/desk";
 import Floor from "./floor/Floor";
 import LiveBook from "./floor/LiveBook";
 
@@ -18,7 +20,9 @@ export default function DeskView() {
     <LangProvider>
       <div className="p-2 sm:p-3">
         <Nav />
-        <Body />
+        <AksesProvider>
+          <Body />
+        </AksesProvider>
       </div>
     </LangProvider>
   );
@@ -34,13 +38,15 @@ const stat = (m: Record<string, string>, s: string) => m[s] ?? m[s.split(" (")[0
 function Body() {
   const { t } = useLang();
   const v = t.desk;
+  const ak = useAkses();
   const [d, setD] = useState<Desk | null>(null);
   const [err, setErr] = useState("");
   useEffect(() => {
     let live = true;
     // satu poll gagal (jaringan / tepi Railway) tidak boleh menutupi data terakhir; galat dihapus begitu poll berikutnya berhasil
+    // P165: token anggota ikut tiap poll; dimuat ulang begitu login/logout
     const load = () =>
-      desk().then(
+      ak.token().then(desk).then(
         (x) => {
           if (!live) return;
           setD(x);
@@ -54,7 +60,7 @@ function Body() {
       live = false;
       clearInterval(id);
     };
-  }, []);
+  }, [ak]);
 
   const agents2 = d?.buku.filter((b) => b.agent.startsWith("v2:") && b.kursi !== "keluar") ?? [];
   return (
@@ -71,6 +77,7 @@ function Body() {
         {err && d && <p className="text-center text-xs text-ink/50">{v.stale.replace("{t}", hhmm(d.t))}</p>}
         {!d && !err && <p className="text-center text-ink/50">{v.loading}</p>}
         {d && !d.buku.length && <p className="text-center text-ink/60">{v.empty}</p>}
+        {d?.akses && <AccessBar a={d.akses} />}
         {d && d.buku.length > 0 && <LiveBook d={d} />}
         {agents2.length > 0 && (
           <div>
@@ -88,6 +95,39 @@ function Body() {
         {d && <Rules d={d} />}
       </div>
     </section>
+  );
+}
+
+// P165: siapa yang melihat apa, dan jalan masuk anggota (login -> FAB gratis di halaman beli -> beli 1 sinyal -> 7 hari langsung)
+function AccessBar({ a }: { a: Akses }) {
+  const { t } = useLang();
+  const v = t.desk.akses;
+  const ak = useAkses();
+  const btn = "rounded-full bg-ink px-4 py-2 text-sm text-white transition-colors hover:bg-violet disabled:opacity-40";
+  return (
+    <div className={`flex flex-wrap items-center justify-between gap-3 rounded-2xl border px-5 py-3 ${a.live ? "border-violet/30 bg-violet/5" : "border-ink/10 bg-white/70"}`}>
+      <div className="min-w-0 max-w-3xl">
+        <p className="text-sm font-medium text-ink">{a.live ? `● ${v.live}` : `🔒 ${v.delayed.replace("{h}", String(Math.round(a.tunda_s / 3600)))}`}</p>
+        <p className="mt-0.5 text-xs leading-snug text-ink/60">{a.live ? v.liveSub : ak.authenticated ? v.signedNoBuy : v.delayedSub}</p>
+      </div>
+      <div className="flex flex-wrap items-center gap-3">
+        {!a.live &&
+          (ak.authenticated ? (
+            <Link className={btn} href="/buy">
+              {v.buy}
+            </Link>
+          ) : (
+            <button className={btn} onClick={ak.login} disabled={!ak.ready}>
+              {v.signIn}
+            </button>
+          ))}
+        {ak.authenticated && (
+          <button className="text-sm text-ink/50 underline" onClick={ak.logout}>
+            {v.signOut}
+          </button>
+        )}
+      </div>
+    </div>
   );
 }
 
@@ -141,6 +181,7 @@ function AgentCard({ b }: { b: Buku }) {
         {b.status_terakhir && b.status_terakhir !== "ok" && <span className="ml-2 rounded-full bg-ink/10 px-2 py-0.5 text-[10px] uppercase">{stat(v.status, b.status_terakhir)}</span>}
       </p>
       <Spark pts={b.deret} />
+      {b.terkunci && <p className="mt-2 text-xs text-ink/55">🔒 {v.akses.lockedDecision}</p>}
       {k && (
         <>
           {k.bot && (
@@ -165,7 +206,11 @@ function AgentCard({ b }: { b: Buku }) {
         </>
       )}
       <div className="mt-3">
-        <Weights pos={b.posisi} max={0.25} />
+        {b.terkunci && b.n_posisi ? (
+          <p className="text-sm text-ink/60">🔒 {v.akses.lockedPositions.replace("{n}", String(b.n_posisi))}</p>
+        ) : (
+          <Weights pos={b.posisi} max={0.25} />
+        )}
       </div>
     </article>
   );

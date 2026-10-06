@@ -222,15 +222,22 @@ function Slip({ r, open, sealed, now }: { r: AnalisRec; open: boolean; sealed: s
       </header>
       {/* nama + model yang tercatat DI DALAM alasan yang di-hash = model yang benar-benar membuat pilihan ini (slot agent bisa berganti model, F-D105) */}
       {now && r.alasan.nama && now !== r.alasan.nama && <p className="mt-1 text-xs text-violet">{v.madeBy.replace("{m}", r.alasan.model ?? r.alasan.nama)}</p>}
-      <p className="mt-3 font-display text-3xl font-[300]">{r.bot}</p>
-      <div className="mt-3" title={v.convictionNote}>
-        <div className="h-2 w-full overflow-hidden rounded-full bg-ink/10">
-          <div className="h-full rounded-full bg-violet" style={{ width: `${Math.max(0, Math.min(100, r.keyakinan))}%` }} />
-        </div>
-        <p className="mt-1 text-xs text-ink/60">
-          {v.conviction} {r.keyakinan}%
-        </p>
-      </div>
+      {r.bot == null || r.keyakinan == null ? (
+        // P165: pilihan bar yang belum tutup = isi anggota; pilihannya tetap dikomit on-chain (bisa dibaca dari kontrak), ini kunci tampilan
+        <p className="mt-3 text-sm text-ink/60">🔒 {v.pickSealed}</p>
+      ) : (
+        <>
+          <p className="mt-3 font-display text-3xl font-[300]">{r.bot}</p>
+          <div className="mt-3" title={v.convictionNote}>
+            <div className="h-2 w-full overflow-hidden rounded-full bg-ink/10">
+              <div className="h-full rounded-full bg-violet" style={{ width: `${Math.max(0, Math.min(100, r.keyakinan))}%` }} />
+            </div>
+            <p className="mt-1 text-xs text-ink/60">
+              {v.conviction} {r.keyakinan}%
+            </p>
+          </div>
+        </>
+      )}
       {open && p ? (
         <div className="mt-4 space-y-3 text-sm">
           <p className="whitespace-pre-line text-ink/85">{p.alasan}</p>

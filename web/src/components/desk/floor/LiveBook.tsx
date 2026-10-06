@@ -6,6 +6,7 @@
 
 import dynamic from "next/dynamic";
 import { useEffect, useMemo, useRef, useState } from "react";
+import { useAkses } from "@/components/akses";
 import { useLang } from "@/components/lang";
 import { LINKS } from "@/lib/copy";
 import { hhmm, liveBook, type Desk, type Isi, type LiveBook as LB, type Slot } from "@/lib/desk";
@@ -33,10 +34,11 @@ type F = ReturnType<typeof useLang>["t"]["desk"]["live"];
 const why = (x: Isi, f: F) => (x.alasan ? (f.reasons[x.alasan] ?? (x.alasan.startsWith("exit rule") ? f.reasons.exit : x.alasan)) : "");
 
 // r4 (F-D116): slot posisi. Batang = jarak stop-loss -> take-profit (masuk di 1/3 karena TP = 2 x jarak SL), titik = harga siklus terakhir
-function Slots({ slot, max, f }: { slot: Slot[]; max: number; f: F }) {
+// P165 publik: `terkunci` slot terbuka digambar sebagai kartu bergembok (jumlahnya jujur, isinya untuk anggota)
+function Slots({ slot, max, f, terkunci = 0 }: { slot: Slot[]; max: number; f: F; terkunci?: number }) {
   return (
     <div className="mt-4 rounded-xl border border-ink/10 p-3">
-      <p className="text-sm uppercase tracking-wide text-ink/50">{f.slots.replace("{n}", String(slot.length)).replace("{m}", String(max))}</p>
+      <p className="text-sm uppercase tracking-wide text-ink/50">{f.slots.replace("{n}", String(slot.length + terkunci)).replace("{m}", String(max))}</p>
       <ul className="mt-2 grid gap-2 sm:grid-cols-2 xl:grid-cols-5">
         {slot.map((x) => {
           const span = x.sl != null && x.tp != null ? x.tp - x.sl : 0;
@@ -83,7 +85,12 @@ function Slots({ slot, max, f }: { slot: Slot[]; max: number; f: F }) {
             </li>
           );
         })}
-        {Array.from({ length: Math.max(0, max - slot.length) }, (_, i) => (
+        {Array.from({ length: terkunci }, (_, i) => (
+          <li key={`kunci${i}`} className="grid place-items-center rounded-lg border border-ink/15 bg-ink/[0.03] px-2 py-3 text-[11px] text-ink/55">
+            🔒 {f.slotLocked}
+          </li>
+        ))}
+        {Array.from({ length: Math.max(0, max - slot.length - terkunci) }, (_, i) => (
           <li key={`kosong${i}`} className="grid place-items-center rounded-lg border border-dashed border-ink/15 px-2 py-3 text-[11px] text-ink/40">
             {f.slotEmpty}
           </li>
@@ -143,6 +150,7 @@ function Curve({ lb, startLabel }: { lb: LB; startLabel: string }) {
 
 export default function LiveBook({ d }: { d: Desk }) {
   const { t } = useLang();
+  const ak = useAkses();
   const f = t.desk.live;
   const [lb, setLb] = useState<LB | null>(null);
   const [err, setErr] = useState("");
@@ -156,7 +164,7 @@ export default function LiveBook({ d }: { d: Desk }) {
   useEffect(() => {
     let live = true;
     const load = () =>
-      liveBook().then(
+      ak.token().then(liveBook).then(
         (x) => {
           if (!live) return;
           setLb(x);
@@ -174,7 +182,7 @@ export default function LiveBook({ d }: { d: Desk }) {
       clearInterval(id);
       mq.removeEventListener("change", on);
     };
-  }, []);
+  }, [ak]);
   useEffect(() => {
     const el = box.current;
     if (!el) return;
@@ -197,10 +205,17 @@ export default function LiveBook({ d }: { d: Desk }) {
   const p = lb.pipa;
   const valid = p.agen.filter((a) => a.status === "ok").length;
   const pos = Object.entries(p.target);
+  const kunci = p.terkunci ? (p.slot_n ?? 0) : 0;
   const nLong = pos.filter(([, x]) => x > 0).length, nShort = pos.length - nLong;
   // rem rugi harian (SK-M10) aktif = buku sengaja datar sampai 00:00 UTC: ditampilkan, bukan disembunyikan di pita keputusan
   const brake = /daily loss brake/.test(p.dasar ?? "");
-  const posText = pos.length ? `${f.positions.replace("{n}", String(pos.length))} (▲${nLong} ▼${nShort})` : brake ? `${f.flatBook} · ${f.brakeShort}` : f.flatBook;
+  const posText = kunci
+    ? `${f.positions.replace("{n}", String(kunci))} 🔒`
+    : pos.length
+      ? `${f.positions.replace("{n}", String(pos.length))} (▲${nLong} ▼${nShort})`
+      : brake
+        ? `${f.flatBook} · ${f.brakeShort}`
+        : f.flatBook;
   const sealed = p.status === "dikomit";
   const loss = lb.modal_awal - lb.ekuitas;
   const feeShare = loss > 0 ? Math.round((lb.fee / loss) * 100) : null;
@@ -212,7 +227,7 @@ export default function LiveBook({ d }: { d: Desk }) {
     .replace("{v}", String(valid))
     .replace("{m}", String(p.agen.length))
     .replace("{r}", p.rumus)
-    .replace("{bot}", p.bot ?? "-")
+    .replace("{bot}", p.bot ?? (p.terkunci ? "🔒" : "-"))
     .replace("{score}", p.skor_bot != null ? ` (${p.skor_bot >= 0 ? "+" : ""}${p.skor_bot.toFixed(1)})` : "")
     .replace("{p}", posText)
     .replace("{seal}", sealed ? `${f.sealed} ✓` : p.status ?? "-");
@@ -242,14 +257,14 @@ export default function LiveBook({ d }: { d: Desk }) {
             {compact ? `${valid}/${p.agen.length}` : `${f.stages.agents} · ${f.valid.replace("{n}", String(valid)).replace("{m}", String(p.agen.length))}`}
           </span>
           <span ref={bridge.el("formula")} className={`${tag} border-violet/40 bg-ink/90 font-mono text-[10px] text-violet-2`}>
-            {compact ? `${p.rumus} · ${p.bot?.split("-")[0] ?? "-"}` : `${f.stages.formula} ${p.rumus} · ${p.bot ?? "-"}`}
+            {compact ? `${p.rumus} · ${p.bot?.split("-")[0] ?? (p.terkunci ? "🔒" : "-")}` : `${f.stages.formula} ${p.rumus} · ${p.bot ?? (p.terkunci ? "🔒" : "-")}`}
             {p.skor_bot != null && !compact ? ` ${p.skor_bot >= 0 ? "+" : ""}${p.skor_bot.toFixed(1)}` : ""}
           </span>
           <span ref={bridge.el("bot")} className={`${tag} border-violet/20 font-mono text-[10px] text-ink/70`}>
-            {compact ? p.bot?.split("-")[0] : `${f.stages.bot} · ${p.bot ?? "-"}`}
+            {compact ? (p.bot?.split("-")[0] ?? (p.terkunci ? "🔒" : "-")) : `${f.stages.bot} · ${p.bot ?? (p.terkunci ? "🔒" : "-")}`}
           </span>
           <span ref={bridge.el("book")} className={`${tag} border-violet/20 font-mono text-[10px] text-ink/70`}>
-            {compact ? `${pos.length}` : `${f.stages.book} · ${posText}`}
+            {compact ? `${kunci || pos.length}` : `${f.stages.book} · ${posText}`}
           </span>
           {p.tx ? (
             <a ref={bridge.el("chain")} href={LINKS.tx + p.tx} target="_blank" rel="noreferrer" className={`${tag} pointer-events-auto border-violet/20 font-mono text-[10px] text-violet underline-offset-2 hover:underline`}>
@@ -292,7 +307,7 @@ export default function LiveBook({ d }: { d: Desk }) {
               {sub && <p className="truncate font-mono text-[10px] text-ink/45">{sub}</p>}
             </div>
           ))}
-          {!p.slot && (
+          {!p.slot && !p.terkunci && (
           <div className="col-span-2 rounded-xl border border-ink/10 px-3 py-2">
             <p className="text-[10px] uppercase tracking-wide text-ink/45">{f.nowPos}</p>
             <div className="mt-1 flex flex-wrap gap-1">
@@ -310,7 +325,7 @@ export default function LiveBook({ d }: { d: Desk }) {
         </div>
       </div>
 
-      {p.slot && <Slots slot={p.slot} max={p.maks_slot ?? 5} f={f} />}
+      {(p.slot || p.terkunci) && <Slots slot={p.slot ?? []} max={p.maks_slot ?? 5} f={f} terkunci={kunci} />}
 
       <div className="mt-4 rounded-xl border border-ink/10 p-3">
         <p className={label}>{f.perBot}</p>
@@ -345,6 +360,7 @@ export default function LiveBook({ d }: { d: Desk }) {
 
       <div className="mt-4 rounded-xl border border-ink/10 p-3">
         <p className={label}>{f.tape}</p>
+        {lb.akses?.live === false && <p className="mt-0.5 text-[11px] text-ink/50">🔒 {f.tapeDelayed}</p>}
         <ul className="mt-2 max-h-[22rem] divide-y divide-ink/5 overflow-auto pr-1 text-xs">
           {lb.pita_keputusan.map((r) => (
             <li key={r.hash} className="grid gap-x-3 gap-y-0.5 py-2 sm:grid-cols-[3.5rem_9rem_1fr_4.5rem]">

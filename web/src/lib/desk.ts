@@ -33,6 +33,9 @@ export type Buku = {
   keputusan_terakhir: Keputusan | null;
   siklus_terakhir?: number | null;
   isi_terakhir?: number;
+  // P165: tampilan publik tanpa isi yang bisa ditiru - posisi/target/keputusan kosong, jumlah posisi tetap terlihat
+  n_posisi?: number;
+  terkunci?: boolean;
   // P159: penampilan pekerja 3D dari config/agents.json (opsional)
   kursi?: "aktif" | "uji" | "antre" | "keluar" | null; // P160: kursi agent di meja v2 (keluar = dinonaktifkan builder)
   npc?: { shirt?: string; hair?: string; skin?: string; extra?: "headset" | "cap" | "glasses" | "beanie" | "hood" | "none"; prop?: "mug" | "paper" | "plant" | "books"; short?: string } | null;
@@ -85,10 +88,15 @@ export type Desk = {
   siklus_12?: Siklus[];
   siklus_24j: number;
   komit_24j: number;
+  akses?: Akses;
 };
 
-export async function desk(): Promise<Desk> {
-  const r = await fetch(`${GATE}/desk`, { cache: "no-store" });
+// P165: anggota (login Privy + beli >= 1 sinyal dalam 7 hari) melihat isi meja langsung; publik melihat isi keputusan sesudah `tunda_s`
+export type Akses = { live: boolean; tunda_s: number; isi_sampai?: number; syarat: string; beli: string; faucet?: string };
+const hdr = (token?: string | null): HeadersInit => (token ? { Authorization: `Bearer ${token}` } : {});
+
+export async function desk(token?: string | null): Promise<Desk> {
+  const r = await fetch(`${GATE}/desk`, { cache: "no-store", headers: hdr(token) });
   if (!r.ok) throw new Error(`/desk HTTP ${r.status}`);
   return r.json();
 }
@@ -96,14 +104,15 @@ export async function desk(): Promise<Desk> {
 // P158: rincian satu buku untuk modal lantai /desk (`GET /desk/agent/<nama>`, Gate.meja_agent)
 export type AgentDetail = {
   buku: Buku;
-  statistik: { siklus_24j: number; ok: number; gagal: number; terlambat: number; siklus_bertransaksi: number; isi_24j: number; biaya_24j: number; bot_pilihan: Record<string, number> };
+  statistik: { siklus_24j: number; ok: number; gagal: number; terlambat: number; siklus_bertransaksi: number; isi_24j: number; biaya_24j: number; bot_pilihan?: Record<string, number> };
   riwayat: { siklus: number; status: string; galat?: string | null; ringkasan?: string | null; bot?: string | null; target: Record<string, Target>; isi: Isi[]; ekuitas: number; hash: string }[];
   model: string | null;
   agent_id: number | null;
+  akses?: Akses;
 };
 
-export async function agentDetail(name: string): Promise<AgentDetail> {
-  const r = await fetch(`${GATE}/desk/agent/${encodeURIComponent(name)}`, { cache: "no-store" });
+export async function agentDetail(name: string, token?: string | null): Promise<AgentDetail> {
+  const r = await fetch(`${GATE}/desk/agent/${encodeURIComponent(name)}`, { cache: "no-store", headers: hdr(token) });
   if (!r.ok) throw new Error(`/desk/agent HTTP ${r.status}`);
   return r.json();
 }
@@ -142,12 +151,15 @@ export type LiveBook = {
     status: string | null;
     slot?: Slot[] | null;
     maks_slot?: number;
+    slot_n?: number; // P165 publik: jumlah slot terbuka (isinya untuk anggota)
+    terkunci?: boolean;
   };
   pita_keputusan: { siklus: number; bot: string | null; dasar: string | null; instrumen: string[]; masuk: number; isi: Isi[]; ekuitas: number; hash: string }[];
+  akses?: Akses;
 };
 
-export async function liveBook(): Promise<LiveBook> {
-  const r = await fetch(`${GATE}/desk/fabius`, { cache: "no-store" });
+export async function liveBook(token?: string | null): Promise<LiveBook> {
+  const r = await fetch(`${GATE}/desk/fabius`, { cache: "no-store", headers: hdr(token) });
   if (!r.ok) throw new Error(`/desk/fabius HTTP ${r.status}`);
   return r.json();
 }

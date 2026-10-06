@@ -58,7 +58,7 @@ export default function Floor({ d }: { d: Desk }) {
   const seatList = useMemo(() => toSeats(d, d.t), [d]);
   const hub = hubBook(d);
   const kh = hub?.keputusan_terakhir;
-  const nInstr = kh?.instrumen?.length ?? Object.keys(hub?.posisi ?? {}).length;
+  const nInstr = kh?.instrumen?.length ?? hub?.n_posisi ?? Object.keys(hub?.posisi ?? {}).length;
   const hubLine = !hub ? "-" : nInstr ? f.onInstr.replace("{bot}", kh?.bot ?? "consensus").replace("{n}", String(nInstr)) : f.flatHub;
   // terlambat = model tidak menjawab dalam batas waktu (bukan galat model): kata "late", bukan "failed"
   const word = (s: (typeof seatList)[number]) => (s.pose === "fail" && s.main.status_terakhir === "terlambat" ? v.status.terlambat : f.poses[s.pose]);

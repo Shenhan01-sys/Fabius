@@ -6,6 +6,8 @@
 
 import { motion } from "motion/react";
 import { useEffect, useRef, useState } from "react";
+import { useAkses } from "@/components/akses";
+import { useLang } from "@/components/lang";
 import { agentDetail, hhmm, type AgentDetail, type Buku } from "@/lib/desk";
 import { GATE } from "@/lib/x402-buy";
 import { fmtPct } from "./model";
@@ -69,6 +71,8 @@ export default function AgentModal({
   reduced: boolean;
   onClose: () => void;
 }) {
+  const ak = useAkses();
+  const va = useLang().t.desk.akses;
   const [tab, setTab] = useState(books[0].key);
   const [data, setData] = useState<Record<string, AgentDetail | string>>({});
   const closeRef = useRef<HTMLButtonElement>(null);
@@ -79,14 +83,16 @@ export default function AgentModal({
   useEffect(() => {
     if (data[book.agent]) return;
     let live = true;
-    agentDetail(book.agent).then(
+    ak.token()
+      .then((tok) => agentDetail(book.agent, tok))
+      .then(
       (x) => live && setData((o) => ({ ...o, [book.agent]: x })),
       (e: unknown) => live && setData((o) => ({ ...o, [book.agent]: String(e) })),
     );
     return () => {
       live = false;
     };
-  }, [book.agent, data]);
+  }, [book.agent, data, ak]);
 
   useEffect(() => {
     closeRef.current?.focus();
@@ -204,7 +210,8 @@ export default function AgentModal({
             <div className="rounded-xl border border-ink/10 p-3">
               <p className="text-[10px] uppercase tracking-wide text-ink/45">{v.positions}</p>
               <ul className="mt-2 space-y-1">
-                {Object.entries(book.posisi).length === 0 && <li className="text-xs text-ink/50">■ {v.noFills}</li>}
+                {book.terkunci && book.n_posisi ? <li className="text-xs text-ink/55">🔒 {va.lockedPositions.replace("{n}", String(book.n_posisi))}</li> : null}
+                {Object.entries(book.posisi).length === 0 && !(book.terkunci && book.n_posisi) && <li className="text-xs text-ink/50">■ {v.noFills}</li>}
                 {Object.entries(book.posisi)
                   .sort((a, b) => Math.abs(b[1]) - Math.abs(a[1]))
                   .map(([a, x]) => (
@@ -217,7 +224,7 @@ export default function AgentModal({
                     </li>
                   ))}
               </ul>
-              {st && Object.keys(st.bot_pilihan).length > 0 && (
+              {st?.bot_pilihan && Object.keys(st.bot_pilihan).length > 0 && (
                 <>
                   <p className="mt-3 text-[10px] uppercase tracking-wide text-ink/45">{v.stats.picks}</p>
                   <div className="mt-1 flex flex-wrap gap-1">
@@ -236,6 +243,7 @@ export default function AgentModal({
           <p className="mt-4 text-[10px] uppercase tracking-wide text-ink/45">{v.history}</p>
           {typeof d === "string" && <p className="mt-2 text-xs text-ink/60">{d}</p>}
           {!d && <p className="mt-2 text-xs text-ink/50">{v.loading}</p>}
+          {typeof d === "object" && d.akses?.live === false && <p className="mt-1 text-[11px] text-ink/50">🔒 {va.lockedHistory}</p>}
           {typeof d === "object" && (
             <table className="mt-2 w-full text-left text-[11px]">
               <thead className="text-ink/45">
