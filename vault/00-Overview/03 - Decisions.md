@@ -3278,3 +3278,23 @@ GLM 5.3 Flash), jadi:
 **Terkait:** F-D113 · [[04-Tools/TL36 - meja v2 bot + instrumen]] · [[04-Tools/TL33 - agent analis]]
 
 **Tambahan F-D114 (6 Okt ±02:4xZ, builder memilih "Turunkan Qwen 27B"):** `qwen27b` (agent 2570, Groq) `nonaktif` - HTTP 413 Payload Too Large di semua siklus. Meja berjalan dengan 5 kursi aktif (glm, qwen, berita, muse, qwenplus); tiga agent pihak penyedia gratis (KiosAPI x2, Groq) turun, identitasnya tetap dan bisa `aktif` lagi.
+
+## F-D115 — Penamaan: Fabius = meja v2 (tidak ada "v3"); revisi rumus = r1, r2, r3; v1 disembunyikan dari web · 6 Okt 2026 (WIB)
+
+Builder: *"Fabius v3 gaada kan brati? Semua masih full v2 kan? Mending kalau ternyata di tengah jalan ada yg v3 digabung aja ke v2, catat ini di
+vault"*, *"yg v1 hilangkan saja biar ga menuh-in"*, *"usulanmu mengenai hapus aja label v2 saya sepenuhnya sepakat, mending skalian skrg aja"*.
+
+1. **Satu Fabius:** mekanisme meja yang hidup = meja v2 (F-D112). Perubahan di tengah jalan TIDAK menjadi "v3"; ia revisi di dalam v2. Revisi rumus
+   konsensus ditulis **rumus r1 / r2 / r3** (= `PARAMS2.v` 1/2/3 di kode; sha tiap revisi tetap di Decisions F-D113 + koreksinya). Sekarang: rumus r3.
+2. **Web tanpa label "v2":** buku konsensus meja = "Fabius"; buku per agent = "Rapor agent" (paper milik agent, bukan posisi Fabius).
+3. **v1 disembunyikan dari `/desk`** (buku + rekaman; `V1_TAMPIL = False` di gerbang). Data v1 tetap tersimpan dan tetap bisa dibuktikan lewat
+   `/desk/proof/<hash>`. **Mesin v1 masih berjalan** sampai builder memutuskan, karena laporan pembanding (di bawah) menunjukkan v1 menjadi garis
+   dasar yang berguna.
+
+**Laporan pembanding v1 vs v2 (dicetak 6 Okt ±05Z dari `/desk` + `/desk/agent/*`, jendela sejak siklus v2 pertama 5 Okt 16:20Z):** Fabius (v2)
+10.000 -> 9.572,82 (**-4,27 %**), 445 transaksi, fee 264,71 USDT dalam 167 siklus (79 siklus bertransaksi), bot dominan B2-RS 111 siklus, B1-TREND 37,
+B5 15, B4 4; buku konsensus v1 9.927,51 -> 9.907,74 (-0,20 %; transaksi total 212, fee 39,30 sejak 5 Okt 10:35Z). Sekitar dua pertiga kerugian v2 =
+fee (264,71 dari 427,18 USDT); sebelum fee v2 ±-1,6 %. Masalah utamanya perputaran (rotasi peringkat B2 + pergantian bot/instrumen) -> dicatat
+sebagai pekerjaan (P163).
+
+**Terkait:** F-D112 · F-D113 · F-D114 · [[04-Tools/TL36 - meja v2 bot + instrumen]]

@@ -66,6 +66,8 @@ instrumennya BTC + PAXG pilihan agent B5 -> aturan B2 (butuh >= 8 aset) datar, b
 
 **Agent dinonaktifkan + keputusan kursi builder (6 Okt):** agent `nonaktif` di config kehilangan kursinya (`keluar`, SK-M23) dan antrean naik; `analis.py kursi --slug <s> --ke aktif|uji|antre --alasan "..."` menulis keputusan builder ke `kursi_builder` yang diterapkan sekali oleh gerbang dan dikomit sebagai peristiwa `kursi` (SK-M24). Dipakai pertama untuk F-D114.
 
+**Penamaan (F-D115):** di web meja ini = "Fabius" (tanpa "v2"), revisi rumus ditulis r1/r2/r3 (= `PARAMS2.v`); buku per agent = "Rapor agent". Meja v1 tidak ditampilkan (`V1_TAMPIL = False`), mesinnya masih berjalan sampai builder memutuskan.
+
 ## Batas yang dicatat jujur
 
 Hasil meja v2 = strategi baru (universe pilihan AI + aturan terkunci), BUKAN rekam jejak bot harian; uji maju F-D16 tidak disentuh. Aturan harian
