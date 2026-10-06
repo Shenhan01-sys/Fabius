@@ -102,7 +102,7 @@ export default function Nav() {
           className={`glass flex items-center gap-1.5 rounded-full px-3.5 py-2 text-xs font-semibold transition-colors hover:text-violet ${ak.anggota?.live ? "text-violet" : "text-ink/80"}`}
         >
           {ak.authenticated && <span className={`inline-block h-2 w-2 rounded-full ${ak.anggota?.live ? "bg-violet" : "bg-ink/30"}`} aria-hidden />}
-          {ak.authenticated ? (ak.anggota?.live ? t.nav.member : t.nav.signedIn) : t.nav.signIn}
+          {ak.authenticated ? (ak.anggota?.live ? t.nav.member : t.nav.signedIn) : ak.memproses ? "…" : t.nav.signIn}
         </button>
         <Link href="/#proof" className="hidden rounded-full bg-ink px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-violet lg:inline-block">
           {t.nav.cta}

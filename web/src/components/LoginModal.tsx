@@ -7,7 +7,7 @@
 import Link from "next/link";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { useEffect, useRef, useState } from "react";
-import { useLoginWithEmail, useLoginWithOAuth, useLoginWithTelegram } from "@privy-io/react-auth";
+import { useLoginWithEmail, useLoginWithTelegram } from "@privy-io/react-auth";
 import { useAkses } from "./akses";
 import { useLang } from "./lang";
 import IsoCube from "./ui/IsoCube";
@@ -122,7 +122,7 @@ function Masuk() {
   const [kode, setKode] = useState("");
   const [sibuk, setSibuk] = useState<"" | "google" | "telegram" | "kirim" | "cek">("");
   const [galat, setGalat] = useState("");
-  const oauth = useLoginWithOAuth();
+  const ak = useAkses();
   const tg = useLoginWithTelegram();
   const em = useLoginWithEmail();
 
@@ -156,7 +156,7 @@ function Masuk() {
             <button
               className={`${tombol} border-ink/15 bg-white text-ink hover:border-ink/30 hover:bg-ink/[0.02]`}
               disabled={!!sibuk}
-              onClick={() => jalan("google", () => oauth.initOAuth({ provider: "google" }))}
+              onClick={() => jalan("google", () => ak.masukGoogle())}
             >
               {sibuk === "google" ? <Spin /> : <GoogleIcon />}
               {sibuk === "google" ? v.redirecting.replace("{p}", "Google") : v.google}

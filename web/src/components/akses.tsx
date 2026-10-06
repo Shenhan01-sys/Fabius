@@ -5,7 +5,7 @@
 // login + status anggota (gerbang `GET /access`: login Privy + dompet membeli >= 1 sinyal dalam 7 hari) ke navbar, /popup login (`LoginModal`, dipasang Nav), /desk, /analysts, /buy.
 
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
-import { PrivyProvider, usePrivy } from "@privy-io/react-auth";
+import { PrivyProvider, useLoginWithOAuth, usePrivy } from "@privy-io/react-auth";
 import { GATE, PRIVY_APP_ID, PRIVY_CONFIG } from "@/lib/x402-buy";
 
 export type Anggota = {
@@ -23,6 +23,8 @@ export type AksesCtx = {
   ready: boolean;
   authenticated: boolean;
   login: () => void;
+  masukGoogle: () => Promise<void>; // login Google (redirect); hook-nya hidup di Jembatan supaya redirect balik DISELESAIKAN walau popup tertutup
+  memproses: boolean; // OAuth sedang diselesaikan sesudah redirect balik
   logout: () => void;
   token: () => Promise<string | null>;
   anggota: Anggota | null; // null = belum diperiksa / belum login
@@ -39,6 +41,8 @@ const KOSONG: AksesCtx = {
   ready: false,
   authenticated: false,
   login: () => {},
+  masukGoogle: async () => {},
+  memproses: false,
   logout: () => {},
   token: async () => null,
   anggota: null,
@@ -71,6 +75,12 @@ async function bacaAnggota(tok: string): Promise<Anggota> {
 
 function Jembatan({ children }: { children: React.ReactNode }) {
   const { ready, authenticated, login, logout, getAccessToken, user } = usePrivy();
+  // Privy menyelesaikan login OAuth hanya bila hook ini TER-MOUNT di halaman tempat penyedia mengembalikan pengguna (parameter `privy_oauth_*`).
+  // Dulu hook ada di popup (`Masuk`), yang tertutup sesudah redirect: login tidak selesai sampai pengguna menekan "Sign in" lagi. Sekarang selalu hidup.
+  const oauth = useLoginWithOAuth();
+  const initOAuth = oauth.initOAuth;
+  const masukGoogle = useCallback(() => initOAuth({ provider: "google" }).then(() => undefined), [initOAuth]);
+  const memproses = oauth.loading;
   const tok = useRef(getAccessToken);
   useEffect(() => {
     tok.current = getAccessToken;
@@ -107,6 +117,8 @@ function Jembatan({ children }: { children: React.ReactNode }) {
       ready,
       authenticated,
       login: () => login(),
+      masukGoogle,
+      memproses,
       logout: () => void logout(),
       token: async () => (authenticated ? tok.current() : null),
       anggota,
@@ -118,7 +130,7 @@ function Jembatan({ children }: { children: React.ReactNode }) {
       bukaLogin,
       tutupLogin,
     }),
-    [ready, authenticated, login, logout, anggota, periksa, email, metode, wallet, popup, bukaLogin, tutupLogin],
+    [ready, authenticated, login, masukGoogle, memproses, logout, anggota, periksa, email, metode, wallet, popup, bukaLogin, tutupLogin],
   );
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>;
 }
