@@ -55,9 +55,13 @@ export function layout(n: number, i: number) {
 }
 
 export function seats(d: Desk, now: number): Seat[] {
+  // agent yang dinonaktifkan builder (kursi `keluar`) tidak punya meja di lantai
+  const keluar = (slug: string) => (d.buku.find((b) => b.agent === `v2:${slug}`)?.kursi ?? d.kursi?.[slug]) === "keluar";
   const slugs = Array.from(
     new Set(d.buku.filter((b) => b.agent !== "konsensus" && b.agent !== "v2" && !b.agent.startsWith("_")).map((b) => b.agent.replace(/^v2:/, ""))),
-  ).sort();
+  )
+    .filter((s) => !keluar(s))
+    .sort();
   const last = d.siklus_terakhir?.siklus;
   const out = slugs.map((slug, i) => {
     const v1 = d.buku.find((b) => b.agent === slug);

@@ -34,7 +34,7 @@ export type Buku = {
   siklus_terakhir?: number | null;
   isi_terakhir?: number;
   // P159: penampilan pekerja 3D dari config/agents.json (opsional)
-  kursi?: "aktif" | "uji" | "antre" | null; // P160: kursi agent di meja v2
+  kursi?: "aktif" | "uji" | "antre" | "keluar" | null; // P160: kursi agent di meja v2 (keluar = dinonaktifkan builder)
   npc?: { shirt?: string; hair?: string; skin?: string; extra?: "headset" | "cap" | "glasses" | "beanie" | "hood" | "none"; prop?: "mug" | "paper" | "plant" | "books"; short?: string } | null;
 };
 export type Isi = { aset: string; dari: number; ke: number; harga: number; fee: number };
@@ -58,7 +58,7 @@ export type Desk = {
   // P160 (F-D113): ambang konsensus untuk jumlah kursi aktif sekarang + aturan kursi
   ambang_v2?: { kuorum: number; min_agent_instrumen: number; veto_min_agent: number; ambang_instrumen: number };
   params_kursi?: { status: string; maks_aktif: number; maks_uji: number; jendela_siklus: number; naik_sah_min: number; tukar_unggul_min: number; turun_sah_maks: number };
-  kursi?: Record<string, "aktif" | "uji" | "antre">;
+  kursi?: Record<string, "aktif" | "uji" | "antre" | "keluar">;
   params_v2_sha?: string;
   anchor?: string;
   buku: Buku[];

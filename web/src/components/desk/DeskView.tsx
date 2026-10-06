@@ -58,7 +58,7 @@ function Body() {
   const kons = d?.buku.find((b) => b.agent === "konsensus");
   const agents = d?.buku.filter((b) => b.agent !== "konsensus" && !b.agent.startsWith("v2")) ?? [];
   const v2 = d?.buku.find((b) => b.agent === "v2");
-  const agents2 = d?.buku.filter((b) => b.agent.startsWith("v2:")) ?? [];
+  const agents2 = d?.buku.filter((b) => b.agent.startsWith("v2:") && b.kursi !== "keluar") ?? [];
   return (
     <section className="relative overflow-hidden rounded-[30px] bg-gradient-to-b from-lav via-lav to-white px-6 pb-20 pt-32 sm:px-12 sm:pt-40 lg:px-16">
       <div className="mx-auto max-w-4xl text-center">
