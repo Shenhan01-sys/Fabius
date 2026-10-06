@@ -181,3 +181,18 @@ export async function dataHealth(): Promise<DataHealth> {
 }
 
 export const hhmm = (s: number) => new Date(s * 1000).toISOString().slice(11, 16) + "Z";
+
+// Aturan kursi (copy `seatRules`) diisi dari parameter terkunci gerbang; dipakai /desk dan /submit-agent supaya angkanya satu sumber.
+export type ParamsKursi = NonNullable<Desk["params_kursi"]>;
+export function seatRulesText(tpl: string, pk: ParamsKursi, statusLabel: string): string {
+  return tpl
+    .replace("{a}", String(pk.maks_aktif))
+    .replace("{u}", String(pk.maks_uji))
+    .replace("{w}", String(pk.jendela_siklus))
+    .replace("{up}", String(Math.round(pk.naik_sah_min * 100)))
+    .replace("{swap}", String(pk.tukar_unggul_min * 100))
+    .replace("{down}", String(Math.round(pk.turun_sah_maks * 100)))
+    .replace("{tdown}", String(Math.round((pk.uji_turun_sah_maks ?? pk.turun_sah_maks) * 100)))
+    .replace("{tmin}", String(pk.uji_amati_min ?? pk.jendela_siklus / 2))
+    .replace("{status}", statusLabel);
+}

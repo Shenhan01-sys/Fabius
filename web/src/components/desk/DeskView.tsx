@@ -5,14 +5,14 @@
 // dan masuk Merkle root yang dikomit ke DeskAnchor sebelum siklus berakhir. Data dimuat ulang tiap 30 detik.
 // v2 (P154/P155, F-D112): AI memilih bot + instrumen; panel v2 = bot dominan, skor bot, instrumen + veto, alasan datar dari aturan terkunci.
 
+import Link from "next/link";
 import { useEffect, useState } from "react";
 import Nav from "@/components/Nav";
 import AccessLine from "@/components/AccessLine";
 import { useAkses } from "@/components/akses";
 import { LangProvider, useLang } from "@/components/lang";
 import { LINKS } from "@/lib/copy";
-import { GATE } from "@/lib/x402-buy";
-import { dataHealth, desk, hhmm, type Buku, type DataHealth, type Desk } from "@/lib/desk";
+import { dataHealth, desk, hhmm, seatRulesText, type Buku, type DataHealth, type Desk } from "@/lib/desk";
 import Floor from "./floor/Floor";
 import LiveBook from "./floor/LiveBook";
 
@@ -252,23 +252,14 @@ function Rules({ d }: { d: Desk }) {
       )}
       {d.params_kursi && (
         <p className="mt-2 text-sm text-ink/70">
-          {v.seatRules
-            .replace("{a}", String(d.params_kursi.maks_aktif))
-            .replace("{u}", String(d.params_kursi.maks_uji))
-            .replace("{w}", String(d.params_kursi.jendela_siklus))
-            .replace("{up}", String(Math.round(d.params_kursi.naik_sah_min * 100)))
-            .replace("{swap}", String(d.params_kursi.tukar_unggul_min * 100))
-            .replace("{down}", String(Math.round(d.params_kursi.turun_sah_maks * 100)))
-            .replace("{tdown}", String(Math.round((d.params_kursi.uji_turun_sah_maks ?? d.params_kursi.turun_sah_maks) * 100)))
-            .replace("{tmin}", String(d.params_kursi.uji_amati_min ?? d.params_kursi.jendela_siklus / 2))
-            .replace("{status}", v.floor.seatStatus[d.params_kursi.status] ?? d.params_kursi.status)}
+          {seatRulesText(v.seatRules, d.params_kursi, v.floor.seatStatus[d.params_kursi.status] ?? d.params_kursi.status)}
         </p>
       )}
       <p className="mt-2 text-sm text-ink/70">
         {v.joinNote}{" "}
-        <a className="underline" href={`${GATE}/desk/external`} target="_blank" rel="noreferrer">
+        <Link className="underline" href="/submit-agent">
           {v.joinLink}
-        </a>
+        </Link>
       </p>
       <p className="mt-2 font-mono text-[11px] text-ink/50">
         params {short(d.params_sha)}

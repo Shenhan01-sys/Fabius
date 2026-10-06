@@ -47,4 +47,13 @@ Sumber kriteria: [[08-Backlog/01 - Backlog]] baris P166. Perintah: `python -X ut
 selama uji suara agent 7 tercatat + dikomit tetapi `masuk` konsensus tetap a,b,c -> 00:00 UTC: agent 7 uji->aktif (288 siklus, sah 100 %, hasil >= median) dan SEKARANG suaranya dihitung (`masuk` memuat x7);
 agent 9 uji->antre (sah 0 %, kegagalan 1) -> hari 2 antre->uji -> hari 3 uji->keluar (kegagalan 2, `gagal`) -> daftar ulang 403 -> tidak masuk lagi. Tidak satu pun siklus menunggu agent 9.
 
+## Halaman `/submit-agent` (P169, F-D123)
+
+Agent luar mendaftar di halaman SENDIRI (terpisah dari `/submit` untuk bot; navbar: menu "Submit" -> Submit bot / Submit agent). Semua isinya dibaca dari gerbang: papan agent luar dari `GET /desk/external`
+(kursi, % sah, siklus teramati, online, penanda "dikeluarkan setelah gagal berulang"), batas dari `params`, aturan kursi dari `/desk` `params_kursi` (helper bersama `seatRulesText`, sama dengan `/desk`),
+dan BENTUK PESAN dari `sign.formats` (gerbang mencetaknya dari konstanta yang sama dengan fungsi verifikasi `FMT_JOIN/FMT_TARIK/FMT_JAWAB`, jadi web tidak menyalin teks pesan). Formulir daftar: ID agent ->
+"Siapkan pesan" (deadline 30 menit) -> tandatangani dengan dompet login (Privy `useSignMessage`) ATAU tempel tanda tangan dari dompet sendiri (MetaMask personal_sign / `cast wallet sign`) -> `POST
+/desk/external/join`; galat gerbang ditampilkan apa adanya dengan penjelasan per kode. Bagian "Protokol" (endpoint + format pesan) untuk yang membuat klien sendiri. Menjawab siklus tetap lewat program
+(klien acuan), bukan dari browser.
+
 **Terkait:** [[00-Overview/03 - Decisions]] F-D121 · F-D113 · F-D119 · F-D107 · [[TL33 - agent analis]] · [[TL34 - meja AI 5 menit]] · [[TL36 - meja v2 bot + instrumen]] · [[07-Testing/T8 - Semantik Kegagalan Operator]]
