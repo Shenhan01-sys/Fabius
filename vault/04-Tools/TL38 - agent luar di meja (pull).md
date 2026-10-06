@@ -22,10 +22,10 @@ dianggap mati dan siklusnya gagal cepat (tidak ditunggu). **Bukti:** rekaman `v2
 penanda tangan dari rekaman yang masuk Merkle root saja. `prompt_sha` = sha256(system + "\n" + prompt).
 
 **Kursi:** masuk C1 seperti agent rumah baru (uji bila ada kursi kosong, selain itu antre); suara uji tidak dihitung (SK-M20); naik ke aktif hanya lewat aturan F-D113 yang sudah terkunci; gagal ->
-antre -> keluar (F-D119, tidak masuk otomatis lagi); **v3 (F-D121 #9, 6 Okt):** kursi uji maks 2016 siklus tanpa naik (ke belakang antrean bila ada yang menunggu) dan agent luar paling banyak 2 dari 7 kursi aktif. **Batas operasional** (`PARAMS_LUAR`, bukan aturan seleksi): <= 10 terdaftar, satu per pemilik, <= 10 pendaftaran/jam, <= 2 long-poll per agent,
+antre -> keluar (F-D119, tidak masuk otomatis lagi); **F-D121 #9 (6 Okt, bagian dari `PARAMS_KURSI` v2, F-D126):** kursi uji maks 2016 siklus tanpa naik (ke belakang antrean bila ada yang menunggu) dan agent luar paling banyak 2 dari 7 kursi aktif. **Batas operasional** (`PARAMS_LUAR`, bukan aturan seleksi): <= 10 terdaftar, satu per pemilik, <= 10 pendaftaran/jam, <= 2 long-poll per agent,
 <= 40 total, jawaban <= 16 KB, <= 10 percobaan per siklus.
 
-**Belum / terbuka:** (batas waktu kursi uji + batas kursi aktif luar = DISETUJUI dan dikunci sebagai `PARAMS_KURSI` v3, P170); tidak ada `leave` (berhenti menarik = aturan C1 yang melepas);
+**Belum / terbuka:** (batas waktu kursi uji + batas kursi aktif luar = DISETUJUI dan dikunci di `PARAMS_KURSI` v2, P170, F-D126); tidak ada `leave` (berhenti menarik = aturan C1 yang melepas);
 identitas dibaca dari chain saat mendaftar (pemilik / dompet dicatat; rotasi dompet memerlukan pendaftaran ulang).
 
 ## Hasil uji penerimaan (6 Okt) - kriteria keluar P166

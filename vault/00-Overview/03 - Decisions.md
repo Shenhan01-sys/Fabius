@@ -3437,6 +3437,8 @@ dengan membuang dua kunci itu dan `v: 2` = `0x47f1c058…`, sama dengan yang ter
 masuk dan kursi uji penuh (sebanyak yang dibutuhkan; `tunggu_sampai` +1 hari, riwayat diulang, bukan kegagalan); (b) kandidat luar tidak naik bila 2 kursi aktif luar terisi, kecuali menukar agent luar aktif terlemah (unggul
 >= 0,5 pp); keputusan kursi builder (SK-M24) tidak dibatasi. T8 SK-M34 + SK-M35.
 
+**Penamaan dikoreksi (F-D126, 6 Okt malam):** tidak ada v3. Aturan di atas DIGABUNG ke `PARAMS_KURSI` v2 (`v` = 2); sha v2 sekarang `0x3bbee1c0a7ce4be8bab9710f7099e056cd4e925eae65354ac84719a5bef8545e` (live ±16:10Z); sha "v3" `0x76f7196a92a419ce…` hanya hidup 15:20Z - ±16:10Z.
+
 ## F-D122 - Pintu bot dibuka penuh (rule / code / feed) + tinjauan dua tahap: bot teknis, lalu agent LLM pemilik Fabius · 6 Okt 2026 (WIB)
 
 Builder (6 Okt) menolak form `/submit` yang memaksa memilih metode Fabius: *"biarkan semua input itu dari user, kan bot user, kita tidak perlu menentukannya"* ("nanti ga bervariasi"). Sesudah saya
@@ -3519,7 +3521,7 @@ Builder (6 Okt malam): *"Hapus F-D90, P90 gas, P170 di rebrand ke v2"* + *"F-D90
    tidak ada ambang berubah sebelum keputusan builder (kunci v2 atau tetap v1). R3-R11 tetap menunggu.
 3. **P75 / P80 tetap ditunda** (telaah hukum ToS sebelum uang nyata; telaah hukum menjual sinyal): tidak dikerjakan selama hackathon (bersama F-D124); syarat telaah hukum F-D72 tidak dicabut.
 4. **`PARAMS_KURSI` satu v2:** tidak ada v3. Aturan F-D121 #9 (kursi uji maks 2016 siklus; agent luar maks 2 dari 7 kursi aktif) DIGABUNG ke v2, `v` di kode = 2. Riwayat sha (tetap tercatat, tidak ditulis ulang): revisi pertama v2 (F-D119) `0x47f1c0587a8cf60b3c68cf8098850018b4ff11aa25c4e44685de16209a77ea40`
-   hidup 6 Okt ±11:00Z - 15:20Z; "v3" `0x76f7196a92a419cee466250a84dcc2cd08bb181dc3d7b6e334fac3248d255e00` hidup 15:20Z - migrasi; v2 sekarang: sha dicatat di sini sesudah migrasi live. Evaluasi kursi hanya jalan 00:00 UTC dan belum ada yang berjalan di bawah aturan baru,
+   hidup 6 Okt ±11:00Z - 15:20Z; "v3" `0x76f7196a92a419cee466250a84dcc2cd08bb181dc3d7b6e334fac3248d255e00` hidup 15:20Z - ±16:10Z; v2 sekarang `0x3bbee1c0a7ce4be8bab9710f7099e056cd4e925eae65354ac84719a5bef8545e`, LIVE 6 Okt ±16:10Z (gerbang dari `e09e2b55`; `GET /desk` `params_kursi.v` 2, `uji_maks_siklus` 2016, `maks_aktif_luar` 2, `params_kursi_sha` cocok dengan `meja.sha(meja2.PARAMS_KURSI)`). Evaluasi kursi hanya jalan 00:00 UTC dan belum ada yang berjalan di bawah aturan baru,
    jadi tidak ada perubahan perilaku akibat penamaan.
 
 **Terkait:** F-D90 (nisan) · F-D113 · F-D119 · F-D121 · F-D124 · F-D125 · [[08-Backlog/08 - Riset Optimasi Ambang]]
