@@ -20,7 +20,7 @@ import urllib.error
 import urllib.request
 from typing import Callable, Dict, List, Optional, Tuple
 
-sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+sys.path[:0] = [os.path.dirname(os.path.abspath(__file__)), os.path.dirname(os.path.dirname(os.path.abspath(__file__)))]   # tools + akar repo (engine)
 import meja  # noqa: E402
 
 GERBANG = "https://fabius-x402-production.up.railway.app"
@@ -203,6 +203,24 @@ def sumber_fee(recs: List[dict]) -> Dict[str, dict]:
     return dict(sorted(out.items(), key=lambda kv: -kv[1]["fee"]))
 
 
+def lama_pegang(recs: List[dict]) -> dict:
+    """Lama hidup posisi TERCATAT (buka/arah baru -> tutup/balik), dalam siklus 5 menit, + fee buka+tutup posisi yang hidup <= 2 siklus."""
+    buka, lama, fee_pendek = {}, [], 0.0
+    for r in recs:
+        for x in r.get("isi") or []:
+            a, d0, d1, t = x["aset"], x["dari"], x["ke"], int(r["siklus"])
+            if abs(d0) > 1e-9 and (abs(d1) < 1e-9 or (d0 > 0) != (d1 > 0)) and a in buka:
+                t_buka, f_buka = buka.pop(a)
+                lama.append((t - t_buka) // 300)
+                fee_pendek += (f_buka + x["fee"]) if lama[-1] <= 2 else 0.0
+            if abs(d1) > 1e-9 and (abs(d0) < 1e-9 or (d0 > 0) != (d1 > 0)):
+                buka[a] = (t, x["fee"])
+    lama.sort()
+    n = len(lama) or 1
+    return {"posisi": len(lama), "median_siklus": lama[len(lama) // 2] if lama else None,
+            "maks_n_siklus_pct": {k: round(sum(1 for v in lama if v <= k) / n * 100, 1) for k in (1, 2, 6, 12)}, "fee_posisi_maks_2_siklus": round(fee_pendek, 2)}
+
+
 def laporan(recs: List[dict], harga: Dict[int, Dict[str, float]], kepekaan: bool = False) -> dict:
     """Seluruh keluaran P163 dalam satu dict (dipakai CLI + tes integrasi). `kepekaan` menambah tetangga parameter (KEPEKAAN)."""
     tercatat = recs[-1]["ekuitas"]
@@ -210,8 +228,147 @@ def laporan(recs: List[dict], harga: Dict[int, Dict[str, float]], kepekaan: bool
     hasil = {nama: {k: v for k, v in replay(recs, harga, pol).items() if k not in ("seri", "kirim")} for nama, pol in pols.items()}
     base = hasil["r3 (sekarang)"]
     return {"siklus": len(recs), "harga_siklus": sum(1 for r in recs if harga.get(int(r["siklus"]))), "ekuitas_tercatat": tercatat,
-            "fee_tercatat": round(sum(x["fee"] for r in recs for x in r.get("isi") or []), 6), "sumber": sumber_fee(recs),
+            "fee_tercatat": round(sum(x["fee"] for r in recs for x in r.get("isi") or []), 6), "sumber": sumber_fee(recs), "lama_pegang": lama_pegang(recs),
             "setia": base["ekuitas"] is not None and abs(base["ekuitas"] - tercatat) <= SETIA_USDT, "replay": hasil}
+
+
+# ---------------------------------------------------------------- r4 slot posisi (F-D116, usulan): candle harian perp + replay
+
+class CandleVision:
+    """Candle harian perp dari Binance Vision (berkas statis, sama dengan REST: F-D83), `hari` hari sebelum `sampai_ms`, cache disk per aset.
+    Baris = (t buka ms, o, h, l, c, volume kuotasi) seperti `meja2.Pasar2.harian`."""
+
+    def __init__(self, sampai_ms: int, hari: int = 130, cache_dir: Optional[str] = None, fetch: Optional[Callable[[str], Optional[bytes]]] = None):
+        import tempfile
+        self.sampai, self.mulai = sampai_ms, sampai_ms - hari * 86_400_000
+        self.cache_dir = cache_dir or os.path.join(tempfile.gettempdir(), "fabius-vision-1d")
+        self.fetch = fetch
+        self._rows: Dict[str, List[tuple]] = {}
+
+    def _get(self, url: str) -> Optional[bytes]:
+        if self.fetch is None:
+            import feed_bars
+            self.fetch = feed_bars.http_get
+        return self.fetch(url)
+
+    @staticmethod
+    def _parse(blob: bytes) -> List[tuple]:
+        import csv
+        import io
+        import zipfile
+        z = zipfile.ZipFile(io.BytesIO(blob))
+        with z.open(z.namelist()[0]) as f:
+            return [(int(r[0]), float(r[1]), float(r[2]), float(r[3]), float(r[4]), float(r[7]))
+                    for r in csv.reader(io.TextIOWrapper(f)) if r and r[0].strip().isdigit()]
+
+    def _unduh(self, a: str) -> List[tuple]:
+        base, rows = "https://data.binance.vision/data/futures/um", []
+        d = dt.datetime.fromtimestamp(self.mulai / 1000, dt.timezone.utc).date().replace(day=1)
+        akhir = dt.datetime.fromtimestamp(self.sampai / 1000, dt.timezone.utc).date()
+        while d <= akhir:
+            nxt = (d.replace(day=28) + dt.timedelta(days=4)).replace(day=1)
+            blob = self._get(f"{base}/monthly/klines/{a}/1d/{a}-1d-{d:%Y-%m}.zip") if nxt <= akhir else None
+            if blob:
+                rows += self._parse(blob)
+            else:                                                                                 # bulan berjalan / zip bulanan belum terbit
+                h = d
+                while h < min(nxt, akhir):
+                    b = self._get(f"{base}/daily/klines/{a}/1d/{a}-1d-{h}.zip")
+                    rows += self._parse(b) if b else []
+                    h += dt.timedelta(days=1)
+            d = nxt
+        return sorted({r[0]: r for r in rows if r[0] < self.sampai}.values())
+
+    def rows(self, a: str) -> List[tuple]:
+        if a not in self._rows:
+            path = os.path.join(self.cache_dir, f"{a}-{self.sampai}.json")
+            if os.path.exists(path):
+                self._rows[a] = [tuple(r) for r in json.load(open(path, encoding="utf-8"))]
+            else:
+                self._rows[a] = self._unduh(a)
+                os.makedirs(self.cache_dir, exist_ok=True)
+                with open(path, "w", encoding="utf-8") as f:
+                    json.dump(self._rows[a], f)
+        return self._rows[a]
+
+
+def _pasar_arsip(store, t: int, _cache: Dict[tuple, object] = {}):  # noqa: B006 - cache seri per (store, aset, hari) disengaja
+    """`meja2.Pasar2` pada waktu `t`: candle harian yang sudah tutup sebelum t (panjang = `harian_limit` - 1 seperti REST hidup)."""
+    import meja2
+    from engine.series import Series
+
+    class PasarArsip(meja2.Pasar2):
+        def harian(self, a):
+            key = (id(store), a, t // 86_400)
+            if key not in _cache:
+                rows = [r for r in store.rows(a) if r[0] + 86_400_000 <= t * 1000][-(meja2.PARAMS2["harian_limit"] - 1):]
+                _cache[key] = Series.from_rows(rows) if rows else None
+            if _cache[key] is None:
+                raise ValueError(f"tidak ada candle harian {a}")
+            return _cache[key]
+
+        def onboard(self):                                                                       # perkiraan: candle pertama di jendela = listing
+            return {a: (r[0][0] if r and r[0][0] > store.mulai + 86_400_000 else 0) for a, r in store._rows.items()}
+    return PasarArsip(get=None, now=lambda: t)
+
+
+def replay_slot(recs: List[dict], harga: Dict[int, Dict[str, float]], store, P: Optional[dict] = None, rugi_maks: float = 0.03) -> dict:
+    """Replay r4 slot (F-D116) pada siklus + harga tercatat: kandidat dari target aturan tercatat, aturan keluar bot dijalankan ulang oleh
+    `meja2.arah` (kode terkunci) pada candle harian Vision, rem rugi dihitung dari ekuitas buku slot sendiri."""
+    import meja2
+    import meja_slot as ms
+    P = P or ms.PARAMS_SLOT
+    b, hari, aturan, terakhir = ms.buku_baru(), {}, {}, {}
+    eq, kirim, alasan, pegang, puncak, dd, maks_buka, tanpa_harga = [], [], {}, [], meja.PARAMS["modal_awal"], 0.0, 0, 0
+    for r in recs:
+        t = int(r["siklus"])
+        if not harga.get(t):
+            continue
+        tanpa_harga += sum(1 for a in b["posisi"] if a not in harga[t])
+        terakhir.update(harga[t])
+        h = {**terakhir, **harga[t]}                                  # aset dipegang yang keluar dari universe harga v2: harga terakhir (basi, dihitung)
+        p = _pasar_arsip(store, t)
+        e0 = ms.ekuitas(b, h)
+        hari.setdefault(t // 86_400, e0)
+        rem = e0 / hari[t // 86_400] - 1 <= -rugi_maks
+
+        def atr(a, p=p):
+            try:
+                return ms.atr_frac(p.harian(a), P["atr_hari"])
+            except Exception:  # noqa: BLE001
+                return None
+
+        def keluar(pos, p=p, t=t):
+            key = (pos["bot"], tuple(sorted(pos["uni"])), t // 86_400)
+            if key not in aturan:
+                aturan[key] = meja2.arah(pos["bot"], list(pos["uni"]), p)[0] if pos["uni"] or pos["bot"] == "B5-CORE-RWA" else {}
+            w = aturan[key].get(pos["aset"], 0.0)
+            return (1 if w > 1e-12 else -1 if w < -1e-12 else 0) != pos["arah"]
+        buka_t ={a: x["t"] for a, x in b["posisi"].items()}
+        f = ms.langkah(b, t, h, [] if rem else ms.kandidat(r, atr), keluar, rem, P)
+        for x in f:
+            if x["alasan"] != "open":
+                key = "TP" if x["alasan"] == "TP" else "SL" if x["alasan"] == "SL" else "rem rugi" if x["alasan"] == "daily loss brake" else "aturan keluar bot"
+                alasan[key] = alasan.get(key, 0) + 1
+                pegang.append((t - buka_t[x["aset"]]) // 300)
+        kirim.append((r, f))
+        maks_buka = max(maks_buka, len(b["posisi"]))
+        e = ms.ekuitas(b, h)
+        eq.append((t, e))
+        puncak = max(puncak, e)
+        dd = min(dd, e / puncak - 1)
+    akhir: Dict[str, float] = {}
+    for t, e in eq:
+        akhir[dt.datetime.fromtimestamp(t, dt.timezone.utc).strftime("%Y-%m-%d")] = e
+    lalu, ph = meja.PARAMS["modal_awal"], {}
+    for d in sorted(akhir):
+        ph[d] = round((akhir[d] / lalu - 1) * 100, 3)
+        lalu = akhir[d]
+    n_isi = sum(len(f) for _, f in kirim)
+    return {"ekuitas": round(eq[-1][1], 2) if eq else None, "fee": round(b["biaya"], 2), "isi": n_isi, "dd_pct": round(dd * 100, 3),
+            "per_hari_pct": ph, "buka": sum(1 for _, f in kirim for x in f if x["alasan"] == "open"), "tutup_per_alasan": alasan,
+            "pegang_median_siklus": sorted(pegang)[len(pegang) // 2] if pegang else None, "maks_posisi_terbuka": maks_buka,
+            "masih_terbuka": len(b["posisi"]), "siklus_posisi_tanpa_harga": tanpa_harga, "buku": b, "seri": eq, "kirim": kirim}
 
 
 def main() -> int:
@@ -221,6 +378,7 @@ def main() -> int:
     ap.add_argument("--gerbang", default=GERBANG)
     ap.add_argument("--json", action="store_true", help="cetak laporan sebagai JSON")
     ap.add_argument("--kepekaan", action="store_true", help="tambah tetangga parameter kebijakan (uji kepekaan)")
+    ap.add_argument("--slot", action="store_true", help="replay usulan r4 slot posisi (F-D116); candle harian perp dari Binance Vision")
     a = ap.parse_args()
     recs, harga = muat(a.dari, a.sampai, a.gerbang)
     if not recs:
@@ -236,10 +394,21 @@ def main() -> int:
     print(f"\nFEE TERCATAT per sumber (total {lp['fee_tercatat']:.2f} USDT):")
     for k, v in lp["sumber"].items():
         print(f"  {k:36s} {v['isi']:4d} isi  {v['fee']:8.2f} USDT  ({v['fee'] / tot * 100:5.1f} %)")
+    lp_ = lp["lama_pegang"]
+    print(f"\nLAMA PEGANG posisi tercatat: {lp_['posisi']} posisi, median {lp_['median_siklus']} siklus; ditutup <= 1/2/6/12 siklus: "
+          f"{' / '.join(f'{v} %' for v in lp_['maks_n_siklus_pct'].values())}; fee buka+tutup posisi <= 2 siklus {lp_['fee_posisi_maks_2_siklus']:.2f} USDT")
     print("\nREPLAY (arah aturan bot sama, target diubah kebijakan):")
     for nama, x in lp["replay"].items():
         hari = "  ".join(f"{d[5:]} {v:+6.2f} %" for d, v in x["per_hari_pct"].items())
         print(f"  {nama:26s} ekuitas {x['ekuitas']:9.2f}  fee {x['fee']:7.2f}  isi {x['isi']:4d}  dd {x['dd_pct']:6.2f} %  rem+{x['rem_replay']:<3d} {hari}")
+    if a.slot and lp["setia"]:
+        x = replay_slot(recs, harga, CandleVision((int(recs[-1]["siklus"]) // 86_400 + 1) * 86_400_000))
+        hari = "  ".join(f"{d[5:]} {v:+6.2f} %" for d, v in x["per_hari_pct"].items())
+        print(f"\nR4 SLOT POSISI (F-D116, usulan): ekuitas {x['ekuitas']:9.2f}  fee {x['fee']:7.2f}  isi {x['isi']:4d}  dd {x['dd_pct']:6.2f} %  {hari}")
+        print(f"  buka {x['buka']}, tutup per alasan {x['tutup_per_alasan']}, median lama pegang {x['pegang_median_siklus']} siklus, "
+              f"maks terbuka {x['maks_posisi_terbuka']}, masih terbuka {x['masih_terbuka']}, siklus-posisi berharga basi {x['siklus_posisi_tanpa_harga']}")
+        for aset, ps in sorted(x["buku"]["posisi"].items()):
+            print(f"    terbuka {aset:14s} {ps['bot']:16s} arah {ps['arah']:+d}  margin {ps['margin']:.3f} x {ps['leverage']:.2f}  masuk {ps['masuk']}")
     base = lp["replay"]["r3 (sekarang)"]["ekuitas"]
     print(f"\nreplay r3 vs tercatat: {base - lp['ekuitas_tercatat']:+.4f} USDT -> {'SETIA' if lp['setia'] else 'TIDAK SETIA (kebijakan lain tidak boleh dibandingkan)'}")
     return 0 if lp["setia"] else 2

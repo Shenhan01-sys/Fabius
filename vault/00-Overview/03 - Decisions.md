@@ -3298,3 +3298,38 @@ fee (264,71 dari 427,18 USDT); sebelum fee v2 ±-1,6 %. Masalah utamanya perputa
 sebagai pekerjaan (P163).
 
 **Terkait:** F-D112 · F-D113 · F-D114 · [[04-Tools/TL36 - meja v2 bot + instrumen]]
+
+## F-D116 — Rumus r4 "slot posisi" (USULAN builder, belum dikunci) · 6 Okt 2026 (WIB)
+
+Builder, sesudah angka P163 (fee 62 % dari kerugian, separuh posisi hidup <= 10 menit): *"jeda 5 menit itu berlaku saat sudah close position, jadi
+kalau open positionnya masih belum slesai ya jgn di close dulu dan countdown 5 menitnya tidak berjalan, baru jalannya setelah slesai closed
+position"*, *"maksimal open posisi ada 5, jadi kalau misal udh open lalu ternyata ada signal yg berpeluang bagus ya open lagi gapapa dengan catatan
+posisi yg lama ga di close"*. Jawaban pilihan: posisi selesai = TP/SL (*"Sesuaikan bot ... Kan bot ngasih aturannya"*), dan *"kalau ga kena TP/SL
+tapi keluar dari daerahnya itu tetap akan closed kan?"* = aturan keluar bot; TP/SL dari volatilitas + aturan keluar bot; ganti bot = posisi lama
+dipegang sampai selesai; jeda berlaku untuk seluruh buku; ukuran *"3-5% modal aja dengan laverage (kalau agentnya yakin bakal profit)"*, leverage
+maksimal 5x; ukuran dikunci sampai ditutup.
+
+Usulan (dikunci sebagai PARAMS2 r4 hanya sesudah replay pada arsip produksi + kata builder; aturan bot terkunci tidak berubah):
+
+1. **Maks 5 posisi** terbuka bersamaan, satu posisi per aset (tidak ditambah, tidak dibalik selama terbuka).
+2. **Buka:** di siklus tanpa jeda dan dengan slot kosong, kandidat = aset di target konsensus (arah dari aturan bot terkunci, veto dibuang) yang
+   belum dipegang, urut skor instrumen konsensus; dibuka sampai slot penuh. Posisi lama tidak disentuh.
+3. **Ukuran (dikunci sampai ditutup):** keyakinan c = (skor instrumen - ambang instrumen) / (n aktif - ambang instrumen), dipotong 0..1;
+   margin = 3 % + 2 % x c modal, leverage = 1x + 4x x c (maks 5x), notional = margin x leverage (maks 25 % modal per posisi, total maks 125 %).
+   Pengaman: leverage dipotong supaya jarak SL <= separuh jarak likuidasi (1 / leverage).
+4. **Tutup** oleh yang duluan: SL = harga masuk -/+ 1 x ATR 14 hari (candle harian perp), TP = +/- 2 x ATR (untung:rugi 2:1); aturan keluar bot
+   pembuka (aturan terkunci bot itu pada universe saat dibuka, candle harian yang sudah tutup); rem rugi harian SK-M10 (tutup semua, datar sampai
+   00:00 UTC). Dicek tiap siklus 5 menit pada harga isi siklus.
+5. **Ganti bot** tidak menutup posisi; tiap posisi mencatat bot pembukanya (hasil per bot tetap terukur).
+6. **Jeda:** siklus yang menutup posisi tidak membuka posisi baru; siklus berikutnya (5 menit sesudah tutup) boleh. Selama posisi terbuka, jeda
+   tidak berjalan.
+7. **Konstanta bot yang sudah terkunci menang** ("sesuaikan bot"): B4-LISTING-FADE margin 2 %, 1x, tanpa stop (`stop: None`), tutup lewat aturan
+   14 harinya + rem rugi.
+8. Keputusan agent + konsensus tetap direkam, di-hash, dan dikomit tiap siklus seperti sekarang.
+
+Batas yang dinyatakan: TP/SL dicek pada harga siklus (bukan sentuhan di antara siklus); funding + likuidasi tidak dimodelkan di buku kertas; replay
+tidak bisa membuka posisi di siklus yang tercatat datar karena rem r3 (target aturan tidak terekam).
+
+**Replay pertama (6 Okt ±10Z, [[07-Testing/01 - Test Commands]] #96):** mekanisme jalan (fee 264,71 -> 1,59 pada siklus yang sama), tetapi kelima slot terisi B2-RS dalam satu siklus (5 Okt 17:00Z) dan belum ada yang tertutup 17 jam kemudian, jadi angka hasilnya = lima posisi, bukan penilaian r4. Ditemukan untuk implementasi hidup: aset yang dipegang bisa keluar dari universe harga v2 (SOXSUSDT sejak 18:45Z) -> harga isi meja hidup wajib mencakup semua aset yang sedang dipegang.
+
+**Terkait:** P163 · F-D112 · F-D115 · [[04-Tools/TL36 - meja v2 bot + instrumen]]

@@ -89,9 +89,13 @@ class ReplayTests(unittest.TestCase):
                           "aturan buka/tutup/balik (bot lain)": 1, "ganti bot": 1, "pembalikan peringkat B2": 1, "rem rugi": 2})
         self.assertTrue(set(s) <= set(mr.SUMBER))
         self.assertAlmostEqual(sum(v["fee"] for v in s.values()), 9.0)
+        lp = mr.lama_pegang(recs)                                    # A: buka 300 -> balik 1500 (4) -> balik 1800 (1) -> balik 2100 (1) -> tutup 2400 (1); C: 600 -> 2400 (6)
+        self.assertEqual((lp["posisi"], lp["median_siklus"]), (5, 1))
+        self.assertEqual(lp["maks_n_siklus_pct"], {1: 60.0, 2: 60.0, 6: 100.0, 12: 100.0})
+        self.assertAlmostEqual(lp["fee_posisi_maks_2_siklus"], 6.0)
 
 
-class ArchiveReplayIntegrationTests(unittest.TestCase):
+class ArsipHTTP(unittest.TestCase):
     """Rantai produksi tanpa jaringan luar: `meja2.siklus2` (model + Binance dipalsukan) -> `gabung_v2` + `Gate.meja_simpan` (seperti
     `meja_loop`) -> server HTTP gerbang (`make_handler`) -> `meja_replay.muat` lewat HTTP -> `meja_replay.laporan`."""
     T0 = 1_791_200_100                                                                                       # 11:35 UTC, 18 siklus tetap di hari yang sama
@@ -150,6 +154,8 @@ class ArchiveReplayIntegrationTests(unittest.TestCase):
         except urllib.error.HTTPError as e:
             return e.code, json.loads(e.read().decode())
 
+
+class ArchiveReplayIntegrationTests(ArsipHTTP):
     def test_archive_route_is_english_and_serves_the_hashed_fabius_records_and_cycle_prices(self):
         code, a = self._get(f"/desk/archive/{self.date}")
         self.assertEqual(code, 200)
@@ -186,6 +192,42 @@ class ArchiveReplayIntegrationTests(unittest.TestCase):
             self.assertLessEqual(x["isi"], base["isi"], nama)
         self.assertEqual(base["per_hari_pct"], {self.date: round((lp["ekuitas_tercatat"] / meja.PARAMS["modal_awal"] - 1) * 100, 3)})
         self.assertEqual(set(mr.laporan(recs, harga, kepekaan=True)["replay"]), set(mr.KEBIJAKAN) | set(mr.KEPEKAAN))
+
+
+class UniStore:
+    """Candle harian untuk replay slot, searah dengan `FakePasar` (SOL/WIF/BTC/PAXG naik, NEAR turun), high/low +/-1 % -> ATR ±2 %."""
+    def __init__(self, t):
+        d0 = (t // 86_400 - 101) * 86_400_000
+        naik = {"SOLUSDT", "WIFUSDT", "BTCUSDT", "PAXGUSDT"}
+        self._rows = {a: [(d0 + i * 86_400_000, c, c * 1.01, c * 0.99, c, 5e6) for i in range(100) for c in [(100 + i) if a in naik else (200 - i)]]
+                      for a in UNI if a != "NEWUSDT"}
+        self.mulai = d0 - 30 * 86_400_000
+
+    def rows(self, a):
+        return self._rows.get(a, [])
+
+
+class SlotIntegrationTests(ArsipHTTP):
+    """F-D116 lewat rantai yang sama: arsip HTTP gerbang asli -> `replay_slot` (aturan keluar = `meja2.arah`, kandidat = target tercatat)."""
+
+    def test_slot_replay_over_http_respects_the_f_d116_limits(self):
+        import meja_slot as ms
+        recs, harga = mr.muat(self.date, self.date, self.url)
+        x = mr.replay_slot(recs, harga, UniStore(self.T0))
+        self.assertGreater(x["buka"], 0)
+        self.assertLessEqual(x["maks_posisi_terbuka"], ms.PARAMS_SLOT["maks_posisi"])
+        for _, fs in x["kirim"]:
+            alasan = {f["alasan"] for f in fs}
+            self.assertTrue(alasan <= {"open", "SL", "TP", "daily loss brake"} | {f"exit rule {b}" for b in meja2.BOTS}, alasan)
+            if alasan - {"open"}:
+                self.assertNotIn("open", alasan)                                                # jeda: siklus yang menutup tidak membuka
+        b = x["buku"]
+        self.assertAlmostEqual(x["fee"], round(b["biaya"], 2))
+        self.assertAlmostEqual(sum(f["fee"] for _, fs in x["kirim"] for f in fs), b["biaya"], places=4)
+        self.assertEqual(x["isi"], b["n_trade"])
+        for a, p in b["posisi"].items():                                                       # ukuran dikunci: qty = notional saat buka / harga masuk
+            self.assertLessEqual(abs(p["qty"]) * p["masuk"], ms.PARAMS_SLOT["maks_per_posisi"] * 10_000 * 1.1)
+        self.assertEqual(mr.replay_slot(recs, harga, UniStore(self.T0))["ekuitas"], x["ekuitas"])   # deterministik
 
 
 if __name__ == "__main__":
