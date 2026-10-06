@@ -19,6 +19,7 @@ export type Seat = {
   rotY: number;
   scale: number;
   trial: boolean; // P160: kursi uji - suaranya belum dihitung di konsensus
+  luar: boolean; // P166: agent luar (bukan agent rumah)
 };
 
 // penampilan tiga agent pertama bila gerbang belum mengirim `npc` (sama dengan config/agents.json)
@@ -77,6 +78,7 @@ export function seats(d: Desk, now: number): Seat[] {
       pose: pose(main, last, now),
       look: lookFor(slug, nama, main.npc ?? v1?.npc ?? FALLBACK[slug]),
       trial: (v2?.kursi ?? d.kursi?.[slug]) === "uji",
+      luar: !!v2?.luar,
       ...layout(slugs.length, i),
     };
   });

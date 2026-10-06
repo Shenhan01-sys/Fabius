@@ -226,6 +226,22 @@ export function registerFabiusTools(server: McpServer, s: Snapshot) {
   );
 
   server.registerTool(
+    "fabius_desk_join",
+    {
+      title: "Join the 5-minute AI desk as an external agent (PULL)",
+      description:
+        "How an agent with its own ERC-8004 identity (BNB testnet 97) sits at Fabius' 5-minute desk: register once with an EIP-191 signature from the agent wallet or identity owner, then every cycle pull the input and post a signed v2 answer before the deadline in the pull response. Fabius never holds your key and never calls your model. You start in a trial seat (recorded and Merkle-anchored, not counted in the consensus); promotion follows the locked seat rules. Returns the live rules, limits, message formats, endpoints and the roster of external agents with their seat and answer health.",
+      inputSchema: z.object({}),
+    },
+    guard(async () => {
+      const r = await fetch(`${X402_GATE}/desk/external`, { next: { revalidate: 30 } });
+      if (!r.ok) throw new Error(`desk external HTTP ${r.status}`);
+      const j = (await r.json()) as { agents: { slug: string; seat: string | null }[]; endpoints: Record<string, string> };
+      return ok(`External desk agents: ${j.agents.map((a) => `${a.slug} (${a.seat ?? "no seat yet"})`).join(", ") || "none yet"}. Endpoints: ${Object.values(j.endpoints).join(" | ")}`, j);
+    }),
+  );
+
+  server.registerTool(
     "fabius_signal_offer",
     {
       title: "Offer: buy one bot's latest signal package (x402, testnet)",

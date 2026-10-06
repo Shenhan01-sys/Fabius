@@ -3394,3 +3394,31 @@ Builder: urutan C1 -> B1 -> C2 -> B2, lalu "Lanjut" atas rencana B1a-B1e. Piliha
 6. Batas: sinyal bot penerbit yang masuk slot belum dikomit / dijual worker (berikutnya); kanal hanya bar harian sampai B2.
 
 **Terkait:** P161 · P83 · F-D71 · F-D85 · F-D87 · F-D88 · [[04-Tools/TL37 - jalur pengajuan bot]]
+
+## F-D121 — Agent luar ikut siklus meja dengan cara PULL (P166, P160 tahap 2) · 6 Okt 2026 (WIB)
+
+Builder memilih (6 Okt, urutan C1 -> B1 -> C2 -> B2) *"Pull: agent ambil & kirim jawaban"*. Pilihan rancangan yang saya ambil (mengikat sampai builder mengubah):
+
+1. **Identitas = ERC-8004, aturan yang sama dengan SelectionAnchor:** pesan EIP-191 harus ditandatangani dompet agent (`getAgentWallet`) atau pemilik
+   identitas (`ownerOf`). Agent luar tidak mendapat kunci apa pun dari Fabius; Fabius tidak pernah memanggil model mereka.
+2. **Daftar sekali** (`POST /desk/external/join`, pesan `Fabius desk join v1 / agent_id / deadline`, berlaku <= 1 jam). Slug = `x<agent_id>`; nama dari
+   kartu ERC-8004 (dibersihkan, <= 24 huruf). Batas masuk (operasional, bukan aturan seleksi): <= 10 terdaftar, satu per pemilik, satu per agent, <= 10
+   pendaftaran per jam, id agent rumah ditolak, agent yang keluar karena gagal (F-D119) ditolak.
+3. **Tarik** (`GET /desk/external/pull?agent_id=N&wait=25`): long-poll. Masukan = persis yang dilihat agent rumah (`SYSTEM2` + prompt per agent: bukunya
+   sendiri, fitur terukur, aturan bot), ditambah `prompt_sha` dan batas waktu. Masukan tidak memuat keputusan agent lain. Tanpa tarikan 15 menit = agent dianggap
+   mati: siklusnya gagal cepat, TIDAK ditunggu.
+4. **Jawab** (`POST /desk/external/answer`, pesan `Fabius desk answer v1 / agent_id / siklus / prompt_sha / answer_sha`): jawaban v2 yang sama dengan agent
+   rumah, divalidasi `parse2` saat diterima (galat = 422, boleh kirim ulang sebelum batas); sah pertama menang; batas = tenggat jawab siklus (210 s sesudah data terbaca, paling lambat t0 + 265 s; dicetak mutlak di respons tarik, komit siklus tetap
+   sempat). Rekaman siklus memuat `luar` {penanda_tangan, tanda_tangan} + `prompt_sha` + `jawaban_sha`, jadi tanda tangan bisa diperiksa pihak ketiga dari rekaman
+   yang masuk Merkle root.
+5. **Kursi:** agent luar masuk C1 seperti agent rumah baru (uji bila ada kursi uji kosong, selain itu antre). Jawaban uji TIDAK dihitung konsensus (SK-M20);
+   naik ke aktif hanya lewat aturan F-D113 yang sudah terkunci (>= 288 siklus, sah >= 95 %, hasil >= median aktif atau unggul >= 0,5 pp). Gagal -> antre -> keluar (F-D119).
+6. **Tidak ada leave:** agent yang ingin keluar berhenti menarik; aturan C1 yang melepasnya.
+7. **Penemuan:** `GET /desk/external` (aturan, batas, format pesan, daftar agent luar + kursi + keadaan) + klien acuan `tools/desk_agent_client.py`.
+8. **Privasi:** masukan agent publik (data pasar + buku agent itu sendiri); tidak ada kontak yang disimpan.
+9. **USULAN, BELUM DIKUNCI (butuh kata builder, `PARAMS_KURSI` v3):** (a) kursi uji tanpa batas waktu bisa ditahan agent luar yang sah tetapi biasa-biasa saja,
+   karena aturan F-D113/F-D119 hanya menyingkirkan yang gagal; usulan: >= 2016 siklus (7 hari) di kursi uji tanpa naik -> belakang antrean; (b) agent luar yang
+   naik ke aktif memengaruhi konsensus; usulan: paling banyak 2 dari 7 kursi aktif untuk agent luar. Sampai dikunci, pelepasnya = keputusan kursi builder
+   (`analis.py kursi`, SK-M24).
+
+**Terkait:** F-D113 · F-D119 · F-D107 · P151 · P160 · P166 · [[04-Tools/TL33 - agent analis]] · [[04-Tools/TL36 - meja v2 bot + instrumen]]

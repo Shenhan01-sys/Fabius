@@ -11,6 +11,7 @@ import AccessLine from "@/components/AccessLine";
 import { useAkses } from "@/components/akses";
 import { LangProvider, useLang } from "@/components/lang";
 import { LINKS } from "@/lib/copy";
+import { GATE } from "@/lib/x402-buy";
 import { dataHealth, desk, hhmm, type Buku, type DataHealth, type Desk } from "@/lib/desk";
 import Floor from "./floor/Floor";
 import LiveBook from "./floor/LiveBook";
@@ -263,6 +264,12 @@ function Rules({ d }: { d: Desk }) {
             .replace("{status}", v.floor.seatStatus[d.params_kursi.status] ?? d.params_kursi.status)}
         </p>
       )}
+      <p className="mt-2 text-sm text-ink/70">
+        {v.joinNote}{" "}
+        <a className="underline" href={`${GATE}/desk/external`} target="_blank" rel="noreferrer">
+          {v.joinLink}
+        </a>
+      </p>
       <p className="mt-2 font-mono text-[11px] text-ink/50">
         params {short(d.params_sha)}
         {d.params_v2_sha && <> · formula r{String((d.params_v2 as { v?: number } | undefined)?.v ?? "")} {short(d.params_v2_sha)}</>}

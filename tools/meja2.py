@@ -430,7 +430,8 @@ def posisi(bot: Optional[str], ins: List[str], eks: float, veto: List[str], p: P
 
 def siklus2(t0: int, agents: List[dict], books: Dict[str, dict], ring: Dict[str, str], call: Callable[[dict, str, str], str], snap: Optional[dict],
             p: Pasar2, get: Callable = None, log: Callable[[str], None] = print, sampai: Optional[float] = None,
-            keluar: Optional[List[str]] = None, paksa: Optional[List[dict]] = None) -> Tuple[List[dict], Dict[str, float]]:
+            keluar: Optional[List[str]] = None, paksa: Optional[List[dict]] = None,
+            bukti: Optional[Callable[[str, int], Optional[dict]]] = None) -> Tuple[List[dict], Dict[str, float]]:
     """-> (rekaman per agent v2 + konsensus v2, harga isi). `sampai` = waktu mutlak batas jawab model (gerbang memasangnya supaya komit siklus tetap
     sempat); dihitung SESUDAH data aturan + harga dibaca, jadi cache dingin tidak memakan jatah komit."""
     import concurrent.futures as cf
@@ -457,7 +458,9 @@ def siklus2(t0: int, agents: List[dict], books: Dict[str, dict], ring: Dict[str,
     prompts = {ag["slug"]: prompt2(snap, uni, tk, books[f"v2:{ag['slug']}"], harga, ring.get(f"v2:{ag['slug']}"), far) for ag in agents}
     hasil: Dict[str, dict] = {}
     pool = cf.ThreadPoolExecutor(max_workers=max(1, len(agents)))
-    fut = {pool.submit(call, ag, SYSTEM2, prompts[ag["slug"]]): ag for ag in agents}
+    # P166 (F-D121): agent luar (`luar`) dijawab lewat PULL; `call` menerima siklus + pemeriksa format `parse2` supaya galat format dilaporkan saat itu juga
+    argumen = lambda ag: ({**ag, "siklus": t0, "tenggat": time.time() + batas, "validasi": lambda raw: parse2(raw, uni, fitur)} if ag.get("luar") else ag)  # noqa: E731
+    fut = {pool.submit(call, argumen(ag), SYSTEM2, prompts[ag["slug"]]): ag for ag in agents}
     try:
         for f in cf.as_completed(fut, timeout=batas):
             ag = fut[f]
@@ -488,6 +491,8 @@ def siklus2(t0: int, agents: List[dict], books: Dict[str, dict], ring: Dict[str,
             r.update(status="ok", jawaban_sha=meja.sha(h["raw"].encode()), keputusan={**k, "ringkasan": f"{k['bot']} on {', '.join(i['aset'] for i in k['instrumen']) or '-'}: {k['ringkasan']}",
                      "target": tg, "diubah": sorted(tg), "arah_alasan": why}, isi=meja.isi(books[nb], tg, harga))
             ring[nb] = k["ringkasan"]
+            if ag.get("luar") and bukti and bukti(s, t0):                                      # bukti tanda tangan ikut rekaman yang di-hash + dikomit
+                r["luar"] = bukti(s, t0)
         r["ekuitas"] = round(meja.ekuitas(books[nb], harga), 4)
         kursi_catat(kst, s, r["status"] == "ok", r["ekuitas"])
         rek.append(r)

@@ -38,6 +38,7 @@ export type Buku = {
   terkunci?: boolean;
   // P159: penampilan pekerja 3D dari config/agents.json (opsional)
   kursi?: "aktif" | "uji" | "antre" | "keluar" | null; // P160: kursi agent di meja v2 (keluar = dinonaktifkan builder)
+  luar?: boolean; // P166: agent luar (PULL, identitas ERC-8004 sendiri), bukan agent rumah
   npc?: { shirt?: string; hair?: string; skin?: string; extra?: "headset" | "cap" | "glasses" | "beanie" | "hood" | "none"; prop?: "mug" | "paper" | "plant" | "books"; short?: string } | null;
 };
 // r4 (F-D116): isi membawa alasan (open / SL / TP / exit rule <bot> / daily loss brake / r4 start), bot pemilik posisi, dan pnl yang direalisasi

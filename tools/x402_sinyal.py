@@ -55,6 +55,7 @@ import analis as an                                                           # 
 import privy_server as pv                                                     # noqa: E402
 import meja                                                                   # noqa: E402
 import pengajuan as pj                                                        # noqa: E402
+import agen_luar as al                                                        # noqa: E402
 
 NETWORK = "eip155:97"
 PROXY = "0x402085c248EeA27D92E8b30b2C58ed07f9E20001"      # x402ExactPermit2Proxy kanonis (56 & 97)
@@ -337,8 +338,44 @@ class Gate:
         self._luar_coba: Dict[str, float] = {}
         self.meja_dir = os.path.join(os.path.dirname(self.analis_dir), "meja")                # P152: rekaman, siklus, buku meja AI 5 menit
         self.meja_lock = threading.Lock()
+        self._kst: tuple = (0.0, {})
+        self.luar = al.Luar(os.path.join(self.meja_dir, "luar.json"), now=self.now, resolve=self._luar_resolve, status=self._luar_status, rumah=self._luar_rumah)   # P166
         self.data_cv = threading.Condition()                                                 # P155: meja v2 menunggu snapshot siklus yang sama
         self._kabar: tuple = (0.0, None)
+
+    # ---------------------------------------------------------------- P166 (F-D121): agent luar di meja (PULL)
+    def _luar_cfg(self) -> dict:
+        return an.load_cfg(os.path.join(self.data.workdir, "deployments", "97.json"))
+
+    def _luar_rumah(self) -> set:
+        return {int(v["agent_id"]) for v in (self._luar_cfg().get("agents") or {}).values() if v.get("agent_id")}
+
+    def _luar_resolve(self, agent_id: int) -> dict:
+        """Identitas ERC-8004 di chain: pemilik + dompet agent (+ nama dari kartu). Identitas tidak ada (revert) -> KeyError; RPC mati -> galat lain."""
+        import evm as evmmod
+        ident = self._luar_cfg()["identity"]
+        try:
+            owner = self.ev.call_decode(ident, "ownerOf(uint256)", ("uint256",), (agent_id,), ("address",))[0]
+        except evmmod.RpcError as e:
+            raise KeyError(agent_id) from e
+        try:
+            wallet = self.ev.call_decode(ident, "getAgentWallet(uint256)", ("uint256",), (agent_id,), ("address",))[0]
+        except Exception:  # noqa: BLE001 - dompet agent opsional; pemilik tetap sah
+            wallet = None
+        if wallet and int(wallet, 16) == 0:
+            wallet = None
+        return {"owner": owner, "wallet": wallet, "nama": an.kartu_luar(self.ev, ident, agent_id)["nama"]}
+
+    def _luar_status(self, slug: str) -> dict:
+        """Kursi + kesehatan jawaban satu agent dari state meja (dibaca paling sering tiap 20 detik)."""
+        t, kst = self._kst
+        if time.time() - t > 20:
+            kst = (self.meja_muat()[0].get("_v2_kursi")) or {}
+            self._kst = (time.time(), kst)
+        e = (kst.get("kursi") or {}).get(slug)
+        sah = ((kst.get("riwayat") or {}).get(slug) or {}).get("sah") or []
+        return {"kursi": e["status"] if e else None, "gagal": bool(e and e.get("gagal")), "n": len(sah),
+                "sah_pct": round(100 * sum(sah) / len(sah), 1) if sah else None}
 
     def kabar_cache(self, umur_s: int = 900) -> Optional[List[dict]]:
         """Judul berita untuk agent berita di meja: dibaca paling sering tiap 15 menit (bukan tiap 5 menit)."""
@@ -409,13 +446,13 @@ class Gate:
             mine = [r for r in rek if r["agent"] == name]
             last = next((r for r in reversed(mine) if r.get("status", "ok") == "ok"), None)
             slug = name.split(":", 1)[-1]
-            nama_ag = next((a["name"] for a in an.AGENTS if a["slug"] == slug), slug)
+            nama_ag = next((a["name"] for a in an.AGENTS if a["slug"] == slug), None) or self.luar.nama(slug) or slug
             nama = {meja.KONSENSUS: "Fabius v1 consensus (retired)", "v2": "Fabius"}.get(name) or nama_ag
             kons = name in (meja.KONSENSUS, "v2")
             out_books.append({"agent": name, "nama": nama, "versi": 2 if name.startswith("v2") else 1,
                               # P159: penampilan pekerja 3D dari config/agents.json (opsional; web membuatnya dari slug bila kosong)
                               "npc": next((a.get("npc") for a in an.AGENTS if a["slug"] == slug), None) if not kons else None,
-                              "kursi": kursi.get(slug) if name.startswith("v2:") else None,
+                              "kursi": kursi.get(slug) if name.startswith("v2:") else None, "luar": bool(self.luar.nama(slug)) if name.startswith("v2:") else False,
                               "ekuitas": round(e, 2), "hasil_pct": round((e / meja.PARAMS["modal_awal"] - 1) * 100, 3),
                               "biaya": round(b.get("biaya", 0), 2), "n_trade": b.get("n_trade", 0),
                               # posisi yang BENAR-BENAR terisi (qty x harga / ekuitas), bukan target: target < ambang 2 % tidak ditransaksikan
@@ -997,7 +1034,7 @@ def make_handler(gate: Gate):
                             continue
                     return self._send(200, {"nama": "Fabius x402 - paket sinyal terverifikasi (testnet 97)", "token": cfg["token"], "simbol": "FAB", "proxy": PROXY,
                                             "payTo": cfg["facilitator"], "network": NETWORK, "harga": prices, "harga_kunci": harga.status()["state"],
-                                            "rute": ["/teaser/<bot>", "/signal/<bot>[/<bar>]", "/active", "/analysts[/<close>|/scores|/full]", "POST /faucet"], "repo_head": gate.data.head})
+                                            "rute": ["/teaser/<bot>", "/signal/<bot>[/<bar>]", "/active", "/analysts[/<close>|/scores|/full]", "/desk/external", "POST /faucet"], "repo_head": gate.data.head})
                 if parts[0] == "analis" and len(parts) == 2 and parts[1] == "skor":
                     v = gate.analis_view()
                     return self._send(200, {"papan": v["papan"], "pilihan_terskor": v["skor"], "aturan_bot_aktif": "engine/pemilih.py",
@@ -1038,6 +1075,16 @@ def make_handler(gate: Gate):
                 if parts[0] == "access" and len(parts) == 1:                 # P165: status anggota untuk navbar + halaman /login web
                     code, body = gate.akses(self.headers.get("Authorization"))
                     return self._send(code, {**body, "live": code == 200, "tunda_s": TUNDA_PUBLIK_S, "hari": AKSES_HARI})
+                if parts[0] == "desk" and len(parts) == 2 and parts[1] == "external":                     # P166: aturan + daftar agent luar
+                    return self._send(200, gate.luar.info())
+                if parts[0] == "desk" and len(parts) == 3 and parts[1] == "external" and parts[2] == "pull":
+                    try:
+                        aid = int((qs.get("agent_id") or ["0"])[0])
+                        wait = float((qs.get("wait") or ["0"])[0])
+                    except ValueError:
+                        return self._send(400, {"error": "agent_id and wait must be numbers"})
+                    code, body = gate.luar.tarik(aid, wait)
+                    return self._send(code, body)
                 live = gate.live(self.headers.get("Authorization")) if parts[0] in ("desk", "analis") else False   # P165
                 if parts[0] == "desk" and len(parts) == 1:
                     return self._send(200, {**gate.meja_view(), "akses": gate.akses_info(True)} if live else gate.meja_view_publik())
@@ -1102,6 +1149,23 @@ def make_handler(gate: Gate):
                     return self._send(400, {"error": f"bad request: {type(e).__name__}"})
                 except Exception as e:  # noqa: BLE001
                     gate.log(f"GALAT pengajuan {type(e).__name__}: {str(e)[:200]}")
+                    return self._send(500, {"error": f"{type(e).__name__}"})
+            if path in ("/desk/external/join", "/desk/external/answer"):                       # P166 (F-D121): agent luar mendaftar / menjawab
+                try:
+                    n = int(self.headers.get("Content-Length") or 0)
+                    if n > 2 * al.PARAMS_LUAR["jawaban_maks_byte"]:
+                        return self._send(413, {"error": "body too large"})
+                    body = json.loads(self.rfile.read(n) or b"{}")
+                    if not isinstance(body, dict):
+                        return self._send(400, {"error": "body must be a JSON object"})
+                    code, out = (gate.luar.join if path.endswith("/join") else gate.luar.jawab)(body)
+                    if path.endswith("/join") and code == 201:
+                        gate.log(f"agent luar terdaftar {out['slug']} ({out['name']})")
+                    return self._send(code, out)
+                except ValueError:
+                    return self._send(400, {"error": "body is not valid JSON"})
+                except Exception as e:  # noqa: BLE001
+                    gate.log(f"GALAT agent luar {type(e).__name__}: {str(e)[:200]}")
                     return self._send(500, {"error": f"{type(e).__name__}"})
             if path != "/faucet":
                 return self._send(404, {"error": "rute tidak dikenal"})
@@ -1435,8 +1499,10 @@ def meja_loop(gate: "Gate", ev, stop: threading.Event) -> None:
             r2 = {k: v for k, v in ring.items() if k.startswith("v2")}
 
             def call2(ag, system, user):
+                if ag.get("luar"):                                             # P166: agent luar menjawab lewat PULL, bukan dipanggil Fabius
+                    return gate.luar.minta(ag, system, user, ag["siklus"], ag["validasi"], ag.get("tenggat"))
                 return an.call_model({**ag, "effort": meja.PARAMS["effort"]}, system, user, timeout=max(20, int(sampai - time.time()) - 5))
-            rek, harga = meja2.siklus2(t0, agents, b2, r2, call2, snap, pasar2, log=gate.log, sampai=sampai,
+            rek, harga = meja2.siklus2(t0, agents + gate.luar.agents(), b2, r2, call2, snap, pasar2, log=gate.log, sampai=sampai, bukti=gate.luar.bukti,
                                        keluar=[a["slug"] for a in an.AGENTS if a.get("nonaktif")],    # SK-M23: kursi agent nonaktif dilepas
                                        paksa=an.muat_kursi_builder())                                 # SK-M24: keputusan kursi builder
             hasil.update(rek=rek, harga=harga, books=b2, ring=r2)

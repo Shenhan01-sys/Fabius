@@ -130,12 +130,14 @@ export default function Floor({ d }: { d: Desk }) {
                 <span className={`block font-mono text-[10px] leading-tight ${s.pose === "fail" ? "text-gap" : s.pose === "trade" ? "text-violet" : "text-ink/70"}`}>
                   {glyph[s.pose]} {s.look.short}
                   {s.trial ? ` · ${f.trialShort}` : ""}
+                  {s.luar ? ` · ${f.externalShort}` : ""}
                 </span>
               ) : (
                 <>
                   <span className="block text-[11px] font-medium leading-tight text-ink">
                     {s.nama}
                     {s.trial && <span className="ml-1 rounded bg-lav-2 px-1 font-mono text-[9px] uppercase text-ink/60">{f.trialShort}</span>}
+                    {s.luar && <span className="ml-1 rounded bg-lav-2 px-1 font-mono text-[9px] uppercase text-ink/60">{f.externalShort}</span>}
                   </span>
                   <span className={`block font-mono text-[10px] leading-tight ${s.pose === "fail" ? "text-gap" : s.pose === "trade" ? "text-violet" : "text-ink/55"}`}>
                     {glyph[s.pose]} {word(s)}
