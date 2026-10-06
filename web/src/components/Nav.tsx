@@ -18,6 +18,7 @@ export default function Nav() {
     ["/status", t.nav.status],
     ["/analysts", t.nav.analysts],
     ["/desk", t.nav.desk],
+    ["/submit", t.nav.submit],
     ["/#access", t.nav.access],
   ];
   return (
@@ -28,7 +29,7 @@ export default function Nav() {
       </Link>
       <nav className="glass hidden items-center gap-1 rounded-full px-2 py-1.5 md:flex">
         {links.map(([href, label]) => (
-          <Link key={href} href={href} className="rounded-full px-4 py-2 text-[0.92rem] font-medium text-ink/80 transition hover:bg-white/70 hover:text-ink">
+          <Link key={href} href={href} className="rounded-full px-2.5 py-2 text-[0.86rem] font-medium text-ink/80 transition hover:bg-white/70 hover:text-ink xl:px-4 xl:text-[0.92rem]">
             {label}
           </Link>
         ))}
