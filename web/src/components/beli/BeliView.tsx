@@ -7,31 +7,24 @@
 // akun Google yang ditautkan memakai wallet yang SAMA. Skrip Mini App Telegram dimuat dulu supaya Privy melihat `window.Telegram`.
 
 import Link from "next/link";
-import Script from "next/script";
 import { useCallback, useEffect, useState } from "react";
-import { PrivyProvider, useLinkAccount, usePrivy, useSignTypedData, useSigners, useWallets } from "@privy-io/react-auth";
+import { useLinkAccount, usePrivy, useSignTypedData, useSigners, useWallets } from "@privy-io/react-auth";
 import type { Hex } from "viem";
 import Nav from "@/components/Nav";
 import { LangProvider, useLang } from "@/components/lang";
-import { GATE, PRIVY_APP_ID, PRIVY_CONFIG, PRIVY_KEY_QUORUM_ID, PRIVY_POLICY_ID, buy, fabBalance, faucet, teaser, type Package, type RincianAset, type Teaser } from "@/lib/x402-buy";
+import { useAkses } from "@/components/akses";
+import { GATE, PRIVY_KEY_QUORUM_ID, PRIVY_POLICY_ID, buy, fabBalance, faucet, teaser, type Package, type RincianAset, type Teaser } from "@/lib/x402-buy";
 
 const px = (x: number) => (x >= 100 ? x.toLocaleString("en-US", { maximumFractionDigits: 2 }) : x >= 1 ? x.toFixed(4) : x.toFixed(6));
 const pct = (x: number) => `${x >= 0 ? "+" : ""}${(x * 100).toFixed(1)}%`;
 
 export default function BeliView({ bot }: { bot?: string }) {
-  const [scriptDone, setScriptDone] = useState(false);
+  // P165: PrivyProvider + skrip Telegram dipasang sekali di root layout (components/akses.tsx)
   return (
     <LangProvider>
-      <Script src="https://telegram.org/js/telegram-web-app.js" strategy="afterInteractive" onReady={() => setScriptDone(true)} onError={() => setScriptDone(true)} />
       <div className="p-2 sm:p-3">
         <Nav />
-        {scriptDone ? (
-          <PrivyProvider appId={PRIVY_APP_ID} config={PRIVY_CONFIG}>
-            <Buy fixed={bot} />
-          </PrivyProvider>
-        ) : (
-          <Shell bot={bot} />
-        )}
+        <Buy fixed={bot} />
       </div>
     </LangProvider>
   );
@@ -71,6 +64,7 @@ function Buy({ fixed }: { fixed?: string }) {
   const { t, lang } = useLang();
   const v = t.beli;
   const { ready, authenticated, login, logout, user } = usePrivy();
+  const { periksa } = useAkses();
   const [izinMsg, setIzinMsg] = useState<string>("");
   const { linkTelegram, linkOAuth } = useLinkAccount({
     onSuccess: () => setIzinMsg(v.tgDone),
@@ -127,6 +121,7 @@ function Buy({ fixed }: { fixed?: string }) {
         (await signTypedData(td as unknown as Parameters<typeof signTypedData>[0], { address: owner, uiOptions: { showWalletUIs: false } })).signature;
       setPkg(await buy(bot, tz.harga.bar, owner, sign, tg));
       refresh();
+      periksa(); // P165: pembelian = akses anggota 7 hari; navbar + /desk + /analysts langsung tahu
     } catch (e) {
       setNote(e instanceof Error ? e.message : String(e));
     }

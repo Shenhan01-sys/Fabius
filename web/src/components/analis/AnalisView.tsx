@@ -5,31 +5,23 @@
 // Privy + catatan pembelian). Papan peringkat = selisih bps vs bot identitas, digambar sebagai batang dari sumbu nol.
 // Agent LUAR (P151, F-D107) ikut tampil dengan label "external" dan panel cara bergabung; mereka belum menentukan bot aktif.
 
-import Link from "next/link";
-import Script from "next/script";
-import { useEffect, useRef, useState } from "react";
-import { PrivyProvider, usePrivy } from "@privy-io/react-auth";
+import { useEffect, useState } from "react";
+import AccessLine from "@/components/AccessLine";
+import { useAkses } from "@/components/akses";
 import Nav from "@/components/Nav";
 import { LangProvider, useLang } from "@/components/lang";
 import { LINKS } from "@/lib/copy";
-import { GATE, PRIVY_APP_ID, PRIVY_CONFIG } from "@/lib/x402-buy";
+import { GATE } from "@/lib/x402-buy";
 import { lengkap, publik, short, utc, type AnalisRec, type Lengkap, type PapanRow, type Publik } from "@/lib/analis";
 
 export default function AnalisView() {
-  const [scriptDone, setScriptDone] = useState(false);
+  // P165: login Privy satu untuk seluruh aplikasi (root layout + navbar + /login); halaman ini hanya membaca statusnya
   return (
     <LangProvider>
-      <Script src="https://telegram.org/js/telegram-web-app.js" strategy="afterInteractive" onReady={() => setScriptDone(true)} onError={() => setScriptDone(true)} />
       <div className="p-2 sm:p-3">
         <Nav />
         <Hero>
-          {scriptDone ? (
-            <PrivyProvider appId={PRIVY_APP_ID} config={PRIVY_CONFIG}>
-              <Board />
-            </PrivyProvider>
-          ) : (
-            <Loading />
-          )}
+          <Board />
         </Hero>
       </div>
     </LangProvider>
@@ -58,29 +50,25 @@ function Hero({ children }: { children: React.ReactNode }) {
   );
 }
 
-const btn = "inline-block rounded-full bg-ink px-5 py-2.5 text-sm text-white transition hover:bg-violet disabled:cursor-not-allowed disabled:opacity-40";
 const panel = "rounded-2xl border border-ink/10 bg-white/70 p-5";
 const label = "text-sm uppercase tracking-wide text-ink/50";
 
 function Board() {
   const { t } = useLang();
   const v = t.analis;
-  const { ready, authenticated, login, logout, getAccessToken } = usePrivy();
+  const ak = useAkses();
+  const authenticated = ak.authenticated;
   const [pub, setPub] = useState<Publik | null>(null);
   const [err, setErr] = useState("");
   const [full, setFull] = useState<Lengkap | null>(null);
-  const tokFn = useRef(getAccessToken);
-  useEffect(() => {
-    tokFn.current = getAccessToken;
-  }, [getAccessToken]);
 
   useEffect(() => {
     publik().then(setPub, (e: unknown) => setErr(String(e)));
   }, []);
   useEffect(() => {
-    if (!ready || !authenticated) return;
+    if (!ak.ready || !ak.authenticated) return;
     let live = true;
-    tokFn.current()
+    ak.token()
       .then((tok) => (tok ? lengkap(tok) : ({ ok: false, status: 401, error: "no access token" } as Lengkap)))
       .then(
         (r) => live && setFull(r),
@@ -89,7 +77,7 @@ function Board() {
     return () => {
       live = false;
     };
-  }, [ready, authenticated]);
+  }, [ak]);
 
   if (err) return <p className="text-sm text-ink/70">{v.error}: {err}</p>;
   if (!pub) return <Loading />;
@@ -104,7 +92,7 @@ function Board() {
 
   return (
     <>
-      <div className="grid gap-6 lg:grid-cols-2">
+      <div className="grid gap-6">
         <div className={panel}>
           <p className={label}>{v.active}</p>
           <p className="mt-2 font-display text-4xl font-[300]">{pub.aktif.bot}</p>
@@ -113,46 +101,8 @@ function Board() {
           </p>
         </div>
 
-        <div className={panel}>
-          <p className={label}>{v.accessTitle}</p>
-          <p className="mt-2 text-sm text-ink/70">{v.accessSub}</p>
-          <div className="mt-3">
-            {!ready ? (
-              <p className="text-ink/50">{v.loading}</p>
-            ) : !authenticated ? (
-              <button className={btn} onClick={login}>
-                {v.signIn}
-              </button>
-            ) : !shown ? (
-              <p className="text-ink/50">{v.checking}</p>
-            ) : shown.ok ? (
-              <p className="text-sm">
-                <span className="font-medium text-violet">{v.unlocked.replace("{d}", utc(shown.akses.berlaku_sampai))}</span>
-                <span className="text-ink/60"> · {v.boughtWith.replace("{bot}", shown.akses.pembelian_terakhir.bot).replace("{bar}", shown.akses.pembelian_terakhir.bar)}</span>
-              </p>
-            ) : shown.status === 402 ? (
-              <div className="flex flex-wrap items-center gap-3">
-                <p className="text-sm text-ink/80">
-                  {v.needBuy}
-                  {shown.dompet?.[0] && <span className="block font-mono text-xs text-ink/50">{v.checked.replace("{w}", short(shown.dompet[0]))}</span>}
-                </p>
-                <Link className={btn} href="/buy">
-                  {v.buy}
-                </Link>
-              </div>
-            ) : (
-              <p className="break-all text-sm text-ink/70">
-                {v.error}: {shown.error}
-              </p>
-            )}
-            {authenticated && (
-              <button className="mt-3 block text-sm text-ink/50 underline" onClick={logout}>
-                {v.signOut}
-              </button>
-            )}
-          </div>
-        </div>
       </div>
+      <AccessLine next="/analysts" publik="publicAnalysts" />
 
       {latest == null ? (
         <p className="text-ink/60">{v.noPicks}</p>
