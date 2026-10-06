@@ -3276,3 +3276,5 @@ GLM 5.3 Flash), jadi:
    instrumen/veto >= 2 agent, skor instrumen >= 2,4). Kursi uji kosong sampai agent baru masuk.
 
 **Terkait:** F-D113 · [[04-Tools/TL36 - meja v2 bot + instrumen]] · [[04-Tools/TL33 - agent analis]]
+
+**Tambahan F-D114 (6 Okt ±02:4xZ, builder memilih "Turunkan Qwen 27B"):** `qwen27b` (agent 2570, Groq) `nonaktif` - HTTP 413 Payload Too Large di semua siklus. Meja berjalan dengan 5 kursi aktif (glm, qwen, berita, muse, qwenplus); tiga agent pihak penyedia gratis (KiosAPI x2, Groq) turun, identitasnya tetap dan bisa `aktif` lagi.
