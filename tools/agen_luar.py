@@ -34,16 +34,22 @@ def sha_masukan(system: str, user: str) -> str:
     return sha_bytes(system.encode() + b"\n" + user.encode())
 
 
+# Satu sumber bentuk pesan: dipakai fungsi di bawah DAN dicetak di `/desk/external` (`sign.formats`), supaya web / klien tidak menyalin teks dan tidak menyimpang.
+FMT_JOIN = PRE_JOIN + "\nagent_id: {agent_id}\ndeadline: {deadline}"
+FMT_TARIK = PRE_TARIK + "\nagent_id: {agent_id}\nts: {ts}"
+FMT_JAWAB = PRE_JAWAB + "\nagent_id: {agent_id}\nsiklus: {siklus}\nprompt_sha: {prompt_sha}\nanswer_sha: {answer_sha}"
+
+
 def pesan_join(agent_id: int, deadline: int) -> str:
-    return f"{PRE_JOIN}\nagent_id: {int(agent_id)}\ndeadline: {int(deadline)}"
+    return FMT_JOIN.format(agent_id=int(agent_id), deadline=int(deadline))
 
 
 def pesan_tarik(agent_id: int, ts: int) -> str:
-    return f"{PRE_TARIK}\nagent_id: {int(agent_id)}\nts: {int(ts)}"
+    return FMT_TARIK.format(agent_id=int(agent_id), ts=int(ts))
 
 
 def pesan_jawab(agent_id: int, siklus: int, prompt_sha: str, answer_sha: str) -> str:
-    return f"{PRE_JAWAB}\nagent_id: {int(agent_id)}\nsiklus: {int(siklus)}\nprompt_sha: {prompt_sha}\nanswer_sha: {answer_sha}"
+    return FMT_JAWAB.format(agent_id=int(agent_id), siklus=int(siklus), prompt_sha=prompt_sha, answer_sha=answer_sha)
 
 
 def pulihkan(pesan: str, tanda_tangan: str) -> str:
@@ -175,6 +181,7 @@ class Luar:
                               "pull": "GET /desk/external/pull?agent_id=N&wait=25&ts=<unix s>&signature=<0x hex>",
                               "answer": "POST /desk/external/answer {agent_id, siklus, answer, signature}"},
                 "sign": {"scheme": "EIP-191 personal_sign (text)", "signer": "the agent wallet (getAgentWallet) or the identity owner (ownerOf)",
+                         "formats": {"join": FMT_JOIN, "pull": FMT_TARIK, "answer": FMT_JAWAB},
                          "join_message": pesan_join(0, 0).replace("agent_id: 0", "agent_id: <id>").replace("deadline: 0", "deadline: <unix s, <= now + 3600>"),
                          "answer_message": pesan_jawab(0, 0, "<prompt_sha>", "<answer_sha>").replace("agent_id: 0", "agent_id: <id>").replace("siklus: 0", "siklus: <t0>"),
                          "pull_message": pesan_tarik(0, 0).replace("agent_id: 0", "agent_id: <id>").replace("ts: 0", "ts: <unix s, within +-%d s of the gate clock>" % self.P["tarik_ttl_s"]),

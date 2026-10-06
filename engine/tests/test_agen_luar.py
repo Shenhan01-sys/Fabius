@@ -118,6 +118,10 @@ class JoinTests(unittest.TestCase):
         self.assertEqual(i["params"]["maks_terdaftar"], 10)
         self.assertIn("Fabius desk answer v1", i["sign"]["answer_message"])
         self.assertEqual((i["agents"][0]["slug"], i["agents"][0]["seat"], i["agents"][0]["valid_pct"], i["agents"][0]["online"]), ("x7", "uji", 90.0, False))
+        f = i["sign"]["formats"]                                                                  # bentuk pesan bisa dibaca mesin dan SAMA dengan yang diverifikasi gerbang
+        self.assertEqual(f["join"].format(agent_id=7, deadline=9), al.pesan_join(7, 9))
+        self.assertEqual(f["pull"].format(agent_id=7, ts=9), al.pesan_tarik(7, 9))
+        self.assertEqual(f["answer"].format(agent_id=7, siklus=9, prompt_sha="0xp", answer_sha="0xa"), al.pesan_jawab(7, 9, "0xp", "0xa"))
 
 
 @unittest.skipUnless(HAVE_ETH, "butuh eth-account")
