@@ -102,7 +102,7 @@ function Board() {
         </div>
 
       </div>
-      <AccessLine next="/analysts" publik="publicAnalysts" />
+      <AccessLine publik="publicAnalysts" />
 
       {latest == null ? (
         <p className="text-ink/60">{v.noPicks}</p>

@@ -1,8 +1,8 @@
 "use client";
 
-// P165: SATU login untuk seluruh aplikasi (builder: login di navbar + halaman /login sendiri, bukan kartu login di tiap halaman). PrivyProvider dipasang
+// P165: SATU login untuk seluruh aplikasi (builder: login di navbar, sebagai popup ala web2 - Google / Telegram / email - bukan kartu per halaman). PrivyProvider dipasang
 // sekali di root layout (`Providers`); skrip Telegram dimuat `beforeInteractive` di layout supaya login di Mini App jalan. `useAkses()` memberi status
-// login + status anggota (gerbang `GET /access`: login Privy + dompet membeli >= 1 sinyal dalam 7 hari) ke navbar, /login, /desk, /analysts, /buy.
+// login + status anggota (gerbang `GET /access`: login Privy + dompet membeli >= 1 sinyal dalam 7 hari) ke navbar, /popup login (`LoginModal`, dipasang Nav), /desk, /analysts, /buy.
 
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
 import { PrivyProvider, usePrivy } from "@privy-io/react-auth";
@@ -30,9 +30,23 @@ export type AksesCtx = {
   email?: string | null;
   metode?: string | null;
   wallet?: string | null;
+  popup: boolean; // popup login / akun terbuka
+  bukaLogin: () => void;
+  tutupLogin: () => void;
 };
 
-const KOSONG: AksesCtx = { ready: false, authenticated: false, login: () => {}, logout: () => {}, token: async () => null, anggota: null, periksa: () => {} };
+const KOSONG: AksesCtx = {
+  ready: false,
+  authenticated: false,
+  login: () => {},
+  logout: () => {},
+  token: async () => null,
+  anggota: null,
+  periksa: () => {},
+  popup: false,
+  bukaLogin: () => {},
+  tutupLogin: () => {},
+};
 const Ctx = createContext<AksesCtx>(KOSONG);
 
 export const useAkses = () => useContext(Ctx);
@@ -64,6 +78,9 @@ function Jembatan({ children }: { children: React.ReactNode }) {
   const [anggota, setAnggota] = useState<Anggota | null>(null);
   const [n, setN] = useState(0);
   const periksa = useCallback(() => setN((x) => x + 1), []);
+  const [popup, setPopup] = useState(false);
+  const bukaLogin = useCallback(() => setPopup(true), []);
+  const tutupLogin = useCallback(() => setPopup(false), []);
 
   useEffect(() => {
     let live = true;
@@ -97,8 +114,11 @@ function Jembatan({ children }: { children: React.ReactNode }) {
       email,
       metode,
       wallet,
+      popup,
+      bukaLogin,
+      tutupLogin,
     }),
-    [ready, authenticated, login, logout, anggota, periksa, email, metode, wallet],
+    [ready, authenticated, login, logout, anggota, periksa, email, metode, wallet, popup, bukaLogin, tutupLogin],
   );
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>;
 }

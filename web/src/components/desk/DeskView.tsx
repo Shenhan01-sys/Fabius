@@ -75,7 +75,7 @@ function Body() {
         {err && d && <p className="text-center text-xs text-ink/50">{v.stale.replace("{t}", hhmm(d.t))}</p>}
         {!d && !err && <p className="text-center text-ink/50">{v.loading}</p>}
         {d && !d.buku.length && <p className="text-center text-ink/60">{v.empty}</p>}
-        {d?.akses && <AccessLine next="/desk" publik="publicDesk" />}
+        {d?.akses && <AccessLine publik="publicDesk" />}
         {d && d.buku.length > 0 && <LiveBook d={d} />}
         {agents2.length > 0 && (
           <div>

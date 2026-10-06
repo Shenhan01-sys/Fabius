@@ -1,15 +1,14 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
 import { useAkses } from "./akses";
+import LoginModal from "./LoginModal";
 import { useLang } from "./lang";
 import IsoCube from "./ui/IsoCube";
 
 export default function Nav() {
   const { t, lang, setLang } = useLang();
   const ak = useAkses();
-  const path = usePathname();
   // Satu nav untuk semua halaman: bagian landing lewat "/#...", halaman lain lewat path sendiri.
   const links: [string, string][] = [
     ["/#journey", t.nav.journey],
@@ -44,18 +43,19 @@ export default function Nav() {
           <span className="mx-1 text-ink/30">/</span>
           <span className={lang === "id" ? "text-violet" : ""}>ID</span>
         </button>
-        {/* P165: satu login untuk seluruh situs; status anggota sama dengan yang dipakai /desk + /analysts */}
-        <Link
-          href={ak.authenticated ? "/login" : `/login?next=${encodeURIComponent(path || "/")}`}
-          className={`glass flex items-center gap-1.5 rounded-full px-3.5 py-2 text-xs font-semibold ${ak.anggota?.live ? "text-violet" : "text-ink/80"}`}
+        {/* P165: satu login untuk seluruh situs = popup (LoginModal); status anggota sama dengan yang dipakai /desk + /analysts */}
+        <button
+          onClick={ak.bukaLogin}
+          className={`glass flex items-center gap-1.5 rounded-full px-3.5 py-2 text-xs font-semibold transition-colors hover:text-violet ${ak.anggota?.live ? "text-violet" : "text-ink/80"}`}
         >
           {ak.authenticated && <span className={`inline-block h-2 w-2 rounded-full ${ak.anggota?.live ? "bg-violet" : "bg-ink/30"}`} aria-hidden />}
           {ak.authenticated ? (ak.anggota?.live ? t.nav.member : t.nav.signedIn) : t.nav.signIn}
-        </Link>
+        </button>
         <Link href="/#proof" className="hidden rounded-full bg-ink px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-violet lg:inline-block">
           {t.nav.cta}
         </Link>
       </div>
+      <LoginModal />
     </header>
   );
 }
