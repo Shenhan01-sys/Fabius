@@ -14,7 +14,7 @@ from engine.spec import SPECS
 from engine.target import Target
 
 from .helpers import BNB, ETH, T0, md_perp, regime_closes
-from .test_submission import EXAMPLE, Account, encode_typed_data, example, with_
+from .test_submission import EXAMPLE, Account, encode_typed_data, example, rule_sub, with_
 
 FAST = GateParams.fast()
 
@@ -324,6 +324,19 @@ class ReviewTests(unittest.TestCase):
         self.assertEqual(rep0["n_trials"], 7)
         g3 = [g for g in rep["gerbang"] if g["gate"] == "G3"][0]
         self.assertIn("(N=11)", g3["value"])
+
+    def test_a_rule_report_counts_its_g5_variants_in_the_trials_and_says_so_while_template_reports_stay_as_they_were(self):
+        rep = self.run_review(rule_sub())
+        self.assertEqual(rep["varian_g5"], 12)                                  # 4 faktor x (2 parameter + kelompok semua)
+        self.assertEqual(rep["n_trials"], 6 + 0 + 1 + 12)                       # percobaan 6 (contoh) + riwayat 0 + 1 + varian G5
+        g3 = [g for g in rep["gerbang"] if g["gate"] == "G3"][0]
+        self.assertIn("(N=19)", g3["value"])
+        self.assertIn("termasuk 12 varian G5 aturan", reviewmod.render(rep))
+        self.assertIn("PULLBACK-TREND-1 (rule)", reviewmod.render(rep))
+        self.assertIn("TREND-ETH-30 (template B1-TREND)", reviewmod.render(self.run_review()))
+        self.assertEqual((rep["template"], rep["bot_id"]), ("RULE", "PULLBACK-TREND-1"))
+        self.assertNotIn("varian_g5", self.run_review())                        # laporan template: kunci itu tidak ada, sha laporan lama tetap sah
+        self.assertEqual(self.run_review(rule_sub(), prior_family_submissions=2)["n_trials"], 6 + 2 + 1 + 12)
 
     def test_epoch_seed_changes_the_seed_and_the_report(self):
         a = self.run_review()

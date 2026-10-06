@@ -21,7 +21,9 @@ formulir tanpa kontak (peninjau memakai pengganti "disimpan privat"; sha + tanda
 
 **B1e web (`/submit`, navbar "Submit bot"):** papan pipa (tiap kiriman di lintasan 4 stasiun: diterima -> gerbang G1-G11 + KPI -> bayangan maju n/60 hari -> slot; ditolak = silang di stasiun gerbang) dari `GET /bots/submissions` (gerbang menambah progres bayangan dari genesis ledger maju + status slot dari buku hidup) + formulir yang DIBANGKITKAN dari `GET /bots/schema` (metode terkunci + param bawaannya, universe = chip simbol yang diizinkan, rujukan + sumber data bisa ditambah, label EN di web / label skema di ID); dompet login Privy = dompet penerbit + bagi hasil; gerbang menghitung pesan EIP-712, Privy menandatangani, `POST /bots/submit`.
 
+**P167a (7 Okt, selesai di lokal, belum di-push):** skema pengajuan v2 (`kind` = template / rule / code / feed; dibuka template + rule; domain EIP-712 `version` "2"). Metode SEPENUHNYA dari penerbit: `kind=rule` membawa aturan JSON yang dijalankan mesin kita; `/submit` tidak lagi memaksa memilih template (jalur API template tetap sah). Rincian: [[04-Tools/TL39 - aturan deklaratif (rule)]].
+
 **Belum (berikutnya):** sinyal bot penerbit yang masuk slot belum dikomit/dijual worker (FABIUS_BOTS); bot intraday
-(B2). Semantik kegagalan: [[07-Testing/T8 - Semantik Kegagalan Operator]] SK-J1..J6.
+(B2); jenis `code` (P167b) dan `feed` (P167c); peninjau LLM (P168). Semantik kegagalan: [[07-Testing/T8 - Semantik Kegagalan Operator]] SK-J1..J13.
 
 **Terkait:** [[00-Overview/03 - Decisions]] F-D120 · F-D71 · F-D72 · F-D85 · F-D88 · [[TL36 - meja v2 bot + instrumen]]

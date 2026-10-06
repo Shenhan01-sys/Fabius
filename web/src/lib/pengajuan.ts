@@ -1,9 +1,10 @@
 // P161 B1e: jalur pengajuan bot penerbit di web. Skema + pesan EIP-712 + antrean semuanya dari gerbang (`tools/pengajuan.py`); web hanya
 // menyusun formulir dari skema, meminta dompet Privy menandatangani pesan yang dihitung gerbang, lalu mengirim.
 import { GATE } from "./x402-buy";
+import type { RuleVocab } from "./rule";
 
 export type Field = {
-  t: "int" | "str" | "text" | "number" | "enum" | "list" | "address" | "url" | "date" | "bool" | "object";
+  t: "int" | "str" | "text" | "number" | "enum" | "list" | "address" | "url" | "date" | "bool" | "object" | "rule";
   label: string;
   help?: string;
   optional?: boolean;
@@ -26,6 +27,8 @@ export type SchemaInfo = {
   symbols: string[];
   kill_bounds: Record<string, [number, number]>;
   shadow_days: number;
+  kinds_open: string[];
+  rule: RuleVocab;
   schema: Record<string, Node>;
 };
 

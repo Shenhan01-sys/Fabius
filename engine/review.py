@@ -18,7 +18,7 @@ from __future__ import annotations
 import dataclasses
 from typing import Any, Dict, Iterable, List, Optional, Tuple
 
-from . import anggaran, locks, submission
+from . import anggaran, locks, rule as rulemod, submission
 from .data import MarketData
 from .gates import GateParams, Pnl, format_results, run_gates, verdict
 from .kpi import KpiParams
@@ -55,6 +55,8 @@ def review(sub: Dict[str, Any], data: MarketData, incumbents: Optional[Dict[str,
         prior, sumber = int(prior_family_submissions), "manual"
     k = prior + 1
     percobaan = int(sub["evidence"]["percobaan"]) + prior + 1
+    varian = rulemod.varian_g5(sub["spec"]["rule"], len(gp.plateau_factors)) if sub["kind"] == "rule" else 0
+    percobaan += varian                                   # P167a: kebebasan menyusun aturan = derajat kebebasan lebih banyak = ambang Sharpe G3 ikut naik
     gp2 = dataclasses.replace(anggaran.gate_params_for(k, gp), n_trials=max(gp.n_trials, percobaan), seed=epoch_seed if epoch_seed is not None else gp.seed)
     spec = submission.to_botspec(sub)
     ident = {"diverifikasi": False, "masalah": []}
@@ -74,6 +76,8 @@ def review(sub: Dict[str, Any], data: MarketData, incumbents: Optional[Dict[str,
               "identitas": ident, "kunci": {"state": kunci["state"], "sha_kini": kunci["sha_kini"], "sha_kunci": kunci["sha_kunci"]},
               "gerbang": [dataclasses.asdict(r) for r in results],
               "mengikat": bool(ident["diverifikasi"] and kunci["state"] == "TERKUNCI" and v == "LOLOS_SHADOW" and sumber == "registri")}
+    if sub["kind"] == "rule":                              # hanya bot rule: laporan template tidak berubah (sha laporan lama tetap sah)
+        report["varian_g5"] = varian
     return _seal(report)
 
 
@@ -91,7 +95,7 @@ def render(report: Dict[str, Any]) -> str:
         return "\n".join(lines)
     from .gates import GateResult
     results: List[GateResult] = [GateResult(**g) for g in report["gerbang"]]
-    head = f"{report['bot_id']} (template {report['template']})"
+    head = f"{report['bot_id']} ({'rule' if report['template'] == rulemod.RULE_METHOD else 'template ' + report['template']})"
     text = format_results(head, results)
     ident = report["identitas"]
     text += (f"\nIDENTITAS: {'terverifikasi' if ident['diverifikasi'] else 'BELUM terverifikasi'}"
@@ -101,6 +105,8 @@ def render(report: Dict[str, Any]) -> str:
     text += (f"\nKELUARGA: pengajuan ke-{kel.get('k', '?')} dalam 365 hari -> alpha G3/G8 {kel.get('alpha', '?')} (A1/k, F-D88) | sumber k: "
              f"{kel.get('sumber', '?')}{'' if kel.get('sumber') == 'registri' else ' (tidak mengikat)'}")
     text += f"\nMENGIKAT: {'ya' if report['mengikat'] else 'TIDAK (indikatif)'} | vonis {report['vonis']} | N percobaan {report['n_trials']}"
+    if "varian_g5" in report:
+        text += f" (termasuk {report['varian_g5']} varian G5 aturan)"
     text += f"\nreport_sha {report['report_sha']}\nspec_sha {report['spec_sha']}\nsubmission_sha {report['submission_sha']}\ndata_hash {report['data_hash']}"
     return text
 

@@ -8,6 +8,7 @@ import unittest
 from engine.bots import REGISTRY
 from engine.freshness import StaleBars, assert_fresh
 from engine.quality import find_gaps, missing_days
+from engine.rule import RULE_METHOD
 from engine.series import DAY_MS, Series, max_drawdown, pct_change, rolling_mean, rolling_std, sharpe
 from engine.spec import SPECS, canon, sha0x
 
@@ -69,7 +70,7 @@ class SpecTests(unittest.TestCase):
 
     def test_one_method_one_parameter_and_registered(self):
         self.assertEqual(len(SPECS), 6)
-        self.assertEqual(set(SPECS), set(REGISTRY))
+        self.assertEqual(set(SPECS) | {RULE_METHOD}, set(REGISTRY))             # + mesin bot rule (P167a): satu fungsi untuk semua aturan, tanpa spec statis
         for k, sp in SPECS.items():
             self.assertEqual(sp.bot_id, k)
             self.assertTrue(sp.param_nama and sp.metode)

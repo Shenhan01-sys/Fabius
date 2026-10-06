@@ -13,12 +13,12 @@ Prinsip:
   - **Pembunuh = data**: syarat mematikan bot berbentuk terstruktur (metrik, pembanding, ambang berbatas, jendela) supaya bisa
     ditegakkan kode (`slots.killer_triggered`), bukan janji.
   - Angka di bagian `evidence.klaim` adalah KLAIM penerbit; yang dihitung sebagai bukti hanya keluaran peninjau-bot kami.
-  - **Dibuka dulu: `template` saja** (keputusan builder 2 Okt malam). `method_pr` dan `feed` ada di skema tetapi ditolak `validate`
-    sampai dibuka (`ENABLED_KINDS`).
+  - **Dibuka bertahap** (`ENABLED_KINDS`; jenis yang belum dibuka ada di skema tetapi ditolak `validate`): `template` (2 Okt malam), `rule`
+    (P167a, 7 Okt; epik 12). Skema v2 (7 Okt): metode SEPENUHNYA dari penerbit (builder: "biarkan semua input itu dari user").
 
-Jenis bot: `template` (dijalankan mesin kami; replay penuh), `method_pr` (metode baru lewat pull request; kode ditinjau manusia
-dan TIDAK PERNAH dijalankan otomatis dari kiriman luar), `feed` (penerbit menjalankan bot sendiri dan mengomit sinyalnya ke chain;
-satu-satunya bukti = rekam jejak maju yang ter-anchor).
+Jenis bot: `template` (metode yang sudah ada di mesin + SATU parameter; dipertahankan, tidak lagi jalur utama), `rule` (aturan deklaratif JSON,
+`engine/rule.py`, dijalankan mesin kami; replay penuh), `code` (fungsi kode pengguna di sandbox; PRIVAT; P167b), `feed` (penerbit menjalankan bot
+sendiri dan mengomit sinyalnya ke chain; satu-satunya bukti = rekam jejak maju yang ter-anchor; P167c).
 """
 from __future__ import annotations
 
@@ -32,13 +32,14 @@ import unicodedata
 from typing import Any, Dict, Iterable, List, Optional
 from urllib.parse import urlsplit
 
-from . import chain
+from . import chain, rule as rulemod
 from .bots import REGISTRY
 from .spec import PERP_UNIVERSE, SPECS, BotSpec, sha0x
 
-SCHEMA_V = 1
-KINDS = ("template", "method_pr", "feed")
-ENABLED_KINDS = ("template",)
+SCHEMA_V = 2
+KINDS = ("template", "rule", "code", "feed")
+ENABLED_KINDS = ("template", "rule")
+TEMPLATES = tuple(sorted(k for k in SPECS if k in REGISTRY))     # metode bawaan mesin untuk kind=template (RULE bukan template)
 MECHANISMS = ("premi_risiko", "perilaku", "arus_paksa_struktural", "informasi", "lainnya")
 KILL_METRICS = ("net_pnl_bps", "sharpe", "mdd_pct", "rata_net_per_sinyal_bps")
 KILL_COMPARATORS = ("<", "<=")
@@ -64,15 +65,16 @@ def _f(t: str, label: str, **kw: Any) -> Dict[str, Any]:
 SCHEMA: Dict[str, Any] = {
     "v": _f("int", "Versi skema", const=SCHEMA_V),
     "kind": _f("enum", "Jenis bot", values=KINDS,
-               help="template = metode yang sudah ada di mesin + satu parameter (satu-satunya yang dibuka sekarang); method_pr = metode baru "
-                    "lewat pull request; feed = Anda menjalankan bot sendiri dan mengomit sinyal ke chain"),
+               help="rule = aturan deklaratif Anda sendiri, dijalankan mesin kami (dibuka); template = metode bawaan mesin + satu parameter (dibuka, "
+                    "bukan jalur utama); code = fungsi kode Anda di sandbox (segera, privat); feed = Anda menjalankan bot sendiri dan mengomit sinyal ke chain (segera)"),
     "spec": {
         "bot_id": _f("str", "ID bot", pattern=r"[A-Z][A-Z0-9-]{2,30}", help="Awalan B<angka>- dicadangkan untuk bot Fabius"),
         "metode": _f("text", "Metode dalam satu kalimat", min=20, max=300),
         "template": _f("str", "Template (hanya kind=template)", optional=True, max=32),
-        "param_nama": _f("str", "Nama SATU-satunya parameter", pattern=r"[A-Za-z][A-Za-z0-9_]{0,15}"),
-        "param": _f("number", "Nilai parameter", min=0, max=1_000_000),
-        "konstanta": _f("object", "Konstanta terkunci (kosong untuk kind=template)", optional=True),
+        "param_nama": _f("str", "Nama SATU-satunya parameter (hanya kind=template)", optional=True, pattern=r"[A-Za-z][A-Za-z0-9_]{0,15}"),
+        "param": _f("number", "Nilai parameter (hanya kind=template)", optional=True, min=0, max=1_000_000),
+        "konstanta": _f("object", "Konstanta terkunci (kosong untuk kind=template dan rule)", optional=True),
+        "rule": _f("rule", "Aturan deklaratif (hanya kind=rule; kosakata di `rule.vocabulary()`)", optional=True),
         "universe": _f("list", "Universe simbol", min=1, max=40,
                        item=_f("str", "Simbol", pattern=r"[A-Z0-9]{3,20}")),
         "horizon": _f("enum", "Ukuran bar", values=("1d",), help="Mesin saat ini hanya bar harian"),
@@ -285,6 +287,8 @@ def _leaf(n: Dict[str, Any], v: Any, path: str, out: List[str]) -> None:
             ok = x is None or isinstance(x, bool) or _num(x) or (isinstance(x, str) and len(x) <= 80 and _hostile(x, False) is None)
             if not ok:
                 out.append(f"{path}.{_safe(k)}: nilai harus skalar sederhana")
+    elif t == "rule":
+        out.extend(rulemod.validate(v, path))
     elif t == "list":
         if not isinstance(v, list):
             out.append(f"{path}: harus daftar")
@@ -354,13 +358,18 @@ def _semantic(sub: Dict[str, Any], taken: set, enabled: tuple) -> List[str]:
         if any(r in nm for r in RESERVED_NAMES):
             out.append(f"{label}: memuat nama yang dicadangkan ({', '.join(RESERVED_NAMES)}): peniruan Fabius")
     kons = sp.get("konstanta") or {}
-    if sp["param_nama"] in kons:
+    if sp.get("param_nama") is not None and sp["param_nama"] in kons:
         out.append("spec.konstanta: parameter tidak boleh juga muncul sebagai konstanta (satu metode, SATU parameter)")
     if kind == "template":
+        for f in ("param_nama", "param"):
+            if sp.get(f) is None:
+                out.append(f"spec.{f}: wajib untuk kind=template")
+        if sp.get("rule") is not None:
+            out.append("spec.rule: hanya untuk kind=rule")
         tpl = sp.get("template")
-        if tpl not in REGISTRY:
-            out.append(f"spec.template: harus salah satu dari {sorted(REGISTRY)}")
-        else:
+        if tpl not in TEMPLATES:
+            out.append(f"spec.template: harus salah satu dari {list(TEMPLATES)}")
+        elif sp.get("param_nama") is not None and sp.get("param") is not None:
             base = SPECS[tpl]
             if sp["param_nama"] != base.param_nama:
                 out.append(f"spec.param_nama: template {tpl} hanya punya parameter '{base.param_nama}'")
@@ -371,12 +380,25 @@ def _semantic(sub: Dict[str, Any], taken: set, enabled: tuple) -> List[str]:
                 out.append("spec.param: harus > 0")
         if kons:
             out.append("spec.konstanta: untuk kind=template konstanta milik template (kosongkan)")
-        for s in sp["universe"]:
-            if s not in KNOWN_SYMBOLS:
-                out.append(f"spec.universe: {_safe(s)} tidak punya data di mesin")
+    elif kind == "rule":
+        if sp.get("rule") is None:
+            out.append("spec.rule: wajib untuk kind=rule")
+        else:
+            out += rulemod.validate_universe(sp["rule"], len(sp["universe"]))
+        for f in ("template", "param_nama", "param"):
+            if sp.get(f) is not None:
+                out.append(f"spec.{f}: tidak dipakai untuk kind=rule (parameter bernama ada di dalam spec.rule.params)")
+        if kons:
+            out.append("spec.konstanta: untuk kind=rule kosongkan (konstanta ditulis di dalam aturan)")
     else:
         if sp.get("template"):
             out.append("spec.template: hanya untuk kind=template")
+        if sp.get("rule") is not None:
+            out.append("spec.rule: hanya untuk kind=rule")
+    if kind in ("template", "rule"):
+        for s in sp["universe"]:
+            if s not in KNOWN_SYMBOLS:
+                out.append(f"spec.universe: {_safe(s)} tidak punya data di mesin")
     if len(set(sp["universe"])) != len(sp["universe"]):
         out.append("spec.universe: simbol ganda")
     a, b = _date(ev["insample_mulai"]), _date(ev["insample_akhir"])
@@ -426,17 +448,24 @@ def kill_text(k: Dict[str, Any]) -> str:
 
 
 def to_botspec(sub: Dict[str, Any]) -> BotSpec:
-    """BotSpec yang dijalankan mesin kami untuk kind=template: konstanta, penggaris, dan metode milik template; penerbit hanya
-    memberi bot_id, SATU nilai parameter (dipaksa ke tipe parameter template), dan universe. Pembunuh diterjemahkan ke teks;
-    penegakannya oleh `slots.killer_triggered` memakai `theory.pembunuh` terstruktur."""
-    if sub["kind"] != "template":
-        raise ValueError("hanya kind=template yang bisa dijalankan mesin kami")
+    """BotSpec yang dijalankan mesin kami. `template`: konstanta, penggaris, dan metode milik template; penerbit hanya memberi bot_id, SATU nilai
+    parameter (dipaksa ke tipe parameter template), dan universe. `rule`: aturan KANONIK (`rule.canonical`) di `konstanta["rule"]`, `param` = sha
+    aturan itu, penggaris standar milik kami (penerbit tidak menentukan biaya). Pembunuh diterjemahkan ke teks; penegakannya oleh
+    `slots.killer_triggered` memakai `theory.pembunuh` terstruktur."""
     sp = sub["spec"]
+    pembunuh = kill_text(sub["theory"]["pembunuh"])
+    if sub["kind"] == "rule":
+        rc = rulemod.canonical(sp["rule"])
+        return BotSpec(bot_id=sp["bot_id"], metode=sp["metode"], param_nama=rulemod.PARAM_NAMA, param=sha0x(rc), konstanta={"rule": rc},
+                       universe=tuple(sp["universe"]), penggaris=dict(rulemod.PENGGARIS), tier="?", pembunuh=pembunuh, versi=1,
+                       template=rulemod.RULE_METHOD)
+    if sub["kind"] != "template":
+        raise ValueError("hanya kind=template dan kind=rule yang bisa dijalankan mesin kami")
     base = SPECS[sp["template"]]
     p = sp["param"]
     p = int(p) if isinstance(base.param, int) and not isinstance(base.param, bool) else float(p)
     return dataclasses.replace(base, bot_id=sp["bot_id"], template=sp["template"], param=p, universe=tuple(sp["universe"]),
-                               tier="?", pembunuh=kill_text(sub["theory"]["pembunuh"]), versi=1)
+                               tier="?", pembunuh=pembunuh, versi=1)
 
 
 def typed_data(sub: Dict[str, Any], chain_id: int, nonce: int, deadline: int) -> Dict[str, Any]:

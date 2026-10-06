@@ -66,6 +66,22 @@ bisa; B4 butuh fitur umur-listing; B3 (carry) butuh funding + spot -> DI LUAR ko
 
 **Publik:** salinan formulir `rule` (tanpa kontak) ikut `ledger/pengajuan/masuk/` seperti formulir template, supaya siapa pun bisa mengulang replay. Penerbit yang butuh kerahasiaan memakai `code` (privat) atau `feed`.
 
+#### 3.1.1 Rincian pembangunan P167a (7 Okt; baris **USULAN** melampaui teks §3.1 yang disetujui; builder boleh menolaknya)
+
+Dibangun di `engine/rule.py` (validator + evaluator, stdlib saja) dan menempel pada jalur yang sudah ada: `submission.py` (skema), `engine/bots` (`REGISTRY["RULE"]`), `gates.py` (G5), `review.py` (hitungan percobaan), `tools/pengajuan.py` (info + terima), web `/submit`.
+
+1. **Skema pengajuan v2** (`SCHEMA_V` 1 -> 2; `version` domain EIP-712 "2"; registri kosong jadi tidak ada yang dimigrasi): `kind` = template | rule | code | feed (`method_pr` dihapus: digantikan `code`); dibuka sekarang template + rule. Untuk `rule`: `spec.rule` wajib; `spec.template`, `spec.param_nama`, `spec.param`, `spec.konstanta` dilarang (kebebasan penerbit = isi `rule`). `spec.universe` + `horizon` seperti template.
+2. **BotSpec rule:** `template="RULE"`, `param_nama="aturan"`, `param` = sha aturan kanonik, `konstanta={"rule": <aturan kanonik>}`, penggaris standar milik kami `{"fee_bps_sisi": 7, "funding": "nyata dua sisi"}` (sama dengan B1/B2: perbandingan adil; penerbit tidak menentukan biaya). Aturan KANONIK = bilangan bulat untuk jendela / lag, desimal untuk lainnya (`2` == `2.0`), kunci terurut: `fingerprint` (dedupe) tidak bisa dikelabui dengan `2` vs `2.0`.
+3. **Semantik waktu (dua konvensi, persis bot template):** `ret(n)` = c[i]/c[i-n] - 1 dengan i-n di GRID hari-UTC gabungan universe (B1/B2; bar hilang di salah satu ujung = tak terdefinisi); fitur jendela lain (`sma ema std zscore rsi atr_pct max_high min_low vol_ratio drawdown`) memakai n bar harian TERAKHIR milik aset itu, bolong data dilewati (B6), lalu ditaruh di grid menurut tanggal. Alasan terukur 7 Okt: `ledger/bars` punya bolong (SOL, XRP, LTC, TRX, NEAR kehilangan 5 hari bar, 26-28 Feb dan 1-2 Apr 2022); bila semua fitur dihitung di grid, B6 berbeda di 18 hari dan kriteria "identik di seluruh riwayat" gagal. `lag` menggeser di grid (hari kalender).
+4. **Mesin keadaan `per_aset`:** flat -> long / short -> flat. Masuk saat kondisi masuk benar; long dan short sama-sama benar saat flat = tetap flat (konflik, tidak ada pemenang diam-diam). Keluar: `keluar_*` bila ada, jika tidak keluar saat kondisi masuk tak lagi benar. Keadaan TIDAK berubah bila kondisi masuk dan keluar yang relevan sama-sama salah / tak terdefinisi (B6 persis).
+5. **Bobot:** `sama` = gross_maks / (jumlah aset ber-bar hari itu) per aset berposisi (B1/B6 persis); `inv_vol` (`bobot.n` = jendela volatilitas) = jatah berbanding 1/sigma (simpangan baku return harian n hari, ddof 1), dinormalisasi atas aset ber-sigma terdefinisi; gross <= gross_maks selalu.
+6. **USULAN - `peringkat.rotasi`** = `harian` | `tujuh_sub_buku` (= B2-RS: buku hari-minggu j diperbarui tiap hari-UTC j; target = rerata buku yang ada). Tanpanya B2-RS tidak bisa dinyatakan ulang (kriteria penerimaan §3.1). Satu hari rebalance tetap TIDAK ditawarkan (doktrin B2: memilih hari = memilih nasib).
+7. **USULAN - gross:** `per_aset` <= 1,0 (disetujui); `peringkat` <= 2,0 (1,0 per kaki, dollar-neutral) karena B2-RS bergross 2,0.
+8. **USULAN - validator tambahan:** parameter bernama wajib dipakai dan bernilai != 0 (parameter yatim / nol tidak bisa digeser G5); anggaran kerja = jumlah jendela semua fitur berbeda <= 1500 (tinjauan harian berjalan di pekerjaan GitHub berbatas waktu); `min_aset` >= long + short.
+9. **G5 aturan:** tiap parameter bernama dikali 0,5 / 0,75 / 1,25 / 1,5 SATU per SATU + SEMUA bersama (bila > 1 parameter); tiap kelompok harus lolos seperti G5 sekarang (>= 3 varian berbeda, >= 3 ber-Sharpe > 0 dan >= 0,5x dasar). **Parameter dekoratif** (tidak mengubah target di semua variannya) = G5 GAGAL; tanpa parameter bernama = G5 GAGAL. Tipe dihormati: parameter jendela / lag tetap bilangan bulat.
+10. **Hitungan percobaan (P83):** `n_trials` = `evidence.percobaan` + riwayat keluarga + 1 + jumlah varian G5 aturan itu (faktor x (parameter + 1 bila > 1 parameter)); dicetak di laporan sebagai `varian_g5` (hanya untuk `rule`; laporan template tidak berubah).
+11. **Web `/submit`:** pilihan template dihapus dari jalur utama (kriteria 1 P167); pembangun aturan dibangkitkan dari kosakata yang dibagikan gerbang (`GET /bots/schema`), validasi langsung lewat `POST /bots/typed-data`; `code` dan `feed` tampil sebagai jenis "segera".
+
 ### 3.2 `code` - fungsi kode pengguna di sandbox [DISETUJUI; kode PRIVAT; urutan di §7]
 
 Kontrak: `PARAMS = {"N": 60}` (angka bernama yang boleh digeser G5) dan `def target(bars, params) -> {aset: bobot}`. **Kausalitas oleh konstruksi:** mesin memanggil `target` sekali per bar i dengan data DIPOTONG <= i (tuple tak
@@ -236,7 +252,7 @@ Berlaku untuk agent luar; agent rumah tidak ditinjau ulang kecuali builder memin
 
 | Urutan | Fase | Isi | Syarat |
 |---|---|---|---|
-| 1 | P167a | skema `kind=rule` + validator + evaluator + bukti ekuivalensi B1/B6/B2 + G5 atas parameter bernama + pembangun aturan di `/submit` (skema pengajuan naik ke v2) | disetujui |
+| 1 | P167a | skema `kind=rule` + validator + evaluator + bukti ekuivalensi B1/B6/B2 + G5 atas parameter bernama + pembangun aturan di `/submit` (skema pengajuan naik ke v2) | **SELESAI di lokal 7 Okt (§9); belum di-push / deploy** |
 | 2 | P168a | peninjau BOT: brief bot, panggilan xkiro `z-ai/glm-5.3` lewat gerbang, skema ketat, set kalibrasi, laporan publik, integrasi sesudah tahap teknis | disetujui; uji satu panggilan kecil |
 | 3 | P168b | peninjau AGENT + brief agent + penahanan kenaikan kursi (N = 288 siklus) | P168a |
 | 4 | P167b | jenis `code`: analisis statis, pelari terisolasi, kausalitas; editor kode di `/submit`; kode PRIVAT | repo privat atau jalur privat yang disetujui |
@@ -262,4 +278,16 @@ Urutan (builder: *"gas yg menurutmu paling oke"*): `rule` dulu karena determinis
 - [x] Jendela bayangan `feed` 120 hari; N agent 288 (ikut *"saya acc semua decision epik12"*).
 - [x] Urutan fase: P167a -> P168a -> P168b -> P167b -> P167c.
 
-**Terkait:** [[00-Overview/03 - Decisions]] F-D122 · F-D123 · F-D121 · [[08-Backlog/07 - Epik Kolaborasi Bot Terbuka]] · [[04-Tools/TL37 - jalur pengajuan bot]] · [[04-Tools/TL38 - agent luar di meja (pull)]]
+## 9. Bukti penerimaan P167a (7 Okt 2026; semua angka dicetak perintahnya hari itu: [[07-Testing/01 - Test Commands]] #111-#113)
+
+| Kriteria (baris backlog P167) | Bukti |
+|---|---|
+| (1) `/submit` tanpa pilihan template wajib; tiga jenis tampil; template lama tetap lolos | Render lokal 1280 px dan lebar sempit (peramban headless menahan lebar efektif 500 px; gerbang lokal): tiga ubin jenis (Rule terpilih; Code dan Feed berlabel "soon", nonaktif); pilihan template dihapus dari formulir; kerangka awal netral (`close > 0`), bukan contoh strategi; tanpa luapan horizontal. Template lama tetap lolos di gerbang: `test_submission` (contoh template sah; parameter wajib hanya untuk template) + `test_pengajuan` (alur HTTP template) |
+| (2) rule: kosakata + kedalaman + jendela dibatasi validator; tanpa mengintip masa depan; jalur gerbang yang sama; EKUIVALENSI B1/B6/B2 | Validator: tes penolakan per kosakata, batas, parameter, bobot, peringkat dan anggaran jendela + fuzz (> 800 nilai bermusuhan di tiap daun, tidak pernah melempar) + pohon 5000 tingkat. Kausalitas: memotong data di hari t tidak mengubah target t (7 aturan lebar, data ber-bolong + aset listing terlambat); mengubah SEMUA bar sesudah t tidak mengubah target <= t; G1 PIT lolos. G1-G11 + K1-K5 jalan pada rule (`engine.cli intake`). **Ekuivalensi** (`python -X utf8 tools/rule_ekuivalensi.py`): B1 (N 60/30/90), B6 (N 10/20), B2 (L 28/14) sebagai rule: bobot DAN PnL identik pada seluruh `ledger/bars` (2470 hari; hari berposisi 2192/2224/2261, 1322/1533, 2426/2440; hari beda bobot 0 di ketujuh konfigurasi) + data sintetis ber-bolong (3 seed x 6 konfigurasi) + sub-buku basi B2 |
+| (3) G5 atas parameter bernama; varian ikut hitungan percobaan keluarga (P83); tanpa parameter bernama = G5 gagal | `_g5_rule`: tiap parameter satu per satu + semua bersama; dekoratif = gagal; tanpa parameter = gagal; varian di luar batas validator tetap diuji. `review`: `varian_g5` ikut `n_trials` (contoh 2 parameter: 12 varian; N = 6 + 0 + 1 + 12 = 19). Contoh `intake` produksi: G5 PASS dengan baris `R: ...`, `T: ...`, `semua: ...` |
+| (6) formulir web dibangkitkan dari skema gerbang | `GET /bots/schema` membagikan `rule` (kosakata + batas) dan `kinds_open`; pembangun aturan memakainya; kontrak web-gerbang diuji (`WebContractTests`: Node menjalankan `rule.ts`, `engine/rule.py` memvalidasi 6 keadaan, penghitung simpul / kedalaman / jendela web = gerbang); interaksi diuji di peramban (ganti mode, tambah parameter, kondisi bersarang, ganti nama parameter memperbarui rujukan) |
+| (7) tes + T8 + vault, deploy, cek builder | Suite penuh 704 tes lulus (245.072 s); T8 205 baris (SK-J7..SK-J13 baru) masalah 0, `--run` 184 tes jangkar lulus 184 / dilewati 0 / gagal 0; mutasi: 32 cacat nyata disuntik, 32 tertangkap (satu mutasi ternyata setara-perilaku). **Deploy BELUM** (menunggu kata push builder); cek builder: tanda tangan dompet Privy di `/submit` belum teruji (butuh login builder) |
+
+Yang TIDAK dibuktikan: bahwa aturan buatan pengguna menghasilkan untung (contoh `intake`: TOLAK pada G3, G8, G10, K2; contoh memang tidak mengklaim apa pun); peninjau LLM (P168a) belum ada; `code` (P167b) dan `feed` (P167c) belum dibuka.
+
+**Terkait:** [[00-Overview/03 - Decisions]] F-D122 · F-D123 · F-D121 · [[08-Backlog/07 - Epik Kolaborasi Bot Terbuka]] · [[04-Tools/TL37 - jalur pengajuan bot]] · [[04-Tools/TL38 - agent luar di meja (pull)]] · [[04-Tools/TL39 - aturan deklaratif (rule)]]

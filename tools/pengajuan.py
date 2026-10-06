@@ -16,7 +16,7 @@ import threading
 import time
 from typing import Callable, Dict, Iterable, List, Optional, Tuple
 
-from engine import submission
+from engine import rule as rulemod, submission
 from engine.spec import SPECS
 
 CHAIN_ID = 97
@@ -128,7 +128,7 @@ def info_tanda_tangan() -> Dict[str, object]:
             "max_ttl_s": 3600, "templates": {k: {"param_nama": v.param_nama, "param": v.param, "metode": v.metode} for k, v in sorted(SPECS.items())
                                               if k in submission.REGISTRY},
             "symbols": sorted(submission.KNOWN_SYMBOLS), "kill_bounds": submission.KILL_BOUNDS, "shadow_days": 60,
-            "schema": submission.schema_json()}
+            "kinds_open": list(submission.ENABLED_KINDS), "rule": rulemod.vocabulary(), "schema": submission.schema_json()}
 
 
 def bayangan_dari(workdir: str, now_s: int) -> Dict[str, dict]:

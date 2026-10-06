@@ -4,7 +4,7 @@ import json
 import os
 import unittest
 
-from engine import chain, submission
+from engine import chain, rule as R, submission
 from engine.bots import REGISTRY
 from engine.replay import replay
 from engine.spec import SPECS
@@ -12,6 +12,7 @@ from engine.spec import SPECS
 from .helpers import BNB, ETH, md_perp, walk
 
 EXAMPLE = os.path.join(os.path.dirname(__file__), "..", "examples", "submission.example.json")
+RULE_EXAMPLE = os.path.join(os.path.dirname(__file__), "..", "examples", "submission.rule.example.json")
 
 try:
     from eth_account import Account
@@ -22,6 +23,11 @@ except ImportError:                                  # verifikasi tanda tangan o
 
 def example():
     with open(EXAMPLE, encoding="utf-8") as f:
+        return json.load(f)
+
+
+def rule_sub():
+    with open(RULE_EXAMPLE, encoding="utf-8") as f:
         return json.load(f)
 
 
@@ -47,11 +53,12 @@ class ValidateTests(unittest.TestCase):
     def test_example_file_is_valid(self):
         self.assertEqual(submission.validate(example()), [])
 
-    def test_only_template_kind_is_open_for_now(self):
-        self.assertEqual(submission.ENABLED_KINDS, ("template",))
-        for kind in ("method_pr", "feed"):
+    def test_only_template_and_rule_kinds_are_open_for_now(self):
+        self.assertEqual(submission.ENABLED_KINDS, ("template", "rule"))                    # P167a (7 Okt): rule dibuka; code (P167b) dan feed (P167c) menyusul
+        for kind in ("code", "feed"):
             sub = with_(with_(example(), "kind", kind), "spec.template", None)
             self.assertRejected(sub, f"'{kind}' belum dibuka")
+        self.assertRejected(with_(example(), "kind", "method_pr"), "kind: harus salah satu dari")   # jalur PR dihapus di skema v2 (digantikan code)
         # tetap bisa dibuka lewat parameter (jalur masa depan), dan bentuknya sudah divalidasi
         sub = with_(with_(example(), "kind", "feed"), "spec.template", None)
         self.assertRejected(sub, "komit_maju", enabled_kinds=submission.KINDS)
@@ -236,6 +243,91 @@ class ValidateTests(unittest.TestCase):
         self.assertTrue(submission.validate({}))
         self.assertTrue(submission.validate(with_(example(), "spec", "teks")))
         self.assertTrue(submission.validate(with_(example(), "spec.universe", "ETHUSDT")))
+
+
+class RuleKindTests(unittest.TestCase):
+    """P167a: kind=rule - metode sepenuhnya dari penerbit (aturan JSON), bidang template tidak dipakai, aturan diperiksa dengan jalurnya."""
+
+    def assertRejected(self, sub, fragment, **kw):
+        probs = submission.validate(sub, **kw)
+        self.assertTrue(any(fragment in p for p in probs), f"{fragment!r} tidak ada di {probs}")
+
+    def test_the_rule_example_is_valid_and_rule_is_open_while_code_and_feed_are_not(self):
+        self.assertEqual(submission.validate(rule_sub()), [])
+        self.assertIn("rule", submission.ENABLED_KINDS)
+        self.assertEqual(submission.SCHEMA_V, 2)
+        for kind in ("code", "feed"):
+            self.assertRejected(with_(rule_sub(), "kind", kind), f"'{kind}' belum dibuka")
+
+    def test_a_rule_form_has_no_template_parameter_or_constants(self):
+        self.assertRejected(with_(rule_sub(), "spec.rule", None), "spec.rule: wajib untuk kind=rule")
+        for f, v in (("template", "B1-TREND"), ("param_nama", "N"), ("param", 30)):
+            self.assertRejected(with_(rule_sub(), f"spec.{f}", v), f"spec.{f}: tidak dipakai untuk kind=rule")
+        self.assertRejected(with_(rule_sub(), "spec.konstanta", {"k": 3}), "kosongkan")
+        self.assertRejected(with_(example(), "spec.rule", rule_sub()["spec"]["rule"]), "spec.rule: hanya untuk kind=rule")      # kind=template membawa aturan
+        for f in ("param_nama", "param"):
+            self.assertRejected(with_(example(), f"spec.{f}", None), f"spec.{f}: wajib untuk kind=template")             # template tetap wajib punya parameter
+
+    def test_rule_problems_are_reported_with_their_path_and_the_universe_is_checked(self):
+        self.assertRejected(with_(rule_sub(), "spec.rule.params.R", 1), "spec.rule.masuk_long.and[0].a.n: parameter 'R' dipakai sebagai jendela")
+        self.assertRejected(with_(rule_sub(), "spec.rule.mode", "acak"), "spec.rule.mode")
+        bad = rule_sub()
+        bad["spec"]["rule"]["masuk_long"]["and"][0]["a"]["n"] = {"p": "ZZ"}
+        self.assertRejected(bad, "spec.rule.masuk_long.and[0].a.n: parameter 'ZZ' tidak dideklarasikan")
+        self.assertRejected(with_(rule_sub(), "spec.universe", ["ETHUSDT", "NGAWURUSDT"]), "tidak punya data")
+        rank = {"mode": "peringkat", "params": {}, "skor": {"f": "ret", "n": 20}, "long_teratas": 1, "short_terbawah": 1, "min_aset": 5, "rotasi": "harian",
+                "bobot": {"skema": "sama", "gross_maks": 2.0}}
+        sub = with_(with_(rule_sub(), "spec.rule", rank), "spec.universe", ["ETHUSDT", "BNBUSDT"])
+        self.assertRejected(sub, "lebih besar dari jumlah aset universe")
+        self.assertEqual(submission.validate(with_(with_(rule_sub(), "spec.rule", rank), "spec.universe", ["ETHUSDT", "BNBUSDT", "BTCUSDT", "SOLUSDT", "XRPUSDT"])), [])
+
+    def test_reserved_ids_and_the_theory_block_apply_to_rules_too(self):
+        self.assertRejected(with_(rule_sub(), "spec.bot_id", "B9-RULE"), "dicadangkan")
+        self.assertRejected(with_(rule_sub(), "theory.pembunuh.threshold", 99999), "theory.pembunuh.threshold")
+        self.assertRejected(with_(rule_sub(), "evidence.percobaan", 0), "minimal 1")
+
+    def test_to_botspec_builds_a_canonical_rule_spec_with_our_ruler(self):
+        sub = rule_sub()
+        sp = submission.to_botspec(sub)
+        self.assertEqual((sp.bot_id, sp.template, sp.method, sp.param_nama), ("PULLBACK-TREND-1", "RULE", "RULE", "aturan"))
+        self.assertEqual(sp.penggaris, {"fee_bps_sisi": 7, "funding": "nyata dua sisi"})        # penerbit tidak menentukan biaya
+        self.assertEqual(sp.konstanta, {"rule": R.canonical(sub["spec"]["rule"])})
+        self.assertEqual(sp.param, submission.sha0x(sp.konstanta["rule"]))                       # param = sha aturan kanonik
+        self.assertIn("net_pnl_bps", sp.pembunuh)
+        self.assertEqual(sp.universe, tuple(sub["spec"]["universe"]))
+        self.assertIn("RULE", REGISTRY)
+        # 2 vs 2.0 dan kunci yang sama: bot yang sama; aturan beda: bot beda
+        fl = with_(with_(sub, "spec.rule.params.R", 14.0), "spec.rule.bobot.gross_maks", 1)
+        self.assertEqual(submission.validate(fl), [])
+        self.assertEqual(submission.to_botspec(fl).fingerprint(), sp.fingerprint())
+        self.assertNotEqual(submission.to_botspec(with_(sub, "spec.rule.params.T", 120)).fingerprint(), sp.fingerprint())
+        self.assertNotEqual(submission.submission_sha(fl), submission.submission_sha(sub))        # sha pengajuan memakai teks apa adanya (tanda tangan)
+        with self.assertRaises(ValueError):
+            submission.to_botspec(with_(sub, "kind", "feed"))
+
+    def test_a_rule_form_runs_in_the_engine_and_replays(self):
+        sp = submission.to_botspec(rule_sub())
+        md = md_perp({ETH: walk(400, 1, drift=0.002), BNB: walk(400, 2, drift=0.002)})
+        tg = REGISTRY[sp.method](sp, md)
+        self.assertTrue(all(t.bot_id == "PULLBACK-TREND-1" for t in tg))
+        self.assertGreater(len(replay(sp, md)), 0)
+
+    def test_the_signed_message_binds_the_rule_and_the_domain_is_schema_v2(self):
+        sub = rule_sub()
+        td = submission.typed_data(sub, 97, 1, 2)
+        self.assertEqual(td["domain"]["version"], "2")
+        self.assertEqual(td["message"]["specSha"], submission.spec_sha_of(sub))
+        other = copy.deepcopy(sub)
+        other["spec"]["rule"]["masuk_long"]["and"][0]["b"]["c"] = 25
+        self.assertNotEqual(submission.typed_data(other, 97, 1, 2)["message"]["specSha"], td["message"]["specSha"])        # aturan lain = tanda tangan lain
+
+    def test_the_schema_exposes_the_rule_field_for_the_web_builder(self):
+        sch = submission.schema_json()["spec"]
+        self.assertEqual(sch["rule"]["t"], "rule")
+        self.assertTrue(sch["rule"]["optional"])
+        for f in ("template", "param_nama", "param", "konstanta"):
+            self.assertTrue(sch[f]["optional"], f)
+        self.assertEqual(submission.schema_json()["kind"]["values"], ("template", "rule", "code", "feed"))
 
 
 class SpecAndHashTests(unittest.TestCase):

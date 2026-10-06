@@ -10,22 +10,25 @@ from unittest import mock
 
 from engine import anggaran, ledger, registri, submission, terdaftar
 
-from .test_submission import example
+from .test_submission import example, rule_sub
 
 ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 sys.path.insert(0, os.path.join(ROOT, "tools"))
 T = 1_791_000_000
 
 
-def pasang(root, vonis=registri.LOLOS, ubah=False):
+def pasang(root, vonis=registri.LOLOS, ubah=False, sub=None):
     d = os.path.join(root, "ledger", "pengajuan")
     os.makedirs(os.path.join(d, "masuk"), exist_ok=True)
-    sub = example()
+    sub = sub or example()
     sha, spec_sha = submission.submission_sha(sub), submission.spec_sha_of(sub)
     pub = json.loads(json.dumps(sub))
     pub["identity"].pop("contact")
     if ubah:
-        pub["spec"]["param"] = 99                                   # isi diubah sesudah lolos
+        if sub["kind"] == "rule":
+            pub["spec"]["rule"]["params"]["R"] = 15                 # aturan diubah sesudah lolos
+        else:
+            pub["spec"]["param"] = 99                               # isi diubah sesudah lolos
     with open(os.path.join(d, "masuk", f"{sha}.json"), "w", encoding="utf-8") as f:
         json.dump({"submission_sha": sha, "submission": pub}, f)
     e = {"type": "pengajuan", "t_s": T, "t_utc": "-", "issuer": sub["identity"]["issuer_wallet"], "payout": sub["identity"]["payout_wallet"],
@@ -47,6 +50,24 @@ class TerdaftarTests(unittest.TestCase):
         self.assertEqual(masalah, [])
         self.assertEqual(specs["TREND-ETH-30"], submission.to_botspec(sub))
         self.assertIn("B1-TREND", terdaftar.semua(self.tmp))                                   # bot Fabius tetap ada
+
+    def test_a_passing_rule_submission_runs_as_the_botspec_rebuilt_from_its_public_form_and_a_changed_rule_never_runs(self):
+        sub = pasang(self.tmp, sub=rule_sub())
+        specs, masalah = terdaftar.penerbit(self.tmp)
+        self.assertEqual(masalah, [])
+        self.assertEqual(specs["PULLBACK-TREND-1"], submission.to_botspec(sub))
+        self.assertEqual(specs["PULLBACK-TREND-1"].method, "RULE")
+        tmp2 = tempfile.mkdtemp()
+        self.addCleanup(shutil.rmtree, tmp2, True)
+        pasang(tmp2, ubah=True, sub=rule_sub())
+        self.assertEqual(terdaftar.penerbit(tmp2)[0], {})                                      # sha pengajuan tidak cocok: tidak dijalankan
+        import paper_tick as pt
+        led = os.path.join(self.tmp, "paper")
+        os.makedirs(led)
+        with mock.patch.object(pt, "ROOT", self.tmp), mock.patch("builtins.print"):
+            self.assertEqual(pt.init_bot("PULLBACK-TREND-1", led, (T + 5 * 86_400) * 1000, False), 0)
+        g = ledger.load(os.path.join(led, "PULLBACK-TREND-1.jsonl"))[0]
+        self.assertEqual((g["type"], g["spec_sha"]), ("genesis", submission.to_botspec(sub).sha()))
 
     def test_tampered_forms_other_verdicts_and_broken_registries_never_run(self):
         pasang(self.tmp, ubah=True)

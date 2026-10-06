@@ -11,6 +11,8 @@ import { useAkses } from "@/components/akses";
 import Nav from "@/components/Nav";
 import { LangProvider, useLang } from "@/components/lang";
 import { isField, kiriman, schemaInfo, submit, typedData, type Field, type Kiriman, type Node, type SchemaInfo } from "@/lib/pengajuan";
+import { startRule, toJson, type RuleState } from "@/lib/rule";
+import RuleBuilder from "./RuleBuilder";
 
 const panel = "min-w-0 rounded-2xl border border-ink/10 bg-white/70 p-5";
 const label = "text-sm uppercase tracking-wide text-ink/50";
@@ -19,8 +21,9 @@ const inp = "w-full rounded-xl border border-ink/15 bg-white px-3 py-2 text-sm t
 const short = (a: string) => `${a.slice(0, 6)}…${a.slice(-4)}`;
 const day = (s: number) => new Date(s * 1000).toISOString().slice(0, 16).replace("T", " ") + "Z";
 // field yang diisi otomatis atau punya kontrol sendiri
-const SKIP = new Set(["v", "kind", "spec.template", "spec.param_nama", "spec.konstanta", "spec.horizon", "spec.universe", "identity.issuer_wallet",
-  "identity.payout_wallet", "evidence.komit_maju"]);
+const SKIP = new Set(["v", "kind", "spec.template", "spec.param_nama", "spec.param", "spec.konstanta", "spec.rule", "spec.horizon", "spec.universe",
+  "identity.issuer_wallet", "identity.payout_wallet", "evidence.komit_maju"]);
+const KINDS = ["rule", "code", "feed"] as const;
 
 type V = Record<string, unknown>;
 
@@ -188,8 +191,9 @@ function Form() {
   const ak = useAkses();
   const { signTypedData } = useSignTypedData();
   const [info, setInfo] = useState<SchemaInfo | null>(null);
-  const [nilai, setNilai] = useState<V>({ "spec.template": "B1-TREND", "evidence.percobaan": "1", "evidence.sumber_data": [""], "theory.referensi": [{}] });
+  const [nilai, setNilai] = useState<V>({ "evidence.percobaan": "1", "evidence.sumber_data": [""], "theory.referensi": [{}] });
   const [uni, setUni] = useState<string[]>([]);
+  const [rule, setRule] = useState<RuleState>(startRule);
   const [fase, setFase] = useState<"" | "cek" | "tanda" | "kirim">("");
   const [masalah, setMasalah] = useState<string[]>([]);
   const [id, setId] = useState("");
@@ -197,7 +201,6 @@ function Form() {
     schemaInfo().then(setInfo, (e: unknown) => setMasalah([String(e)]));
   }, []);
   const set = (p: string, x: unknown) => setNilai((o) => ({ ...o, [p]: x }));
-  const tpl = info?.templates[String(nilai["spec.template"])];
   const wallet = useMemo(() => {
     try {
       return ak.wallet ? getAddress(ak.wallet) : null;
@@ -212,13 +215,12 @@ function Form() {
   const sub = () => {
     const base = bangun(info.schema as Node, "", nilai) as V;
     const spec = base.spec as V;
-    spec.template = nilai["spec.template"];
-    spec.param_nama = tpl?.param_nama;
+    spec.rule = toJson(rule);
     spec.horizon = "1d";
     spec.universe = uni;
     (base.identity as V).issuer_wallet = wallet;
     (base.identity as V).payout_wallet = wallet;
-    base.kind = "template";
+    base.kind = "rule";
     return base;
   };
 
@@ -348,19 +350,33 @@ function Form() {
       >
         <fieldset className="space-y-4">
           <legend className="font-display text-xl text-ink">{v.sections.spec}</legend>
-          <label className="grid gap-1">
-            <span className="text-sm text-ink/80">{v.template}</span>
-            <select className={inp} value={String(nilai["spec.template"])} onChange={(e) => set("spec.template", e.target.value)}>
-              {Object.keys(info.templates).map((k) => (
-                <option key={k}>{k}</option>
-              ))}
-            </select>
-            <span className="text-xs text-ink/50">
-              {tpl?.metode} {v.templateHelp}
-            </span>
-          </label>
+          <div>
+            <p className="text-sm text-ink/80">{v.rule.kindTitle}</p>
+            <div className="mt-2 grid gap-2 sm:grid-cols-3" role="radiogroup" aria-label={v.rule.kindTitle}>
+              {KINDS.map((k) => {
+                const open = (info.kinds_open ?? []).includes(k);
+                return (
+                  <button
+                    key={k}
+                    type="button"
+                    role="radio"
+                    aria-checked={k === "rule"}
+                    aria-disabled={!open}
+                    disabled={!open}
+                    className={`rounded-xl border p-3 text-left transition-colors ${k === "rule" ? "border-violet bg-violet/10" : "border-ink/10 bg-ink/[0.03] opacity-60"}`}
+                  >
+                    <span className="flex items-center justify-between gap-2 text-sm font-medium text-ink">
+                      {v.rule.kinds[k].name}
+                      {!open && <span className="rounded-full bg-ink/10 px-2 py-0.5 text-[10px] font-normal uppercase tracking-wide text-ink/60">{v.rule.soon}</span>}
+                    </span>
+                    <span className="mt-0.5 block text-xs text-ink/60">{v.rule.kinds[k].text}</span>
+                  </button>
+                );
+              })}
+            </div>
+            <p className="mt-2 text-xs text-ink/50">{v.rule.publicNote}</p>
+          </div>
           {bagian("spec", (info.schema as Record<string, Node>).spec, "spec")}
-          {tpl && <p className="-mt-2 text-xs text-ink/50">{v.paramHelp.replace("{v}", String(tpl.param)).replace("{n}", tpl.param_nama)}</p>}
           <div>
             <p className="text-sm text-ink/80">{v.universe}</p>
             <div className="mt-2 flex flex-wrap gap-1.5">
@@ -379,6 +395,7 @@ function Form() {
               })}
             </div>
           </div>
+          {info.rule ? <RuleBuilder vocab={info.rule} state={rule} setState={setRule} /> : <p className="text-sm text-ink/60">…</p>}
         </fieldset>
         {(["identity", "theory", "evidence", "declarations"] as const).map((sec) => (
           <fieldset key={sec} className="space-y-4">

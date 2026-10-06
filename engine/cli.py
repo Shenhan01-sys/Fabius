@@ -459,7 +459,8 @@ def cmd_intake(a) -> int:
     spec = submission.to_botspec(sub)
     res = run_gates(spec, md, _incumbents(md, a.incumbents), GateParams(placebo_n=a.placebo_n, boot_n=a.boot_n),
                     claims=sub["evidence"].get("klaim"))
-    print(format_results(f"{spec.bot_id} (template {spec.template}, {spec.param_nama}={spec.param})", res))
+    what = f"rule, sha aturan {spec.param[:18]}…" if spec.template == "RULE" else f"template {spec.template}, {spec.param_nama}={spec.param}"
+    print(format_results(f"{spec.bot_id} ({what})", res))
     return 0 if verdict(res)[0] == "LOLOS_SHADOW" else 1
 
 

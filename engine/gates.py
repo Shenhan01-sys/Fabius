@@ -18,7 +18,8 @@ G1 PIT        memotong data di hari D tidak mengubah target hari D (deteksi look
 G2 DATA       riwayat cukup panjang; bolong bar kecil (gabungan DAN per seri)
 G3 NET        Sharpe net >= max(ambang dasar, ambang terdeflasi N percobaan) DAN persentil-5 bootstrap blok > 0
 G4 RECENT     24 bulan terakhir > 0 DAN >= seperempat Sharpe penuh (peluruhan); 12 bulan terakhir negatif = PERINGATAN
-G5 PLATEAU    parameter x0,5 ... x1,5 (tipe parameter dihormati; butuh cukup varian berbeda) tetap menghasilkan
+G5 PLATEAU    parameter x0,5 ... x1,5 (tipe parameter dihormati; butuh cukup varian berbeda) tetap menghasilkan; bot rule (P167a): tiap parameter
+              BERNAMA satu per satu + semuanya bersama; parameter dekoratif atau tanpa parameter bernama = gagal
 G6 PHASE      hasil tidak bergantung pada fase jadwal (hari-minggu / tanggal); RERATA fase, bukan fase terbaik
 G7 FOLD       tetap positif setelah tahun terbaik dibuang (F-D16)
 G8 NULL       lebih baik dari hipotesis nol: pengacakan waktu (pergeseran melingkar, eksposur sama; batas atas 95 % galat Monte Carlo);
@@ -39,6 +40,7 @@ from dataclasses import dataclass
 from typing import Callable, Dict, List, Optional, Sequence, Tuple
 
 from . import kpi as kpimod
+from . import rule as rulemod
 from .bots import NULL_KIND, PHASE_VARIANTS, REGISTRY
 from .data import MarketData
 from .quality import find_gaps, missing_days
@@ -248,7 +250,47 @@ def _vary(base, f, like=None):
     return float(base) * f
 
 
+def _g5_rule(c: _Ctx) -> GateResult:
+    """G5 untuk bot `rule` (epik 12 §4): tiap parameter bernama x0,5..x1,5 SATU per SATU + SEMUA bersama; tiap kelompok lolos seperti G5 biasa.
+    Tanpa parameter bernama = tidak ada klaim kekokohan = GAGAL; parameter yang tidak mengubah target sama sekali (dekoratif) = GAGAL."""
+    p = c.p
+    rule = (f"tiap parameter bernama x{p.plateau_factors[0]}..x{p.plateau_factors[-1]} SATU per SATU + SEMUA bersama (bila > 1): tiap kelompok >= {p.plateau_min_ok} "
+            f"varian BERBEDA, Sharpe >= {p.plateau_ratio} x dasar dan > 0 pada >= {p.plateau_min_ok}; parameter dekoratif atau tanpa parameter bernama = GAGAL")
+    base = _sh(c.pnl())
+    if math.isnan(base) or base <= 0:
+        return GateResult("G5", "PLATEAU", FAIL, f"dasar {_fmt(base)}", rule)
+    groups = rulemod.kelompok_plateau(c.spec.konstanta["rule"], p.plateau_factors)
+    if not groups:
+        return GateResult("G5", "PLATEAU", FAIL, f"dasar {_fmt(base)} | tanpa parameter bernama: tidak ada klaim kekokohan yang bisa diuji", rule)
+    base_w = [t.weights for t in c.tg()]
+    parts: List[str] = []
+    ok_all, dekoratif = True, []
+    for nama, rows in groups:
+        res: List[Tuple[str, float]] = []
+        berubah = False
+        for label, r in rows:
+            sp2 = dataclasses.replace(c.spec, konstanta={"rule": r})
+            try:
+                tg2 = REGISTRY[sp2.method](sp2, c.data)
+                berubah = berubah or [t.weights for t in tg2] != base_w
+                res.append((label, _sh(replay(sp2, c.data, tg2, c.tables))))
+            except Exception:                                  # varian yang melempar dihitung GAGAL, bukan dibuang diam-diam
+                berubah = True
+                res.append((label, float("nan")))
+        ok_n = sum(1 for _, v in res if not math.isnan(v) and v > 0 and v >= p.plateau_ratio * base)
+        ok_all = ok_all and len(res) >= p.plateau_min_ok and ok_n >= p.plateau_min_ok
+        if nama != "semua" and not berubah:
+            dekoratif.append(nama)
+        parts.append(f"{nama}: " + " ".join(f"{label}:{_fmt(v)}" for label, v in res) + ("" if len(res) >= p.plateau_min_ok else f" (hanya {len(res)} varian berbeda)"))
+    val = f"dasar {_fmt(base)} | " + " | ".join(parts)
+    if dekoratif:
+        val += f" | parameter dekoratif (tidak mengubah target): {', '.join(dekoratif)}"
+    return GateResult("G5", "PLATEAU", PASS if (ok_all and not dekoratif) else FAIL, val, rule)
+
+
 def g5_plateau(c: _Ctx) -> GateResult:
+    if c.spec.method == rulemod.RULE_METHOD:
+        return _g5_rule(c)
     p = c.p
     rule = (f">= {p.plateau_min_ok} varian BERBEDA yang dievaluasi (param x{p.plateau_factors[0]}..x{p.plateau_factors[-1]}), dengan "
             f"Sharpe >= {p.plateau_ratio} x dasar dan > 0 pada >= {p.plateau_min_ok} di antaranya")
