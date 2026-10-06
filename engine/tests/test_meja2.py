@@ -277,10 +277,10 @@ class KursiTests(unittest.TestCase):
         self.assertIn(("u1", "keluar"), {(e["agent"], e["ke"]) for e in ev3})                     # gagal kedua kali -> keluar
         self.assertTrue(st["kursi"]["u1"]["gagal"])
         self.assertEqual([e for e in meja2.kursi_daftar(st, ["u1"], t0 + 2 * 86_400 + 300) if e["agent"] == "u1"], [])   # tidak masuk otomatis lagi
-        self.assertEqual(meja2.PARAMS_KURSI["v"], 3)
+        self.assertEqual(meja2.PARAMS_KURSI["v"], 2)                                              # F-D126: tidak ada v3; aturan F-D121 #9 digabung ke v2
 
     def test_a_trial_seat_held_past_the_limit_without_promotion_makes_room_only_when_someone_eligible_waits(self):
-        """F-D121 #9a (PARAMS_KURSI v3): >= 2016 siklus di kursi uji tanpa naik -> belakang antrean, tetapi HANYA bila ada agent lain di antrean yang boleh masuk dan kursi uji penuh."""
+        """F-D121 #9a (PARAMS_KURSI v2): >= 2016 siklus di kursi uji tanpa naik -> belakang antrean, tetapi HANYA bila ada agent lain di antrean yang boleh masuk dan kursi uji penuh."""
         t0 = 1_791_244_800
         lim = meja2.PARAMS_KURSI["uji_maks_siklus"]
         tua, baru = t0 - (lim + 1) * 300, t0 - 10 * 300
@@ -312,7 +312,7 @@ class KursiTests(unittest.TestCase):
         self.assertEqual(meja2.kursi_evaluasi(belum, t0), [])
 
     def test_external_agents_hold_at_most_two_active_seats_and_may_only_swap_with_a_weaker_external(self):
-        """F-D121 #9b (PARAMS_KURSI v3): `maks_aktif_luar` kursi aktif untuk agent luar; kandidat luar ke-3 hanya bisa menukar agent luar aktif terlemah (unggul >= 0,5 pp)."""
+        """F-D121 #9b (PARAMS_KURSI v2): `maks_aktif_luar` kursi aktif untuk agent luar; kandidat luar ke-3 hanya bisa menukar agent luar aktif terlemah (unggul >= 0,5 pp)."""
         t0 = 1_791_244_800
         w = meja2.PARAMS_KURSI["jendela_siklus"]
         lama = t0 - (w + 1) * 300
