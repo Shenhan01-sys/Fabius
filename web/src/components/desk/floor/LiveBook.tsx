@@ -137,6 +137,8 @@ export default function LiveBook({ d }: { d: Desk }) {
   const loss = lb.modal_awal - lb.ekuitas;
   const feeShare = loss > 0 ? Math.round((lb.fee / loss) * 100) : null;
   const compact = w < 640;
+  // gerbang mengirim JSON berkunci terurut abjad: urutkan per jumlah siklus di sini
+  const byCycles = Object.entries(lb.per_bot).sort((a, b) => b[1].siklus - a[1].siklus);
   const summary = f.summary
     .replace("{t}", hhmm(p.siklus))
     .replace("{v}", String(valid))
@@ -206,7 +208,7 @@ export default function LiveBook({ d }: { d: Desk }) {
             <Curve lb={lb} startLabel={f.start.replace("{v}", usd(lb.modal_awal))} />
           </div>
           <div className="mt-1 flex flex-wrap gap-x-3 gap-y-1 text-[10px] text-ink/60">
-            {Object.keys(lb.per_bot).map((b) => (
+            {byCycles.map(([b]) => (
               <span key={b} className="inline-flex items-center gap-1 font-mono">
                 <span className="inline-block h-2.5 w-2.5 rounded-sm" style={{ background: BOT_COLOR[b] ?? "#8b86a6" }} aria-hidden />
                 {b}
@@ -251,7 +253,7 @@ export default function LiveBook({ d }: { d: Desk }) {
             </tr>
           </thead>
           <tbody className="divide-y divide-ink/5 font-mono">
-            {Object.entries(lb.per_bot).map(([b, x]) => (
+            {byCycles.map(([b, x]) => (
               <tr key={b}>
                 <td className="py-1.5">
                   <span className="mr-1.5 inline-block h-2.5 w-2.5 rounded-sm align-middle" style={{ background: BOT_COLOR[b] ?? "#8b86a6" }} aria-hidden />
