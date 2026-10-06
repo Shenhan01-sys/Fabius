@@ -3362,5 +3362,6 @@ akan cek" atas usulan pembagian (alpha berbayar, rekam jejak tertunda + bukti gr
 4. **Batas yang dinyatakan:** pilihan analis dikomit on-chain dalam bentuk terbaca (SelectionAnchor) supaya bisa diverifikasi, jadi menyegelnya di
    web adalah kunci tampilan, bukan rahasia. Meja (DeskAnchor) hanya menyimpan root, jadi isi keputusannya memang tidak terbaca sebelum dibuka.
    Alat replay P163 tanpa token anggota hanya memuat rekaman >= 24 jam.
+5. **Satu login (revisi builder 6 Okt):** *"di page /analysts itu juga ada login cardnya mending dijadiin satu deh, di navbar dikasih untuk login nanti dibikinin login page sendiri via privy"*. PrivyProvider dipasang SEKALI di root layout web (skrip Telegram `beforeInteractive`); navbar punya chip Sign in / Signed in / Member menuju `/login?next=<halaman>`; halaman `/login` = login Privy + akun, dompet, status anggota (gerbang `GET /access`), beli 1 sinyal bila belum anggota, kembali ke halaman asal. Kartu login di `/analysts` dan bilah login di `/desk` diganti satu baris status (`AccessLine`).
 
 **Terkait:** F-D72 · F-D104 · P145 · P165 · [[04-Tools/TL34 - meja AI 5 menit]]

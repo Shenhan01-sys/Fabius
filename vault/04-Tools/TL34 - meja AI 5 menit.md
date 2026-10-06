@@ -56,7 +56,7 @@ Bagian utama `/desk` (menggantikan panel "Fabius v2"): rekam jejak SELURUH buku 
 
 **Mesin v1 dihentikan 6 Okt (F-D117):** `V1_JALAN = False`; root siklus = rekaman meja v2 saja (`rakit_siklus`), siklus tanpa daun tidak dikomit. Rekaman v1 lama tetap bisa dibuktikan.
 
-**Akses anggota (P165, F-D118):** tiap rute meja membaca header `Authorization: Bearer <token Privy>`; anggota (beli >= 1 sinyal dalam 7 hari, `Gate.akses`) mendapat isi langsung + `akses.live = true`; tanpa itu `meja_view_publik` / `meja_fabius_publik` / `meja_agent(live=False)` / `meja_archive(live=False)` / `meja_proof(live=False)` menyembunyikan isi keputusan < 24 jam (`TUNDA_PUBLIK_S`) dan tetap menampilkan ekuitas, hasil, fee, kurva, hasil per bot, status agent, jumlah posisi, root + tx. Web: `components/akses.tsx` (Privy) + bilah akses di `/desk`.
+**Akses anggota (P165, F-D118):** tiap rute meja membaca header `Authorization: Bearer <token Privy>`; anggota (beli >= 1 sinyal dalam 7 hari, `Gate.akses`) mendapat isi langsung + `akses.live = true`; tanpa itu `meja_view_publik` / `meja_fabius_publik` / `meja_agent(live=False)` / `meja_archive(live=False)` / `meja_proof(live=False)` menyembunyikan isi keputusan < 24 jam (`TUNDA_PUBLIK_S`) dan tetap menampilkan ekuitas, hasil, fee, kurva, hasil per bot, status agent, jumlah posisi, root + tx. Web: SATU login untuk seluruh situs - `components/akses.tsx` (`Providers` di root layout + `useAkses()` dengan status anggota dari `GET /access`), chip navbar, halaman `/login`, baris status `AccessLine` di `/desk` + `/analysts`.
 
 ## Cara memeriksa satu keputusan
 

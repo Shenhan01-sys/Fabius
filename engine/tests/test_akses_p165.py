@@ -159,6 +159,11 @@ class HttpTests(Base):
         except urllib.error.HTTPError as e:
             return e.code, json.loads(e.read().decode())
 
+    def test_the_access_route_tells_the_web_who_is_a_member(self):
+        self.assertEqual(self.get("/access")[0], 401)
+        code, a = self.get("/access", "anggota")
+        self.assertEqual((code, a["live"], a["dompet"], a["tunda_s"], a["hari"]), (200, True, "0xabc", xs.TUNDA_PUBLIK_S, xs.AKSES_HARI))
+
     def test_members_get_live_content_on_every_desk_route_and_the_public_gets_the_delayed_view(self):
         _, pub = self.get("/desk")
         _, mem = self.get("/desk", "anggota")

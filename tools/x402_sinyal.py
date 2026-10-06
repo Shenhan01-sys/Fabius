@@ -1019,6 +1019,9 @@ def make_handler(gate: Gate):
                                             "tampil di papan, belum menentukan bot aktif (F-D107)", "join": f"{gate.public_url}/analysts/input"})
                 if parts[0] == "aktif" and len(parts) == 1:
                     return self._send(200, gate.aktif_now())
+                if parts[0] == "access" and len(parts) == 1:                 # P165: status anggota untuk navbar + halaman /login web
+                    code, body = gate.akses(self.headers.get("Authorization"))
+                    return self._send(code, {**body, "live": code == 200, "tunda_s": TUNDA_PUBLIK_S, "hari": AKSES_HARI})
                 live = gate.live(self.headers.get("Authorization")) if parts[0] in ("desk", "analis") else False   # P165
                 if parts[0] == "desk" and len(parts) == 1:
                     return self._send(200, {**gate.meja_view(), "akses": gate.akses_info(True)} if live else gate.meja_view_publik())
