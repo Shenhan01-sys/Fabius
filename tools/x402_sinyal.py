@@ -386,7 +386,8 @@ class Gate:
         out_books = []
         v2 = sorted(b for b in books if b.startswith("v2"))
         kursi = {s: v["status"] for s, v in ((books.get("_v2_kursi") or {}).get("kursi") or {}).items()}       # P160: aktif / uji / antre
-        for name in [meja.KONSENSUS] + sorted(b for b in books if b != meja.KONSENSUS and not b.startswith(("_", "v2"))) + v2:
+        # F-D115: halaman hanya menampilkan Fabius (meja v2); buku + rekaman v1 tetap tersimpan dan bisa dibuktikan lewat /desk/proof
+        for name in ([meja.KONSENSUS] + sorted(b for b in books if b != meja.KONSENSUS and not b.startswith(("_", "v2"))) if V1_TAMPIL else []) + v2:
             b = books.get(name)
             if not b:
                 continue
@@ -396,7 +397,7 @@ class Gate:
             last = next((r for r in reversed(mine) if r.get("status", "ok") == "ok"), None)
             slug = name.split(":", 1)[-1]
             nama_ag = next((a["name"] for a in an.AGENTS if a["slug"] == slug), slug)
-            nama = {meja.KONSENSUS: "Fabius consensus", "v2": "Fabius v2 (bot + instruments)"}.get(name) or (f"v2 · {nama_ag}" if name.startswith("v2:") else nama_ag)
+            nama = {meja.KONSENSUS: "Fabius v1 consensus (retired)", "v2": "Fabius"}.get(name) or nama_ag
             kons = name in (meja.KONSENSUS, "v2")
             out_books.append({"agent": name, "nama": nama, "versi": 2 if name.startswith("v2") else 1,
                               # P159: penampilan pekerja 3D dari config/agents.json (opsional; web membuatnya dari slug bila kosong)
@@ -419,7 +420,8 @@ class Gate:
         out = {"t": time.time(), "params": meja.PARAMS, "params_sha": meja.params_sha(), "params_v2": meja2.PARAMS2, "params_v2_sha": meja.sha(meja2.PARAMS2),
                "params_kursi": meja2.PARAMS_KURSI, "params_kursi_sha": meja.sha(meja2.PARAMS_KURSI), "kursi": kursi,
                "ambang_v2": meja2.ambang(sum(1 for x in kursi.values() if x == "aktif") or 3),
-               "anchor": self.data.cfg_raw().get("contracts", {}).get("DeskAnchor"), "buku": out_books, "rekaman": rek[-40:],
+               "anchor": self.data.cfg_raw().get("contracts", {}).get("DeskAnchor"), "buku": out_books,
+               "rekaman": [r for r in rek if V1_TAMPIL or r["agent"].startswith("v2") or r["agent"] == "kursi"][-40:],
                "siklus_terakhir": ({k: sik[-1].get(k) for k in ("siklus", "root", "tx", "status", "n")} if sik else None),
                "siklus_12": [{k: x.get(k) for k in ("siklus", "root", "tx", "status", "n")} for x in sik[-12:]],
                "siklus_24j": sum(1 for x in sik if x["siklus"] >= cut), "komit_24j": sum(1 for x in sik if x["siklus"] >= cut and x.get("status") == "dikomit")}
@@ -1098,7 +1100,7 @@ def tg_reply(gate: "Gate", chat_id: int, text: str, private: bool = True, user_i
         for b in v["buku"]:
             k = b.get("keputusan_terakhir") or {}
             pos = ", ".join(f"{a} {w:+.2f}" for a, w in list(b["posisi"].items())[:6]) or "flat"
-            rows.append(f"{'CONSENSUS' if b['agent'] == meja.KONSENSUS else b['agent']}: equity {b['ekuitas']:.2f} ({b['hasil_pct']:+.2f}%), "
+            rows.append(f"{b['nama']}: equity {b['ekuitas']:.2f} ({b['hasil_pct']:+.2f}%), "
                         f"{b['n_trade']} trades, fees {b['biaya']:.2f} | {pos}" + (f"\n  {str(k.get('ringkasan') or '')[:200]}" if b['agent'] != meja.KONSENSUS else ""))
         s_ = v.get("siklus_terakhir") or {}
         return ("AI desk (paper, decides every 5 minutes, each cycle anchored on-chain):\n\n" + "\n\n".join(rows)
@@ -1156,6 +1158,8 @@ def telegram_loop(gate: "Gate", stop: threading.Event) -> None:
 
 # Meja v1 (dipensiunkan sesudah 24 jam berdampingan dengan v2) tetap tiga agent awal: laporan pembanding v1 vs v2 tidak tercampur agent baru (P162).
 V1_AGEN = ("glm", "qwen", "berita")
+# F-D115: v1 tidak ditampilkan di /desk (builder: "yg v1 hilangkan saja biar ga menuh-in"); mesinnya masih jalan sampai builder memutuskan.
+V1_TAMPIL = False
 
 
 def kursi_aktif(gate: "Gate") -> Optional[set]:

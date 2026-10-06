@@ -109,13 +109,13 @@ class GateNpcTests(unittest.TestCase):
         old, os.environ["ANALIS_DIR"] = os.environ.get("ANALIS_DIR"), os.path.join(tmp, "analis")
         self.addCleanup(lambda: os.environ.pop("ANALIS_DIR") if old is None else os.environ.update(ANALIS_DIR=old))
         g = xs.Gate(xs.Data(ROOT), "0xk", "https://g", "https://w", log=lambda m: None, now=lambda: 1_791_200_100)
-        books = {"konsensus": meja.buku_baru(), "glm": meja.buku_baru(), "v2:glm": meja.buku_baru(), "baru": meja.buku_baru()}
+        books = {"konsensus": meja.buku_baru(), "glm": meja.buku_baru(), "v2:glm": meja.buku_baru(), "v2:baru": meja.buku_baru()}
         g.meja_simpan([], {"siklus": 1_791_200_100, "daun": [], "harga": {}, "root": "0x1", "status": "dikomit", "n": 0}, books, {})
         by = {b["agent"]: b for b in g.meja_view()["buku"]}
-        self.assertEqual(by["glm"]["npc"]["extra"], "headset")
-        self.assertEqual(by["v2:glm"]["npc"], by["glm"]["npc"])
-        self.assertIsNone(by["baru"]["npc"])                                                       # agent tanpa entri: web membuatnya dari slug
-        self.assertIsNone(by["konsensus"]["npc"])
+        self.assertEqual(by["v2:glm"]["npc"]["extra"], "headset")
+        self.assertNotIn("glm", by)                                                                # F-D115: buku v1 tidak ditampilkan
+        self.assertNotIn("konsensus", by)
+        self.assertIsNone(by["v2:baru"]["npc"])                                                    # agent tanpa entri: web membuatnya dari slug
         json.dumps(by)
         self.assertIsNone(xs.kursi_aktif(g))                                                       # belum ada state kursi: perilaku lama
         books["_v2_kursi"] = {"kursi": {"glm": {"status": "aktif", "sejak": 0}, "baru": {"status": "uji", "sejak": 0}, "lain": {"status": "antre", "sejak": 0}}}

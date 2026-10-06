@@ -269,11 +269,12 @@ class GateTests(unittest.TestCase):
         v = self.g.meja_view()
         by = {b["agent"]: b for b in v["buku"]}
         self.assertNotIn("_v2_state", by)
-        self.assertEqual(by["v2"]["nama"], "Fabius v2 (bot + instruments)")
+        self.assertEqual(by["v2"]["nama"], "Fabius")                                             # F-D115: tanpa label v2
+        self.assertNotIn("konsensus", by)                                                       # v1 tidak ditampilkan
         self.assertEqual(by["v2"]["versi"], 2)
         self.assertEqual(by["v2"]["ekuitas"], 10_010.0)                                        # WIF diberi harga dari harga_v2, bukan harga masuk
         self.assertEqual(by["v2"]["keputusan_terakhir"]["instrumen"], ["WIFUSDT"])
-        self.assertTrue(by["v2:glm"]["nama"].startswith("v2 · "))
+        self.assertFalse(by["v2:glm"]["nama"].startswith("v2"))
         self.assertEqual(v["params_v2"], meja2.PARAMS2)
 
     def test_agent_detail_counts_measured_24h_stats_and_lists_history_newest_first(self):
