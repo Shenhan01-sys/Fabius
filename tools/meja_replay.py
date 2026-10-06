@@ -125,6 +125,13 @@ KEBIJAKAN: Dict[str, Policy] = {
     "jeda 6 siklus (30 menit)": jeda(6),
     "lekat 3 + pita 50%": gabung(lekat_instrumen(3), pita_ukuran(0.5)),
 }
+KEPEKAAN: Dict[str, Policy] = {                                                                     # tetangga parameter (--kepekaan): hasil tidak boleh bergantung satu titik
+    "jeda 3 siklus (15 menit)": jeda(3),
+    "jeda 12 siklus (60 menit)": jeda(12),
+    "lekat instrumen 6 siklus": lekat_instrumen(6),
+    "pita ukuran 25%": pita_ukuran(0.25),
+    "jeda 6 + lekat 3": gabung(lekat_instrumen(3), jeda(6)),
+}
 
 
 # ---------------------------------------------------------------- replay + diagnosis
@@ -152,8 +159,15 @@ def replay(recs: List[dict], harga: Dict[int, Dict[str, float]], pol: Policy = r
         puncak = max(puncak, e)
         dd = min(dd, e / puncak - 1)
         prev = r
+    akhir: Dict[str, float] = {}
+    for t, e in eq:                                                                                  # ekuitas akhir tiap hari UTC
+        akhir[dt.datetime.fromtimestamp(t, dt.timezone.utc).strftime("%Y-%m-%d")] = e
+    lalu, ph = meja.PARAMS["modal_awal"], {}
+    for d in sorted(akhir):                                                                          # % per hari = akhir hari vs akhir hari lalu
+        ph[d] = round((akhir[d] / lalu - 1) * 100, 3)
+        lalu = akhir[d]
     return {"ekuitas": round(eq[-1][1], 2) if eq else None, "fee": round(fee, 2), "isi": isi, "dd_pct": round(dd * 100, 3),
-            "rem_replay": rem, "seri": eq, "kirim": kirim}
+            "rem_replay": rem, "per_hari_pct": ph, "seri": eq, "kirim": kirim}
 
 
 def sebab(x: dict, r: dict, prev: Optional[dict]) -> str:
@@ -189,10 +203,11 @@ def sumber_fee(recs: List[dict]) -> Dict[str, dict]:
     return dict(sorted(out.items(), key=lambda kv: -kv[1]["fee"]))
 
 
-def laporan(recs: List[dict], harga: Dict[int, Dict[str, float]]) -> dict:
-    """Seluruh keluaran P163 dalam satu dict (dipakai CLI + tes integrasi)."""
+def laporan(recs: List[dict], harga: Dict[int, Dict[str, float]], kepekaan: bool = False) -> dict:
+    """Seluruh keluaran P163 dalam satu dict (dipakai CLI + tes integrasi). `kepekaan` menambah tetangga parameter (KEPEKAAN)."""
     tercatat = recs[-1]["ekuitas"]
-    hasil = {nama: {k: v for k, v in replay(recs, harga, pol).items() if k not in ("seri", "kirim")} for nama, pol in KEBIJAKAN.items()}
+    pols = {**KEBIJAKAN, **(KEPEKAAN if kepekaan else {})}
+    hasil = {nama: {k: v for k, v in replay(recs, harga, pol).items() if k not in ("seri", "kirim")} for nama, pol in pols.items()}
     base = hasil["r3 (sekarang)"]
     return {"siklus": len(recs), "harga_siklus": sum(1 for r in recs if harga.get(int(r["siklus"]))), "ekuitas_tercatat": tercatat,
             "fee_tercatat": round(sum(x["fee"] for r in recs for x in r.get("isi") or []), 6), "sumber": sumber_fee(recs),
@@ -205,12 +220,13 @@ def main() -> int:
     ap.add_argument("--sampai", required=True)
     ap.add_argument("--gerbang", default=GERBANG)
     ap.add_argument("--json", action="store_true", help="cetak laporan sebagai JSON")
+    ap.add_argument("--kepekaan", action="store_true", help="tambah tetangga parameter kebijakan (uji kepekaan)")
     a = ap.parse_args()
     recs, harga = muat(a.dari, a.sampai, a.gerbang)
     if not recs:
         print("tidak ada rekaman")
         return 1
-    lp = laporan(recs, harga)
+    lp = laporan(recs, harga, a.kepekaan)
     if a.json:
         print(json.dumps(lp, indent=1, ensure_ascii=False))
         return 0 if lp["setia"] else 2
@@ -222,7 +238,8 @@ def main() -> int:
         print(f"  {k:36s} {v['isi']:4d} isi  {v['fee']:8.2f} USDT  ({v['fee'] / tot * 100:5.1f} %)")
     print("\nREPLAY (arah aturan bot sama, target diubah kebijakan):")
     for nama, x in lp["replay"].items():
-        print(f"  {nama:26s} ekuitas {x['ekuitas']:9.2f}  fee {x['fee']:7.2f}  isi {x['isi']:4d}  dd {x['dd_pct']:6.2f} %  rem+{x['rem_replay']}")
+        hari = "  ".join(f"{d[5:]} {v:+6.2f} %" for d, v in x["per_hari_pct"].items())
+        print(f"  {nama:26s} ekuitas {x['ekuitas']:9.2f}  fee {x['fee']:7.2f}  isi {x['isi']:4d}  dd {x['dd_pct']:6.2f} %  rem+{x['rem_replay']:<3d} {hari}")
     base = lp["replay"]["r3 (sekarang)"]["ekuitas"]
     print(f"\nreplay r3 vs tercatat: {base - lp['ekuitas_tercatat']:+.4f} USDT -> {'SETIA' if lp['setia'] else 'TIDAK SETIA (kebijakan lain tidak boleh dibandingkan)'}")
     return 0 if lp["setia"] else 2

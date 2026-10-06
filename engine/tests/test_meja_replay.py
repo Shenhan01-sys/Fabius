@@ -182,8 +182,10 @@ class ArchiveReplayIntegrationTests(unittest.TestCase):
         base = lp["replay"]["r3 (sekarang)"]
         self.assertEqual(base["isi"], sum(len(r.get("isi") or []) for r in recs))
         for nama, x in lp["replay"].items():
-            self.assertTrue({"ekuitas", "fee", "isi", "dd_pct"} <= set(x), nama)
+            self.assertTrue({"ekuitas", "fee", "isi", "dd_pct", "per_hari_pct"} <= set(x), nama)
             self.assertLessEqual(x["isi"], base["isi"], nama)
+        self.assertEqual(base["per_hari_pct"], {self.date: round((lp["ekuitas_tercatat"] / meja.PARAMS["modal_awal"] - 1) * 100, 3)})
+        self.assertEqual(set(mr.laporan(recs, harga, kepekaan=True)["replay"]), set(mr.KEBIJAKAN) | set(mr.KEPEKAAN))
 
 
 if __name__ == "__main__":
