@@ -3428,3 +3428,61 @@ jam gerbang, penolakan tidak memalsukan kehadiran dan tidak memakai slot; (b) kr
 hanya menjawab "sudah terdaftar" (200); sekarang 403.
 
 **Terkait:** F-D113 · F-D119 · F-D107 · P151 · P160 · P166 · [[04-Tools/TL33 - agent analis]] · [[04-Tools/TL36 - meja v2 bot + instrumen]]
+
+**F-D121 #9 DISETUJUI (6 Okt, builder: *"F-D121 #9 -> saya sepakat"*):** (a) kursi uji yang >= 2016 siklus (7 hari) tanpa naik pindah ke belakang antrean bila ada yang mengantre; (b) agent
+luar paling banyak 2 dari 7 kursi aktif. Dikunci sebagai `PARAMS_KURSI` v3 saat kodenya hidup (P170); sha dicatat di sini ketika itu.
+
+## F-D122 - Pintu bot dibuka penuh (rule / code / feed) + tinjauan dua tahap: bot teknis, lalu agent LLM pemilik Fabius · 6 Okt 2026 (WIB)
+
+Builder (6 Okt) menolak form `/submit` yang memaksa memilih metode Fabius: *"biarkan semua input itu dari user, kan bot user, kita tidak perlu menentukannya"* ("nanti ga bervariasi"). Sesudah saya
+beri tiga opsi (A aturan deklaratif, B kode, C feed), jawabannya: *"semua opsi digabung, karena kode function pun jg sangat penting, nanti pakai bot untuk bagian teknis apakah semua udh memenuhi
+standar Fabius? Kalau udh baru lanjut analisis agent owner Fabius pakai LLM dari provider xkiro (GLM 5.3, effort default) + kasih brief dulu ... jgn bikin agentnya hanya iyaiyaiya aja, hrs deep
+analyze + critical judge ... sama halnya untuk agent"*. Soal G5: *"sesuaikan no1"*. **Yang mengikat (kata builder):**
+
+1. **Metode bot SEPENUHNYA dari pengguna.** Menggantikan keputusan 2 Okt malam *"dibuka dulu: template saja"* (`engine/submission.py` `ENABLED_KINDS = ("template",)`). `kind = template` tetap sah sebagai
+   jalur kompatibel; `/submit` tidak lagi memaksa memilih template.
+2. **Tiga jenis dibuka bersamaan:** `rule` (aturan deklaratif JSON yang dijalankan mesin kita), `code` (fungsi kode pengguna, dijalankan di sandbox oleh bot peninjau), `feed` (program pengguna menerbitkan
+   sinyalnya; kita mencatat + menilai maju).
+3. **Dua tahap tinjauan, untuk BOT dan untuk AGENT:** tahap 1 = bot teknis (otomatis, deterministik: memenuhi standar Fabius?); hanya bila lolos, tahap 2 = agent pemilik Fabius (LLM penyedia xkiro, model
+   GLM 5.3, effort bawaan) menganalisis dengan BRIEF yang memaksa analisis dalam + penilaian kritis (bukan setuju-saja), dengan dua tujuan: tidak merugikan Fabius dan meningkatkan Fabius.
+4. **G5 (plateau) disesuaikan** dengan jenis baru (tidak lagi "satu parameter template").
+5. Agent mendaftar di halaman SENDIRI (F-D123), tidak digabung dengan `/submit`.
+
+**USULAN SAYA, BELUM DIKUNCI (menunggu persetujuan builder; rincian di [[09-Inbox/Session-2026-10-02]] §130 C1-C10):** agent LLM hanya MEMBATASI (vonis `LANJUT` / `TAHAN` / `TOLAK`; tidak bisa
+meloloskan yang gagal teknis; `LANJUT` bukan izin slot) · masukan pengajuan diperlakukan sebagai data tak tepercaya (skema keluaran ketat, tanpa alat, percobaan injeksi = temuan) · uji peninjau dengan set
+kalibrasi kiriman bermasalah-yang-diketahui sebelum masuk jalur · jenis `code`: analisis statis + sandbox + uji kausalitas + eksekusi di pekerjaan terpisah tanpa rahasia, hanya DATA diserahkan ke pekerjaan
+tepercaya · jenis `feed`: hanya bukti maju (jendela bayangan lebih panjang, tanpa slot sampai terbukti) · G5 menggeser parameter BERNAMA yang ditandai pengaju, jumlah varian ikut hitungan percobaan keluarga
+(P83) · agent: tahap 1 = identitas + uji kering + aturan kursi uji, tahap 2 = agent LLM boleh MENAHAN kenaikan ke kursi aktif · panggilan LLM sebagai pekerjaan kedua `bot-review.yml` (rahasia repo
+`XKIRO_API_KEY`) atau di gerbang. **Pertanyaan terbuka untuk builder:** kode pengguna publik (bisa disalin) atau tersegel; tempat panggilan LLM; jendela bayangan jenis `feed`.
+
+**Fakta pendukung (6 Okt):** xkiro = `https://api.xkiro.com/v1` (OpenAI-compatible), kunci `XKIRO_API_KEY` ada di Railway `fabius-x402` dan tidak di laptop; id persis "GLM 5.3" di xkiro belum terverifikasi;
+`analis.call_model` selalu mengirim `reasoning_effort` (effort bawaan = parameter dihilangkan).
+
+**Terkait:** F-D120 · F-D121 · F-D71 · F-D72 · F-D88 · P161 · P166 · P167 · P168 · [[04-Tools/TL37 - jalur pengajuan bot]] · [[09-Inbox/Session-2026-10-02]] §130
+
+## F-D123 - Halaman Submit Agent terpisah dari Submit Bot · 6 Okt 2026 (WIB)
+
+Builder: *"untuk agent nanti bikin page sendiri submit agent, jgn dijadiin satu, bentrok jadinya"*; sesudah saya usulkan `/submit-agent`: *"Boleh dong"* (dikerjakan lebih dulu). Mengoreksi pintu masuk agent
+di F-D121 #7 (penemuan), yang semula hanya catatan di `/desk` yang menaut ke JSON gerbang.
+
+1. **Rute `/submit-agent`** + menu "Submit agent" di navbar; `/submit` tetap HANYA untuk bot. Tidak ada elemen agent di `/submit` dan sebaliknya.
+2. Isi: papan agent luar dari `GET /desk/external` (kursi, % sah, online), langkah gabung (rute, format pesan, klien acuan) DIBANGKITKAN dari respons gerbang supaya tidak bisa menyimpang, dan form daftar
+   bertanda tangan dompet login Privy (pesan `Fabius desk join v1`). Daftar hanya berhasil bila dompet login = dompet agent atau pemilik identitas ERC-8004-nya; selain itu halaman menunjuk ke klien acuan.
+3. Menjawab siklus tetap lewat program (pull/answer); halaman ini TIDAK menjawab dari browser.
+4. Catatan di `/desk` hanya menaut ke halaman ini.
+
+**Terkait:** F-D121 · F-D122 · P169 · [[04-Tools/TL38 - agent luar di meja (pull)]]
+
+## F-D124 - Canary uang asli ditunda: hackathon berjalan tanpa uang nyata · 6 Okt 2026 (WIB)
+
+Builder: *"Canary -> nanti dulu, ini fokus hackathon jd blom brani duit asli"*. Mengikat sampai builder mengubahnya.
+
+1. **Keadaan terukur 6 Okt:** Railway `fabius-engine` bersenjata (`EXEC_REAL=canary`, `EXEC_LIVE_OK=binance:sampai:2026-12-31`, kunci asli terpasang, plafon `EXEC_REAL_MAX_USDT=10`, tetapi `EXEC_MODE=demo`
+   dan `BINANCE_API_ENV=demo`), sedangkan sakelar publik `config/uang_nyata.json` `aktif: false` (HEAD dan origin/master) dan `ledger/eksekusi/` hanya memuat `binance-demo` - TIDAK pernah ada order uang asli
+   (F-D97: dua kunci harus terbuka).
+2. **Tidak ada yang menyalakan sakelar tanpa kata builder.** P133 (canary), P120 (live canary Binance), P122 (Aster live), P123 (Tokocrypto) berstatus DITUNDA atas kata builder; paper + akun demo berjalan terus.
+3. **Usulan (belum dikerjakan):** untuk satu kunci cadangan, `EXEC_REAL` bisa diset `off` atau `EXEC_LIVE_OK` dihapus di Railway; tidak diubah sebelum builder meminta, karena itu mengubah keadaan "bersenjata-diam" yang
+   terdokumentasi di [[04-Tools/TL29 - canary uang nyata]].
+
+**Terkait:** F-D92 · F-D96 · F-D97 · F-D90 · P133 · P120 · P122 · P123 · [[04-Tools/TL29 - canary uang nyata]]
+
