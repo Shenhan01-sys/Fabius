@@ -1,0 +1,26 @@
+{
+  "name": "fabius-pitch-video",
+  "private": true,
+  "description": "Fabius pitch video, Motion-as-Code style, rendered with Remotion. Every frame is a pure function of the frame number, timed by the voiceover's word timings.",
+  "type": "module",
+  "scripts": {
+    "studio": "remotion studio src/index.ts",
+    "still": "remotion still src/index.ts Fabius",
+    "render": "remotion render src/index.ts Fabius out/fabius-pitch.mp4 --codec h264 --crf 18",
+    "render:draft": "remotion render src/index.ts Fabius out/fabius-pitch-draft.mp4 --codec h264 --crf 26 --scale 0.5",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@remotion/cli": "4.0.533",
+    "@remotion/layout-utils": "4.0.533",
+    "@remotion/noise": "4.0.533",
+    "@remotion/paths": "4.0.533",
+    "react": "19.2.8",
+    "react-dom": "19.2.8",
+    "remotion": "4.0.533"
+  },
+  "devDependencies": {
+    "@types/react": "19.2.18",
+    "typescript": "5.9.3"
+  }
+}

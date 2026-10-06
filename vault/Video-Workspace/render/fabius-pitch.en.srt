@@ -1,0 +1,156 @@
+1
+00:00:01,030 --> 00:00:05,789
+Over two thousand years ago, Rome kept
+losing to Hannibal in open battle.
+
+2
+00:00:05,809 --> 00:00:10,896
+So one general did something radical: he
+refused the battles Hannibal wanted.
+
+3
+00:00:10,916 --> 00:00:12,736
+His name was Fabius.
+
+4
+00:00:13,253 --> 00:00:15,431
+Most trading bots want the battle.
+
+5
+00:00:15,451 --> 00:00:20,934
+They charge in, then show you a screenshot
+of profit, taken after the market moved.
+
+6
+00:00:20,954 --> 00:00:23,724
+You can’t check what they decided, or
+when.
+
+7
+00:00:24,041 --> 00:00:29,321
+Fabius is a paper-trading desk that
+commits its decisions to BNB Chain before
+
+8
+00:00:29,341 --> 00:00:30,977
+the outcome exists.
+
+9
+00:00:30,997 --> 00:00:33,157
+Even the decision to do nothing.
+
+10
+00:00:33,609 --> 00:00:35,318
+It starts with the rules.
+
+11
+00:00:35,338 --> 00:00:39,491
+Each of our six bots has its strategy
+hashed and locked on-chain.
+
+12
+00:00:39,511 --> 00:00:43,151
+A strategy that wasn’t locked first can’t
+commit a signal.
+
+13
+00:00:43,377 --> 00:00:48,871
+Every bar, a bot’s signals become one
+Merkle root, committed to chain 97.
+
+14
+00:00:48,891 --> 00:00:53,304
+Late commits are rejected. Every reveal is
+checked against the root.
+
+15
+00:00:53,324 --> 00:00:56,674
+Anyone can rerun the ledger. No keys
+needed.
+
+16
+00:00:56,949 --> 00:00:58,969
+On top runs the AI desk.
+
+17
+00:00:58,989 --> 00:01:05,449
+Every five minutes, AI analysts, each with
+an ERC-8004 identity, vote on which bot to
+
+18
+00:01:05,469 --> 00:01:06,853
+run, and where.
+
+19
+00:01:06,873 --> 00:01:10,072
+A locked formula turns their votes into
+one book.
+
+20
+00:01:10,092 --> 00:01:14,192
+And its root must reach the chain before
+the five minutes are up.
+
+21
+00:01:14,440 --> 00:01:18,120
+The AI picks the rulebook. Code computes
+the position.
+
+22
+00:01:18,391 --> 00:01:20,069
+And the desk is open.
+
+23
+00:01:20,089 --> 00:01:24,475
+Bring your own bot as declarative rules,
+or plug in your own agent.
+
+24
+00:01:24,495 --> 00:01:29,875
+Every bot runs the same gates in public,
+and every verdict comes with its reason.
+
+25
+00:01:30,081 --> 00:01:34,175
+Signals sell over x402, and the buyer pays
+no gas.
+
+26
+00:01:34,195 --> 00:01:38,775
+All on testnet, with a test token. No real
+money, by design.
+
+27
+00:01:39,054 --> 00:01:41,964
+Because here’s what we don’t claim:
+profit.
+
+28
+00:01:42,140 --> 00:01:44,875
+The forward clock started on October 1st.
+
+29
+00:01:44,895 --> 00:01:50,645
+To pass, a bot needs 20 signals, 20 days,
+2 months, and a confidence interval above
+
+30
+00:01:50,665 --> 00:01:51,582
+zero.
+
+31
+00:01:51,602 --> 00:01:54,122
+Today, zero of six have passed.
+
+32
+00:01:54,361 --> 00:01:57,211
+So Fabius does what Fabius does best.
+
+33
+00:01:57,691 --> 00:01:58,941
+It waits.
+
+34
+00:02:00,207 --> 00:02:03,537
+Fabius. Refuse the battle. Prove the
+decision.
