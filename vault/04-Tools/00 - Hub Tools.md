@@ -58,6 +58,7 @@ berbahaya dari alat yang gagal keras.
 - [[TL44 - gerbang seleksi bot (P161)]] ← tulis penjelasannya
 - [[TL46 - lapisan pemilih (P74)]] ← tulis penjelasannya
 - [[TL45 - MCP berbayar meja (P157)]] ← tulis penjelasannya
+- [[TL48 - agent luar uji di Railway (P151 P166)]] ← tulis penjelasannya
 
 <!-- di atas: append-only oleh scripts/sync_vault.py; gloss tulisan tangan utuh -->
 ```dataview
