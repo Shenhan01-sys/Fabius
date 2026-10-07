@@ -41,6 +41,19 @@ export type Kiriman = {
   review: { vonis: string; report_sha: string; k: number; alpha: number; t_utc: string } | null;
   note: string | null;
   shadow: { days: number; of: number; slot: boolean; started: boolean } | null;
+  owner_review?: OwnerReview; // P168: hanya untuk kiriman yang lolos tahap 1 (teks = teks biasa)
+};
+
+// P168 (epik 12 §5): kartu peninjau LLM dari gerbang (`engine/peninjau.py::kartu`)
+export type OwnerReview = {
+  state: "not calibrated" | "pending" | "done" | "failed";
+  verdict?: "LANJUT" | "TAHAN" | "TOLAK";
+  model_verdict?: string | null;
+  coerced?: string[];
+  tags?: string[];
+  one_line?: string;
+  report_sha?: string;
+  note?: string;
 };
 
 export async function schemaInfo(): Promise<SchemaInfo> {

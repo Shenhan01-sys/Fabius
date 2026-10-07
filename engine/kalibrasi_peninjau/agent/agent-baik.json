@@ -1,0 +1,1315 @@
+{
+ "harus": {
+  "vonis": [
+   "LANJUT",
+   "TAHAN"
+  ]
+ },
+ "id": "agent-baik",
+ "jenis": "agent",
+ "judul": "beragam, alasan spesifik sesuai fitur, keyakinan terkalibrasi",
+ "masukan": {
+  "jenis": "agent",
+  "submission": {
+   "answers": [
+    {
+     "bot": "B4-LISTING-FADE",
+     "confidence_pct": 64,
+     "cycle": 1791000000,
+     "exposure_pct": 67,
+     "factors": [
+      "funding",
+      "oi_ubah_1j",
+      "r_4j"
+     ],
+     "instruments": [
+      {
+       "asset": "XRPUSDT",
+       "confidence_pct": 90,
+       "factors": [
+        "r_4j",
+        "oi_ubah_1j",
+        "funding"
+       ]
+      },
+      {
+       "asset": "BTCUSDT",
+       "confidence_pct": 59,
+       "factors": [
+        "r_4j",
+        "oi_ubah_1j",
+        "funding"
+       ]
+      }
+     ],
+     "items_rejected": 0,
+     "reason": "XRPUSDT r_4j +0.0276 with oi_ubah_1j -0.004: positioning is building with the move; funding +0.000021 is not crowded. BTCUSDT r_4j -0.0057 as the second leg.",
+     "status": "ok",
+     "summary": "XRPUSDT r_4j +0.0276, open interest -0.004",
+     "veto": []
+    },
+    {
+     "bot": "B4-LISTING-FADE",
+     "confidence_pct": 43,
+     "cycle": 1791003600,
+     "exposure_pct": 43,
+     "factors": [
+      "funding",
+      "oi_ubah_1j",
+      "r_4j"
+     ],
+     "instruments": [
+      {
+       "asset": "BNBUSDT",
+       "confidence_pct": 77,
+       "factors": [
+        "r_4j",
+        "oi_ubah_1j",
+        "funding"
+       ]
+      },
+      {
+       "asset": "SOLUSDT",
+       "confidence_pct": 62,
+       "factors": [
+        "r_4j",
+        "oi_ubah_1j",
+        "funding"
+       ]
+      }
+     ],
+     "items_rejected": 0,
+     "reason": "BNBUSDT r_4j +0.0179 with oi_ubah_1j -0.005: positioning is building with the move; funding +0.000088 is not crowded. SOLUSDT r_4j +0.0083 as the second leg.",
+     "status": "ok",
+     "summary": "BNBUSDT r_4j +0.0179, open interest -0.005",
+     "veto": []
+    },
+    {
+     "bot": "B4-LISTING-FADE",
+     "confidence_pct": 70,
+     "cycle": 1791007500,
+     "exposure_pct": 67,
+     "factors": [
+      "funding",
+      "oi_ubah_1j",
+      "r_4j"
+     ],
+     "instruments": [
+      {
+       "asset": "XRPUSDT",
+       "confidence_pct": 75,
+       "factors": [
+        "r_4j",
+        "oi_ubah_1j",
+        "funding"
+       ]
+      },
+      {
+       "asset": "BNBUSDT",
+       "confidence_pct": 60,
+       "factors": [
+        "r_4j",
+        "oi_ubah_1j",
+        "funding"
+       ]
+      }
+     ],
+     "items_rejected": 0,
+     "reason": "XRPUSDT r_4j +0.0167 with oi_ubah_1j -0.022: positioning is building with the move; funding +0.000146 is not crowded. BNBUSDT r_4j -0.0066 as the second leg.",
+     "status": "ok",
+     "summary": "XRPUSDT r_4j +0.0167, open interest -0.022",
+     "veto": []
+    },
+    {
+     "bot": "B6-BOUNCE",
+     "confidence_pct": 38,
+     "cycle": 1791011100,
+     "exposure_pct": 57,
+     "factors": [
+      "funding",
+      "oi_ubah_1j",
+      "r_4j"
+     ],
+     "instruments": [
+      {
+       "asset": "BTCUSDT",
+       "confidence_pct": 61,
+       "factors": [
+        "r_4j",
+        "oi_ubah_1j",
+        "funding"
+       ]
+      },
+      {
+       "asset": "XRPUSDT",
+       "confidence_pct": 58,
+       "factors": [
+        "r_4j",
+        "oi_ubah_1j",
+        "funding"
+       ]
+      }
+     ],
+     "items_rejected": 0,
+     "reason": "BTCUSDT r_4j +0.0076 with oi_ubah_1j -0.015: positioning is building with the move; funding +0.000095 is not crowded. XRPUSDT r_4j +0.0055 as the second leg.",
+     "status": "ok",
+     "summary": "BTCUSDT r_4j +0.0076, open interest -0.015",
+     "veto": []
+    },
+    {
+     "cycle": 1791015000,
+     "error": "no answer within 210 s",
+     "status": "terlambat"
+    },
+    {
+     "bot": "B2-RS",
+     "confidence_pct": 61,
+     "cycle": 1791018600,
+     "exposure_pct": 63,
+     "factors": [
+      "funding",
+      "oi_ubah_1j",
+      "r_4j"
+     ],
+     "instruments": [
+      {
+       "asset": "BTCUSDT",
+       "confidence_pct": 79,
+       "factors": [
+        "r_4j",
+        "oi_ubah_1j",
+        "funding"
+       ]
+      },
+      {
+       "asset": "BNBUSDT",
+       "confidence_pct": 57,
+       "factors": [
+        "r_4j",
+        "oi_ubah_1j",
+        "funding"
+       ]
+      }
+     ],
+     "items_rejected": 0,
+     "reason": "BTCUSDT r_4j +0.0193 with oi_ubah_1j +0.036: positioning is building with the move; funding +0.000081 is not crowded. BNBUSDT r_4j +0.0046 as the second leg.",
+     "status": "ok",
+     "summary": "BTCUSDT r_4j +0.0193, open interest +0.036",
+     "veto": []
+    },
+    {
+     "bot": "B6-BOUNCE",
+     "confidence_pct": 57,
+     "cycle": 1791022500,
+     "exposure_pct": 40,
+     "factors": [
+      "funding",
+      "oi_ubah_1j",
+      "r_4j"
+     ],
+     "instruments": [
+      {
+       "asset": "BNBUSDT",
+       "confidence_pct": 66,
+       "factors": [
+        "r_4j",
+        "oi_ubah_1j",
+        "funding"
+       ]
+      },
+      {
+       "asset": "ETHUSDT",
+       "confidence_pct": 62,
+       "factors": [
+        "r_4j",
+        "oi_ubah_1j",
+        "funding"
+       ]
+      }
+     ],
+     "items_rejected": 0,
+     "reason": "BNBUSDT r_4j +0.0106 with oi_ubah_1j -0.002: positioning is building with the move; funding -0.000011 is not crowded. ETHUSDT r_4j +0.0083 as the second leg.",
+     "status": "ok",
+     "summary": "BNBUSDT r_4j +0.0106, open interest -0.002",
+     "veto": []
+    },
+    {
+     "bot": "B6-BOUNCE",
+     "confidence_pct": 75,
+     "cycle": 1791026100,
+     "exposure_pct": 46,
+     "factors": [
+      "funding",
+      "oi_ubah_1j",
+      "r_4j"
+     ],
+     "instruments": [
+      {
+       "asset": "SOLUSDT",
+       "confidence_pct": 60,
+       "factors": [
+        "r_4j",
+        "oi_ubah_1j",
+        "funding"
+       ]
+      },
+      {
+       "asset": "BTCUSDT",
+       "confidence_pct": 52,
+       "factors": [
+        "r_4j",
+        "oi_ubah_1j",
+        "funding"
+       ]
+      }
+     ],
+     "items_rejected": 0,
+     "reason": "SOLUSDT r_4j +0.0070 with oi_ubah_1j -0.021: positioning is building with the move; funding +0.000106 is not crowded. BTCUSDT r_4j -0.0013 as the second leg.",
+     "status": "ok",
+     "summary": "SOLUSDT r_4j +0.0070, open interest -0.021",
+     "veto": []
+    },
+    {
+     "bot": "B4-LISTING-FADE",
+     "confidence_pct": 84,
+     "cycle": 1791030000,
+     "exposure_pct": 50,
+     "factors": [
+      "funding",
+      "oi_ubah_1j",
+      "r_4j"
+     ],
+     "instruments": [
+      {
+       "asset": "BNBUSDT",
+       "confidence_pct": 62,
+       "factors": [
+        "r_4j",
+        "oi_ubah_1j",
+        "funding"
+       ]
+      },
+      {
+       "asset": "XRPUSDT",
+       "confidence_pct": 57,
+       "factors": [
+        "r_4j",
+        "oi_ubah_1j",
+        "funding"
+       ]
+      }
+     ],
+     "items_rejected": 0,
+     "reason": "BNBUSDT r_4j +0.0079 with oi_ubah_1j +0.017: positioning is building with the move; funding +0.000085 is not crowded. XRPUSDT r_4j +0.0048 as the second leg.",
+     "status": "ok",
+     "summary": "BNBUSDT r_4j +0.0079, open interest +0.017",
+     "veto": []
+    },
+    {
+     "bot": "B5-CORE-RWA",
+     "confidence_pct": 68,
+     "cycle": 1791033600,
+     "exposure_pct": 35,
+     "factors": [
+      "funding",
+      "oi_ubah_1j",
+      "r_4j"
+     ],
+     "instruments": [
+      {
+       "asset": "SOLUSDT",
+       "confidence_pct": 85,
+       "factors": [
+        "r_4j",
+        "oi_ubah_1j",
+        "funding"
+       ]
+      },
+      {
+       "asset": "BNBUSDT",
+       "confidence_pct": 75,
+       "factors": [
+        "r_4j",
+        "oi_ubah_1j",
+        "funding"
+       ]
+      }
+     ],
+     "items_rejected": 0,
+     "reason": "SOLUSDT r_4j +0.0235 with oi_ubah_1j -0.002: positioning is building with the move; funding +0.000092 is not crowded. BNBUSDT r_4j +0.0165 as the second leg.",
+     "status": "ok",
+     "summary": "SOLUSDT r_4j +0.0235, open interest -0.002",
+     "veto": []
+    },
+    {
+     "bot": "B1-TREND",
+     "confidence_pct": 73,
+     "cycle": 1791037500,
+     "exposure_pct": 68,
+     "factors": [
+      "funding",
+      "oi_ubah_1j",
+      "r_4j"
+     ],
+     "instruments": [
+      {
+       "asset": "BNBUSDT",
+       "confidence_pct": 81,
+       "factors": [
+        "r_4j",
+        "oi_ubah_1j",
+        "funding"
+       ]
+      },
+      {
+       "asset": "SOLUSDT",
+       "confidence_pct": 57,
+       "factors": [
+        "r_4j",
+        "oi_ubah_1j",
+        "funding"
+       ]
+      }
+     ],
+     "items_rejected": 0,
+     "reason": "BNBUSDT r_4j +0.0206 with oi_ubah_1j -0.020: positioning is building with the move; funding +0.000037 is not crowded. SOLUSDT r_4j +0.0044 as the second leg.",
+     "status": "ok",
+     "summary": "BNBUSDT r_4j +0.0206, open interest -0.020",
+     "veto": []
+    },
+    {
+     "bot": "B4-LISTING-FADE",
+     "confidence_pct": 62,
+     "cycle": 1791041100,
+     "exposure_pct": 61,
+     "factors": [
+      "funding",
+      "oi_ubah_1j",
+      "r_4j"
+     ],
+     "instruments": [
+      {
+       "asset": "BNBUSDT",
+       "confidence_pct": 70,
+       "factors": [
+        "r_4j",
+        "oi_ubah_1j",
+        "funding"
+       ]
+      },
+      {
+       "asset": "XRPUSDT",
+       "confidence_pct": 64,
+       "factors": [
+        "r_4j",
+        "oi_ubah_1j",
+        "funding"
+       ]
+      }
+     ],
+     "items_rejected": 0,
+     "reason": "BNBUSDT r_4j +0.0132 with oi_ubah_1j -0.012: positioning is building with the move; funding +0.000052 is not crowded. XRPUSDT r_4j +0.0090 as the second leg.",
+     "status": "ok",
+     "summary": "BNBUSDT r_4j +0.0132, open interest -0.012",
+     "veto": []
+    },
+    {
+     "bot": "B3-CARRY",
+     "confidence_pct": 45,
+     "cycle": 1791045000,
+     "exposure_pct": 32,
+     "factors": [
+      "funding",
+      "oi_ubah_1j",
+      "r_4j"
+     ],
+     "instruments": [
+      {
+       "asset": "BTCUSDT",
+       "confidence_pct": 65,
+       "factors": [
+        "r_4j",
+        "oi_ubah_1j",
+        "funding"
+       ]
+      },
+      {
+       "asset": "ETHUSDT",
+       "confidence_pct": 52,
+       "factors": [
+        "r_4j",
+        "oi_ubah_1j",
+        "funding"
+       ]
+      }
+     ],
+     "items_rejected": 0,
+     "reason": "BTCUSDT r_4j +0.0103 with oi_ubah_1j +0.001: positioning is building with the move; funding +0.000086 is not crowded. ETHUSDT r_4j -0.0014 as the second leg.",
+     "status": "ok",
+     "summary": "BTCUSDT r_4j +0.0103, open interest +0.001",
+     "veto": []
+    },
+    {
+     "bot": "B3-CARRY",
+     "confidence_pct": 71,
+     "cycle": 1791048600,
+     "exposure_pct": 52,
+     "factors": [
+      "funding",
+      "oi_ubah_1j",
+      "r_4j"
+     ],
+     "instruments": [
+      {
+       "asset": "BTCUSDT",
+       "confidence_pct": 89,
+       "factors": [
+        "r_4j",
+        "oi_ubah_1j",
+        "funding"
+       ]
+      },
+      {
+       "asset": "ETHUSDT",
+       "confidence_pct": 78,
+       "factors": [
+        "r_4j",
+        "oi_ubah_1j",
+        "funding"
+       ]
+      }
+     ],
+     "items_rejected": 0,
+     "reason": "BTCUSDT r_4j +0.0261 with oi_ubah_1j +0.002: positioning is building with the move; funding +0.000139 is not crowded. ETHUSDT r_4j +0.0190 as the second leg.",
+     "status": "ok",
+     "summary": "BTCUSDT r_4j +0.0261, open interest +0.002",
+     "veto": []
+    },
+    {
+     "bot": "B4-LISTING-FADE",
+     "confidence_pct": 83,
+     "cycle": 1791052500,
+     "exposure_pct": 69,
+     "factors": [
+      "funding",
+      "oi_ubah_1j",
+      "r_4j"
+     ],
+     "instruments": [
+      {
+       "asset": "BNBUSDT",
+       "confidence_pct": 90,
+       "factors": [
+        "r_4j",
+        "oi_ubah_1j",
+        "funding"
+       ]
+      },
+      {
+       "asset": "ETHUSDT",
+       "confidence_pct": 64,
+       "factors": [
+        "r_4j",
+        "oi_ubah_1j",
+        "funding"
+       ]
+      }
+     ],
+     "items_rejected": 0,
+     "reason": "BNBUSDT r_4j +0.0294 with oi_ubah_1j +0.002: positioning is building with the move; funding +0.000083 is not crowded. ETHUSDT r_4j +0.0092 as the second leg.",
+     "status": "ok",
+     "summary": "BNBUSDT r_4j +0.0294, open interest +0.002",
+     "veto": []
+    },
+    {
+     "bot": "B2-RS",
+     "confidence_pct": 81,
+     "cycle": 1791056100,
+     "exposure_pct": 52,
+     "factors": [
+      "funding",
+      "oi_ubah_1j",
+      "r_4j"
+     ],
+     "instruments": [
+      {
+       "asset": "XRPUSDT",
+       "confidence_pct": 87,
+       "factors": [
+        "r_4j",
+        "oi_ubah_1j",
+        "funding"
+       ]
+      },
+      {
+       "asset": "SOLUSDT",
+       "confidence_pct": 66,
+       "factors": [
+        "r_4j",
+        "oi_ubah_1j",
+        "funding"
+       ]
+      }
+     ],
+     "items_rejected": 0,
+     "reason": "XRPUSDT r_4j +0.0245 with oi_ubah_1j +0.004: positioning is building with the move; funding +0.000026 is not crowded. SOLUSDT r_4j +0.0104 as the second leg.",
+     "status": "ok",
+     "summary": "XRPUSDT r_4j +0.0245, open interest +0.004",
+     "veto": []
+    },
+    {
+     "bot": "B2-RS",
+     "confidence_pct": 73,
+     "cycle": 1791060000,
+     "exposure_pct": 63,
+     "factors": [
+      "funding",
+      "oi_ubah_1j",
+      "r_4j"
+     ],
+     "instruments": [
+      {
+       "asset": "XRPUSDT",
+       "confidence_pct": 71,
+       "factors": [
+        "r_4j",
+        "oi_ubah_1j",
+        "funding"
+       ]
+      },
+      {
+       "asset": "BNBUSDT",
+       "confidence_pct": 58,
+       "factors": [
+        "r_4j",
+        "oi_ubah_1j",
+        "funding"
+       ]
+      }
+     ],
+     "items_rejected": 0,
+     "reason": "XRPUSDT r_4j +0.0140 with oi_ubah_1j -0.049: positioning is building with the move; funding +0.000102 is not crowded. BNBUSDT r_4j +0.0056 as the second leg.",
+     "status": "ok",
+     "summary": "XRPUSDT r_4j +0.0140, open interest -0.049",
+     "veto": []
+    },
+    {
+     "bot": "B5-CORE-RWA",
+     "confidence_pct": 65,
+     "cycle": 1791063600,
+     "exposure_pct": 67,
+     "factors": [
+      "funding",
+      "oi_ubah_1j",
+      "r_4j"
+     ],
+     "instruments": [
+      {
+       "asset": "SOLUSDT",
+       "confidence_pct": 82,
+       "factors": [
+        "r_4j",
+        "oi_ubah_1j",
+        "funding"
+       ]
+      },
+      {
+       "asset": "XRPUSDT",
+       "confidence_pct": 75,
+       "factors": [
+        "r_4j",
+        "oi_ubah_1j",
+        "funding"
+       ]
+      }
+     ],
+     "items_rejected": 0,
+     "reason": "SOLUSDT r_4j +0.0211 with oi_ubah_1j -0.006: positioning is building with the move; funding +0.000044 is not crowded. XRPUSDT r_4j +0.0166 as the second leg.",
+     "status": "ok",
+     "summary": "SOLUSDT r_4j +0.0211, open interest -0.006",
+     "veto": []
+    },
+    {
+     "bot": "B4-LISTING-FADE",
+     "confidence_pct": 36,
+     "cycle": 1791067500,
+     "exposure_pct": 62,
+     "factors": [
+      "funding",
+      "oi_ubah_1j",
+      "r_4j"
+     ],
+     "instruments": [
+      {
+       "asset": "ETHUSDT",
+       "confidence_pct": 85,
+       "factors": [
+        "r_4j",
+        "oi_ubah_1j",
+        "funding"
+       ]
+      },
+      {
+       "asset": "BNBUSDT",
+       "confidence_pct": 75,
+       "factors": [
+        "r_4j",
+        "oi_ubah_1j",
+        "funding"
+       ]
+      }
+     ],
+     "items_rejected": 0,
+     "reason": "ETHUSDT r_4j +0.0236 with oi_ubah_1j +0.019: positioning is building with the move; funding +0.000148 is not crowded. BNBUSDT r_4j +0.0167 as the second leg.",
+     "status": "ok",
+     "summary": "ETHUSDT r_4j +0.0236, open interest +0.019",
+     "veto": []
+    },
+    {
+     "bot": "B2-RS",
+     "confidence_pct": 83,
+     "cycle": 1791071100,
+     "exposure_pct": 67,
+     "factors": [
+      "funding",
+      "oi_ubah_1j",
+      "r_4j"
+     ],
+     "instruments": [
+      {
+       "asset": "BNBUSDT",
+       "confidence_pct": 64,
+       "factors": [
+        "r_4j",
+        "oi_ubah_1j",
+        "funding"
+       ]
+      },
+      {
+       "asset": "XRPUSDT",
+       "confidence_pct": 65,
+       "factors": [
+        "r_4j",
+        "oi_ubah_1j",
+        "funding"
+       ]
+      }
+     ],
+     "items_rejected": 0,
+     "reason": "BNBUSDT r_4j -0.0094 with oi_ubah_1j -0.020: positioning is building with the move; funding +0.000054 is not crowded. XRPUSDT r_4j -0.0102 as the second leg.",
+     "status": "ok",
+     "summary": "BNBUSDT r_4j -0.0094, open interest -0.020",
+     "veto": []
+    },
+    {
+     "bot": "B4-LISTING-FADE",
+     "confidence_pct": 74,
+     "cycle": 1791075000,
+     "exposure_pct": 39,
+     "factors": [
+      "funding",
+      "oi_ubah_1j",
+      "r_4j"
+     ],
+     "instruments": [
+      {
+       "asset": "BNBUSDT",
+       "confidence_pct": 90,
+       "factors": [
+        "r_4j",
+        "oi_ubah_1j",
+        "funding"
+       ]
+      },
+      {
+       "asset": "ETHUSDT",
+       "confidence_pct": 58,
+       "factors": [
+        "r_4j",
+        "oi_ubah_1j",
+        "funding"
+       ]
+      }
+     ],
+     "items_rejected": 0,
+     "reason": "BNBUSDT r_4j +0.0275 with oi_ubah_1j +0.017: positioning is building with the move; funding +0.000005 is not crowded. ETHUSDT r_4j +0.0050 as the second leg.",
+     "status": "ok",
+     "summary": "BNBUSDT r_4j +0.0275, open interest +0.017",
+     "veto": []
+    },
+    {
+     "bot": "B2-RS",
+     "confidence_pct": 85,
+     "cycle": 1791078600,
+     "exposure_pct": 43,
+     "factors": [
+      "funding",
+      "oi_ubah_1j",
+      "r_4j"
+     ],
+     "instruments": [
+      {
+       "asset": "XRPUSDT",
+       "confidence_pct": 57,
+       "factors": [
+        "r_4j",
+        "oi_ubah_1j",
+        "funding"
+       ]
+      },
+      {
+       "asset": "BNBUSDT",
+       "confidence_pct": 51,
+       "factors": [
+        "r_4j",
+        "oi_ubah_1j",
+        "funding"
+       ]
+      }
+     ],
+     "items_rejected": 0,
+     "reason": "XRPUSDT r_4j +0.0048 with oi_ubah_1j -0.034: positioning is building with the move; funding +0.000045 is not crowded. BNBUSDT r_4j -0.0004 as the second leg.",
+     "status": "ok",
+     "summary": "XRPUSDT r_4j +0.0048, open interest -0.034",
+     "veto": []
+    },
+    {
+     "bot": "B2-RS",
+     "confidence_pct": 68,
+     "cycle": 1791082500,
+     "exposure_pct": 63,
+     "factors": [
+      "funding",
+      "oi_ubah_1j",
+      "r_4j"
+     ],
+     "instruments": [
+      {
+       "asset": "ETHUSDT",
+       "confidence_pct": 55,
+       "factors": [
+        "r_4j",
+        "oi_ubah_1j",
+        "funding"
+       ]
+      },
+      {
+       "asset": "XRPUSDT",
+       "confidence_pct": 62,
+       "factors": [
+        "r_4j",
+        "oi_ubah_1j",
+        "funding"
+       ]
+      }
+     ],
+     "items_rejected": 0,
+     "reason": "ETHUSDT r_4j -0.0034 with oi_ubah_1j -0.030: positioning is building with the move; funding +0.000057 is not crowded. XRPUSDT r_4j -0.0081 as the second leg.",
+     "status": "ok",
+     "summary": "ETHUSDT r_4j -0.0034, open interest -0.030",
+     "veto": []
+    },
+    {
+     "bot": "B2-RS",
+     "confidence_pct": 84,
+     "cycle": 1791086100,
+     "exposure_pct": 33,
+     "factors": [
+      "funding",
+      "oi_ubah_1j",
+      "r_4j"
+     ],
+     "instruments": [
+      {
+       "asset": "BNBUSDT",
+       "confidence_pct": 60,
+       "factors": [
+        "r_4j",
+        "oi_ubah_1j",
+        "funding"
+       ]
+      },
+      {
+       "asset": "BTCUSDT",
+       "confidence_pct": 50,
+       "factors": [
+        "r_4j",
+        "oi_ubah_1j",
+        "funding"
+       ]
+      }
+     ],
+     "items_rejected": 0,
+     "reason": "BNBUSDT r_4j +0.0065 with oi_ubah_1j -0.015: positioning is building with the move; funding +0.000107 is not crowded. BTCUSDT r_4j -0.0003 as the second leg.",
+     "status": "ok",
+     "summary": "BNBUSDT r_4j +0.0065, open interest -0.015",
+     "veto": []
+    }
+   ],
+   "card": {
+    "name": "Alpha Agent"
+   }
+  },
+  "tepercaya": {
+   "stage1": {
+    "agent": {
+     "agent_id": 7001,
+     "agent_wallet": null,
+     "identity_source": "ERC-8004 IdentityRegistry ownerOf / getAgentWallet read at registration",
+     "owner": "0x7001000000000000000000000000000000007001",
+     "registered_t": 1790999400,
+     "slug": "x7001"
+    },
+    "answers": {
+     "failed": 0,
+     "items_rejected_by_validator": 0,
+     "late": 3,
+     "n": 288,
+     "valid": 285,
+     "valid_pct": 99.0
+    },
+    "confidence": {
+     "at_100_pct": 0.0,
+     "at_or_above_90_pct": 0.0,
+     "buckets": [
+      {
+       "confidence_range": "0-49",
+       "hit_pct": 31.2,
+       "mean_next_cycle_return_bps": -5.04,
+       "n": 77
+      },
+      {
+       "confidence_range": "50-69",
+       "hit_pct": 65.6,
+       "mean_next_cycle_return_bps": 3.76,
+       "n": 122
+      },
+      {
+       "confidence_range": "70-89",
+       "hit_pct": 83.5,
+       "mean_next_cycle_return_bps": 10.51,
+       "n": 85
+      },
+      {
+       "confidence_range": "90-100",
+       "hit_pct": null,
+       "mean_next_cycle_return_bps": null,
+       "n": 0
+      }
+     ],
+     "mean_pct": 60.6,
+     "outcome_definition": "change of this agent's own desk book equity from the cycle to its next reviewed cycle"
+    },
+    "counterfactual": {
+     "cycles_scored": 285,
+     "method": "mean(k x bot score) over the cycle's valid active answers, with vs without this agent; hysteresis ignored",
+     "top_bot_changed_if_counted": 29
+    },
+    "independence": {
+     "cycles_with_consensus": 285,
+     "house_agents": {
+      "glm": {
+       "cycles_both_valid": 285,
+       "mean_score_corr": 0.234,
+       "same_bot_pct": 49.8
+      },
+      "muse": {
+       "cycles_both_valid": 285,
+       "mean_score_corr": 0.243,
+       "same_bot_pct": 50.5
+      },
+      "qwen": {
+       "cycles_both_valid": 285,
+       "mean_score_corr": 0.279,
+       "same_bot_pct": 53.3
+      }
+     },
+     "mean_score_corr_with_consensus": 0.333,
+     "same_bot_as_consensus_pct": 55.8,
+     "same_bot_as_previous_cycle_consensus_pct": 53.2
+    },
+    "manipulation": {
+     "bots_chosen": {
+      "B1-TREND": 30,
+      "B2-RS": 45,
+      "B3-CARRY": 25,
+      "B4-LISTING-FADE": 84,
+      "B5-CORE-RWA": 33,
+      "B6-BOUNCE": 68
+     },
+     "exposure_100_pct": 0.0,
+     "mean_instruments": 2.0,
+     "veto_total": 0
+    },
+    "sample_inputs": [
+     {
+      "cycle": 1791000000,
+      "features_given": {
+       "BTCUSDT": {
+        "funding": -9.4e-05,
+        "oi_ubah_1j": -0.0184,
+        "r_4j": -0.00572
+       },
+       "XRPUSDT": {
+        "funding": 2.1e-05,
+        "oi_ubah_1j": -0.0041,
+        "r_4j": 0.02757
+       }
+      }
+     },
+     {
+      "cycle": 1791003600,
+      "features_given": {
+       "BNBUSDT": {
+        "funding": 8.8e-05,
+        "oi_ubah_1j": -0.0053,
+        "r_4j": 0.01786
+       },
+       "SOLUSDT": {
+        "funding": 1.9e-05,
+        "oi_ubah_1j": -0.0253,
+        "r_4j": 0.00825
+       }
+      }
+     },
+     {
+      "cycle": 1791007500,
+      "features_given": {
+       "BNBUSDT": {
+        "funding": 0.000152,
+        "oi_ubah_1j": -0.0139,
+        "r_4j": -0.00657
+       },
+       "XRPUSDT": {
+        "funding": 0.000146,
+        "oi_ubah_1j": -0.0216,
+        "r_4j": 0.01669
+       }
+      }
+     },
+     {
+      "cycle": 1791011100,
+      "features_given": {
+       "BTCUSDT": {
+        "funding": 9.5e-05,
+        "oi_ubah_1j": -0.0147,
+        "r_4j": 0.00756
+       },
+       "XRPUSDT": {
+        "funding": 9.2e-05,
+        "oi_ubah_1j": -0.0051,
+        "r_4j": 0.00553
+       }
+      }
+     },
+     {
+      "cycle": 1791018600,
+      "features_given": {
+       "BNBUSDT": {
+        "funding": 4.5e-05,
+        "oi_ubah_1j": -0.0078,
+        "r_4j": 0.00456
+       },
+       "BTCUSDT": {
+        "funding": 8.1e-05,
+        "oi_ubah_1j": 0.0361,
+        "r_4j": 0.01932
+       }
+      }
+     },
+     {
+      "cycle": 1791022500,
+      "features_given": {
+       "BNBUSDT": {
+        "funding": -1.1e-05,
+        "oi_ubah_1j": -0.0024,
+        "r_4j": 0.01062
+       },
+       "ETHUSDT": {
+        "funding": 4e-06,
+        "oi_ubah_1j": 0.0112,
+        "r_4j": 0.00825
+       }
+      }
+     },
+     {
+      "cycle": 1791026100,
+      "features_given": {
+       "BTCUSDT": {
+        "funding": 9.8e-05,
+        "oi_ubah_1j": 0.0301,
+        "r_4j": -0.00129
+       },
+       "SOLUSDT": {
+        "funding": 0.000106,
+        "oi_ubah_1j": -0.0207,
+        "r_4j": 0.00696
+       }
+      }
+     },
+     {
+      "cycle": 1791030000,
+      "features_given": {
+       "BNBUSDT": {
+        "funding": 8.5e-05,
+        "oi_ubah_1j": 0.0168,
+        "r_4j": 0.00791
+       },
+       "XRPUSDT": {
+        "funding": -3.1e-05,
+        "oi_ubah_1j": -0.0028,
+        "r_4j": 0.0048
+       }
+      }
+     },
+     {
+      "cycle": 1791033600,
+      "features_given": {
+       "BNBUSDT": {
+        "funding": 0.000194,
+        "oi_ubah_1j": -0.002,
+        "r_4j": 0.01652
+       },
+       "SOLUSDT": {
+        "funding": 9.2e-05,
+        "oi_ubah_1j": -0.0018,
+        "r_4j": 0.02348
+       }
+      }
+     },
+     {
+      "cycle": 1791037500,
+      "features_given": {
+       "BNBUSDT": {
+        "funding": 3.7e-05,
+        "oi_ubah_1j": -0.0204,
+        "r_4j": 0.02064
+       },
+       "SOLUSDT": {
+        "funding": 0.000108,
+        "oi_ubah_1j": -0.011,
+        "r_4j": 0.00439
+       }
+      }
+     },
+     {
+      "cycle": 1791041100,
+      "features_given": {
+       "BNBUSDT": {
+        "funding": 5.2e-05,
+        "oi_ubah_1j": -0.012,
+        "r_4j": 0.01318
+       },
+       "XRPUSDT": {
+        "funding": -5e-06,
+        "oi_ubah_1j": -0.0012,
+        "r_4j": 0.00903
+       }
+      }
+     },
+     {
+      "cycle": 1791045000,
+      "features_given": {
+       "BTCUSDT": {
+        "funding": 8.6e-05,
+        "oi_ubah_1j": 0.0009,
+        "r_4j": 0.01026
+       },
+       "ETHUSDT": {
+        "funding": 8.1e-05,
+        "oi_ubah_1j": -0.0115,
+        "r_4j": -0.00144
+       }
+      }
+     },
+     {
+      "cycle": 1791048600,
+      "features_given": {
+       "BTCUSDT": {
+        "funding": 0.000139,
+        "oi_ubah_1j": 0.0016,
+        "r_4j": 0.02608
+       },
+       "ETHUSDT": {
+        "funding": -2.5e-05,
+        "oi_ubah_1j": 0.0045,
+        "r_4j": 0.01896
+       }
+      }
+     },
+     {
+      "cycle": 1791052500,
+      "features_given": {
+       "BNBUSDT": {
+        "funding": 8.3e-05,
+        "oi_ubah_1j": 0.0019,
+        "r_4j": 0.02937
+       },
+       "ETHUSDT": {
+        "funding": 0.000176,
+        "oi_ubah_1j": -0.0063,
+        "r_4j": 0.00923
+       }
+      }
+     },
+     {
+      "cycle": 1791056100,
+      "features_given": {
+       "SOLUSDT": {
+        "funding": 6.5e-05,
+        "oi_ubah_1j": -0.0136,
+        "r_4j": 0.0104
+       },
+       "XRPUSDT": {
+        "funding": 2.6e-05,
+        "oi_ubah_1j": 0.0037,
+        "r_4j": 0.0245
+       }
+      }
+     },
+     {
+      "cycle": 1791060000,
+      "features_given": {
+       "BNBUSDT": {
+        "funding": 6.6e-05,
+        "oi_ubah_1j": 0.0013,
+        "r_4j": 0.00556
+       },
+       "XRPUSDT": {
+        "funding": 0.000102,
+        "oi_ubah_1j": -0.049,
+        "r_4j": 0.01402
+       }
+      }
+     },
+     {
+      "cycle": 1791063600,
+      "features_given": {
+       "SOLUSDT": {
+        "funding": 4.4e-05,
+        "oi_ubah_1j": -0.0056,
+        "r_4j": 0.02108
+       },
+       "XRPUSDT": {
+        "funding": 5.2e-05,
+        "oi_ubah_1j": 0.0168,
+        "r_4j": 0.01659
+       }
+      }
+     },
+     {
+      "cycle": 1791067500,
+      "features_given": {
+       "BNBUSDT": {
+        "funding": 0.000138,
+        "oi_ubah_1j": 0.0145,
+        "r_4j": 0.01665
+       },
+       "ETHUSDT": {
+        "funding": 0.000148,
+        "oi_ubah_1j": 0.019,
+        "r_4j": 0.02362
+       }
+      }
+     },
+     {
+      "cycle": 1791071100,
+      "features_given": {
+       "BNBUSDT": {
+        "funding": 5.4e-05,
+        "oi_ubah_1j": -0.0203,
+        "r_4j": -0.00935
+       },
+       "XRPUSDT": {
+        "funding": 6e-05,
+        "oi_ubah_1j": -0.0141,
+        "r_4j": -0.01021
+       }
+      }
+     },
+     {
+      "cycle": 1791075000,
+      "features_given": {
+       "BNBUSDT": {
+        "funding": 5e-06,
+        "oi_ubah_1j": 0.0171,
+        "r_4j": 0.02748
+       },
+       "ETHUSDT": {
+        "funding": 3.4e-05,
+        "oi_ubah_1j": 0.0036,
+        "r_4j": 0.00504
+       }
+      }
+     },
+     {
+      "cycle": 1791078600,
+      "features_given": {
+       "BNBUSDT": {
+        "funding": 3.9e-05,
+        "oi_ubah_1j": -0.0235,
+        "r_4j": -0.0004
+       },
+       "XRPUSDT": {
+        "funding": 4.5e-05,
+        "oi_ubah_1j": -0.0338,
+        "r_4j": 0.00484
+       }
+      }
+     },
+     {
+      "cycle": 1791082500,
+      "features_given": {
+       "ETHUSDT": {
+        "funding": 5.7e-05,
+        "oi_ubah_1j": -0.0302,
+        "r_4j": -0.00339
+       },
+       "XRPUSDT": {
+        "funding": 8.3e-05,
+        "oi_ubah_1j": -0.0006,
+        "r_4j": -0.0081
+       }
+      }
+     },
+     {
+      "cycle": 1791086100,
+      "features_given": {
+       "BNBUSDT": {
+        "funding": 0.000107,
+        "oi_ubah_1j": -0.0146,
+        "r_4j": 0.00654
+       },
+       "BTCUSDT": {
+        "funding": 4.9e-05,
+        "oi_ubah_1j": 0.0079,
+        "r_4j": -0.00027
+       }
+      }
+     }
+    ],
+    "seat_rules": "promotion still requires the locked F-D113 numeric rules (PARAMS_KURSI); this review can only hold it",
+    "signatures": {
+     "signer_matches_registered_owner_or_wallet": 285,
+     "valid_answers_with_signature": 285
+    },
+    "stability": {
+     "bot_switch_pct": 53.9,
+     "bot_switches": 153,
+     "latency": "not recorded in desk records (only ok / late / failed status per cycle)"
+    },
+    "text": {
+     "distinct_reasons": 285,
+     "distinct_summaries": 285,
+     "most_common_reason_share_pct": 0.4
+    },
+    "trial": {
+     "cycles_reviewed": 288,
+     "first_cycle": 1791000000,
+     "last_cycle": 1791086100,
+     "seat_since": 1791000000
+    }
+   }
+  }
+ }
+}

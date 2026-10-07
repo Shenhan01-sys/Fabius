@@ -54,6 +54,7 @@ AGENTS_PATH = os.path.join(ROOT, "config", "agents.json")
 # masukan yang sama + judul berita/pengumuman Binance (tools/kabar.py) yang disalin ke alasan ber-hash. Penyedia xkiro = OpenAI-compatible.
 SLUG_OK = re.compile(r"^[a-z][a-z0-9]{1,15}$")
 EFFORTS = ("none", "minimal", "low", "medium", "high", "xhigh", "max")
+EFFORT_BAWAAN = "bawaan"   # P168 (epik 12 §5.1): `reasoning_effort` TIDAK dikirim; hanya peninjau LLM (tools/peninjau_llm.py), bukan pilihan `tambah`/`ganti`
 NPC_KEYS = {"shirt", "hair", "skin", "extra", "prop", "short"}
 NPC_EXTRA = ("headset", "cap", "glasses", "beanie", "hood", "none")
 NPC_PROP = ("mug", "paper", "plant", "books")
@@ -306,9 +307,13 @@ def call_model(agent: dict, system: str, user: str, post: Callable = _post, time
         r = post(f"{p['base']}/messages", {"x-api-key": key, "anthropic-version": "2023-06-01"},
                  {"model": agent["model"], "max_tokens": 4000, "system": system, "messages": [{"role": "user", "content": user}]}, timeout)
         return "".join(b.get("text", "") for b in r.get("content", []) if b.get("type") == "text")
-    r = post(f"{p['base']}/chat/completions", {"Authorization": f"Bearer {key}"},
-             {"model": agent["model"], "messages": [{"role": "system", "content": system}, {"role": "user", "content": user}],
-              "reasoning_effort": agent["effort"], "temperature": 0.2}, timeout)
+    body = {"model": agent["model"], "messages": [{"role": "system", "content": system}, {"role": "user", "content": user}],
+            "reasoning_effort": agent["effort"], "temperature": agent.get("temperature", 0.2)}
+    if agent["effort"] == EFFORT_BAWAAN:                         # P168: effort BAWAAN model = parameter dihilangkan (peninjau LLM xkiro GLM 5.3)
+        del body["reasoning_effort"]
+    if agent.get("max_tokens"):
+        body["max_tokens"] = int(agent["max_tokens"])
+    r = post(f"{p['base']}/chat/completions", {"Authorization": f"Bearer {key}"}, body, timeout)
     return (r.get("choices") or [{}])[0].get("message", {}).get("content") or ""
 
 

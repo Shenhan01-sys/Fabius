@@ -12,6 +12,7 @@ import Nav from "@/components/Nav";
 import { LangProvider, useLang } from "@/components/lang";
 import { isField, kiriman, schemaInfo, submit, typedData, type Field, type Kiriman, type Node, type SchemaInfo } from "@/lib/pengajuan";
 import { startRule, toJson, type RuleState } from "@/lib/rule";
+import OwnerReview from "./OwnerReview";
 import RuleBuilder from "./RuleBuilder";
 
 const panel = "min-w-0 rounded-2xl border border-ink/10 bg-white/70 p-5";
@@ -136,6 +137,7 @@ function Board() {
                   {k.review && <span className="font-mono text-ink/45"> · {k.review.vonis}</span>}
                   {k.note && <span className="text-ink/45"> · {k.note}</span>}
                 </p>
+                <OwnerReview r={k.owner_review} />
                 {k.shadow && !k.shadow.slot && (
                   <div className="mt-1.5 flex items-center gap-2">
                     <div className="h-1.5 flex-1 rounded-full bg-ink/10">

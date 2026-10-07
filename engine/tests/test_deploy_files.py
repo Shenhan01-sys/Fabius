@@ -35,7 +35,7 @@ class DeployFilesTests(unittest.TestCase):
 
     def test_every_tools_module_the_worker_imports_is_in_the_archive_and_the_image(self):
         need = set()
-        for f in ("operator_loop.py", "canary.py", "eksekutor.py", "erc8004_validasi.py", "x402_sinyal.py", "analis.py", "privy_server.py", "kabar.py", "meja.py", "meja_data.py", "meja2.py", "meja_slot.py", "pengajuan.py", "pin_spec.py", "agen_luar.py"):
+        for f in ("operator_loop.py", "canary.py", "eksekutor.py", "erc8004_validasi.py", "x402_sinyal.py", "analis.py", "privy_server.py", "kabar.py", "meja.py", "meja_data.py", "meja2.py", "meja_slot.py", "pengajuan.py", "pin_spec.py", "agen_luar.py", "peninjau_llm.py"):
             need |= tools_imported_by(os.path.join(ROOT, "tools", f))
         need -= {"tools/x8004_register.py", "tools/verify_signals.py"}           # hanya perintah lokal / validasi.yml, bukan jalur worker
         self.assertEqual(sorted(need - copied_tools()), [])
