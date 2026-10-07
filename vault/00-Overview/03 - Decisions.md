@@ -3594,3 +3594,15 @@ ditahan, satu pelanggaran format). **Peninjau TETAP tidak aktif.** Keputusan bui
 longgarkan kriteria lulus (mis. mayoritas 2/3 jalan per kasus), atau coba model lain.
 
 **Terkait:** F-D122 · F-D125 · P168 · [[08-Backlog/12 - Epik Pengajuan Terbuka dan Peninjau LLM]] §5.3-§5.4 · [[07-Testing/01 - Test Commands]] #137
+
+
+## F-D131 - Kalibrasi peninjau LLM: kriteria mayoritas 2 dari 3 jalan · 7 Okt 2026 (WIB)
+
+Builder (7 Okt) menjawab tiga opsi P168 (tetap ketat / longgarkan kriteria mayoritas 2/3 / model lain) dengan *"Gas"* tanpa memilih; asisten memilih
+opsi yang paling hemat dan tetap ketat isinya: **kasus kalibrasi lulus bila >= 2 dari 3 jalan masing-masing lolos SEMUA pemeriksaan (skema persis, vonis
+model di daftar, tag wajib, injeksi dilaporkan, nol kutipan karangan) dengan vonis yang SAMA**; tetap butuh 3 jalan. Aturan penilaian
+(`engine/peninjau.py::MIN_JALAN_LULUS`), bukan parameter panggilan - rekaman suhu 0 dinilai ulang tanpa panggilan baru:
+**bot 8/8 LULUS -> peninjau bot AKTIF** (berkas `20261007T123701Z-bot.json`); **agent 5/6 GAGAL** (`agent-baik` ditahan model di semua jalan) -> peninjau
+agent TETAP mati. Peninjau hanya bisa MENAHAN / menolak (tidak pernah memberi slot); batas biaya `maks_panggilan_hari` tetap. Bisa dibalik builder.
+
+**Terkait:** F-D125 · F-D130 · P168 · [[07-Testing/01 - Test Commands]] #138

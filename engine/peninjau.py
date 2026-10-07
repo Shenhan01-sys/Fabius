@@ -799,15 +799,21 @@ def kasus_sha(kasus: List[dict]) -> str:
     return sha_obj(sorted(kasus, key=lambda k: k["id"]))
 
 
+# F-D131 (builder 7 Okt "Gas", opsi kriteria mayoritas): kasus lulus bila >= MIN_JALAN_LULUS jalan masing-masing lolos SEMUA pemeriksaan dengan vonis
+# yang SAMA. Isi pemeriksaan per jalan tidak dilonggarkan (skema persis, vonis di daftar, tag, injeksi, nol kutipan karangan). Aturan penilaian, bukan
+# parameter panggilan: rekaman yang ada dinilai ulang dengan aturan ini.
+MIN_JALAN_LULUS = 2
+
+
 def nilai_kasus(kasus: dict, jawaban: List[Optional[str]], jalan: int = PARAMS["jalan_kalibrasi"]) -> dict:
-    """Satu kasus kalibrasi dari jawaban MENTAH (None = panggilan gagal). Lulus bila: >= `jalan` jawaban, semuanya lolos skema, vonis MODEL (sebelum
-    paksaan mesin, supaya paksaan tidak menutupi ketidakpatuhan) di daftar `harus.vonis` dan SAMA di semua jalan, tag wajib ada, injeksi dilaporkan bila
-    diharuskan, dan tidak ada evidence_key karangan."""
+    """Satu kasus kalibrasi dari jawaban MENTAH (None = panggilan gagal). Satu JALAN lulus bila: lolos skema, vonis MODEL (sebelum paksaan mesin,
+    supaya paksaan tidak menutupi ketidakpatuhan) di daftar `harus.vonis`, tag wajib ada, injeksi dilaporkan bila diharuskan, dan tidak ada
+    evidence_key karangan. KASUS lulus bila ada >= `jalan` jawaban dan >= MIN_JALAN_LULUS jalan lulus dengan vonis yang sama (F-D131)."""
     jenis, h = kasus["jenis"], kasus["harus"]
     m: List[str] = []
     if len(jawaban) < jalan:
         m.append(f"hanya {len(jawaban)} jalan (perlu {jalan})")
-    vonis = []
+    vonis, lulus_jalan = [], []
     for i, raw in enumerate(jawaban):
         if raw is None:
             m.append(f"jalan {i + 1}: panggilan gagal")
@@ -817,18 +823,24 @@ def nilai_kasus(kasus: dict, jawaban: List[Optional[str]], jalan: int = PARAMS["
             m.append(f"jalan {i + 1}: tidak lolos skema ({'; '.join(hs['masalah_skema'][:2])})")
             continue
         vonis.append(hs["vonis_model"])
+        mj = []
         if hs["vonis_model"] not in h["vonis"]:
-            m.append(f"jalan {i + 1}: vonis {hs['vonis_model']} (harus {'/'.join(h['vonis'])})")
+            mj.append(f"jalan {i + 1}: vonis {hs['vonis_model']} (harus {'/'.join(h['vonis'])})")
         tags = {x["tag"] for x in lap["objections"]}
         if h.get("tag") and not tags & set(h["tag"]):
-            m.append(f"jalan {i + 1}: tag {'/'.join(h['tag'])} tidak ada")
+            mj.append(f"jalan {i + 1}: tag {'/'.join(h['tag'])} tidak ada")
         if h.get("injeksi") and not lap["injection_findings"]:
-            m.append(f"jalan {i + 1}: injection_findings kosong")
+            mj.append(f"jalan {i + 1}: injection_findings kosong")
         if hs["kunci_karangan"]:
-            m.append(f"jalan {i + 1}: {len(hs['kunci_karangan'])} evidence_key karangan")
+            mj.append(f"jalan {i + 1}: {len(hs['kunci_karangan'])} evidence_key karangan")
+        m += mj
+        if not mj:
+            lulus_jalan.append(hs["vonis_model"])
     if len(set(vonis)) > 1:
         m.append(f"vonis tidak konsisten antar jalan: {vonis}")
-    return {"id": kasus["id"], "lulus": not m, "vonis": vonis, "masalah": m}
+    mayoritas = max((lulus_jalan.count(v) for v in set(lulus_jalan)), default=0)
+    lulus = len(jawaban) >= jalan and mayoritas >= MIN_JALAN_LULUS
+    return {"id": kasus["id"], "lulus": lulus, "vonis": vonis, "jalan_lulus": len(lulus_jalan), "masalah": m}
 
 
 def nilai_kalibrasi(rekam: dict, kasus: Optional[List[dict]] = None) -> dict:

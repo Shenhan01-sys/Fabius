@@ -476,6 +476,17 @@ class KalibrasiTests(unittest.TestCase):
         kalibrasi_lulus(self.tmp, "agent")
         self.assertTrue(pn.status_kalibrasi(self.tmp, "agent")["aktif"])
 
+    def test_a_case_passes_with_two_clean_matching_runs_of_three_but_not_with_one(self):
+        """F-D131: mayoritas - >= 2 dari 3 jalan masing-masing lolos semua pemeriksaan dengan vonis sama; satu jalan buruk tidak menggagalkan kasus."""
+        k = kasus("bot", "bot-lookahead")
+        baik, buruk = ideal(k), pl.contoh_jawaban(k["masukan"], vonis="LANJUT")
+        self.assertTrue(pn.nilai_kasus(k, [baik, baik, buruk])["lulus"])
+        self.assertTrue(pn.nilai_kasus(k, [baik, None, baik])["lulus"])                              # satu panggilan gagal
+        self.assertFalse(pn.nilai_kasus(k, [baik, buruk, buruk])["lulus"])
+        self.assertFalse(pn.nilai_kasus(k, [baik, baik])["lulus"])                                    # tetap butuh 3 jalan
+        rusak = ideal(k).replace('"gates.G1.value"', '"gates.G1.sharpe"')                          # kutipan karangan = jalan itu gagal
+        self.assertFalse(pn.nilai_kasus(k, [baik, rusak, buruk])["lulus"])
+
     def test_a_reviewer_that_always_holds_fails_both_calibration_sets(self):
         """7 Okt: kalibrasi agent sungguhan LULUS 6/6 dengan TAHAN di semua kasus karena kasus baik menerima TAHAN. Kini kasus baik wajib LANJUT."""
         for jenis in pn.JENIS:
