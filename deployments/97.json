@@ -1,4 +1,11 @@
 {
+ "agen_luar_uji": {
+  "agent_id": 2573,
+  "jenis": "uji milik builder, berbasis aturan",
+  "tx": "0xcc69b6c8661e6dff062d6db22959232b22c1f43a0518c4c12c96741e7033ab84",
+  "uri": "https://raw.githubusercontent.com/Shenhan01-sys/Fabius/master/docs/agen-luar-uji.json",
+  "wallet": "0xcFbB50cA211d70A7F7Ac036B80f408832caF5BB0"
+ },
  "agent": "0x4bb30E3b3bc22082c1935fE3bE7c07448e69c862",
  "analis": {
   "agents": {
