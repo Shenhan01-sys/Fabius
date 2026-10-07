@@ -67,18 +67,19 @@ def anchor_info(lock: dict):
     return {k: r.get(k) for k in ("id", "tx", "block", "anchoredAt", "anchoredAt_utc", "contract", "chainId", "asset")}
 
 
-def init_bot(bot: str, ledger_dir: str, now_ms: int, dry: bool) -> int:
-    specs = terdaftar.semua(ROOT)
+def init_bot(bot: str, ledger_dir: str, now_ms: int, dry: bool, root: str = None) -> int:
+    root = root or ROOT                                     # P161: uji kering memakai salinan repo di folder sementara
+    specs = terdaftar.semua(root)
     if bot not in specs:
         print(f"{bot}: bot tidak dikenal")
         return 3
-    if bot not in bookmod.FORWARD_BOTS and bot not in terdaftar.penerbit(ROOT)[0]:                     # F-D95: semua bot Fabius; bot luar (penerbit) tetap lewat gerbang -> bayangan -> slot
+    if bot not in bookmod.FORWARD_BOTS and bot not in terdaftar.penerbit(root)[0]:                     # F-D95: semua bot Fabius; bot luar (penerbit) tetap lewat gerbang -> bayangan -> slot
         print(f"{bot}: DITOLAK - bukan bot yang boleh punya jam maju (boleh: {', '.join(bookmod.FORWARD_BOTS)}). "
               "Bot luar lewat gerbang -> shadow -> slot seperti penerbit (engine/book.py).")
         return 3
     path = os.path.join(ledger_dir, f"{bot}.jsonl")
     if os.path.exists(path):
-        print(f"{bot}: ledger sudah ada ({os.path.relpath(path, ROOT)}); --init hanya sekali per bot (pivot = ledger baru, bukan timpa)")
+        print(f"{bot}: ledger sudah ada ({os.path.relpath(path, root)}); --init hanya sekali per bot (pivot = ledger baru, bukan timpa)")
         return 3
     st = locks.status()
     if st["state"] != "TERKUNCI":
@@ -98,11 +99,11 @@ def init_bot(bot: str, ledger_dir: str, now_ms: int, dry: bool) -> int:
           f"{'ter-anchor ' + str(anc['tx'])[:14] + '… @ ' + str(anc['anchoredAt_utc']) if anc else 'kunci TIDAK ter-anchor'}")
     if not dry:
         ledger.append(path, sealed, [])
-        print(f"  ditulis: {os.path.relpath(path, ROOT)}")
+        print(f"  ditulis: {os.path.relpath(path, root)}")
     return 0
 
 
-def tick_bot(bot: str, ledger_dir: str, views: "Views", now_ms: int, dry: bool) -> int:
+def tick_bot(bot: str, ledger_dir: str, views: "Views", now_ms: int, dry: bool, root: str = None) -> int:
     path = os.path.join(ledger_dir, f"{bot}.jsonl")
     try:
         records = ledger.load(path)
@@ -118,7 +119,7 @@ def tick_bot(bot: str, ledger_dir: str, views: "Views", now_ms: int, dry: bool) 
         for p in problems[:10]:
             print("  -", p)
         return 3
-    spec = terdaftar.semua(ROOT).get(bot)
+    spec = terdaftar.semua(root or ROOT).get(bot)
     if spec is None or records[0].get("spec_sha") != spec.sha():
         print(f"{bot}: spesifikasi di kode tidak sama dengan genesis (pivot = ledger baru). Tidak menulis apa pun.")
         return 3

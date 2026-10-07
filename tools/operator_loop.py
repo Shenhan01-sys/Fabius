@@ -13,6 +13,9 @@ Lingkungan (variabel Railway):
                           (F-D85: book_sha tiap epoch dicatat di chain). 0 = hanya dicatat "PERLU pin", tidak mengirim.
   ALERT_TELEGRAM_TOKEN / ALERT_TELEGRAM_CHAT   P101: kanal alert (dipasang builder sendiri; tanpa keduanya alert hanya dicatat di log), lihat tools/alert.py.
   ALERT_MIN_TBNB (0.01)   saldo committer di bawah ini = alert.
+  KOMIT_PENERBIT (0)      P161 (USULAN, bawaan MATI): bot penerbit LOLOS_SHADOW dari registri sah ikut dikomit ke SignalAnchor -
+                          `slot` = hanya penghuni buku hidup dari penerbit; `semua` = semua bot penerbit berjam maju (termasuk masa bayangan);
+                          `0` = hanya FABIUS_BOTS. Registri rusak = tidak ada bot penerbit (gagal tertutup). Gas tBNB committer per bot per hari.
   EXEC_MODE (off) + BINANCE_API_KEY / BINANCE_SECRET_KEY / BINANCE_API_ENV   P118 (epik 10, F-D93): eksekutor venue di akhir putaran, DIBUNGKUS
                           SENDIRI (galatnya tidak menggagalkan komit/ungkap); lihat tools/eksekutor.py. Mode live ditolak di service ini.
 
@@ -56,6 +59,8 @@ BOTS = [b.strip() for b in os.environ.get("FABIUS_BOTS", ",".join(sc.BOTS_DEFAUL
 POLL_S = int(os.environ.get("POLL_S", "300"))
 REVEAL_DELAY_S = int(os.environ.get("REVEAL_DELAY_S", "0"))
 PIN_BOOK = os.environ.get("PIN_BOOK", "1") != "0"
+KOMIT_PENERBIT = os.environ.get("KOMIT_PENERBIT", "0").strip().lower()
+MODE_PENERBIT = ("0", "slot", "semua")
 ALERT_MIN_TBNB = float(os.environ.get("ALERT_MIN_TBNB", "0.01"))
 FAILS_BEFORE_ALERT = 3
 TICK_GRACE_S = 12 * 3600 + 900          # tick resmi harus ada paling lambat 12 jam (+15 menit) sesudah penutupan; lewat itu rantai GitHub dianggap macet
@@ -95,6 +100,37 @@ def sync(workdir: str = WORKDIR) -> str:
         git("fetch", "--depth", "1", "origin", BRANCH, cwd=workdir)
         git("reset", "--hard", "FETCH_HEAD", cwd=workdir)
     return git("rev-parse", "HEAD", cwd=workdir)
+
+
+def bot_komit(workdir: str, mode: str = None, bots=None) -> tuple:
+    """P161: bot yang dikomit putaran ini + spesifikasinya. Bawaan = FABIUS_BOTS dengan `SPECS` (perilaku lama). `KOMIT_PENERBIT=slot` menambah
+    penghuni buku hidup yang berasal dari penerbit; `semua` menambah semua bot penerbit LOLOS_SHADOW. Spesifikasi penerbit = BotSpec yang disusun
+    ulang dari formulir publik yang cocok dengan registri (`engine.terdaftar`), bukan berkas spec mentah. -> (bot, {bot: BotSpec}, catatan)."""
+    from engine import terdaftar
+    mode = KOMIT_PENERBIT if mode is None else mode
+    bots = list(BOTS if bots is None else bots)
+    specs = dict(SPECS)
+    if mode in ("0", "", "off", "mati"):
+        return bots, specs, []
+    if mode not in MODE_PENERBIT:
+        return bots, specs, [f"KOMIT_PENERBIT={mode!r} tidak dikenal (0 | slot | semua): bot penerbit TIDAK dikomit"]
+    luar, masalah = terdaftar.rincian(workdir)
+    if masalah and not luar:
+        return bots, specs, [f"bot penerbit tidak dikomit: {masalah[0]}"]
+    pilih = sorted(luar)
+    if mode == "slot":
+        from engine import book_live, ledger as led
+        try:
+            buku = book_live.current_book(led.load(os.path.join(workdir, "ledger", "book", "buku.jsonl")))
+        except Exception as e:  # noqa: BLE001 - buku tak terbaca != tidak ada penghuni penerbit; tidak menebak
+            return bots, specs, [f"buku hidup tak terbaca ({type(e).__name__}): bot penerbit tidak dikomit putaran ini"]
+        di_buku = {e.bot_id: e.spec_sha for e in buku}
+        pilih = [b for b in pilih if di_buku.get(b) == luar[b]["spec"].sha()]
+    for b in pilih:
+        if b not in bots:
+            bots.append(b)
+        specs[b] = luar[b]["spec"]
+    return bots, specs, [f"bot penerbit dikomit ({mode}): {', '.join(pilih) or '-'}"] + masalah[:1]
 
 
 def probe(url: str) -> str:
@@ -328,8 +364,11 @@ class Worker:
         ev = evmmod.Evm(sc.rpc_urls(), sc.CHAIN_ID)
         ev.chain_check()
         cv = sc.AnchorView(ev, addrs["anchor"], addrs["registry"])
-        acts = sc.plan(BOTS, os.path.join(self.workdir, "ledger", "paper"), Views(os.path.join(self.workdir, "ledger", "bars")), cv, committer,
-                       sc.seed_from_key(pk) if pk else None, int(time.time()), REVEAL_DELAY_S)
+        bots, specs, catatan = bot_komit(self.workdir)                       # P161: bawaan = FABIUS_BOTS saja (KOMIT_PENERBIT mati)
+        for c in catatan:
+            self.note_book(c)
+        acts = sc.plan(bots, os.path.join(self.workdir, "ledger", "paper"), Views(os.path.join(self.workdir, "ledger", "bars")), cv, committer,
+                       sc.seed_from_key(pk) if pk else None, int(time.time()), REVEAL_DELAY_S, specs=specs)
         lines = [a.line() for a in acts]
         if lines != self.last_lines:
             for ln in lines or ["(tidak ada tick dalam jendela pindai)"]:
@@ -340,7 +379,7 @@ class Worker:
             st = sc.execute(acts, ev, addrs["anchor"], pk, log=lambda m: log(m))
             log(f"terkirim: {st['commit']} komit, {st['reveal']} ungkap, {st['gagal']} gagal")
             self.last_lines = None                      # paksa catat keadaan baru putaran berikutnya
-        self.alerts_for(acts, st, missing_ticks(os.path.join(self.workdir, "ledger", "paper"), BOTS, int(time.time())))
+        self.alerts_for(acts, st, missing_ticks(os.path.join(self.workdir, "ledger", "paper"), bots, int(time.time())))
         pin = self.book_pin(ev, addrs["registry"], committer, pk, head)
         if pin in ("tolak", "gagal"):
             self.alert.send(f"pin-buku:{pin}", f"pin book_sha {pin.upper()}: {self.last_book}")
@@ -406,7 +445,7 @@ def main() -> int:
         f"region {os.environ.get('RAILWAY_REPLICA_REGION', '?')} | build {os.environ.get('RAILWAY_GIT_COMMIT_SHA', 'lokal')[:10]} | "
         f"kunci {'ADA' if sc.committer_key() else 'TIDAK ADA (mode rencana)'} | eksekutor {os.environ.get('EXEC_MODE', 'off')} | "
         f"umpan eksekusi {'nyala' if os.environ.get('EXEC_FEED_TOKEN') else 'mati (EXEC_FEED_TOKEN tidak ada, F-D94 H7)'} | "
-        f"canary uang nyata {os.environ.get('EXEC_REAL', 'off')}")
+        f"canary uang nyata {os.environ.get('EXEC_REAL', 'off')} | komit penerbit {KOMIT_PENERBIT}")
     for name, url in PROBES:
         log(f"probe {name}: {probe(url)}")
     log(f"IP keluar: {egress_ip()}")

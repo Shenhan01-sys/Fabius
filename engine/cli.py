@@ -191,16 +191,15 @@ def _incumbent_pnls(md) -> dict:
     return out
 
 
-def _book_pnls(md) -> dict:
-    """PnL petahana = BUKU SLOT SEKARANG (buku genesis: hanya bot identitas) - bukan enam bot Fabius. Entri penerbit luar kelak datang dari ledger
-    shadow, bukan dari replay (orkestrator buku hidup: P87)."""
-    out = {}
-    for b, sp in bookmod.fabius_specs(bookmod.genesis_book(0)).items():
-        try:
-            out[b] = replay(sp, md)
-        except NotImplementedError:
-            pass
-    return out
+def _book_pnls(md, root: str = REPO_ROOT) -> dict:
+    """PnL petahana = BUKU SLOT HIDUP SEKARANG (`ledger/book/buku.jsonl`; belum ada = buku genesis, bot identitas) - bukan enam bot Fabius.
+    P161: penghuni penerbit (template/rule) ikut direplay dari BotSpec registri (`seleksi.petahana_buku`); sebelumnya selalu buku genesis, jadi
+    penerbit di slot tidak terlihat oleh G10. Buku hidup tidak sah = berhenti (tidak diam-diam memakai genesis)."""
+    from . import seleksi
+    book, _, probs = seleksi.buku_hidup(root)
+    if probs:
+        raise ValueError(f"buku hidup tidak sah - petahana G10 tidak bisa disusun: {probs[0]}")
+    return seleksi.petahana_buku(book, md, root)[0]
 
 
 def _incumbents(md, mode: str) -> dict:
@@ -210,10 +209,10 @@ def _incumbents(md, mode: str) -> dict:
 BOOK_FILE = os.path.join(REPO_ROOT, "ledger", "book", "buku.jsonl")
 
 
-def _verified_ledgers(ledger_dir: str, view) -> dict:
+def _verified_ledgers(ledger_dir: str, view, root: str = REPO_ROOT) -> dict:
     """Ledger maju yang SAH saja (rantai + hitung ulang dari bar); yang lain dicetak dan tidak dipakai. P161 B1c: bot penerbit LOLOS_SHADOW ikut."""
     from . import terdaftar
-    specs = terdaftar.semua()
+    specs = terdaftar.semua(root)
     ok = {}
     for path in sorted(glob.glob(os.path.join(ledger_dir, "*.jsonl"))):
         try:
@@ -232,13 +231,13 @@ def _verified_ledgers(ledger_dir: str, view) -> dict:
     return ok
 
 
-def _book_killers(book, ok: dict, view, end_ms: int) -> dict:
+def _book_killers(book, ok: dict, view, end_ms: int, root: str = REPO_ROOT) -> dict:
     """Status pembunuh penghuni untuk catatan epoch (P107). Bot Fabius: terjemahan terstruktur (`engine/pembunuh.py`) HANYA bila kuncinya TERKUNCI
     dan ledgernya sah -> YA / BELUM / TIDAK; selain itu "TEKS" (kalimat spesifikasi, dinilai manusia). Penerbit luar belum ada -> "TIDAK"."""
     from . import pembunuh, terdaftar
     from .slots import killer_triggered
     locked = pembunuh.status()["state"] == "TERKUNCI"
-    luar = terdaftar.rincian()[0]
+    luar = terdaftar.rincian(root)[0]
     out = {}
     for e in book:
         if e.bot_id in luar:                                   # P161 B1d: pembunuh terstruktur kiriman penerbit, ditegakkan kode
@@ -259,13 +258,18 @@ def _book_killers(book, ok: dict, view, end_ms: int) -> dict:
 
 def _book_epoch(a) -> int:
     """Satu epoch buku hidup: skor maju penghuni (P85) -> penantang (bot SHADOW_ELIGIBLE di luar buku; gerbang dijalankan terhadap BUKU SEKARANG) ->
-    status pembunuh -> slots.decide_epoch -> catatan. Idempoten per epoch: epoch yang sudah tercatat tidak ditulis dua kali."""
+    status pembunuh -> slots.decide_epoch -> catatan. Idempoten per epoch: epoch yang sudah tercatat tidak ditulis dua kali.
+    P161: petahana G10 = SEMUA penghuni (penerbit ikut direplay); bot yang berhak menantang tetapi DILEWATI (ledger maju belum ada / tidak sah,
+    ditahan peninjau LLM) tercatat di medan `dilewati` catatan epoch (hanya bila ada). `a.root` / `a.gate_params` hanya lewat API (uji kering
+    `tools/uji_jalur_kandidat.py`); CLI selalu repo ini + GateParams terkunci."""
     import dataclasses
-    from . import book_live, forward
+    from . import book_live, forward, seleksi
     from .sinyal import data_fingerprint
     from .slots import FABIUS, Challenger, SlotParams, epoch_id
     from .spec import sha0x
     p = SlotParams()
+    root = getattr(a, "root", None) or REPO_ROOT
+    gp = getattr(a, "gate_params", None) or GateParams()
     now_s = ledgermod.iso_ms(a.now) // 1000 if a.now else int(time.time())
     records = ledgermod.load(a.file)
     if records:
@@ -284,41 +288,52 @@ def _book_epoch(a) -> int:
         records = [book_live.append(a.file, gen, [])] if a.write else [ledgermod.seal(gen, ledgermod.ZERO)]
         print(f"genesis buku hidup {'DITULIS' if a.write else '(rencana)'}: book_sha {gen['book_sha'][:18]}…")
     views: dict = {}
+    potong = getattr(a, "potong_ms", None)                     # uji kering (API saja): bar dipotong pada jam simulasi, tidak ada bar masa depan
 
     def view(name):
         if name not in views:
-            views[name] = load_csv_dir(a.bars, DATA_SYMBOLS, funding_view=name)
+            md = load_csv_dir(a.bars, DATA_SYMBOLS, funding_view=name)
+            views[name] = md.upto(potong) if potong is not None else md
         return views[name]
 
-    ok = _verified_ledgers(a.ledger, view)
+    ok = _verified_ledgers(a.ledger, view, root)
     end = forward.common_end(ok, ledgermod.last_closed_bar(now_s * 1000))
     scores = {e.bot_id: (forward.stats_for(e.bot_id, ok[e.bot_id], end, p).score_bps if e.bot_id in ok else None) for e in book}
-    killers = _book_killers(book, ok, view, end)
+    killers = _book_killers(book, ok, view, end, root)
     bsha = slots_book_sha(book)
     in_book = {e.bot_id for e in book}
-    challengers = []
+    challengers, dilewati = [], []
     from . import terdaftar
-    luar = terdaftar.rincian()[0]                              # P161 B1d: penantang penerbit dari registri (LOLOS_SHADOW + ledger maju sah)
+    luar = terdaftar.rincian(root)[0]                          # P161 B1d: penantang penerbit dari registri (LOLOS_SHADOW + ledger maju sah)
     from . import peninjau
+    inc = tak_replay = None
     for bot in list(bookmod.SHADOW_ELIGIBLE) + sorted(luar):
-        if bot in in_book or bot not in ok:
+        if bot in in_book:
             continue
-        tahan = peninjau.tahan_bot(REPO_ROOT, luar[bot]["submission_sha"]) if bot in luar else None
+        if bot not in ok:                                      # P161: dicatat, bukan hanya hilang dari daftar
+            ada = os.path.exists(os.path.join(a.ledger, f"{bot}.jsonl"))
+            dilewati.append({"bot": bot, "alasan": "ledger maju TIDAK SAH (rantai / hitung ulang dari bar)" if ada else "ledger maju belum dimulai"})
+            continue
+        tahan = peninjau.tahan_bot(root, luar[bot]["submission_sha"]) if bot in luar else None
         if tahan:                                              # P168a (SK-N10): peninjau LLM hanya MENAHAN; LANJUT tidak pernah memberi slot
             print(f"  {bot}: bukan penantang - {tahan}")
+            dilewati.append({"bot": bot, "alasan": f"ditahan peninjau LLM: {tahan}"[:300]})
             continue
         spec = luar[bot]["spec"] if bot in luar else SPECS[bot]
         if a.no_gates:
             v, rsha = "TIDAK_DIJALANKAN", "0x" + "00" * 32
         else:
             md = view("actual")
-            inc = {b: replay(sp, md) for b, sp in bookmod.fabius_specs(book).items()}
+            if inc is None:                                    # P161: SEMUA penghuni (penerbit direplay dari BotSpec registri)
+                inc, tak_replay = seleksi.petahana_buku(book, md, root)
             t0 = time.time()
-            res = run_gates(spec, md, inc, GateParams())
+            res = run_gates(spec, md, inc, gp)
             v, fails, nas = verdict(res)
             rep = {"v": 1, "bot_id": bot, "spec_sha": spec.sha(), "fingerprint": spec.fingerprint(), "data_hash": data_fingerprint(spec, md), "vonis": v,
                    "gagal": fails, "tak_terukur": nas, "kunci_v1": locks.status()["sha_kunci"], "book_sha": bsha, "petahana": sorted(inc),
                    "gerbang": [dataclasses.asdict(r) for r in res]}
+            if tak_replay:                                     # penghuni yang tidak bisa direplay: dicatat (laporan lama tanpa medan ini tetap sah)
+                rep["petahana_tak_direplay"] = dict(sorted(tak_replay.items()))
             rsha = sha0x(rep)
             rep["report_sha"] = rsha
             print(f"  gerbang {bot} terhadap buku {bsha[:12]}…: {v} (gagal {fails or '-'}, tak terukur {nas or '-'}) dalam {time.time() - t0:.0f} s")
@@ -333,6 +348,8 @@ def _book_epoch(a) -> int:
                                       payout=luar[bot]["payout"] if bot in luar else "",
                                       **forward.challenger_fields(bot, ok, [e.bot_id for e in book], end, p)))
     rec = book_live.build_epoch(book, now_s, end, scores, challengers, killers, p)
+    if dilewati:                                               # ikut hash rantai buku; verify_book tetap menghitung ulang keputusan yang sama
+        rec["dilewati"] = dilewati
     print(book_live.fmt_epoch(rec))
     if not a.write:
         print("RENCANA: tidak ada yang ditulis. --write untuk menambah catatan epoch (penulis tunggal buku).")
