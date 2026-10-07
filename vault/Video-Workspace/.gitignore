@@ -1,0 +1,8 @@
+node_modules/
+out/
+# Kokoro TTS model files (fetched by analysis/tts_kokoro.py, ~340 MB)
+analysis/models/
+__pycache__/
+# large intermediates: the committed soundtrack is public/audio/mix.mp3
+public/audio/mix.wav
+public/audio/voiceover.wav
