@@ -2,7 +2,7 @@
 tags: [generated]
 ---
 
-_Auto-Index — 6 halaman · 2026-10-07T07:05Z · dari `vault/scripts/sync_vault.py`_
+_Auto-Index — 6 halaman · 2026-10-07T07:06Z · dari `vault/scripts/sync_vault.py`_
 
 ### 00-Overview (8)
 - [[00-Overview/00 - Hub Overview]]
@@ -45,7 +45,7 @@ _Auto-Index — 6 halaman · 2026-10-07T07:05Z · dari `vault/scripts/sync_vault
 - [[03-Data/D8 - Buku Slot Hidup]]
 - [[03-Data/01 - Dataset]]
 
-### 04-Tools (46)
+### 04-Tools (47)
 - [[04-Tools/00 - Hub Tools]]
 - [[04-Tools/TL1 - judge]]
 - [[04-Tools/TL10 - kunci dan anchor kunci]]
@@ -86,6 +86,7 @@ _Auto-Index — 6 halaman · 2026-10-07T07:05Z · dari `vault/scripts/sync_vault
 - [[04-Tools/TL42 - komit maju penerbit (feed)]]
 - [[04-Tools/TL43 - evaluasi meja F4]]
 - [[04-Tools/TL44 - gerbang seleksi bot (P161)]]
+- [[04-Tools/TL45 - MCP berbayar meja (P157)]]
 - [[04-Tools/TL46 - lapisan pemilih (P74)]]
 - [[04-Tools/TL5 - ledger]]
 - [[04-Tools/TL6 - x402 gate and client]]

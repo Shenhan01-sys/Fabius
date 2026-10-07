@@ -57,6 +57,7 @@ berbahaya dari alat yang gagal keras.
 - [[TL43 - evaluasi meja F4]] — P156 (F4, BAYANGAN): IC / hit / kalibrasi per agent, bobot agent usulan (sha `0x41a1001d…`), buku ablasi per agent + per sumber yang wajib SETIA, rapor direkam, usulan evaluator hanya lewat bayangan + kunci; `FABIUS_F4=bayangan`, `tools/meja_eval.py rapor`
 - [[TL44 - gerbang seleksi bot (P161)]] ← tulis penjelasannya
 - [[TL46 - lapisan pemilih (P74)]] ← tulis penjelasannya
+- [[TL45 - MCP berbayar meja (P157)]] ← tulis penjelasannya
 
 <!-- di atas: append-only oleh scripts/sync_vault.py; gloss tulisan tangan utuh -->
 ```dataview
