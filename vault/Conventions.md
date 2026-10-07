@@ -139,6 +139,17 @@ Frontmatter `tags` (kategori + identitas, mis. `tags: [kontrak, "C2"]`), lalu
   salinan lokal dianggap keadaan sistem) dicatat di [[Concepts/Stale Local Copy]] — baca sebelum
   menyimpulkan "mati" dari satu sumber.
 
+## Alur kerja pengembangan (baku untuk setiap item backlog; dirangkum 7 Okt atas permintaan builder)
+
+Builder 7 Okt: *"planning -> executing -> testing unit-E2E -> audit -> recap all to vault"*. Asalnya [[08-Backlog/10 - Epik Eksekusi Venue]] §8 dan [[08-Backlog/11 - Epik Meja AI v2]] §10; di sini dirangkum supaya berlaku untuk semua item, bukan hanya dua epik itu.
+
+1. **Rencana** - kriteria keluar di rumah item (epik), baris T8 rencana, status 🟡 di [[08-Backlog/01 - Backlog]], dan satu bagian Inbox "rencana sesi" (apa, urutan, batas lingkungan) SEBELUM kode.
+2. **Eksekusi** - kode + tes; fungsi murni, jaringan dipalsukan; tidak ada deploy, transaksi, atau uang (itu langkah builder).
+3. **Tes unit + ujung-ke-ujung** - tes unit per modul; uji ujung-ke-ujung lokal (alur HTTP / CLI penuh, anvil untuk kontrak); uji kering dengan data / model asli bila terjangkau. Bukti = perintah + keluaran di [[07-Testing/01 - Test Commands]].
+4. **Audit** - sensus `tools/test_census.py --wajib-semua`, `forge test`, T8 `check_failure_semantics.py --run`, gerbang vault (`sync_vault`, `check_links`, `hub_shape`, `check_tool_citations`), tinjauan diff sendiri yang mencari cacat (bukan membenarkan), klaim dicek ke [[10-Submissions/01 - Claims Cheat Sheet]].
+5. **Rekap ke vault** - backlog (status + bukti), catatan TL / C, Decisions bila ada keputusan, Inbox, Test Commands, Run It / Quick-Reference, hub. Yang TIDAK bisa dikerjakan asisten (deploy, kunci, transaksi, uji di produksi, kata builder) masuk [[08-Backlog/13 - Langkah Builder Tertunda]] dengan perintah persisnya, supaya tidak terlupa.
+6. **Kirim** - commit tanpa atribusi AI -> kabari builder -> `prepush_check` -> push.
+
 ## Pivot dan status `N/A` (P76, 3 Okt 2026)
 
 - **Pivot = kunci baru.** Mengubah spesifikasi bot, ambang, terjemahan pembunuh, atau parameter uji SESUDAH data terlihat bukan penyetelan. Itu

@@ -2,7 +2,7 @@
 tags: [generated]
 ---
 
-_Auto-Index — 6 halaman · 2026-10-06T07:25Z · dari `vault/scripts/sync_vault.py`_
+_Auto-Index — 6 halaman · 2026-10-07T01:31Z · dari `vault/scripts/sync_vault.py`_
 
 ### 00-Overview (8)
 - [[00-Overview/00 - Hub Overview]]
@@ -43,7 +43,7 @@ _Auto-Index — 6 halaman · 2026-10-06T07:25Z · dari `vault/scripts/sync_vault
 - [[03-Data/D8 - Buku Slot Hidup]]
 - [[03-Data/01 - Dataset]]
 
-### 04-Tools (37)
+### 04-Tools (40)
 - [[04-Tools/00 - Hub Tools]]
 - [[04-Tools/TL1 - judge]]
 - [[04-Tools/TL10 - kunci dan anchor kunci]]
@@ -75,6 +75,9 @@ _Auto-Index — 6 halaman · 2026-10-06T07:25Z · dari `vault/scripts/sync_vault
 - [[04-Tools/TL34 - meja AI 5 menit]]
 - [[04-Tools/TL35 - data meja v2]]
 - [[04-Tools/TL36 - meja v2 bot + instrumen]]
+- [[04-Tools/TL37 - jalur pengajuan bot]]
+- [[04-Tools/TL38 - agent luar di meja (pull)]]
+- [[04-Tools/TL39 - aturan deklaratif (rule)]]
 - [[04-Tools/TL4 - anchor and verify]]
 - [[04-Tools/TL5 - ledger]]
 - [[04-Tools/TL6 - x402 gate and client]]
@@ -89,7 +92,7 @@ _Auto-Index — 6 halaman · 2026-10-06T07:25Z · dari `vault/scripts/sync_vault
 - [[05-Ecosystem/03 - Discovery Gap]]
 - [[05-Ecosystem/04 - Alchemy]]
 
-### 06-Results (33)
+### 06-Results (34)
 - [[06-Results/00 - Hub Results]]
 - [[06-Results/01 - Claims and Limits]]
 - [[06-Results/02 - Thresholds]]
@@ -123,6 +126,7 @@ _Auto-Index — 6 halaman · 2026-10-06T07:25Z · dari `vault/scripts/sync_vault
 - [[06-Results/30 - Spesifikasi Bot dan Kunci]]
 - [[06-Results/31 - Pra-Registrasi P90 R1+R2]]
 - [[06-Results/32 - Hasil P90 R1+R2]]
+- [[06-Results/33 - Pra-Registrasi P90 Gelombang 2]]
 
 ### 07-Testing (9)
 - [[07-Testing/00 - Hub Testing]]
@@ -135,7 +139,7 @@ _Auto-Index — 6 halaman · 2026-10-06T07:25Z · dari `vault/scripts/sync_vault
 - [[07-Testing/T8 - Semantik Kegagalan Operator]]
 - [[07-Testing/01 - Test Commands]]
 
-### 08-Backlog (12)
+### 08-Backlog (14)
 - [[08-Backlog/00 - Hub Backlog]]
 - [[08-Backlog/01 - Backlog]]
 - [[08-Backlog/02 - Epik Alasan Masuk]]
@@ -148,6 +152,8 @@ _Auto-Index — 6 halaman · 2026-10-06T07:25Z · dari `vault/scripts/sync_vault
 - [[08-Backlog/09 - Usulan P107 Pembunuh Terstruktur]]
 - [[08-Backlog/10 - Epik Eksekusi Venue]]
 - [[08-Backlog/11 - Epik Meja AI v2]]
+- [[08-Backlog/12 - Epik Pengajuan Terbuka dan Peninjau LLM]]
+- [[08-Backlog/13 - Langkah Builder Tertunda]]
 
 ### 09-Inbox (6)
 - [[09-Inbox/00 - Hub Inbox]]
@@ -178,9 +184,17 @@ _Auto-Index — 6 halaman · 2026-10-06T07:25Z · dari `vault/scripts/sync_vault
 - [[Concepts/Stale Local Copy]]
 - [[Concepts/Unmeasured Is Not Clean]]
 
+### Reference-VideoPitchs (1)
+- [[Reference-VideoPitchs/00 - Hub Referensi Video]]
+
 ### TradingKnowledge (5)
 - [[TradingKnowledge/00 - Hub Trading Knowledge]]
 - [[TradingKnowledge/Aturan Subtree]]
 - [[TradingKnowledge/Fakta Terukur]]
 - [[TradingKnowledge/Glossary-TK]]
 - [[TradingKnowledge/Sumber dan Jangkauan]]
+
+### Video-Workspace (3)
+- [[Video-Workspace/00 - Hub Workspace]]
+- [[Video-Workspace/README]]
+- [[Video-Workspace/SCRIPT]]
