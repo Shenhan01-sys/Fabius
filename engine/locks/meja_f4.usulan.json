@@ -1,0 +1,114 @@
+{
+  "catatan": "P156 (F4, epik 11 §6): rumus nilai + bobot agent + ablasi + rapor + usulan evaluator meja v2, dipra-registrasi SEBELUM data bayangan pertama; dijalankan hanya sebagai BAYANGAN (FABIUS_F4=bayangan). Dikunci (tools/meja_eval.py kunci --tulis) hanya atas kata builder; tidak di-pin on-chain.",
+  "diusulkan": "2026-10-07T01:54:24Z",
+  "params": {
+    "ablasi": {
+      "agent": "tanpa agent X (kursi aktif): keputusan X dibuang, ambang dari n aktif - 1, bobot sama",
+      "setia_toleransi_usdt": 0.01,
+      "sumber": "tanpa sumber Y: instrumen yang SEMUA faktornya dari Y dibuang; keputusan yang SEMUA faktor utamanya dari Y dibuang; veto agent berfaktor Y dibuang; fitur Y di snapshot dikosongkan (veto keras RugCheck / likuiditas DEX hilang)"
+    },
+    "bobot": {
+      "horizon_siklus": 12,
+      "jendela_siklus": 288,
+      "kappa": 5.0,
+      "maks": 2.0,
+      "min": 0.5,
+      "n_min_jendela": 144,
+      "pemanasan": 288,
+      "rumus": "W_i = clamp(1 + kappa x rata-rata IC 1 jam agent i atas siklus yang hasil 1 jamnya sudah ada dalam 288 siklus terakhir, min, maks); W_i = 1 bila nilai IC kumulatif agent < pemanasan, IC dalam jendela < n_min_jendela, atau ada nilai tidak hingga; dihitung di siklus pertama tiap jam UTC baru, di antaranya tetap",
+      "tiap_s": 3600
+    },
+    "hit": "1 bila bot pilihan agent termasuk return tertinggi (seri dihitung kena); acak = jumlah bot seri tertinggi / 6",
+    "horizon_siklus": [
+      1,
+      12
+    ],
+    "ic": "korelasi peringkat Spearman skor_bot agent (6 bot) vs return 6 bot, peringkat rata-rata untuk seri; salah satu sisi konstan = tanpa IC",
+    "kalibrasi_ember": [
+      0,
+      50,
+      65,
+      80,
+      101
+    ],
+    "konsensus_bobot": "meja2.konsensus2 dengan keyakinan agent, keyakinan instrumen, dan eksposur agent sah dikali f_i = W_i x n / sum W (n = agent aktif sah): nilai bot = sum W k s / sum W, eksposur = sum W e / sum W; W = 1 -> identik bit demi bit",
+    "portofolio_bot": "aturan terkunci bot (meja2.arah) pada semua aset berharga isi siklus itu (universe v2 + aset dipegang); bobot / max(1, gross) = meja2.posisi pada eksposur 1 tanpa veto; candle harian satu aset gagal -> portofolio bot itu tidak terbaca",
+    "rapor": {
+      "horizon_siklus": 12,
+      "jendela_siklus": 288,
+      "maks_karakter": 600
+    },
+    "return_bot": "sum_a w_a x (P_a(t+h) / P_a(t) - 1) pada harga isi tercatat siklus t dan t+h (tepat, bukan siklus terdekat); satu harga hilang = siklus itu tidak dinilai",
+    "sumber": {
+      "berita": [
+        "berita_sebut_6j",
+        "binance_listing",
+        "binance_delisting",
+        "z_berita_sebut_6j"
+      ],
+      "binance": [
+        "r_5m",
+        "r_1j",
+        "r_4j",
+        "vol_1j",
+        "funding",
+        "z_r_1j",
+        "r_24j",
+        "volume_24j",
+        "pnl_1j",
+        "breadth_naik_1j",
+        "sebaran_r4j",
+        "funding_tahunan",
+        "funding_vs_theta",
+        "memecoin_naik_1j",
+        "vol_btc_per_emas",
+        "porsi_oversold"
+      ],
+      "binance_ekstra": [
+        "oi_ubah_1j",
+        "taker_beli_jual",
+        "z_oi_ubah_1j",
+        "z_taker_beli_jual"
+      ],
+      "candle_harian": [
+        "tren_60h",
+        "r_28h",
+        "z_10h",
+        "umur_listing_h",
+        "hari_data"
+      ],
+      "dexscreener": [
+        "dex_vol_1j_rel",
+        "dex_beli_porsi_1j",
+        "dex_likuiditas_usd",
+        "dex_basis",
+        "z_dex_vol_1j_rel"
+      ],
+      "fomo": [
+        "fomo_trader_top",
+        "fomo_thesis"
+      ],
+      "ledger_bot": [
+        "n_posisi"
+      ],
+      "rugcheck": [
+        "rug_skor",
+        "rug_lp_terkunci",
+        "rug_bahaya",
+        "target_rug_bahaya"
+      ]
+    },
+    "usulan": {
+      "bayangan_min_siklus": 288,
+      "ic_buruk": 0.0,
+      "lulus_ic_selisih": 0.02,
+      "lulus_sah_min": 0.95,
+      "lulus_sumber_pp": 0.25,
+      "maks_per_hari": 3,
+      "n_min": 144,
+      "sumber_unggul_pp": 0.5
+    }
+  },
+  "sha": "0x41a1001dfbbfad72710f35bc682c4e129af33b3605285faee9177305f74113ff",
+  "status": "usulan"
+}

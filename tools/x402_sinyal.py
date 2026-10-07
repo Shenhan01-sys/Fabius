@@ -520,26 +520,44 @@ class Gate:
         return 200, {"buku": buku, "statistik": stat, "riwayat": riwayat, "model": next((r.get("model") for r in reversed(mine) if r.get("model")), None),
                      "agent_id": next((r.get("agent_id") for r in reversed(mine) if r.get("agent_id")), None)}
 
+    def eval_simpan(self, rec: dict) -> None:
+        """P156 (F4): rekaman evaluasi BAYANGAN per siklus -> /data/meja/evaluasi/<tgl>.jsonl. Tidak masuk Merkle root: semuanya dihitung ulang
+        dari rekaman yang dikomit + harga isi tercatat (`tools/meja_eval.py`)."""
+        with self.meja_lock:
+            path = self._meja_path("evaluasi", rec["siklus"])
+            os.makedirs(os.path.dirname(path), exist_ok=True)
+            with open(path, "a", encoding="utf-8", newline="\n") as f:
+                f.write(json.dumps(rec, ensure_ascii=False, sort_keys=True) + "\n")
+
     def meja_archive(self, date: str, live: bool = True) -> Tuple[int, dict]:
         """P163: `GET /desk/archive/<YYYY-MM-DD>`, baca saja, satu hari UTC - rekaman buku Fabius (agent "v2", apa adanya: nama field di dalam
         rekaman ikut di-hash jadi tidak diterjemahkan) + harga isi v2 per siklus, untuk replay deterministik (`tools/meja_replay.py`). Isinya sama
-        dengan yang sudah publik lewat /desk + /desk/proof; tanpa rekaman v1/agent supaya ringkas. Kunci pembungkus berbahasa Inggris."""
+        dengan yang sudah publik lewat /desk + /desk/proof; tanpa rekaman v1 supaya ringkas. Kunci pembungkus berbahasa Inggris.
+        P156 (F4): + `agent_records` (rekaman agent v2 apa adanya, ber-hash) + `evaluation` (rekaman evaluasi bayangan) + `data_health` (kesehatan
+        sumber per snapshot F1, publik seperti /desk/data) untuk `tools/meja_eval.py`."""
         try:
             if not re.fullmatch(r"\d{4}-\d\d-\d\d", date or ""):
                 raise ValueError
             time.strptime(date, "%Y-%m-%d")
         except ValueError:
             return 400, {"error": "date must be YYYY-MM-DD"}
-        out: Dict[str, list] = {"records": [], "cycles": []}
-        for kind in ("rekaman", "siklus"):
+        out: Dict[str, list] = {"records": [], "cycles": [], "agent_records": [], "evaluation": [], "data_health": []}
+        for kind in ("rekaman", "siklus", "evaluasi", "fitur"):
             path = os.path.join(self.meja_dir, kind, f"{date}.jsonl")
             if not os.path.exists(path):
                 continue
             with open(path, encoding="utf-8") as f:
                 for ln in f:
                     if kind == "rekaman":
-                        if '"v2"' in ln and (r := json.loads(ln)).get("agent") == "v2" and (live or r["siklus"] <= self.batas_publik()):   # P165
-                            out["records"].append(r)
+                        if '"agent": "v2' in ln and (r := json.loads(ln)).get("agent", "").startswith("v2") and (live or r["siklus"] <= self.batas_publik()):   # P165
+                            (out["records"] if r["agent"] == "v2" else out["agent_records"]).append(r)
+                    elif kind == "evaluasi":
+                        if ln.strip() and ((e := json.loads(ln)) and (live or e["siklus"] <= self.batas_publik())):                      # P165: sama
+                            out["evaluation"].append(e)
+                    elif kind == "fitur":
+                        if ln.strip():
+                            s = json.loads(ln)
+                            out["data_health"].append({"t": s.get("t"), "kesehatan": s.get("kesehatan"), "durasi_s": s.get("durasi_s")})
                     elif ln.strip():
                         s = json.loads(ln)
                         out["cycles"].append({"cycle": s["siklus"], "prices": s.get("harga_v2") or {}, "root": s.get("root"), "tx": s.get("tx"),
@@ -1495,6 +1513,7 @@ def v2_siklus(gate: "Gate", books: Dict[str, dict], ring: Dict[str, str], pasar2
         sampai = t0 + meja.PARAMS["siklus_s"] - 35                         # komit v1+v2 butuh ±10 s sebelum batas kontrak t0+300
         b2 = copy.deepcopy({k: v for k, v in books.items() if k.startswith(("v2", "_v2"))})
         r2 = {k: v for k, v in ring.items() if k.startswith("v2")}
+        f4 = f4_siapkan(gate, books, b2)                                    # P156: salinan SEBELUM siklus hidup (None = F4 mati / gagal disiapkan)
 
         def call2(ag, system, user):
             if ag.get("luar"):                                             # P166: agent luar menjawab lewat PULL, bukan dipanggil Fabius
@@ -1507,6 +1526,33 @@ def v2_siklus(gate: "Gate", books: Dict[str, dict], ring: Dict[str, str], pasar2
         hasil.update(rek=rek, harga=harga, books=b2, ring=r2)
     except Exception as e:  # noqa: BLE001 - v2 gagal tidak boleh mengganggu v1 / komit
         gate.log(f"meja v2 gagal: {type(e).__name__}: {str(e)[:200]}")
+        return
+    if f4:                                                                 # SK-M39: bayangan F4 di utas sendiri SESUDAH hasil hidup siap; komit tidak menunggu
+        threading.Thread(target=f4[2].bayangan_utas, args=(f4[1], f4[0], rek, harga, snap, pasar2, t0, hasil, gate.log), daemon=True).start()
+
+
+def f4_siapkan(gate: "Gate", books: Dict[str, dict], b2: Dict[str, dict]) -> Optional[tuple]:
+    """P156 (F4, `FABIUS_F4=bayangan`; bawaan mati): (salinan state + buku Fabius sebelum siklus, salinan state F4, modul). Galat apa pun = F4 siklus
+    ini dilewati (dicatat), siklus hidup jalan terus (SK-M39)."""
+    try:
+        import copy
+        import meja_eval as me
+        if me.mode() != "bayangan":
+            return None
+        return me.pra_siklus(b2), copy.deepcopy(books.get("_f4")), me
+    except Exception as e:  # noqa: BLE001
+        gate.log(f"f4 bayangan tidak disiapkan: {type(e).__name__}: {str(e)[:160]}")
+        return None
+
+
+def f4_gabung(gate: "Gate", books: Dict[str, dict], h2: dict) -> None:
+    """P156: di awal siklus berikutnya, hasil bayangan F4 siklus lalu (bila selesai dan v2 siklus itu digabung) -> `books["_f4"]` + rekaman evaluasi."""
+    try:
+        if h2.get("f4"):
+            import meja_eval as me
+            me.gabung(books, h2, gate.eval_simpan, gate.log)
+    except Exception as e:  # noqa: BLE001
+        gate.log(f"f4 gabung gagal: {type(e).__name__}: {str(e)[:160]}")
 
 
 def meja_loop(gate: "Gate", ev, stop: threading.Event) -> None:
@@ -1517,6 +1563,7 @@ def meja_loop(gate: "Gate", ev, stop: threading.Event) -> None:
     from evm import calldata, receipt_ok
     books, ring = gate.meja_muat()
     pasar2 = meja2.Pasar2()
+    h2_lalu: dict = {}                                                       # P156: hasil bayangan F4 siklus lalu digabung di awal siklus berikutnya
 
     def call(ag, system, user):
         return an.call_model({**ag, "effort": meja.PARAMS["effort"]}, system, user, timeout=meja.PARAMS["batas_jawab_s"] - 10)
@@ -1530,6 +1577,8 @@ def meja_loop(gate: "Gate", ev, stop: threading.Event) -> None:
             return
         try:
             gate.data.refresh()
+            f4_gabung(gate, books, h2_lalu)                                  # P156: sebelum utas v2 baru menyalin state F4
+            h2_lalu = {}
             acfg = an.load_cfg(os.path.join(gate.data.workdir, "deployments", "97.json"))
             desk = gate.data.cfg_raw().get("contracts", {}).get("DeskAnchor")
             agents = an.active_agents(acfg) if acfg.get("selection") else []
@@ -1544,6 +1593,7 @@ def meja_loop(gate: "Gate", ev, stop: threading.Event) -> None:
                 v1 = meja.siklus(t0, [a for a in agents if a["slug"] in V1_AGEN], books, ring, call, judul=judul, log=gate.log)
             th.join(timeout=max(0.0, t0 + meja.PARAMS["siklus_s"] - 25 - time.time()))
             rek, sik = rakit_siklus(t0, v1, h2, books, ring, gate.log)
+            h2["_digabung"], h2_lalu = "harga_v2" in sik, h2                 # P156: F4 siklus ini digabung hanya bila v2-nya masuk buku hidup
             if not sik["daun"]:
                 gate.meja_simpan(rek, sik, books, ring)
                 continue
@@ -1626,6 +1676,12 @@ def main() -> int:
     gate.log(f"meja AI 5 menit: {'NYALA, DeskAnchor ' + desk if (desk and aktif and pk) else 'mati (DeskAnchor/agent/kunci belum ada)'} | params {meja.params_sha()[:18]}")
     if desk and aktif and pk:
         threading.Thread(target=meja_loop, args=(gate, ev, stop), daemon=True).start()
+    try:                                                                     # P156: mode F4 tercetak di log mulai (bawaan MATI)
+        import meja_eval as me
+        gate.log(f"evaluasi meja F4 (P156): {me.mode().upper()} (FABIUS_F4={os.environ.get('FABIUS_F4') or '-'}) | params {me.params_sha()[:18]} | "
+                 f"kunci {me.status()['state']}")
+    except Exception as e:  # noqa: BLE001
+        gate.log(f"evaluasi meja F4 tidak terbaca: {type(e).__name__}: {str(e)[:160]}")
     import meja_data as md
     gate.log(f"data meja v2 (F1): NYALA | registry {md.registry_sha()[:18]} ({len(md.REGISTRY)} token) | FOMO {'ada kunci' if os.environ.get('FOMO_API_KEY') else 'tanpa kunci'}")
     threading.Thread(target=data_loop, args=(gate, stop), daemon=True).start()
