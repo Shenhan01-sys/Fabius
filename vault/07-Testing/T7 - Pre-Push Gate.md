@@ -55,6 +55,7 @@ $ python -X utf8 vault/scripts/prepush_check.py --all
 
 ## Kalau gagal
 
+- **Merah di push PERTAMA sebuah cabang baru** (Actions `attribution-guard`, log `memeriksa rentang: HEAD`) padahal commit barumu bersih: tanpa ref sebelumnya (`BEFORE` = nol) workflow memeriksa SELURUH riwayat (7 Okt: 2.752 commit) dan hanya menandai `08cb049`, keputusan builder di F-D22. Terukur dua kali: `claude/relaxed-sagan-p83xc8` (push pertama 6 Okt 22:53Z, run 37543413189) dan `claude/submission-deck-md2pptx` (7 Okt 13:59Z, run 37632991349); sembilan push berikutnya ke cabang pertama memakai rentang `<sebelum>..<sesudah>` dan hijau. Jangan menulis ulang riwayat karena itu: jalankan dulu `python -X utf8 vault/scripts/prepush_check.py --range origin/master..HEAD` di lokal, dan bila bersih, commitmu tidak bermasalah.
 - Exit 2 (bukan 1) = **tidak bisa menyimpulkan** (branch tanpa upstream / `git log` gagal). Jangan
   artikan itu sebagai lolos; pakai `--range origin/master..HEAD` eksplisit.
 - Menemukan pelanggaran di commit yang **belum ter-push**: `git commit --amend -F <pesan>` untuk yang
