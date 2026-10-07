@@ -12,86 +12,94 @@
   "submission": {
    "answers": [
     {
-     "bot": "B4-LISTING-FADE",
+     "bot": "B1-TREND",
      "confidence_pct": 46,
      "cycle": 1791000000,
      "exposure_pct": 55,
      "factors": [
-      "r_1j",
+      "r_4j",
+      "tren_60h",
       "vol_1j"
      ],
      "instruments": [
       {
-       "asset": "BNBUSDT",
+       "asset": "XRPUSDT",
        "confidence_pct": 68,
        "factors": [
-        "r_1j",
+        "tren_60h",
+        "r_4j",
         "vol_1j"
        ]
       },
       {
-       "asset": "SOLUSDT",
+       "asset": "BTCUSDT",
        "confidence_pct": 68,
        "factors": [
-        "r_1j",
+        "tren_60h",
+        "r_4j",
         "vol_1j"
        ]
       }
      ],
      "items_rejected": 0,
-     "reason": "B4-LISTING-FADE fits: fading short-term spikes. BNBUSDT leads on r_1j (+0.0020), SOLUSDT is second (+0.0008). Nothing on the input argues against it.",
+     "reason": "B1 is long only where tren_60h > 0: XRPUSDT +0.3172. BTCUSDT tren_60h +0.2799 is the second leg. R_4j and vol_1j do not argue against it.",
      "status": "ok",
-     "summary": "B4-LISTING-FADE: fading short-term spikes on BNBUSDT, SOLUSDT",
+     "summary": "B1-TREND: trend continuation on XRPUSDT, BTCUSDT",
      "veto": []
     },
     {
-     "bot": "B4-LISTING-FADE",
+     "bot": "B1-TREND",
      "confidence_pct": 82,
      "cycle": 1791003600,
      "exposure_pct": 52,
      "factors": [
-      "r_1j",
+      "r_4j",
+      "tren_60h",
       "vol_1j"
      ],
      "instruments": [
       {
-       "asset": "BNBUSDT",
+       "asset": "SOLUSDT",
        "confidence_pct": 86,
        "factors": [
-        "r_1j",
+        "tren_60h",
+        "r_4j",
         "vol_1j"
        ]
       },
       {
-       "asset": "SOLUSDT",
+       "asset": "XRPUSDT",
        "confidence_pct": 86,
        "factors": [
-        "r_1j",
+        "tren_60h",
+        "r_4j",
         "vol_1j"
        ]
       }
      ],
      "items_rejected": 0,
-     "reason": "B4-LISTING-FADE fits: fading short-term spikes. BNBUSDT leads on r_1j (+0.0065), SOLUSDT is second (-0.0019). Open interest is falling, so size stays moderate.",
+     "reason": "B1 is long only where tren_60h > 0: SOLUSDT +0.5471. XRPUSDT tren_60h +0.4346 is the second leg. R_4j is negative, a short pullback inside the trend, so size stays moderate.",
      "status": "ok",
-     "summary": "B4-LISTING-FADE: fading short-term spikes on BNBUSDT, SOLUSDT",
+     "summary": "B1-TREND: trend continuation on SOLUSDT, XRPUSDT",
      "veto": []
     },
     {
-     "bot": "B4-LISTING-FADE",
+     "bot": "B1-TREND",
      "confidence_pct": 52,
      "cycle": 1791007500,
      "exposure_pct": 39,
      "factors": [
-      "r_1j",
+      "r_4j",
+      "tren_60h",
       "vol_1j"
      ],
      "instruments": [
       {
-       "asset": "SOLUSDT",
+       "asset": "ETHUSDT",
        "confidence_pct": 71,
        "factors": [
-        "r_1j",
+        "tren_60h",
+        "r_4j",
         "vol_1j"
        ]
       },
@@ -99,48 +107,52 @@
        "asset": "BTCUSDT",
        "confidence_pct": 71,
        "factors": [
-        "r_1j",
+        "tren_60h",
+        "r_4j",
         "vol_1j"
        ]
       }
      ],
      "items_rejected": 0,
-     "reason": "I keep B4-LISTING-FADE because SOLUSDT r_1j +0.0098 and vol_1j +0.0118 still describe fading short-term spikes; open interest is falling, so size stays moderate.",
+     "reason": "ETHUSDT keeps the strongest tren_60h (+0.3285); r_4j -0.0080, vol_1j 0.0123. BTCUSDT tren_60h +0.2740 is the second leg. Caveat: r_4j is negative, a short pullback inside the trend, so size stays moderate.",
      "status": "ok",
-     "summary": "B4-LISTING-FADE: fading short-term spikes on SOLUSDT, BTCUSDT",
+     "summary": "B1-TREND: trend continuation on ETHUSDT, BTCUSDT",
      "veto": []
     },
     {
-     "bot": "B4-LISTING-FADE",
+     "bot": "B1-TREND",
      "confidence_pct": 67,
      "cycle": 1791011100,
      "exposure_pct": 49,
      "factors": [
-      "r_1j",
+      "r_4j",
+      "tren_60h",
       "vol_1j"
      ],
      "instruments": [
       {
-       "asset": "BTCUSDT",
+       "asset": "XRPUSDT",
        "confidence_pct": 79,
        "factors": [
-        "r_1j",
+        "tren_60h",
+        "r_4j",
         "vol_1j"
        ]
       },
       {
-       "asset": "SOLUSDT",
+       "asset": "BNBUSDT",
        "confidence_pct": 79,
        "factors": [
-        "r_1j",
+        "tren_60h",
+        "r_4j",
         "vol_1j"
        ]
       }
      ],
      "items_rejected": 0,
-     "reason": "I keep B4-LISTING-FADE because BTCUSDT r_1j +0.0052 and vol_1j +0.0040 still describe fading short-term spikes; open interest is falling, so size stays moderate.",
+     "reason": "XRPUSDT keeps the strongest tren_60h (+0.1581); r_4j +0.0150, vol_1j 0.0085. BNBUSDT tren_60h +0.1566 is the second leg. Caveat: r_4j and vol_1j do not argue against it.",
      "status": "ok",
-     "summary": "B4-LISTING-FADE: fading short-term spikes on BTCUSDT, SOLUSDT",
+     "summary": "B1-TREND: trend continuation on XRPUSDT, BNBUSDT",
      "veto": []
     },
     {
@@ -149,333 +161,354 @@
      "status": "terlambat"
     },
     {
-     "bot": "B6-BOUNCE",
+     "bot": "B1-TREND",
      "confidence_pct": 61,
      "cycle": 1791018600,
      "exposure_pct": 47,
      "factors": [
       "r_4j",
-      "z_10h"
+      "tren_60h",
+      "vol_1j"
      ],
      "instruments": [
       {
-       "asset": "BNBUSDT",
+       "asset": "XRPUSDT",
        "confidence_pct": 76,
        "factors": [
-        "z_10h",
-        "r_4j"
+        "tren_60h",
+        "r_4j",
+        "vol_1j"
        ]
       },
       {
-       "asset": "SOLUSDT",
+       "asset": "ETHUSDT",
        "confidence_pct": 76,
        "factors": [
-        "z_10h",
-        "r_4j"
+        "tren_60h",
+        "r_4j",
+        "vol_1j"
        ]
       }
      ],
      "items_rejected": 0,
-     "reason": "BNBUSDT and SOLUSDT rank top on z_10h (-1.4690, -0.9140). That is the B6-BOUNCE setup (a rebound after a stretched drop). Caveat: open interest is falling, so size stays moderate.",
+     "reason": "Trend rule holds on XRPUSDT (tren_60h +0.2185, r_4j +0.0157). ETHUSDT tren_60h +0.1499 is the second leg. R_4j and vol_1j do not argue against it.",
      "status": "ok",
-     "summary": "B6-BOUNCE: a rebound after a stretched drop on BNBUSDT, SOLUSDT",
+     "summary": "B1-TREND: trend continuation on XRPUSDT, ETHUSDT",
      "veto": []
     },
     {
-     "bot": "B6-BOUNCE",
+     "bot": "B1-TREND",
      "confidence_pct": 78,
      "cycle": 1791022500,
      "exposure_pct": 47,
      "factors": [
       "r_4j",
-      "z_10h"
+      "tren_60h",
+      "vol_1j"
      ],
      "instruments": [
       {
-       "asset": "ETHUSDT",
+       "asset": "BNBUSDT",
        "confidence_pct": 84,
        "factors": [
-        "z_10h",
-        "r_4j"
+        "tren_60h",
+        "r_4j",
+        "vol_1j"
        ]
       },
       {
-       "asset": "SOLUSDT",
+       "asset": "BTCUSDT",
        "confidence_pct": 84,
        "factors": [
-        "z_10h",
-        "r_4j"
+        "tren_60h",
+        "r_4j",
+        "vol_1j"
        ]
       }
      ],
      "items_rejected": 0,
-     "reason": "Same view as last cycle: a rebound after a stretched drop on ETHUSDT (z_10h -1.5520); SOLUSDT adds breadth. Nothing on the input argues against it.",
+     "reason": "B1 is long only where tren_60h > 0: BNBUSDT +0.5113. BTCUSDT tren_60h +0.2915 is the second leg. R_4j is negative, a short pullback inside the trend, so size stays moderate.",
      "status": "ok",
-     "summary": "B6-BOUNCE: a rebound after a stretched drop on ETHUSDT, SOLUSDT",
+     "summary": "B1-TREND: trend continuation on BNBUSDT, BTCUSDT",
      "veto": []
     },
     {
-     "bot": "B6-BOUNCE",
+     "bot": "B1-TREND",
      "confidence_pct": 77,
      "cycle": 1791026100,
      "exposure_pct": 36,
      "factors": [
       "r_4j",
-      "z_10h"
+      "tren_60h",
+      "vol_1j"
      ],
      "instruments": [
       {
        "asset": "ETHUSDT",
        "confidence_pct": 83,
        "factors": [
-        "z_10h",
-        "r_4j"
+        "tren_60h",
+        "r_4j",
+        "vol_1j"
        ]
       },
       {
-       "asset": "BTCUSDT",
+       "asset": "XRPUSDT",
        "confidence_pct": 83,
        "factors": [
-        "z_10h",
-        "r_4j"
+        "tren_60h",
+        "r_4j",
+        "vol_1j"
        ]
       }
      ],
      "items_rejected": 0,
-     "reason": "Same view as last cycle: a rebound after a stretched drop on ETHUSDT (z_10h -1.5770); BTCUSDT adds breadth. Open interest is falling, so size stays moderate.",
+     "reason": "B1 is long only where tren_60h > 0: ETHUSDT +0.1101. XRPUSDT tren_60h +0.0769 is the second leg. R_4j is negative, a short pullback inside the trend, so size stays moderate.",
      "status": "ok",
-     "summary": "B6-BOUNCE: a rebound after a stretched drop on ETHUSDT, BTCUSDT",
+     "summary": "B1-TREND: trend continuation on ETHUSDT, XRPUSDT",
      "veto": []
     },
     {
-     "bot": "B6-BOUNCE",
+     "bot": "B1-TREND",
      "confidence_pct": 79,
      "cycle": 1791030000,
      "exposure_pct": 55,
      "factors": [
       "r_4j",
-      "z_10h"
+      "tren_60h",
+      "vol_1j"
      ],
      "instruments": [
       {
-       "asset": "BTCUSDT",
+       "asset": "ETHUSDT",
        "confidence_pct": 84,
        "factors": [
-        "z_10h",
-        "r_4j"
-       ]
-      },
-      {
-       "asset": "BNBUSDT",
-       "confidence_pct": 84,
-       "factors": [
-        "z_10h",
-        "r_4j"
+        "tren_60h",
+        "r_4j",
+        "vol_1j"
        ]
       }
      ],
      "items_rejected": 0,
-     "reason": "B6-BOUNCE fits: a rebound after a stretched drop. BTCUSDT leads on z_10h (-0.2050), BNBUSDT is second (-0.0100). Open interest is falling, so size stays moderate.",
+     "reason": "ETHUSDT keeps the strongest tren_60h (+0.0107); r_4j -0.0231, vol_1j 0.0056. No second instrument trends up. Caveat: r_4j is negative, a short pullback inside the trend, so size stays moderate.",
      "status": "ok",
-     "summary": "B6-BOUNCE: a rebound after a stretched drop on BTCUSDT, BNBUSDT",
+     "summary": "B1-TREND: trend continuation on ETHUSDT",
      "veto": []
     },
     {
-     "bot": "B6-BOUNCE",
+     "bot": "B1-TREND",
      "confidence_pct": 38,
      "cycle": 1791033600,
      "exposure_pct": 51,
      "factors": [
       "r_4j",
-      "z_10h"
+      "tren_60h",
+      "vol_1j"
      ],
      "instruments": [
+      {
+       "asset": "BNBUSDT",
+       "confidence_pct": 64,
+       "factors": [
+        "tren_60h",
+        "r_4j",
+        "vol_1j"
+       ]
+      },
       {
        "asset": "XRPUSDT",
        "confidence_pct": 64,
        "factors": [
-        "z_10h",
-        "r_4j"
-       ]
-      },
-      {
-       "asset": "BTCUSDT",
-       "confidence_pct": 64,
-       "factors": [
-        "z_10h",
-        "r_4j"
+        "tren_60h",
+        "r_4j",
+        "vol_1j"
        ]
       }
      ],
      "items_rejected": 0,
-     "reason": "B6-BOUNCE fits: a rebound after a stretched drop. XRPUSDT leads on z_10h (-1.0510), BTCUSDT is second (-0.8760). Nothing on the input argues against it.",
+     "reason": "BNBUSDT keeps the strongest tren_60h (+0.5268); r_4j +0.0081, vol_1j 0.0078. XRPUSDT tren_60h +0.0983 is the second leg. Caveat: r_4j and vol_1j do not argue against it.",
      "status": "ok",
-     "summary": "B6-BOUNCE: a rebound after a stretched drop on XRPUSDT, BTCUSDT",
+     "summary": "B1-TREND: trend continuation on BNBUSDT, XRPUSDT",
      "veto": []
     },
     {
-     "bot": "B2-RS",
+     "bot": "B1-TREND",
      "confidence_pct": 48,
      "cycle": 1791037500,
      "exposure_pct": 33,
      "factors": [
-      "r_1j",
-      "r_4j"
+      "r_4j",
+      "tren_60h",
+      "vol_1j"
      ],
      "instruments": [
       {
-       "asset": "ETHUSDT",
+       "asset": "BNBUSDT",
        "confidence_pct": 69,
        "factors": [
+        "tren_60h",
         "r_4j",
-        "r_1j"
+        "vol_1j"
        ]
       },
       {
        "asset": "SOLUSDT",
        "confidence_pct": 69,
        "factors": [
+        "tren_60h",
         "r_4j",
-        "r_1j"
+        "vol_1j"
        ]
       }
      ],
      "items_rejected": 0,
-     "reason": "I keep B2-RS because ETHUSDT r_4j +0.0162 and r_1j -0.0042 still describe relative strength ranking; open interest is falling, so size stays moderate.",
+     "reason": "Trend rule holds on BNBUSDT (tren_60h +0.0815, r_4j +0.0044). SOLUSDT tren_60h +0.0760 is the second leg. Vol_1j is above normal, so conviction is capped.",
      "status": "ok",
-     "summary": "B2-RS: relative strength ranking on ETHUSDT, SOLUSDT",
+     "summary": "B1-TREND: trend continuation on BNBUSDT, SOLUSDT",
      "veto": []
     },
     {
-     "bot": "B2-RS",
+     "bot": "B1-TREND",
      "confidence_pct": 42,
      "cycle": 1791041100,
      "exposure_pct": 65,
      "factors": [
-      "r_1j",
-      "r_4j"
+      "r_4j",
+      "tren_60h",
+      "vol_1j"
      ],
      "instruments": [
       {
-       "asset": "BTCUSDT",
+       "asset": "SOLUSDT",
        "confidence_pct": 66,
        "factors": [
+        "tren_60h",
         "r_4j",
-        "r_1j"
+        "vol_1j"
        ]
       },
-      {
-       "asset": "BNBUSDT",
-       "confidence_pct": 66,
-       "factors": [
-        "r_4j",
-        "r_1j"
-       ]
-      }
-     ],
-     "items_rejected": 0,
-     "reason": "I keep B2-RS because BTCUSDT r_4j +0.0164 and r_1j +0.0019 still describe relative strength ranking; open interest is falling, so size stays moderate.",
-     "status": "ok",
-     "summary": "B2-RS: relative strength ranking on BTCUSDT, BNBUSDT",
-     "veto": []
-    },
-    {
-     "bot": "B2-RS",
-     "confidence_pct": 40,
-     "cycle": 1791045000,
-     "exposure_pct": 36,
-     "factors": [
-      "r_1j",
-      "r_4j"
-     ],
-     "instruments": [
       {
        "asset": "ETHUSDT",
-       "confidence_pct": 65,
+       "confidence_pct": 66,
        "factors": [
+        "tren_60h",
         "r_4j",
-        "r_1j"
-       ]
-      },
-      {
-       "asset": "XRPUSDT",
-       "confidence_pct": 65,
-       "factors": [
-        "r_4j",
-        "r_1j"
+        "vol_1j"
        ]
       }
      ],
      "items_rejected": 0,
-     "reason": "ETHUSDT and XRPUSDT rank top on r_4j (+0.0145, +0.0025). That is the B2-RS setup (relative strength ranking). Caveat: nothing on the input argues against it.",
+     "reason": "Trend rule holds on SOLUSDT (tren_60h +0.3071, r_4j -0.0059). ETHUSDT tren_60h +0.1769 is the second leg. R_4j is negative, a short pullback inside the trend, so size stays moderate.",
      "status": "ok",
-     "summary": "B2-RS: relative strength ranking on ETHUSDT, XRPUSDT",
+     "summary": "B1-TREND: trend continuation on SOLUSDT, ETHUSDT",
      "veto": []
     },
     {
-     "bot": "B2-RS",
+     "bot": "B1-TREND",
+     "confidence_pct": 37,
+     "cycle": 1791045000,
+     "exposure_pct": 43,
+     "factors": [
+      "r_4j",
+      "tren_60h",
+      "vol_1j"
+     ],
+     "instruments": [
+      {
+       "asset": "XRPUSDT",
+       "confidence_pct": 64,
+       "factors": [
+        "tren_60h",
+        "r_4j",
+        "vol_1j"
+       ]
+      },
+      {
+       "asset": "SOLUSDT",
+       "confidence_pct": 64,
+       "factors": [
+        "tren_60h",
+        "r_4j",
+        "vol_1j"
+       ]
+      }
+     ],
+     "items_rejected": 0,
+     "reason": "B1 is long only where tren_60h > 0: XRPUSDT +0.0980. SOLUSDT tren_60h +0.0185 is the second leg. R_4j and vol_1j do not argue against it.",
+     "status": "ok",
+     "summary": "B1-TREND: trend continuation on XRPUSDT, SOLUSDT",
+     "veto": []
+    },
+    {
+     "bot": "B1-TREND",
      "confidence_pct": 83,
      "cycle": 1791048600,
      "exposure_pct": 37,
      "factors": [
-      "r_1j",
-      "r_4j"
+      "r_4j",
+      "tren_60h",
+      "vol_1j"
      ],
      "instruments": [
-      {
-       "asset": "ETHUSDT",
-       "confidence_pct": 86,
-       "factors": [
-        "r_4j",
-        "r_1j"
-       ]
-      },
       {
        "asset": "BTCUSDT",
        "confidence_pct": 86,
        "factors": [
+        "tren_60h",
         "r_4j",
-        "r_1j"
+        "vol_1j"
+       ]
+      },
+      {
+       "asset": "SOLUSDT",
+       "confidence_pct": 86,
+       "factors": [
+        "tren_60h",
+        "r_4j",
+        "vol_1j"
        ]
       }
      ],
      "items_rejected": 0,
-     "reason": "ETHUSDT and BTCUSDT rank top on r_4j (+0.0069, +0.0040). That is the B2-RS setup (relative strength ranking). Caveat: nothing on the input argues against it.",
+     "reason": "B1 is long only where tren_60h > 0: BTCUSDT +0.2430. SOLUSDT tren_60h +0.0337 is the second leg. R_4j and vol_1j do not argue against it.",
      "status": "ok",
-     "summary": "B2-RS: relative strength ranking on ETHUSDT, BTCUSDT",
+     "summary": "B1-TREND: trend continuation on BTCUSDT, SOLUSDT",
      "veto": []
     },
     {
-     "bot": "B2-RS",
+     "bot": "B1-TREND",
      "confidence_pct": 64,
      "cycle": 1791052500,
      "exposure_pct": 52,
      "factors": [
-      "r_1j",
-      "r_4j"
+      "r_4j",
+      "tren_60h",
+      "vol_1j"
      ],
      "instruments": [
-      {
-       "asset": "BTCUSDT",
-       "confidence_pct": 77,
-       "factors": [
-        "r_4j",
-        "r_1j"
-       ]
-      },
       {
        "asset": "ETHUSDT",
        "confidence_pct": 77,
        "factors": [
+        "tren_60h",
         "r_4j",
-        "r_1j"
+        "vol_1j"
+       ]
+      },
+      {
+       "asset": "XRPUSDT",
+       "confidence_pct": 77,
+       "factors": [
+        "tren_60h",
+        "r_4j",
+        "vol_1j"
        ]
       }
      ],
      "items_rejected": 0,
-     "reason": "Same view as last cycle: relative strength ranking on BTCUSDT (r_4j +0.0119); ETHUSDT adds breadth. Nothing on the input argues against it.",
+     "reason": "ETHUSDT keeps the strongest tren_60h (+0.1131); r_4j +0.0030, vol_1j 0.0088. XRPUSDT tren_60h +0.0621 is the second leg. Caveat: r_4j and vol_1j do not argue against it.",
      "status": "ok",
-     "summary": "B2-RS: relative strength ranking on BTCUSDT, ETHUSDT",
+     "summary": "B1-TREND: trend continuation on ETHUSDT, XRPUSDT",
      "veto": []
     },
     {
@@ -485,7 +518,8 @@
      "exposure_pct": 61,
      "factors": [
       "r_4j",
-      "tren_60h"
+      "tren_60h",
+      "vol_1j"
      ],
      "instruments": [
       {
@@ -493,7 +527,8 @@
        "confidence_pct": 71,
        "factors": [
         "tren_60h",
-        "r_4j"
+        "r_4j",
+        "vol_1j"
        ]
       },
       {
@@ -501,12 +536,13 @@
        "confidence_pct": 71,
        "factors": [
         "tren_60h",
-        "r_4j"
+        "r_4j",
+        "vol_1j"
        ]
       }
      ],
      "items_rejected": 0,
-     "reason": "Same view as last cycle: trend continuation on SOLUSDT (tren_60h +0.5359); ETHUSDT adds breadth. Open interest is falling, so size stays moderate.",
+     "reason": "SOLUSDT keeps the strongest tren_60h (+0.5359); r_4j -0.0242, vol_1j 0.0111. ETHUSDT tren_60h +0.3308 is the second leg. Caveat: r_4j is negative, a short pullback inside the trend, so size stays moderate.",
      "status": "ok",
      "summary": "B1-TREND: trend continuation on SOLUSDT, ETHUSDT",
      "veto": []
@@ -518,7 +554,8 @@
      "exposure_pct": 62,
      "factors": [
       "r_4j",
-      "tren_60h"
+      "tren_60h",
+      "vol_1j"
      ],
      "instruments": [
       {
@@ -526,7 +563,8 @@
        "confidence_pct": 81,
        "factors": [
         "tren_60h",
-        "r_4j"
+        "r_4j",
+        "vol_1j"
        ]
       },
       {
@@ -534,12 +572,13 @@
        "confidence_pct": 81,
        "factors": [
         "tren_60h",
-        "r_4j"
+        "r_4j",
+        "vol_1j"
        ]
       }
      ],
      "items_rejected": 0,
-     "reason": "B1-TREND fits: trend continuation. ETHUSDT leads on tren_60h (+0.2863), BTCUSDT is second (+0.0481). Funding is already elevated, so the position stays small.",
+     "reason": "Trend rule holds on ETHUSDT (tren_60h +0.2863, r_4j -0.0034). BTCUSDT tren_60h +0.0481 is the second leg. R_4j is negative, a short pullback inside the trend, so size stays moderate.",
      "status": "ok",
      "summary": "B1-TREND: trend continuation on ETHUSDT, BTCUSDT",
      "veto": []
@@ -551,7 +590,8 @@
      "exposure_pct": 70,
      "factors": [
       "r_4j",
-      "tren_60h"
+      "tren_60h",
+      "vol_1j"
      ],
      "instruments": [
       {
@@ -559,22 +599,15 @@
        "confidence_pct": 84,
        "factors": [
         "tren_60h",
-        "r_4j"
-       ]
-      },
-      {
-       "asset": "ETHUSDT",
-       "confidence_pct": 84,
-       "factors": [
-        "tren_60h",
-        "r_4j"
+        "r_4j",
+        "vol_1j"
        ]
       }
      ],
      "items_rejected": 0,
-     "reason": "B1-TREND fits: trend continuation. XRPUSDT leads on tren_60h (+0.4446), ETHUSDT is second (-0.0198). Funding is already elevated, so the position stays small.",
+     "reason": "Trend rule holds on XRPUSDT (tren_60h +0.4446, r_4j +0.0029). No second instrument trends up. R_4j and vol_1j do not argue against it.",
      "status": "ok",
-     "summary": "B1-TREND: trend continuation on XRPUSDT, ETHUSDT",
+     "summary": "B1-TREND: trend continuation on XRPUSDT",
      "veto": []
     },
     {
@@ -584,7 +617,8 @@
      "exposure_pct": 52,
      "factors": [
       "r_4j",
-      "tren_60h"
+      "tren_60h",
+      "vol_1j"
      ],
      "instruments": [
       {
@@ -592,7 +626,8 @@
        "confidence_pct": 65,
        "factors": [
         "tren_60h",
-        "r_4j"
+        "r_4j",
+        "vol_1j"
        ]
       },
       {
@@ -600,12 +635,13 @@
        "confidence_pct": 65,
        "factors": [
         "tren_60h",
-        "r_4j"
+        "r_4j",
+        "vol_1j"
        ]
       }
      ],
      "items_rejected": 0,
-     "reason": "I keep B1-TREND because ETHUSDT tren_60h +0.1765 and r_4j +0.0118 still describe trend continuation; nothing on the input argues against it.",
+     "reason": "B1 is long only where tren_60h > 0: ETHUSDT +0.1765. BTCUSDT tren_60h +0.1201 is the second leg. R_4j and vol_1j do not argue against it.",
      "status": "ok",
      "summary": "B1-TREND: trend continuation on ETHUSDT, BTCUSDT",
      "veto": []
@@ -617,7 +653,8 @@
      "exposure_pct": 43,
      "factors": [
       "r_4j",
-      "tren_60h"
+      "tren_60h",
+      "vol_1j"
      ],
      "instruments": [
       {
@@ -625,7 +662,8 @@
        "confidence_pct": 65,
        "factors": [
         "tren_60h",
-        "r_4j"
+        "r_4j",
+        "vol_1j"
        ]
       },
       {
@@ -633,146 +671,159 @@
        "confidence_pct": 65,
        "factors": [
         "tren_60h",
-        "r_4j"
+        "r_4j",
+        "vol_1j"
        ]
       }
      ],
      "items_rejected": 0,
-     "reason": "I keep B1-TREND because BNBUSDT tren_60h +0.2091 and r_4j -0.0293 still describe trend continuation; open interest is falling, so size stays moderate.",
+     "reason": "B1 is long only where tren_60h > 0: BNBUSDT +0.2091. ETHUSDT tren_60h +0.0138 is the second leg. R_4j is negative, a short pullback inside the trend, so size stays moderate.",
      "status": "ok",
      "summary": "B1-TREND: trend continuation on BNBUSDT, ETHUSDT",
      "veto": []
     },
     {
-     "bot": "B6-BOUNCE",
+     "bot": "B1-TREND",
      "confidence_pct": 72,
      "cycle": 1791075000,
      "exposure_pct": 46,
      "factors": [
       "r_4j",
-      "z_10h"
+      "tren_60h",
+      "vol_1j"
      ],
      "instruments": [
+      {
+       "asset": "BTCUSDT",
+       "confidence_pct": 81,
+       "factors": [
+        "tren_60h",
+        "r_4j",
+        "vol_1j"
+       ]
+      },
       {
        "asset": "SOLUSDT",
        "confidence_pct": 81,
        "factors": [
-        "z_10h",
-        "r_4j"
-       ]
-      },
-      {
-       "asset": "ETHUSDT",
-       "confidence_pct": 81,
-       "factors": [
-        "z_10h",
-        "r_4j"
+        "tren_60h",
+        "r_4j",
+        "vol_1j"
        ]
       }
      ],
      "items_rejected": 0,
-     "reason": "SOLUSDT and ETHUSDT rank top on z_10h (-1.1580, -0.2210). That is the B6-BOUNCE setup (a rebound after a stretched drop). Caveat: funding is already elevated, so the position stays small.",
+     "reason": "BTCUSDT keeps the strongest tren_60h (+0.5399); r_4j -0.0206, vol_1j 0.0046. SOLUSDT tren_60h +0.1573 is the second leg. Caveat: r_4j is negative, a short pullback inside the trend, so size stays moderate.",
      "status": "ok",
-     "summary": "B6-BOUNCE: a rebound after a stretched drop on SOLUSDT, ETHUSDT",
+     "summary": "B1-TREND: trend continuation on BTCUSDT, SOLUSDT",
      "veto": []
     },
     {
-     "bot": "B6-BOUNCE",
+     "bot": "B1-TREND",
      "confidence_pct": 82,
      "cycle": 1791078600,
      "exposure_pct": 53,
      "factors": [
       "r_4j",
-      "z_10h"
+      "tren_60h",
+      "vol_1j"
      ],
      "instruments": [
-      {
-       "asset": "XRPUSDT",
-       "confidence_pct": 86,
-       "factors": [
-        "z_10h",
-        "r_4j"
-       ]
-      },
       {
        "asset": "BTCUSDT",
        "confidence_pct": 86,
        "factors": [
-        "z_10h",
-        "r_4j"
+        "tren_60h",
+        "r_4j",
+        "vol_1j"
+       ]
+      },
+      {
+       "asset": "SOLUSDT",
+       "confidence_pct": 86,
+       "factors": [
+        "tren_60h",
+        "r_4j",
+        "vol_1j"
        ]
       }
      ],
      "items_rejected": 0,
-     "reason": "XRPUSDT and BTCUSDT rank top on z_10h (-0.9600, -0.6100). That is the B6-BOUNCE setup (a rebound after a stretched drop). Caveat: nothing on the input argues against it.",
+     "reason": "BTCUSDT keeps the strongest tren_60h (+0.3456); r_4j +0.0028, vol_1j 0.0112. SOLUSDT tren_60h +0.2222 is the second leg. Caveat: vol_1j is above normal, so conviction is capped.",
      "status": "ok",
-     "summary": "B6-BOUNCE: a rebound after a stretched drop on XRPUSDT, BTCUSDT",
+     "summary": "B1-TREND: trend continuation on BTCUSDT, SOLUSDT",
      "veto": []
     },
     {
-     "bot": "B6-BOUNCE",
+     "bot": "B1-TREND",
      "confidence_pct": 40,
      "cycle": 1791082500,
      "exposure_pct": 59,
      "factors": [
       "r_4j",
-      "z_10h"
+      "tren_60h",
+      "vol_1j"
      ],
      "instruments": [
       {
-       "asset": "BTCUSDT",
+       "asset": "ETHUSDT",
        "confidence_pct": 65,
        "factors": [
-        "z_10h",
-        "r_4j"
+        "tren_60h",
+        "r_4j",
+        "vol_1j"
        ]
       },
       {
-       "asset": "SOLUSDT",
+       "asset": "BNBUSDT",
        "confidence_pct": 65,
        "factors": [
-        "z_10h",
-        "r_4j"
+        "tren_60h",
+        "r_4j",
+        "vol_1j"
        ]
       }
      ],
      "items_rejected": 0,
-     "reason": "Same view as last cycle: a rebound after a stretched drop on BTCUSDT (z_10h -1.6970); SOLUSDT adds breadth. Open interest is falling, so size stays moderate.",
+     "reason": "Trend rule holds on ETHUSDT (tren_60h +0.4153, r_4j -0.0196). BNBUSDT tren_60h +0.3266 is the second leg. R_4j is negative, a short pullback inside the trend, so size stays moderate.",
      "status": "ok",
-     "summary": "B6-BOUNCE: a rebound after a stretched drop on BTCUSDT, SOLUSDT",
+     "summary": "B1-TREND: trend continuation on ETHUSDT, BNBUSDT",
      "veto": []
     },
     {
-     "bot": "B6-BOUNCE",
+     "bot": "B1-TREND",
      "confidence_pct": 53,
      "cycle": 1791086100,
      "exposure_pct": 38,
      "factors": [
       "r_4j",
-      "z_10h"
+      "tren_60h",
+      "vol_1j"
      ],
      "instruments": [
-      {
-       "asset": "BNBUSDT",
-       "confidence_pct": 72,
-       "factors": [
-        "z_10h",
-        "r_4j"
-       ]
-      },
       {
        "asset": "SOLUSDT",
        "confidence_pct": 72,
        "factors": [
-        "z_10h",
-        "r_4j"
+        "tren_60h",
+        "r_4j",
+        "vol_1j"
+       ]
+      },
+      {
+       "asset": "BNBUSDT",
+       "confidence_pct": 72,
+       "factors": [
+        "tren_60h",
+        "r_4j",
+        "vol_1j"
        ]
       }
      ],
      "items_rejected": 0,
-     "reason": "Same view as last cycle: a rebound after a stretched drop on BNBUSDT (z_10h -0.4570); SOLUSDT adds breadth. Open interest is falling, so size stays moderate.",
+     "reason": "Trend rule holds on SOLUSDT (tren_60h +0.3624, r_4j -0.0130). BNBUSDT tren_60h +0.2284 is the second leg. R_4j is negative, a short pullback inside the trend, so size stays moderate.",
      "status": "ok",
-     "summary": "B6-BOUNCE: a rebound after a stretched drop on BNBUSDT, SOLUSDT",
+     "summary": "B1-TREND: trend continuation on SOLUSDT, BNBUSDT",
      "veto": []
     }
    ],
@@ -804,20 +855,20 @@
      "buckets": [
       {
        "confidence_range": "0-49",
-       "hit_pct": 36.2,
-       "mean_next_cycle_return_bps": -5.15,
+       "hit_pct": 37.2,
+       "mean_next_cycle_return_bps": -4.83,
        "n": 94
       },
       {
        "confidence_range": "50-69",
-       "hit_pct": 62.4,
-       "mean_next_cycle_return_bps": 2.83,
+       "hit_pct": 61.5,
+       "mean_next_cycle_return_bps": 2.54,
        "n": 109
       },
       {
        "confidence_range": "70-89",
        "hit_pct": 77.8,
-       "mean_next_cycle_return_bps": 8.91,
+       "mean_next_cycle_return_bps": 9.14,
        "n": 81
       },
       {
@@ -827,72 +878,74 @@
        "n": 0
       }
      ],
-     "mean_pct": 58.7,
+     "mean_pct": 58.6,
      "outcome_definition": "change of this agent's own desk book equity from the cycle to its next reviewed cycle"
     },
     "counterfactual": {
      "cycles_scored": 285,
      "method": "mean(k x bot score) over the cycle's valid active answers, with vs without this agent; hysteresis ignored",
-     "top_bot_changed_if_counted": 31
+     "top_bot_changed_if_counted": 24
     },
     "independence": {
      "cycles_with_consensus": 285,
      "house_agents": {
       "glm": {
        "cycles_both_valid": 285,
-       "mean_score_corr": 0.358,
-       "same_bot_pct": 66.7
+       "mean_score_corr": 0.041,
+       "same_bot_pct": 17.5
       },
       "muse": {
        "cycles_both_valid": 285,
-       "mean_score_corr": 0.382,
-       "same_bot_pct": 68.4
+       "mean_score_corr": 0.056,
+       "same_bot_pct": 19.6
       },
       "qwen": {
        "cycles_both_valid": 285,
-       "mean_score_corr": 0.36,
-       "same_bot_pct": 68.1
+       "mean_score_corr": 0.028,
+       "same_bot_pct": 18.2
       }
      },
-     "mean_score_corr_with_consensus": 0.484,
-     "same_bot_as_consensus_pct": 73.3,
-     "same_bot_as_previous_cycle_consensus_pct": 72.2
+     "mean_score_corr_with_consensus": 0.056,
+     "same_bot_as_consensus_pct": 19.6,
+     "same_bot_as_previous_cycle_consensus_pct": 19.7
     },
     "manipulation": {
      "bots_chosen": {
-      "B1-TREND": 60,
-      "B2-RS": 59,
-      "B4-LISTING-FADE": 59,
-      "B6-BOUNCE": 107
+      "B1-TREND": 281,
+      "B5-CORE-RWA": 4
      },
      "exposure_100_pct": 0.0,
-     "mean_instruments": 2.0,
+     "mean_instruments": 1.91,
      "veto_total": 0
     },
     "sample_inputs": [
      {
       "cycle": 1791000000,
       "features_given": {
-       "BNBUSDT": {
-        "r_1j": 0.00203,
-        "vol_1j": 0.00442
+       "BTCUSDT": {
+        "r_4j": -0.00572,
+        "tren_60h": 0.2799,
+        "vol_1j": 0.0037
        },
-       "SOLUSDT": {
-        "r_1j": 0.00077,
-        "vol_1j": 0.00923
+       "XRPUSDT": {
+        "r_4j": 0.02757,
+        "tren_60h": 0.3172,
+        "vol_1j": 0.00299
        }
       }
      },
      {
       "cycle": 1791003600,
       "features_given": {
-       "BNBUSDT": {
-        "r_1j": 0.00645,
-        "vol_1j": 0.00512
-       },
        "SOLUSDT": {
-        "r_1j": -0.00187,
+        "r_4j": -0.00141,
+        "tren_60h": 0.5471,
         "vol_1j": 0.00958
+       },
+       "XRPUSDT": {
+        "r_4j": -0.00825,
+        "tren_60h": 0.4346,
+        "vol_1j": 0.01263
        }
       }
      },
@@ -900,129 +953,144 @@
       "cycle": 1791007500,
       "features_given": {
        "BTCUSDT": {
-        "r_1j": 0.00388,
+        "r_4j": -0.00153,
+        "tren_60h": 0.274,
         "vol_1j": 0.00889
        },
-       "SOLUSDT": {
-        "r_1j": 0.00976,
-        "vol_1j": 0.01177
+       "ETHUSDT": {
+        "r_4j": -0.00797,
+        "tren_60h": 0.3285,
+        "vol_1j": 0.0123
        }
       }
      },
      {
       "cycle": 1791011100,
       "features_given": {
-       "BTCUSDT": {
-        "r_1j": 0.00516,
-        "vol_1j": 0.00401
+       "BNBUSDT": {
+        "r_4j": -0.01385,
+        "tren_60h": 0.1566,
+        "vol_1j": 0.0033
        },
-       "SOLUSDT": {
-        "r_1j": 0.00449,
-        "vol_1j": 0.00522
+       "XRPUSDT": {
+        "r_4j": 0.01496,
+        "tren_60h": 0.1581,
+        "vol_1j": 0.00853
        }
       }
      },
      {
       "cycle": 1791018600,
       "features_given": {
-       "BNBUSDT": {
-        "r_4j": -0.01474,
-        "z_10h": -1.469
+       "ETHUSDT": {
+        "r_4j": -0.01506,
+        "tren_60h": 0.1499,
+        "vol_1j": 0.00972
        },
-       "SOLUSDT": {
-        "r_4j": 0.0044,
-        "z_10h": -0.914
+       "XRPUSDT": {
+        "r_4j": 0.01566,
+        "tren_60h": 0.2185,
+        "vol_1j": 0.00696
        }
       }
      },
      {
       "cycle": 1791022500,
       "features_given": {
-       "ETHUSDT": {
-        "r_4j": -0.00039,
-        "z_10h": -1.552
+       "BNBUSDT": {
+        "r_4j": -0.00851,
+        "tren_60h": 0.5113,
+        "vol_1j": 0.00657
        },
-       "SOLUSDT": {
-        "r_4j": 8e-05,
-        "z_10h": -0.773
+       "BTCUSDT": {
+        "r_4j": -0.01601,
+        "tren_60h": 0.2915,
+        "vol_1j": 0.00634
        }
       }
      },
      {
       "cycle": 1791026100,
       "features_given": {
-       "BTCUSDT": {
-        "r_4j": 0.00658,
-        "z_10h": 0.06
-       },
        "ETHUSDT": {
         "r_4j": -0.01353,
-        "z_10h": -1.577
+        "tren_60h": 0.1101,
+        "vol_1j": 0.01011
+       },
+       "XRPUSDT": {
+        "r_4j": 0.00907,
+        "tren_60h": 0.0769,
+        "vol_1j": 0.01072
        }
       }
      },
      {
       "cycle": 1791030000,
       "features_given": {
-       "BNBUSDT": {
-        "r_4j": -0.00611,
-        "z_10h": -0.01
-       },
-       "BTCUSDT": {
-        "r_4j": -0.0132,
-        "z_10h": -0.205
+       "ETHUSDT": {
+        "r_4j": -0.02308,
+        "tren_60h": 0.0107,
+        "vol_1j": 0.00559
        }
       }
      },
      {
       "cycle": 1791033600,
       "features_given": {
-       "BTCUSDT": {
-        "r_4j": -0.00177,
-        "z_10h": -0.876
+       "BNBUSDT": {
+        "r_4j": 0.00808,
+        "tren_60h": 0.5268,
+        "vol_1j": 0.00781
        },
        "XRPUSDT": {
         "r_4j": 0.01575,
-        "z_10h": -1.051
+        "tren_60h": 0.0983,
+        "vol_1j": 0.00612
        }
       }
      },
      {
       "cycle": 1791037500,
       "features_given": {
-       "ETHUSDT": {
-        "r_1j": -0.00424,
-        "r_4j": 0.01618
+       "BNBUSDT": {
+        "r_4j": 0.0044,
+        "tren_60h": 0.0815,
+        "vol_1j": 0.01281
        },
        "SOLUSDT": {
-        "r_1j": 0.00582,
-        "r_4j": 0.00973
+        "r_4j": 0.00973,
+        "tren_60h": 0.076,
+        "vol_1j": 0.01061
        }
       }
      },
      {
       "cycle": 1791041100,
       "features_given": {
-       "BNBUSDT": {
-        "r_1j": 0.00228,
-        "r_4j": 0.01432
+       "ETHUSDT": {
+        "r_4j": -0.0365,
+        "tren_60h": 0.1769,
+        "vol_1j": 0.00772
        },
-       "BTCUSDT": {
-        "r_1j": 0.00193,
-        "r_4j": 0.01643
+       "SOLUSDT": {
+        "r_4j": -0.00586,
+        "tren_60h": 0.3071,
+        "vol_1j": 0.00793
        }
       }
      },
      {
       "cycle": 1791045000,
       "features_given": {
-       "ETHUSDT": {
-        "r_1j": -0.0023,
-        "r_4j": 0.01446
+       "SOLUSDT": {
+        "r_4j": -0.00612,
+        "tren_60h": 0.0185,
+        "vol_1j": 0.00827
        },
        "XRPUSDT": {
-        "r_1j": -0.00929,
-        "r_4j": 0.00246
+        "r_4j": 0.00246,
+        "tren_60h": 0.098,
+        "vol_1j": 0.0055
        }
       }
      },
@@ -1030,25 +1098,29 @@
       "cycle": 1791048600,
       "features_given": {
        "BTCUSDT": {
-        "r_1j": 0.01175,
-        "r_4j": 0.00401
+        "r_4j": 0.00401,
+        "tren_60h": 0.243,
+        "vol_1j": 0.0073
        },
-       "ETHUSDT": {
-        "r_1j": 0.00409,
-        "r_4j": 0.00687
+       "SOLUSDT": {
+        "r_4j": 0.00221,
+        "tren_60h": 0.0337,
+        "vol_1j": 0.00872
        }
       }
      },
      {
       "cycle": 1791052500,
       "features_given": {
-       "BTCUSDT": {
-        "r_1j": -0.00408,
-        "r_4j": 0.01192
-       },
        "ETHUSDT": {
-        "r_1j": -0.00417,
-        "r_4j": 0.00301
+        "r_4j": 0.00301,
+        "tren_60h": 0.1131,
+        "vol_1j": 0.00883
+       },
+       "XRPUSDT": {
+        "r_4j": -0.01431,
+        "tren_60h": 0.0621,
+        "vol_1j": 0.00988
        }
       }
      },
@@ -1057,11 +1129,13 @@
       "features_given": {
        "ETHUSDT": {
         "r_4j": -0.00162,
-        "tren_60h": 0.3308
+        "tren_60h": 0.3308,
+        "vol_1j": 0.00582
        },
        "SOLUSDT": {
         "r_4j": -0.02421,
-        "tren_60h": 0.5359
+        "tren_60h": 0.5359,
+        "vol_1j": 0.01111
        }
       }
      },
@@ -1070,24 +1144,23 @@
       "features_given": {
        "BTCUSDT": {
         "r_4j": 0.00891,
-        "tren_60h": 0.0481
+        "tren_60h": 0.0481,
+        "vol_1j": 0.0063
        },
        "ETHUSDT": {
         "r_4j": -0.00336,
-        "tren_60h": 0.2863
+        "tren_60h": 0.2863,
+        "vol_1j": 0.0103
        }
       }
      },
      {
       "cycle": 1791063600,
       "features_given": {
-       "ETHUSDT": {
-        "r_4j": 0.02449,
-        "tren_60h": -0.0198
-       },
        "XRPUSDT": {
         "r_4j": 0.00295,
-        "tren_60h": 0.4446
+        "tren_60h": 0.4446,
+        "vol_1j": 0.00641
        }
       }
      },
@@ -1096,11 +1169,13 @@
       "features_given": {
        "BTCUSDT": {
         "r_4j": 0.00285,
-        "tren_60h": 0.1201
+        "tren_60h": 0.1201,
+        "vol_1j": 0.01106
        },
        "ETHUSDT": {
         "r_4j": 0.01178,
-        "tren_60h": 0.1765
+        "tren_60h": 0.1765,
+        "vol_1j": 0.00937
        }
       }
      },
@@ -1109,24 +1184,28 @@
       "features_given": {
        "BNBUSDT": {
         "r_4j": -0.02925,
-        "tren_60h": 0.2091
+        "tren_60h": 0.2091,
+        "vol_1j": 0.00621
        },
        "ETHUSDT": {
         "r_4j": 0.00145,
-        "tren_60h": 0.0138
+        "tren_60h": 0.0138,
+        "vol_1j": 0.0093
        }
       }
      },
      {
       "cycle": 1791075000,
       "features_given": {
-       "ETHUSDT": {
-        "r_4j": -0.00483,
-        "z_10h": -0.221
+       "BTCUSDT": {
+        "r_4j": -0.02057,
+        "tren_60h": 0.5399,
+        "vol_1j": 0.00455
        },
        "SOLUSDT": {
         "r_4j": 0.02205,
-        "z_10h": -1.158
+        "tren_60h": 0.1573,
+        "vol_1j": 0.01078
        }
       }
      },
@@ -1135,24 +1214,28 @@
       "features_given": {
        "BTCUSDT": {
         "r_4j": 0.00283,
-        "z_10h": -0.61
+        "tren_60h": 0.3456,
+        "vol_1j": 0.01116
        },
-       "XRPUSDT": {
-        "r_4j": 0.0201,
-        "z_10h": -0.96
+       "SOLUSDT": {
+        "r_4j": 0.00959,
+        "tren_60h": 0.2222,
+        "vol_1j": 0.00733
        }
       }
      },
      {
       "cycle": 1791082500,
       "features_given": {
-       "BTCUSDT": {
-        "r_4j": 0.00359,
-        "z_10h": -1.697
+       "BNBUSDT": {
+        "r_4j": -0.0029,
+        "tren_60h": 0.3266,
+        "vol_1j": 0.00218
        },
-       "SOLUSDT": {
-        "r_4j": 0.01011,
-        "z_10h": -1.133
+       "ETHUSDT": {
+        "r_4j": -0.01957,
+        "tren_60h": 0.4153,
+        "vol_1j": 0.00991
        }
       }
      },
@@ -1161,11 +1244,13 @@
       "features_given": {
        "BNBUSDT": {
         "r_4j": 0.01548,
-        "z_10h": -0.457
+        "tren_60h": 0.2284,
+        "vol_1j": 0.01235
        },
        "SOLUSDT": {
         "r_4j": -0.01304,
-        "z_10h": 0.058
+        "tren_60h": 0.3624,
+        "vol_1j": 0.01092
        }
       }
      }
@@ -1176,13 +1261,13 @@
      "valid_answers_with_signature": 285
     },
     "stability": {
-     "bot_switch_pct": 1.4,
-     "bot_switches": 4,
+     "bot_switch_pct": 2.8,
+     "bot_switches": 8,
      "latency": "not recorded in desk records (only ok / late / failed status per cycle)"
     },
     "text": {
      "distinct_reasons": 285,
-     "distinct_summaries": 77,
+     "distinct_summaries": 26,
      "most_common_reason_share_pct": 0.4
     },
     "trial": {

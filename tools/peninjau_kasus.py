@@ -333,33 +333,32 @@ def _kep(bot, skor, k, eks, ins, ringkasan, alasan, veto=()):
 # 7 Okt (kalibrasi sungguhan): agent "baik" lama memakai SATU template kalimat untuk semua alasan dan berganti bot 54 % siklus - model menahannya dengan
 # benar (BOILERPLATE, NO_MECHANISM). Agent baik kini: pilihan bot stabil (berganti hanya saat rezim berganti), instrumen + faktor sesuai mekanisme bot,
 # alasan dari beberapa bentuk kalimat dengan nilai fitur sungguhan dan catatan risiko yang ikut data.
-MEKANISME = {"B1-TREND": ("trend continuation", "tren_60h", True, ["tren_60h", "r_4j"]),
-             "B2-RS": ("relative strength ranking", "r_4j", True, ["r_4j", "r_1j"]),
-             "B3-CARRY": ("funding carry", "funding", True, ["funding", "oi_ubah_1j"]),
-             "B4-LISTING-FADE": ("fading short-term spikes", "r_1j", True, ["r_1j", "vol_1j"]),
-             "B5-CORE-RWA": ("a calm core allocation", "vol_1j", False, ["vol_1j", "tren_60h"]),
-             "B6-BOUNCE": ("a rebound after a stretched drop", "z_10h", False, ["z_10h", "r_4j"])}
 
 
 def alasan_baik(bot: str, fs: Dict[str, dict], i: int) -> Tuple[List[str], List[str], str, str]:
-    """-> (dua aset, faktor, ringkasan, alasan) yang konsisten dengan mekanisme `bot` dan nilai fitur siklus ini."""
-    nama, kunci, turun, faktor = MEKANISME[bot]
-    pilih = sorted(ASET, key=lambda a: fs[a][kunci], reverse=turun)[:2]
-    a0, a1 = pilih
-    f0, f1 = fs[a0], fs[a1]
-    risiko = ("open interest is falling, so size stays moderate" if f0["oi_ubah_1j"] < 0 else
-              "funding is already elevated, so the position stays small" if f0["funding"] > 0.00015 else
-              "hourly volatility is above normal, so conviction is capped" if f0["vol_1j"] > 0.011 else "nothing on the input argues against it")
-    bentuk = i % 4
-    if bentuk == 0:
-        alasan = f"{bot} fits: {nama}. {a0} leads on {kunci} ({f0[kunci]:+.4f}), {a1} is second ({f1[kunci]:+.4f}). {risiko.capitalize()}."
-    elif bentuk == 1:
-        alasan = f"I keep {bot} because {a0} {kunci} {f0[kunci]:+.4f} and {faktor[1]} {f0[faktor[1]]:+.4f} still describe {nama}; {risiko}."
-    elif bentuk == 2:
-        alasan = f"{a0} and {a1} rank top on {kunci} ({f0[kunci]:+.4f}, {f1[kunci]:+.4f}). That is the {bot} setup ({nama}). Caveat: {risiko}."
-    else:
-        alasan = f"Same view as last cycle: {nama} on {a0} ({kunci} {f0[kunci]:+.4f}); {a1} adds breadth. {risiko.capitalize()}."
-    return pilih, faktor, f"{bot}: {nama} on {a0}, {a1}", alasan
+    """-> (aset, faktor, ringkasan, alasan). 7 Okt sore: SETIAP fitur yang disebut alasan (termasuk catatan risiko) ikut dikutip - peninjau melihat
+    hanya fitur yang dikutip, jadi menyebut fitur lain terbaca sebagai halusinasi (kalibrasi menangkapnya dengan benar)."""
+    if bot == "B1-TREND":
+        pilih = sorted((a for a in ASET if fs[a]["tren_60h"] > 0), key=lambda a: -fs[a]["tren_60h"])[:2]
+        faktor = ["tren_60h", "r_4j", "vol_1j"]
+        a0 = pilih[0]
+        f0 = fs[a0]
+        risiko = ("r_4j is negative, a short pullback inside the trend, so size stays moderate" if f0["r_4j"] < 0 else
+                  "vol_1j is above normal, so conviction is capped" if f0["vol_1j"] > 0.011 else "r_4j and vol_1j do not argue against it")
+        lain = f" {pilih[1]} tren_60h {fs[pilih[1]]['tren_60h']:+.4f} is the second leg." if len(pilih) > 1 else " No second instrument trends up."
+        bentuk = i % 3
+        if bentuk == 0:
+            alasan = f"B1 is long only where tren_60h > 0: {a0} {f0['tren_60h']:+.4f}.{lain} {risiko.capitalize()}."
+        elif bentuk == 1:
+            alasan = f"{a0} keeps the strongest tren_60h ({f0['tren_60h']:+.4f}); r_4j {f0['r_4j']:+.4f}, vol_1j {f0['vol_1j']:.4f}.{lain} Caveat: {risiko}."
+        else:
+            alasan = f"Trend rule holds on {a0} (tren_60h {f0['tren_60h']:+.4f}, r_4j {f0['r_4j']:+.4f}).{lain} {risiko.capitalize()}."
+        return pilih, faktor, f"B1-TREND: trend continuation on {', '.join(pilih)}", alasan
+    top = max(ASET, key=lambda a: fs[a]["tren_60h"])
+    pilih, faktor = ["BTCUSDT"], ["tren_60h", "vol_1j"]
+    alasan = (f"No instrument has tren_60h > 0 (best {top} {fs[top]['tren_60h']:+.4f}), so B1 would be flat; a small B5 core on BTCUSDT "
+              f"(vol_1j {fs['BTCUSDT']['vol_1j']:.4f}) is the cautious default.")
+    return pilih, faktor, "B5-CORE-RWA: small core while nothing trends up", alasan
 
 
 def rekaman_agent(perilaku: str, seed: int):
@@ -368,7 +367,6 @@ def rekaman_agent(perilaku: str, seed: int):
     rek, fitur_siklus = [], {}
     eq, eq_h = 10_000.0, {h: 10_000.0 for h in RUMAH}
     benar, kons_lalu = rng.choice(BOTS), None
-    pegang = None
     for i in range(N):
         t = SEJAK + i * 300
         if i % 30 == 0:
@@ -393,9 +391,7 @@ def rekaman_agent(perilaku: str, seed: int):
         if perilaku == "baik":
             if i % 97 == 50:
                 status = "terlambat"
-            if pegang is None or (i % 30 == 0 and rng.random() < 0.8):      # berganti hanya saat rezim berganti
-                pegang = benar
-            b = pegang
+            b = "B1-TREND" if any(fs[a]["tren_60h"] > 0 for a in ASET) else "B5-CORE-RWA"   # syarat aturan bot dipenuhi fitur siklus ini
             pilih, faktor, ringkasan, alasan = alasan_baik(b, fs, i)
             k = round(rng.uniform(0.35, 0.85), 2)
             r = (k - 0.55) * 0.004 + rng.gauss(0.0001, 0.001)
