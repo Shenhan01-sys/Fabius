@@ -15,6 +15,7 @@ tags: [backlog, epik, "meja-ai", llm, x402, mcp]
 - *"mcp fabius itu hanya menyediakan signal dan data yg mendukung/menjelaskan lebih detail mengenai sinyal itu dan mcpnya itu hanya bisa dipakai dengan
   melalui x402, jadi user bisa deposit dulu ... nanti tiap call mcp maka akan lgsg otomatis terpotong dari akunnya"*
 
+**Status (7 Okt, P156 F4):** F4 dibangun + diuji LOKAL sebagai BAYANGAN (`tools/meja_eval.py`, [[04-Tools/TL43 - evaluasi meja F4]], bukti §13): nilai per agent, bobot agent bayangan (rumus dipra-registrasi sha `0x41a1001d…`, status USULAN, kunci menunggu kata builder), buku ablasi per agent + per sumber, rapor direkam, usulan evaluator lewat versi bayangan. Mesin hidup TIDAK berubah (rumus r4 F-D116, bobot sama). Belum: push + deploy gerbang, `FABIUS_F4=bayangan` di Railway, kriteria 3 hari berturut (§13).
 **Status (5 Okt sore):** F1 HIDUP (P153, cek 24 jam ±6 Okt 11:40Z); F2 + F3 opsi D dibangun dan diuji kering (P154/P155,
 [[04-Tools/TL36 - meja v2 bot + instrumen]]), menunggu push + deploy; F4/F5 belum. Rencana E0 disetujui builder 5 Okt (*"Gasss"*, workflow: *"OKe nice, gas catat ke vault"*). Keputusan F-D110
 (meja v2) dan F-D111 (MCP berbayar). Backlog P153-P157. Status per item hanya di [[08-Backlog/01 - Backlog]].
@@ -151,7 +152,7 @@ berubah**, bukan tiap siklus.
 | **F1** data | pengumpul di gerbang (cache + anggaran), registry alamat terkunci, fitur per aset + per bot + tes, panel kesehatan data | P153 |
 | **F2** format v2 | prompt dengan tabel fitur, validasi `skor_bot` / `bot` / `faktor` / `eksposur` | P154 |
 | **F3** mesin v2 | bot dominan, hysteresis, eksposur, veto, risiko; bayangan di samping v1 lalu menggantikan | P155 |
-| **F4** evaluasi | rapor agent, bobot dinamis, buku ablasi, usulan evaluator | P156 |
+| **F4** evaluasi | rapor agent, bobot dinamis, buku ablasi, usulan evaluator (bayangan; [[04-Tools/TL43 - evaluasi meja F4]]) | P156 |
 | **F5** MCP berbayar + tampilan | deposit, saldo, kunci API, potong per panggilan; `/desk` v2 (matriks agent x bot, "kenapa bot ini"); halaman akun | P157 |
 
 ## 10. Alur kerja pengembangan (berlaku untuk setiap tonggak; sumber: [[08-Backlog/10 - Epik Eksekusi Venue]] §8 + [[Conventions]])
@@ -172,6 +173,7 @@ rumus dikunci sebelum data (versi baru = kunci baru); koreksi tetap terlihat ([[
 
 - Mengisi faucet tBNB harian ke dompet gerbang `0x10c41a996Bab4042867c2dD388937A1e2743f1b1` (gas komit meja).
 - Kata peralihan v1 -> v2 sesudah bayangan F3.
+- F4 (P156): push + deploy gerbang, lalu `railway variable set FABIUS_F4=bayangan --service fabius-x402`; kata kunci rumus F4 (`python -X utf8 tools/meja_eval.py kunci --tulis --catatan "..."`); izin biaya bila bayangan prompt / rapor-di-prompt ingin dijalankan (panggilan model kedua per siklus); bobot / rapor di mesin hidup hanya lewat revisi rumus baru + kunci + kata builder.
 - Opsional: FOMO Starter ($49,99/bulan) bila ingin refresh per jam; akses API Bubblemaps bila ingin dipakai.
 - Menguji deposit + MCP berbayar sebagai pengguna (F5).
 
@@ -184,5 +186,25 @@ rumus dikunci sebelum data (versi baru = kunci baru); koreksi tetap terlihat ([[
 - MCP berbayar menghapus pintu tingkat 0 gratis untuk agen (juri tetap bisa memeriksa lewat web `/verify`).
 - Akses open interest + rasio taker Binance belum diukur dari Railway.
 
+## 13. Bukti F4 (P156) - 7 Okt 2026, lokal (container sesi; gerbang, Railway, Vercel, dan model TIDAK terjangkau; angka dicetak perintahnya hari itu)
+
+Rancangan terhadap mesin HARI INI: rumus hidup r4 (F-D116) = argmax rata-rata (keyakinan x skor_bot) kursi aktif dengan bobot SAMA, buku = slot posisi.
+Teks §5 (V_b berbobot W + lambda x Q_b) dan §6 ditulis sebelum r4: Q_b tidak pernah dikunci dan tidak ada di mesin hidup, jadi F4 memakai lambda = 0; W
+hanya ada di dunia bayangan `bobot`. Rumus + parameter F4 dipra-registrasi sebelum data bayangan pertama: `engine/locks/meja_f4.usulan.json` sha
+`0x41a1001dfbbfad72710f35bc682c4e129af33b3605285faee9177305f74113ff` (`python -X utf8 tools/meja_eval.py kunci` -> `status USULAN`; tidak di-pin on-chain).
+
+| Kriteria | Bukti | Status |
+|---|---|---|
+| §8 (1) metrik per agent + per sumber tercetak 3 hari berturut | `tools/meja_eval.py rapor` mencetak per hari UTC: agent (kursi, sah, IC 5 menit + 1 jam, hit 1 jam vs acak, kalibrasi 4 ember, W bayangan), sumber (sitasi, IC 1 jam disitasi vs tidak, ablasi pp vs Fabius, cakupan F1), dunia ablasi. Diuji lewat server HTTP gerbang asli (`GET /desk/archive/<tgl>` dengan `agent_records` + `evaluation` + `data_health`) dan berkas luring - keluarannya sama karakter demi karakter (`ArchiveCliTests`). Arsip SINTETIS 3 hari (`contoh`: meja hidup asli + pasar/model palsu): `arsip sintetis 3 hari, 108 siklus, rekaman F4 108 (SETIA 108)`; rapor mencetak 3 hari (`tajam` IC 1 jam +1,000, `balik` -1,000, `acak` -0,014 / -0,048 / +0,003) - angka sintetis, BUKAN meja hidup | ⏳ data produksi: butuh deploy + `FABIUS_F4=bayangan` + 3 hari UTC berturut; hari sebelum F4 bisa dihitung ulang `--vision` (belum diuji dengan Vision sungguhan) |
+| §8 (2) bobot agent berubah sesuai rumus (tes) | `WeightTests`: kasus hitung tangan (IC 0,1 -> 1,5; 0,3 -> 2,0; -0,2 -> 0,5; pemanasan 100/288 -> 1; jendela 100 < 144 -> 1; NaN -> 1); hanya di siklus pertama tiap jam baru; W = 1 identik bit demi bit dengan `konsensus2` hidup (300 kasus acak); W lain = rumus (64,0 / 10,0 / eksposur 0,68); di bayangan nyata (pemanasan diperkecil) tiap W yang tercatat sama dengan W yang dihitung ulang dari baris nilai tercatat, berubah hanya per jam, `tajam` 2,0 / `balik` 0,5 | ✅ tes; rumus berstatus USULAN (kunci = kata builder) |
+| §8 (3) buku ablasi hidup | Dunia `penuh` / `bobot` / `tanpa:<agent>` / `tanpa_sumber:<Y>` (8 sumber) tiap siklus; `penuh` SETIA ke rekaman Fabius tiap siklus (30/30 siklus meja hidup asli berisi 12 buka, 8 SL, 3 TP, ganti bot B1 -> B5 -> B1, agent gagal 7 kali; rem rugi harian dicerminkan di semua dunia); celah / tidak SETIA -> hanya `penuh` disinkron ulang + dicatat. Pada pasar SINTETIS 62 aset / 5 agent / 15 dunia: `SETIA 30/30`, `siklus_bayangan` median 63 ms, maks 117 ms, state 91 KiB, rekaman 6,7 KiB/siklus | ⏳ terbangun + diuji; hidup di produksi sesudah deploy + sakelar |
+| §6 rapor ke prompt + efek sebelum/sesudah | rapor per agent tiap jam (teks bahasa Inggris + sha) DIREKAM, tidak masuk prompt hidup (`LoopTests`: dengan F4 bayangan rekaman hidup, `prompt_sha`, root, buku identik dengan F4 mati); `efek_rapor` 288 vs 288 siklus diuji (selisih IC 0,15 hitung tangan; < 288 = belum cukup) | ⏳ menyalakan di prompt hidup = revisi prompt + kunci + kata builder; bayangan prompt butuh izin biaya |
+| §6 usulan evaluator lewat versi bayangan, tanpa perubahan diri diam-diam (SK-M13) | aturan kode harian (E1 IC <= 0 -> lampirkan rapor; E2 dunia tanpa-Y unggul >= 0,5 pp -> buang Y) + LLM opsional lewat CLI (keluaran = data tak tepercaya); status hanya `usulan -> bayangan -> lulus/gagal -> siap_kunci`; kriteria wajib ditulis saat dibuat (sha), bayangan >= 288 siklus, prompt butuh izin biaya, `siap_kunci` butuh kata builder + sha kunci; tes memastikan `config/agents.json`, sha PARAMS2 / PARAMS_KURSI / PARAMS_SLOT, `SYSTEM2` tidak berubah | ✅ tes; evaluator LLM belum dipanggil dengan model sungguhan |
+| sakelar bayangan: mati = nol efek | `FABIUS_F4` selain `bayangan` = mati (termasuk `hidup`); utas F4 mulai SESUDAH hasil hidup siap, galat F4 hanya dicatat; hasil digabung di awal siklus berikutnya hanya bila v2 masuk buku hidup | ✅ tes (`LoopTests`) |
+| tes + T8 + mutasi | `engine/tests/test_meja_eval.py` 24 tes lulus; mutasi: 19 cacat disuntik ke `tools/meja_eval.py` + gerbang, 19 tertangkap (satu mutan setara ditemukan dan diganti, dua celah tes ditutup: transisi status + rem rugi di dunia bayangan); T8 SK-M13 berjangkar + SK-M36..SK-M42 | ✅ |
+
+Yang TIDAK dibuktikan: bahwa agent mana pun punya IC positif di meja hidup, bahwa bobot dinamis atau rapor memperbaiki hasil (belum ada data produksi),
+dan bahwa ablasi sitasi sama dengan kontrafaktual "tanpa melihat sumber Y" (butuh panggilan model kedua).
+
 **Terkait:** [[00-Overview/03 - Decisions]] F-D110 / F-D111 · [[08-Backlog/01 - Backlog]] P153-P157 · [[04-Tools/TL34 - meja AI 5 menit]] ·
-[[04-Tools/TL20 - server MCP]] · [[08-Backlog/06 - Epik Gerbang Sinyal]] · [[07-Testing/T8 - Semantik Kegagalan Operator]]
+[[04-Tools/TL20 - server MCP]] · [[04-Tools/TL43 - evaluasi meja F4]] · [[08-Backlog/06 - Epik Gerbang Sinyal]] · [[07-Testing/T8 - Semantik Kegagalan Operator]]
