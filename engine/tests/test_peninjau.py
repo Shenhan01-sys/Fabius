@@ -400,6 +400,31 @@ class AgentTests(unittest.TestCase):
         self.assertIsNotNone(pn.tahan_naik_agent(tahan, True, True))
         self.assertIsNone(pn.tahan_naik_agent(lanjut, True, True))
 
+    def test_kursi_evaluasi_holds_a_qualified_trial_agent_and_lanjut_alone_never_promotes(self):
+        import meja
+        import meja2
+        w = meja2.PARAMS_KURSI["jendela_siklus"]
+        t0 = 1_900_022_400 // 86_400 * 86_400
+        sejak = t0 - (w + 10) * meja.PARAMS["siklus_s"]
+
+        def st(sah_x):
+            return {"kursi": {"a": {"status": "aktif", "sejak": sejak - 10**6}, "x9": {"status": "uji", "sejak": sejak}},
+                    "riwayat": {"a": {"sah": [1] * w, "eq": [1.0] * (w + 1)}, "x9": {"sah": [1] * int(w * sah_x) + [0] * (w - int(w * sah_x)),
+                                                                                    "eq": [1.0] * w + [1.05]}}}
+        s = st(1.0)
+        ev = meja2.kursi_evaluasi(s, t0, {"x9"}, tahan=lambda slug, e: "owner-agent review verdict TAHAN (model)")
+        self.assertEqual(s["kursi"]["x9"]["status"], "uji")
+        self.assertTrue(any(e["agent"] == "x9" and e["alasan"].startswith("promotion held") for e in ev))
+        s = st(1.0)
+        meja2.kursi_evaluasi(s, t0, {"x9"}, tahan=lambda slug, e: None)                    # LANJUT: aturan numerik memutuskan
+        self.assertEqual(s["kursi"]["x9"]["status"], "aktif")
+        s = st(0.90)                                                                         # sah 90 % < 95 %: LANJUT tidak menaikkan
+        meja2.kursi_evaluasi(s, t0, {"x9"}, tahan=lambda slug, e: None)
+        self.assertEqual(s["kursi"]["x9"]["status"], "uji")
+        s = st(1.0)
+        meja2.kursi_evaluasi(s, t0, {"x9"})                                                  # tanpa kait = perilaku lama
+        self.assertEqual(s["kursi"]["x9"]["status"], "aktif")
+
 
 class KalibrasiTests(unittest.TestCase):
     def setUp(self):
