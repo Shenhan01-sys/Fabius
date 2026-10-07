@@ -20,6 +20,8 @@ membacanya sendiri. Angka gas di sini berasal dari receipt, bukan dari perkiraan
 - [[C6 - LockRegistry]] — pra-registrasi spesifikasi per pengunci, ditulis sekali; ter-deploy 2 Okt (M3)
 - [[C7 - SignalAnchor]] — komit-ungkap sinyal per bot per bar; ter-deploy 2 Okt, menunggu komit pertama
 - [[C8 - ExecutionAnchor]] — catatan isi order venue (uang nyata) per komit SignalAnchor; menolak order yang mengaku dikirim sebelum komit (R-E1 di chain)
+- [[C9 - BotRegistry]] — daftar bot penerbit + pabrik splitter (CREATE2); transisi status wajib menunjuk laporan yang di-pin; ditulis + diuji lokal, BELUM di-deploy (P81)
+- [[C10 - RevenueSplitter]] — `payTo` per bot, bagi hasil 60/40 persis `economics.split`, pull, bagian Fabius hanya turun; ditulis + diuji lokal, BELUM di-deploy (P81)
 
 <!-- di atas: append-only oleh scripts/sync_vault.py; gloss tulisan tangan utuh -->
 ```dataview

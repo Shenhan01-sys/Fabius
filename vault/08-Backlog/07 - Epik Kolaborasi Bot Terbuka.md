@@ -17,7 +17,7 @@ memakai bot itu**; tingkat 0 (umpan bukti) boleh duluan.* Putaran ketiga (F-D73)
 `slots.py`, `book.py`, `locks.py`, `economics.py`, `chain.py`; keluaran `python -X utf8 -m engine.cli gate --data <dir> --bot ALL`
 (`<dir>` = keluaran `fetch.py` di `09-Inbox/Session-2026-10-02-skrip/`); mentah di [[09-Inbox/Session-2026-10-02]] §8 dan §9.
 
-> **STATUS: USULAN rancangan + kode awal berdiri sendiri.** Belum ada penerbit luar, bot terkunci, kontrak, FE. Ambang di halaman ini
+> **STATUS: USULAN rancangan + kode awal berdiri sendiri.** Belum ada penerbit luar, bot terkunci, kontrak (7 Okt: `BotRegistry` + `RevenueSplitter` ditulis + diuji lokal, BELUM di-deploy - P81), FE. Ambang di halaman ini
 > adalah **v1, DIKUNCI sementara (F-D73)**: `python -X utf8 -m engine.cli lock` mencetak `TERKUNCI` dan sha `0xf145b70a…fe5f32` (~~bawaan di kode, belum dikunci: `BELUM_DIKUNCI`~~ - keadaan sebelum 2 Okt 07:40Z;
 > ~~berkas kunci belum di-commit dan belum di-anchor~~ **kunci ter-anchor di chain 97 pada 2026-10-02T08:17:48Z (F-D74; `python -X utf8 tools/anchor_lock.py --verify`) dan di-commit bersama catatan ini**; ambang belum teroptimasi: [[08-Backlog/08 - Riset Optimasi Ambang]]). Semua angka dalam-sampel dan dicetak ulang oleh perintah di atas; bukan klaim edge.
 
@@ -32,6 +32,7 @@ memakai bot itu**; tingkat 0 (umpan bukti) boleh duluan.* Putaran ketiga (F-D73)
 | 2 Okt malam (tinjauan keamanan) | 12 temuan diukur oleh peninjau independen; sebagian besar diperbaiki (§9); G8 alokasi diperketat jadi dua uji → **B5 kini TOLAK** | temuan #10 peninjau: benchmark tunggal terhadap BTC tidak menguji aturan B5 |
 | 2 Okt (putaran 3, F-D73) | **ambang v1 DIKUNCI sementara** (sha `0xf145b70a…fe5f32`); bot identitas = **B1-TREND** (`engine/book.py`; buku genesis = B1 saja); basis 60/40 = **pendapatan** (dikonfirmasi); petahana G10 bawaan di `intake`/`review` = buku genesis (`--incumbents six` = perilaku lama); riset optimasi ambang dijadwalkan (epik 08) | jawaban builder ("Betul" / "saya gas" / "sementara ini oke, nanti riset lagi"); **bukan perubahan angka gerbang** - dogfood dicetak ulang sesudah kunci: vonis dan angka identik |
 | 2 Okt (putaran 4, F-D74) | kunci v1 **di-anchor** di chain 97 (`tools/anchor_lock.py`; tx `0xf09d61e6…`, `anchoredAt` 2026-10-02T08:17:48Z; asset `FABIUS-LOCK/review-v1`, verdict Abstain sebagai pemetaan) dan di-commit | jawaban builder: "Anchor sekarang gapapa sih" / "Commit"; **angka tidak berubah** |
+| 7 Okt (P81) | kontrak C-H **ditulis + diuji lokal, belum di-deploy**: [[02-Contracts/C9 - BotRegistry]] + [[02-Contracts/C10 - RevenueSplitter]]; §8 diberi catatan pembaruan dengan butir USULAN (a)-(g) | kerja backlog P81; **angka gerbang tidak berubah**, 60/40 = `economics.split` apa adanya |
 
 Empat perubahan gerbang setelah melihat hasil pada bot sendiri adalah alasan kuat untuk **mengunci** gerbang sebelum ada kandidat luar (§10 #3).
 
@@ -164,7 +165,7 @@ Agentic Wallet" (long-only on-chain): B2/B3/B6 butuh short atau perp atau sedang
 12 bulan terakhir −0,42. Identitas = **penunjukan**, bukan kelulusan: ia kebal rolling tetapi catatannya tampil dengan gerbang yang gagal, ia mati lewat pembunuhnya sendiri
 ("12 bulan maju tanpa mengalahkan buy&hold pada MDD dan Sharpe"), dan F-D16 tetap berlaku sebelum uang nyata. ~~Menunggu satu kata builder (§10 #2).~~ **Dikonfirmasi (F-D73): "Yang penting tradenya instrumen kripto, saya gas."** Dikode di `engine/book.py` (`trades_crypto_only`; buku genesis = B1 saja; bot Fabius lain lewat gerbang → shadow → slot).
 
-## 8. Imbalan dan kontrak (60/40; rancangan, tidak ada kontrak yang ditulis)
+## 8. Imbalan dan kontrak (60/40; rancangan, ~~tidak ada kontrak yang ditulis~~ kontrak ditulis + diuji lokal 7 Okt, belum di-deploy)
 
 - **Penerbit 60 % / Fabius 40 % dari pendapatan penjualan sinyal bot itu** (keputusan builder; `engine/economics.py`: `split` tepat bilangan bulat, debu pembulatan ke Fabius, jumlah selalu sama dengan masukan;
   `share_change_allowed`: bagian Fabius hanya boleh **turun**). Bot Fabius sendiri 100 % Fabius. Basis = pendapatan (bukan profit trading) - lihat K5.
@@ -174,6 +175,8 @@ Agentic Wallet" (long-only on-chain): B2/B3/B6 butuh short atau perp atau sedang
 - Identitas on-chain hanya alamat dompet; kontak dan data pribadi di luar chain (UU PDP) dan di luar hash/tanda tangan. Identitas ERC-8004 penerbit opsional (kepemilikannya belum diverifikasi).
 - Pembayaran x402 **memang** lewat kontrak (token ERC-20 + Permit2 + proxy x402 kanonis `0x402085c2…`, sudah dipakai di 97); yang baru hanya penerima (`payTo`) berupa kontrak pemisah.
   Kalkulator `economics.break_even_subscribers` (asumsi harga dan biaya operasi, bukan gerbang): pelanggan berbayar yang dibutuhkan agar 40 % Fabius menutup biaya operasi satu bot.
+
+**Pembaruan 7 Okt (P81): kontrak DITULIS + DIUJI lokal, BELUM di-deploy** - [[02-Contracts/C9 - BotRegistry]] dan [[02-Contracts/C10 - RevenueSplitter]]. Yang mengikuti teks di atas: satu klon EIP-1167 per bot lewat CREATE2 (alamat yang dihitung `engine/splitter.py` sama dengan klon yang benar-benar di-deploy di EVM uji Foundry); `release(token)` bersifat pull; pembagian persis `economics.split` (98 vektor split sampai 2^256-1, 70 vektor `share_change_allowed`, 8 skenario release bertahap / tarif turun); bagian Fabius hanya turun, hanya oleh Fabius; tidak ada penyitaan; status tidak menyentuh splitter; transisi menunjuk laporan yang di-pin di LockRegistry. **USULAN yang melampaui teks ini (builder boleh menolak):** (a) salt CREATE2 mengikat penerbit + payout + specSha; (b) `deploySplitter` tanpa izin, supaya uang di alamat prediksi tidak bergantung pada pendaftaran; (c) tabel transisi enam panah (SHADOW → AKTIF/PENSIUN, AKTIF → TERGUSUR/PENSIUN, TERGUSUR → AKTIF/PENSIUN, PENSIUN final); (d) "sudah di-anchor" ditegakkan sebagai pin `anchorer` di LockRegistry, dan kunci spesifikasi tidak boleh lebih baru dari laporan pendaftarannya; (e) aturan segmen saat tarif turun: saldo yang belum di-checkpoint ikut tarif baru (bisa 1 wei di bawah versi ber-checkpoint, ditemukan fuzz); (f) `releaseIssuer` / `releaseFabius` per pihak; (g) dompet Fabius bisa diganti Fabius. Uji: `forge test --offline` 117/117 (BotRegistry 18, RevenueSplitter 21); `python -X utf8 -m unittest engine.tests.test_splitter` 11 OK. Belum: deploy (kata builder), gerbang x402 yang menawarkan `payTo` klon, perkakas operator untuk mendaftar / transisi, dan telaah hukum (P75/P80).
 
 ## 9. Risiko dan hasil tinjauan keamanan independen (12 temuan, diukur oleh peninjau; status per akhir 2 Okt malam)
 
@@ -224,7 +227,7 @@ hasil dogfood menolak 4 dari 5 bot yang bisa dinilai - bisa berarti terlalu keta
 
 | ID | kerja | catatan |
 |---|---|---|
-| P81 | `BotRegistry` + `RevenueSplitter` (klon per bot, pull-payment, bagian Fabius hanya turun, `economics.split` sebagai vektor uji) | M3; [[08-Backlog/06 - Epik Gerbang Sinyal]] §3 |
+| P81 | `BotRegistry` + `RevenueSplitter` (klon per bot, pull-payment, bagian Fabius hanya turun, `economics.split` sebagai vektor uji) | M3; [[08-Backlog/06 - Epik Gerbang Sinyal]] §3 → **7 Okt: ditulis + diuji lokal, BELUM di-deploy** ([[02-Contracts/C9 - BotRegistry]], [[02-Contracts/C10 - RevenueSplitter]]; status di [[08-Backlog/01 - Backlog]]) |
 | P82 | ~~peninjau agen~~ **DIGANTI (F-D72): peninjau-bot** - kode selesai (`review.py`); sisa: FE/antrean, penyimpanan nonce, pemeriksa URL rujukan | bawaan tanpa model |
 | P83 | penghitung percobaan global + BH lintas kandidat + seed rahasia dari hash blok + tahan 12 bulan terakhir | menutup sisa temuan #1 -> **penghitung global + alpha A1/k dibangun 3 Okt malam** (`engine/registri.py`, F-D88 #7); BH lintas kandidat, seed rahasia, tahan 12 bulan menunggu R4 |
 | P84 | jalur `method_pr` (templat PR, pemeriksaan statis, tes wajib) | ditutup sampai ada keperluan |
@@ -246,7 +249,7 @@ uang nyata (P75/P80) dan bukan klaim edge.
 ## 12. Batas
 
 - Satu sampel (16 penyintas, 2020-2026, satu sumber data dengan bolong); gerbang menilai **masa lalu**; shadow maju adalah satu-satunya bukti yang berarti.
-- B4 belum bisa dinilai; `method_pr`/`feed` ditutup; G11 NA; tidak ada penerbit luar, kontrak, FE, atau orkestrator buku hidup.
+- B4 belum bisa dinilai; `method_pr`/`feed` ditutup; G11 NA; tidak ada penerbit luar, kontrak (C-H ditulis + diuji lokal 7 Okt, belum di-deploy), FE, atau orkestrator buku hidup.
 - Teks teori tidak dinilai mesin (keputusan: tanpa agen). Peninjau tidak memeriksa keberadaan URL rujukan.
 - Kunci v1 = ambang yang disetujui **sementara**, bukan ambang teroptimasi; riset di [[08-Backlog/08 - Riset Optimasi Ambang]]. ~~Berkas kunci belum di-commit dan belum di-anchor (jam `dikunci` = jam laptop).~~ Kunci ter-anchor (F-D74); jam yang berlaku = `anchoredAt` 2026-10-02T08:17:48Z, bukan `dikunci`.
 - Plafon daya: dengan riwayat beberapa tahun, edge Sharpe ≤ 0,5 tidak terpisahkan dari noise oleh gerbang apa pun (`09-Inbox/Session-2026-10-02-skrip/run14_power_arithmetic.py`); hanya data maju yang menjawab.
