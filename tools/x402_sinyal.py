@@ -58,6 +58,7 @@ import pengajuan as pj                                                        # 
 import feed_gerbang as fg                                                     # noqa: E402  P167c: komit feed + anchor akar
 import agen_luar as al                                                        # noqa: E402
 import peninjau_llm as pl                                                     # noqa: E402  P168: peninjau LLM (tahap 2)
+import akun_mcp as am                                                         # noqa: E402  P157 (F5): akun MCP berbayar (FABIUS_F5, bawaan mati)
 
 NETWORK = "eip155:97"
 PROXY = "0x402085c248EeA27D92E8b30b2C58ed07f9E20001"      # x402ExactPermit2Proxy kanonis (56 & 97)
@@ -345,6 +346,7 @@ class Gate:
         self.luar = al.Luar(os.path.join(self.meja_dir, "luar.json"), now=self.now, resolve=self._luar_resolve, status=self._luar_status, rumah=self._luar_rumah)   # P166
         self.data_cv = threading.Condition()                                                 # P155: meja v2 menunggu snapshot siklus yang sama
         self._kabar: tuple = (0.0, None)
+        self.akun = am.Akun(os.path.join(os.path.dirname(self.analis_dir), "akun"), now=self.now)   # P157 (F5): buku akun MCP berbayar
 
     # ---------------------------------------------------------------- P167c: bot feed terdaftar (registri repo, vonis MAJU_FEED)
     def feed_terdaftar(self) -> dict:
@@ -1053,6 +1055,10 @@ def make_handler(gate: Gate):
                 r_pn = pl.rute(gate, parts, int(gate.now()), TUNDA_PUBLIK_S) if parts else None   # P168: /bots/analysis, /desk/external/review
                 if r_pn:
                     return self._send(*r_pn)
+                r_ak = am.rute_get(gate, gate.akun, parts, self.headers, self.headers.get("PAYMENT-SIGNATURE") or self.headers.get("X-PAYMENT"),
+                                   sys.modules[__name__])                                    # P157 (F5): /account/* (404 selama FABIUS_F5 mati)
+                if r_ak:
+                    return self._send(*r_ak)
                 if not parts:
                     gate.data.refresh()
                     led, cfg = gate.data.ledgers(), gate.data.cfg()
@@ -1168,6 +1174,18 @@ def make_handler(gate: Gate):
 
         def do_POST(self):
             path = urllib.parse.urlparse(self.path).path.rstrip("/")
+            if path.startswith("/account"):                                    # P157 (F5): kunci API + potong per panggilan (404 selama FABIUS_F5 mati)
+                try:
+                    n = int(self.headers.get("Content-Length") or 0)
+                    if n > 16_384:
+                        return self._send(413, {"error": "body too large"})
+                    out = am.rute_post(gate, gate.akun, path, self.headers, json.loads(self.rfile.read(n) or b"{}"))
+                    return self._send(*(out or (404, {"error": "unknown account route"})))
+                except ValueError:
+                    return self._send(400, {"error": "body is not valid JSON"})
+                except Exception as e:  # noqa: BLE001
+                    gate.log(f"GALAT akun {type(e).__name__}: {str(e)[:200]}")
+                    return self._send(500, {"error": f"{type(e).__name__}"})
             if path in ("/bots/submit", "/bots/typed-data"):                   # P161 B1a: pengajuan bot (formulir bertanda tangan)
                 try:
                     n = int(self.headers.get("Content-Length") or 0)
@@ -1737,8 +1755,10 @@ def main() -> int:
                  f"kunci {me.status()['state']}")
     except Exception as e:  # noqa: BLE001
         gate.log(f"evaluasi meja F4 tidak terbaca: {type(e).__name__}: {str(e)[:160]}")
+    gate.log(f"MCP berbayar (P157 F5): {'TERBUKA' if am.sakelar() else 'MATI'} (FABIUS_F5={os.environ.get('FABIUS_F5') or '-'}) | buku akun "
+             f"{len(gate.akun.recs)} rekaman, {'RUSAK: ' + gate.akun.rusak[0] if gate.akun.rusak else 'utuh'} | kepala {gate.akun.kepala_buku()[:18]}")
     lockreg = data.cfg_raw().get("contracts", {}).get("LockRegistry")
-    gate.log(f"anchor komit feed (P167c): {'NYALA, LockRegistry ' + lockreg if (lockreg and pk) else 'mati (LockRegistry/kunci belum ada)'}")
+    gate.log(f"anchor komit feed (P167c):{'NYALA, LockRegistry ' + lockreg if (lockreg and pk) else 'mati (LockRegistry/kunci belum ada)'}")
     if lockreg and pk:
         threading.Thread(target=feed_anchor_loop, args=(gate, ev, stop), daemon=True).start()
     import meja_data as md

@@ -9,6 +9,7 @@ import { ChainReadError, COMMITTER, LOCK_REGISTRY, SIGNAL_ANCHOR, commitCount, d
 import { signalsFor as readSignals, verifyBar } from "./verify";
 import { getStatus } from "./status";
 import { ADDR_RE, CHAIN_RE, FOMO_VIEWS, MINT_RE, bubblemaps, dexscreener, fomo, rugcheck } from "./data-tools";
+import { DICABUT, GATE as AKUN_GATE, HARGA, HARGA_MCP, akun as bacaAkun, fab, harga as bacaHarga, panggil, potong, sha256hex, type Jawab } from "./akun";
 
 type Result = { content: { type: "text"; text: string }[]; isError?: boolean };
 
@@ -42,9 +43,37 @@ const HONESTY = [
   "Signals are position INTENTS (enter / exit / resize), not orders, not leverage advice.",
 ];
 
-export function registerFabiusTools(server: McpServer, s: Snapshot) {
+/** P157 (F5): `berbayar` = set alat F-D111 (gratis hanya fabius_pricing + fabius_account); `kunci` = kunci API pemanggil dari header permintaan ini. */
+export type Opsi = { berbayar?: boolean; kunci?: string | null };
+
+export function registerFabiusTools(server: McpServer, s: Snapshot, opsi: Opsi = {}) {
   const forward = s.bots.filter((b) => b.forward).map((b) => b.id);
   const BOT = z.enum(s.bots.map((b) => b.id) as [string, ...string[]]);
+
+  // P157 (F5, F-D111): mode berbayar = alat data publik P140 dicabut, alat tingkat 0 lama dipotong per panggilan lewat gerbang (cek -> jalankan -> potong;
+  // hasil hanya dikirim bila potongan berhasil; galat alat tidak dipotong). Mode bawaan (sakelar mati) = daftar alat persis seperti sebelumnya.
+  const asli = server.registerTool.bind(server);
+  type Cb = (...a: unknown[]) => Result | Promise<Result>;
+  const bayar = (alat: string, harga: number, cb: Cb) => async (...a: unknown[]): Promise<Result> => {
+    if (!opsi.kunci) return butuhKunci(alat, harga);
+    const callId = `mcp-${globalThis.crypto.randomUUID()}`;
+    const cek = await potong(opsi.kunci, alat, callId, null, true);
+    if (!cek.ok) return tolakGerbang(alat, cek);
+    const r = await cb(...a);
+    if (r.isError) return r;
+    const c = await potong(opsi.kunci, alat, callId, await sha256hex(JSON.stringify(r.content)), false);
+    if (!c.ok) return tolakGerbang(alat, c);
+    return { ...r, content: [...r.content, { type: "text", text: `Charged ${fab(harga)} FAB (call ${callId}); balance ${fab(Number(c.body.balance_atomic ?? 0))} FAB.` }] };
+  };
+  const reg = ((name: string, meta: { description?: string }, cb: Cb) => {
+    if (!opsi.berbayar) return asli(name as never, meta as never, cb as never);
+    const harga = HARGA_MCP[name];
+    if (DICABUT.includes(name) || harga === undefined) return undefined;
+    const teks = (meta.description ?? "").replace(/ Optional data tools here: [^.]*\./, ""); // alat data P140 sudah dicabut di mode ini
+    return asli(name as never, { ...meta, description: `${teks} PAID: ${fab(harga)} FAB per call from your deposit (fabius_pricing).` } as never,
+      bayar(name, harga, cb) as never);
+  }) as unknown as McpServer["registerTool"];
+  if (opsi.berbayar) daftarF5(server, opsi);
 
   // Satu pembaca untuk MCP dan halaman /verify (lib/verify.ts); bentuk keluaran MCP dipertahankan untuk klien yang sudah ada.
   async function signalsFor(bot: string, bar: string) {
@@ -67,7 +96,7 @@ export function registerFabiusTools(server: McpServer, s: Snapshot) {
     };
   }
 
-  server.registerTool(
+  reg(
     "fabius_overview",
     {
       title: "Fabius: what this is",
@@ -100,7 +129,7 @@ export function registerFabiusTools(server: McpServer, s: Snapshot) {
     ),
   );
 
-  server.registerTool(
+  reg(
     "fabius_analysts",
     {
       title: "Analyst agents: active bot, picks, leaderboard",
@@ -124,7 +153,7 @@ export function registerFabiusTools(server: McpServer, s: Snapshot) {
   const CONTEXT =
     " Context only: this is DEX/memecoin market data; Fabius bots trade 16 major perps (most relevant to B4 new listings). Analysts still pick ONE locked bot; nobody trades from this.";
 
-  server.registerTool(
+  reg(
     "fabius_dexscreener",
     {
       title: "Data: DexScreener pairs (public)",
@@ -141,7 +170,7 @@ export function registerFabiusTools(server: McpServer, s: Snapshot) {
     },
   );
 
-  server.registerTool(
+  reg(
     "fabius_rugcheck",
     {
       title: "Data: RugCheck risk summary for a Solana token (public)",
@@ -158,7 +187,7 @@ export function registerFabiusTools(server: McpServer, s: Snapshot) {
     },
   );
 
-  server.registerTool(
+  reg(
     "fabius_bubblemaps",
     {
       title: "Data: Bubblemaps holder-cluster map availability (public)",
@@ -175,7 +204,7 @@ export function registerFabiusTools(server: McpServer, s: Snapshot) {
     },
   );
 
-  server.registerTool(
+  reg(
     "fabius_fomo",
     {
       title: "Data: FOMO social-trading traders and theses (fomoapi.io)",
@@ -193,7 +222,7 @@ export function registerFabiusTools(server: McpServer, s: Snapshot) {
     },
   );
 
-  server.registerTool(
+  reg(
     "fabius_desk",
     {
       title: "AI desk: 5-minute AI decisions and paper results",
@@ -209,7 +238,7 @@ export function registerFabiusTools(server: McpServer, s: Snapshot) {
     }),
   );
 
-  server.registerTool(
+  reg(
     "fabius_analyst_join",
     {
       title: "Join as an analyst agent (open registry)",
@@ -225,7 +254,7 @@ export function registerFabiusTools(server: McpServer, s: Snapshot) {
     }),
   );
 
-  server.registerTool(
+  reg(
     "fabius_desk_join",
     {
       title: "Join the 5-minute AI desk as an external agent (PULL)",
@@ -241,7 +270,7 @@ export function registerFabiusTools(server: McpServer, s: Snapshot) {
     }),
   );
 
-  server.registerTool(
+  reg(
     "fabius_signal_offer",
     {
       title: "Offer: buy one bot's latest signal package (x402, testnet)",
@@ -268,7 +297,7 @@ export function registerFabiusTools(server: McpServer, s: Snapshot) {
     },
   );
 
-  server.registerTool(
+  reg(
     "fabius_confidence",
     {
       title: "Confidence teaser of one bot (free)",
@@ -284,7 +313,7 @@ export function registerFabiusTools(server: McpServer, s: Snapshot) {
     },
   );
 
-  server.registerTool(
+  reg(
     "fabius_list_bots",
     {
       title: "Bot specifications and slot book",
@@ -300,7 +329,7 @@ export function registerFabiusTools(server: McpServer, s: Snapshot) {
     ),
   );
 
-  server.registerTool(
+  reg(
     "fabius_track_record",
     {
       title: "Forward track record of one bot",
@@ -333,7 +362,7 @@ export function registerFabiusTools(server: McpServer, s: Snapshot) {
     },
   );
 
-  server.registerTool(
+  reg(
     "fabius_proof_feed",
     {
       title: "Proof feed (build snapshot)",
@@ -352,7 +381,7 @@ export function registerFabiusTools(server: McpServer, s: Snapshot) {
     }),
   );
 
-  server.registerTool(
+  reg(
     "fabius_locks",
     {
       title: "Rules locked on-chain",
@@ -362,7 +391,7 @@ export function registerFabiusTools(server: McpServer, s: Snapshot) {
     guard(async () => ok(`${s.locks.length} locks, oldest first.`, { locks: s.locks.map((l) => ({ ...l, explorer: l.tx ? `https://testnet.bscscan.com/tx/${l.tx}` : null })), states: s.lock_states })),
   );
 
-  server.registerTool(
+  reg(
     "fabius_signals",
     {
       title: "Signals of one bot on one bar (live)",
@@ -380,7 +409,7 @@ export function registerFabiusTools(server: McpServer, s: Snapshot) {
     },
   );
 
-  server.registerTool(
+  reg(
     "fabius_latest_signals",
     {
       title: "Latest signals (live)",
@@ -402,7 +431,7 @@ export function registerFabiusTools(server: McpServer, s: Snapshot) {
     }),
   );
 
-  server.registerTool(
+  reg(
     "fabius_verify",
     {
       title: "Verify one bot/bar publicly (live)",
@@ -430,7 +459,7 @@ export function registerFabiusTools(server: McpServer, s: Snapshot) {
     },
   );
 
-  server.registerTool(
+  reg(
     "fabius_status",
     {
       title: "Operations health today (live)",
@@ -443,5 +472,123 @@ export function registerFabiusTools(server: McpServer, s: Snapshot) {
       const lines = r.bots.map((b) => `${b.bot} bar ${b.bar}: ${b.stations.map((x) => `${x.k} ${x.lamp}`).join(", ")}`);
       return ok(`Overall ${r.overall.toUpperCase()} at ${r.checked_utc}. ${lines.join(" | ")}.`, r);
     }),
+  );
+}
+
+// ---------------------------------------------------------------- P157 (F5): alat berbayar dari gerbang + alat penemuan gratis
+
+const butuhKunci = (alat: string, harga: number): Result => ({
+  isError: true,
+  content: [
+    {
+      type: "text",
+      text:
+        `${alat} ${harga ? `costs ${fab(harga)} FAB per call and ` : "is free but "}needs an API key. 1) get free test FAB: POST ${AKUN_GATE}/faucet {"address":"0x.."}; ` +
+        `2) deposit with x402: GET ${AKUN_GATE}/account/deposit/<atomic>; 3) sign the key message with your wallet: POST ${AKUN_GATE}/account/key; ` +
+        "4) reconnect this MCP server with header 'Authorization: Bearer <key>'. Details: fabius_pricing (free) or https://fabius-one.vercel.app/account",
+    },
+  ],
+});
+
+function tolakGerbang(alat: string, j: Jawab): Result {
+  const e = String(j.body.error ?? `gate HTTP ${j.status}`);
+  const lagi = j.status === 402 ? ` Balance ${fab(Number(j.body.balance_atomic ?? 0))} FAB, price ${fab(Number(j.body.price_atomic ?? 0))} FAB. ${String(j.body.deposit ?? "")}` : "";
+  const sakelar = j.status === 404 ? " (paid MCP is not open on the gate yet)" : "";
+  return { isError: true, content: [{ type: "text", text: `${alat}: ${e}${sakelar}.${lagi}` }] };
+}
+
+function daftarF5(server: McpServer, opsi: Opsi) {
+  const hasil = (j: Jawab, alat: string, ringkas: (d: Record<string, unknown>) => string): Result => {
+    if (!j.ok) return tolakGerbang(alat, j);
+    const d = (j.body.data ?? {}) as Record<string, unknown>;
+    return {
+      content: [
+        {
+          type: "text",
+          text: `${ringkas(d)} Charged ${fab(Number((j.body.charge as { atomic?: number } | undefined)?.atomic ?? 0))} FAB; balance ${fab(Number(j.body.balance_atomic ?? 0))} FAB.\n\n${JSON.stringify(j.body, null, 2)}`,
+        },
+      ],
+    };
+  };
+  const call = (alat: string, args: Record<string, unknown>) =>
+    opsi.kunci ? panggil(opsi.kunci, alat, args, `mcp-${globalThis.crypto.randomUUID()}`) : Promise.resolve(null);
+
+  server.registerTool(
+    "fabius_pricing",
+    {
+      title: "Pricing, deposit and API key (free)",
+      description:
+        "Free. Start here: prices of the paid Fabius MCP tools in FAB (BNB testnet 97 credit, no value), how to get free test FAB, how to deposit with x402 (payer pays no gas), how to get an API key by signing a message with your wallet, honesty boundaries, and the public head of the account ledger.",
+      inputSchema: z.object({}),
+    },
+    guard(async () => {
+      const j = await bacaHarga();
+      if (!j.ok) return tolakGerbang("fabius_pricing", j);
+      return ok(`Paid tools: ${Object.entries(HARGA).map(([a, h]) => `${a} ${fab(h)} FAB`).join(", ")}; free: fabius_pricing, fabius_account.`, j.body);
+    }),
+  );
+
+  server.registerTool(
+    "fabius_account",
+    {
+      title: "Your balance, keys and charges (free)",
+      description: "Free. Balance, deposits, charges and keys of the wallet that owns the API key on this connection, with each ledger record's hash chain so you can check it.",
+      inputSchema: z.object({}),
+    },
+    guard(async () => {
+      if (!opsi.kunci) return butuhKunci("fabius_account", 0);
+      const j = await bacaAkun(opsi.kunci);
+      if (!j.ok) return tolakGerbang("fabius_account", j);
+      return ok(`Wallet ${String(j.body.wallet)}: balance ${fab(Number(j.body.balance_atomic ?? 0))} FAB.`, j.body);
+    }),
+  );
+
+  server.registerTool(
+    "fabius_signal",
+    {
+      title: `Live desk signal (${fab(HARGA.fabius_signal)} FAB)`,
+      description:
+        "Paid. The AI desk's live decision for the latest 5-minute cycle: dominant bot, instruments, exposure, veto, open position slots and fills, plus the cycle's Merkle root and DeskAnchor tx on BNB testnet so you can check it was committed before the cycle ended. Paper only.",
+      inputSchema: z.object({}),
+    },
+    guard(async () => {
+      const j = await call("fabius_signal", {});
+      if (!j) return butuhKunci("fabius_signal", HARGA.fabius_signal);
+      return hasil(j, "fabius_signal", (d) => `Cycle ${String(d.cycle_utc)}: dominant bot ${String(d.dominant_bot)}.`);
+    }),
+  );
+
+  server.registerTool(
+    "fabius_signal_explain",
+    {
+      title: `Why this signal (${fab(HARGA.fabius_signal_explain)} FAB)`,
+      description:
+        "Paid. Each active AI agent's answer for the latest cycle (bot, scores for all six bots, confidence, instruments, factors, summary), each agent's contribution to the dominant bot's value under the locked consensus formula, the features of the chosen instruments from the cycle's data snapshot, and the record hashes + Merkle root to verify them.",
+      inputSchema: z.object({}),
+    },
+    guard(async () => {
+      const j = await call("fabius_signal_explain", {});
+      if (!j) return butuhKunci("fabius_signal_explain", HARGA.fabius_signal_explain);
+      return hasil(j, "fabius_signal_explain", (d) => `Cycle ${String(d.cycle_utc)}: ${String(d.dominant_bot)}; ${(d.contribution as unknown[] | undefined)?.length ?? 0} counted agents.`);
+    }),
+  );
+
+  server.registerTool(
+    "fabius_data",
+    {
+      title: `Supporting data snapshot (${fab(HARGA.fabius_data)} FAB)`,
+      description:
+        "Paid. The latest 5-minute data snapshot the desk agents read (per-asset features from Binance, DEX, RugCheck, FOMO, news; per-bot features; source health), optionally filtered to up to 20 symbols. snapshot_sha covers the full snapshot.",
+      inputSchema: z.object({ assets: z.array(z.string().regex(/^[A-Z0-9]{2,20}$/)).max(20).optional() }),
+    },
+    async ({ assets }) => {
+      try {
+        const j = await call("fabius_data", assets ? { assets } : {});
+        if (!j) return butuhKunci("fabius_data", HARGA.fabius_data);
+        return hasil(j, "fabius_data", (d) => `Snapshot ${String(d.snapshot_utc)}: ${Object.keys((d.asset_features as object) ?? {}).length} assets.`);
+      } catch (e) {
+        return fail(e);
+      }
+    },
   );
 }
