@@ -30,7 +30,9 @@ ledger maju `ledger/feed/` (rantai `paper-ledger` -> `tools/feed_tick.py`), voni
 slot: [[04-Tools/TL42 - komit maju penerbit (feed)]]. Perbaikan sampingan: `terdaftar` kini menerima `spec_sha` registri = sha `BotSpec` (yang memang
 ditulis `registri.record`), bukan hanya sha `spec` formulir.
 
-**Belum (berikutnya):** sinyal bot penerbit yang masuk slot belum dikomit/dijual worker (FABIUS_BOTS); bot intraday
+**P161 lanjutan (7 Okt):** peta jalur ujung-ke-ujung + pemeriksa jejak + uji kering + mata rantai yang hilang: [[04-Tools/TL44 - gerbang seleksi bot (P161)]].
+
+**Belum (berikutnya):** sinyal bot penerbit yang masuk slot: KOMIT dibangun di balik sakelar `KOMIT_PENERBIT` (bawaan mati, TL44), DIJUAL menunggu P81 (FABIUS_BOTS); bot intraday
 (B2); pembukaan `code` (persetujuan builder + deploy pelari); jalur slot feed yang "terbukti"; peninjau LLM (P168). Semantik kegagalan:
 [[07-Testing/T8 - Semantik Kegagalan Operator]] SK-J1..J32.
 

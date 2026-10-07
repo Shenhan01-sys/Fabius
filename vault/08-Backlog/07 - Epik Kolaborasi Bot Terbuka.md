@@ -95,6 +95,8 @@ harus https publik (ditolak: localhost, IP, userinfo, port non-standar, host non
 | S5 imbalan | kontrak pemisah milik bot (60/40, §8) menjadi `payTo` x402 untuk sinyal bot itu | kontrak |
 | S6 rolling dan pembunuh | skor bergulir tanggal-kalender; `pembunuh` terstruktur ditegakkan `killer_triggered` | kode |
 
+**P161 (7 Okt):** tahap S0-S6 disambung + tiap tahap tercatat dan diperiksa ulang oleh pemeriksa jejak; uji kering ujung-ke-ujung pada bar repo: [[04-Tools/TL44 - gerbang seleksi bot (P161)]]. Catatan urutan S1: pin on-chain `spec_sha` hari ini terjadi SESUDAH vonis LOLOS_SHADOW (worker `pin_spec`); sebelum gerbang spesifikasi diikat tanda tangan EIP-712 + antrean publik gerbang. Pin SEBELUM gerbang = USULAN (TL44).
+
 Slot ≠ uang nyata. **Slot adalah status paper berhak-rendah, bukan bukti edge**: 60 hari shadow tidak bisa membuktikan edge yang realistis (t-stat 60 hari untuk Sharpe 1
 tahunan ≈ 0,4). Hak tinggi - sinyal berbayar dan bagi hasil nyata - menuntut F-D16 pada data maju (n ≥ 20, harapan net > 0, batas bawah CI > 0, BH 0,10, di luar sampel)
 **dan** telaah hukum (P75/P80). Pemeriksa F-D16 untuk jalur ini belum dikode (P88). Venue uang nyata kelak kemungkinan Binance Agentic Wallet; sekarang paper penuh.
