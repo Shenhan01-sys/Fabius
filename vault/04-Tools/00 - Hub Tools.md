@@ -52,6 +52,7 @@ berbahaya dari alat yang gagal keras.
 - [[TL24 - halaman verify]] — /verify: pemeriksaan publik satu (bot, bar) di peramban, empat stasiun tick -> komit -> dibuka -> dihitung ulang; kode sama dengan MCP
 - [[TL21 - waitlist]] — penampung daftar tunggu tingkat 1: bot Telegram dibaca rantai GitHub tiap 5 menit, pendaftar dikabarkan ke chat builder; log publik hanya hitungan (P115)
 - [[TL40 - peninjau LLM]] — P168a/P168b (F-D125): tahap 2 sesudah tahap teknis, xkiro GLM 5.3 effort bawaan, brief persis ber-sha, JSON ketat, hanya MENAHAN (LLM mati = TAHAN), set kalibrasi; BELUM DIKALIBRASI = tidak di jalur
+- [[TL43 - evaluasi meja F4]] — P156 (F4, BAYANGAN): IC / hit / kalibrasi per agent, bobot agent usulan (sha `0x41a1001d…`), buku ablasi per agent + per sumber yang wajib SETIA, rapor direkam, usulan evaluator hanya lewat bayangan + kunci; `FABIUS_F4=bayangan`, `tools/meja_eval.py rapor`
 
 <!-- di atas: append-only oleh scripts/sync_vault.py; gloss tulisan tangan utuh -->
 ```dataview
