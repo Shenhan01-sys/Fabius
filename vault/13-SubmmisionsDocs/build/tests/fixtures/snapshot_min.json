@@ -1,0 +1,1073 @@
+{
+ "v": 1,
+ "generated_utc": "2026-10-07T10:08:01Z",
+ "repo_head": "ae4c5baf3382b9bbc5db0a06fe599fa5aa2fa605",
+ "bots": [
+  {
+   "id": "B1-TREND",
+   "method": "long bila penutupan > penutupan N hari lalu, selain itu flat (momentum deret waktu, long/flat)",
+   "param": "N = 60",
+   "assets": 16,
+   "tier": "A-",
+   "spec_sha": "0x23cb026bd8c665eb5e94a2764ae122e8eaed1777a6e7f76d84da21b4b3b43daf",
+   "fingerprint": "0x99c58fce87484e5a9d15d09f7e85e2c80be6aa606178614db381e0726310a9bb",
+   "forward": true,
+   "killer": "12 bulan maju tanpa mengalahkan buy&hold pada MDD dan Sharpe; atau kalah dari placebo masuk-acak dengan distribusi lama tahan sama",
+   "universe": [
+    "BTCUSDT",
+    "ETHUSDT",
+    "BNBUSDT",
+    "SOLUSDT",
+    "XRPUSDT",
+    "DOGEUSDT",
+    "ADAUSDT",
+    "LINKUSDT",
+    "LTCUSDT",
+    "AVAXUSDT",
+    "TRXUSDT",
+    "DOTUSDT",
+    "BCHUSDT",
+    "ETCUSDT",
+    "ATOMUSDT",
+    "NEARUSDT"
+   ],
+   "kill_rules": [
+    {
+     "id": "B1-K1",
+     "rule": "terpicu bila TIDAK (Sharpe bot > Sharpe patokan DAN MDD bot > MDD patokan)"
+    },
+    {
+     "id": "B1-K2",
+     "rule": "terpicu bila net bot <= median net placebo geser-melingkar"
+    }
+   ],
+   "status": "INTI",
+   "gate_v1": "TOLAK"
+  },
+  {
+   "id": "B2-RS",
+   "method": "long k teratas, short k terbawah menurut return L hari (rotasi kekuatan relatif, dollar-neutral); 7 sub-buku, masing-masing dirotasi mingguan pada hari-UTC berbeda (tanpa pilihan hari)",
+   "param": "L = 28",
+   "assets": 16,
+   "tier": "B",
+   "spec_sha": "0x2dd6ccf261abaa27e4c05110b05d471f211bc60a36975c3797788ba85b87fcb7",
+   "fingerprint": "0x6d74c6342734642cb5de9f5a2b1c87c4eee8c6b3d1b16f46f2153088752c3c8c",
+   "forward": true,
+   "killer": "net Sharpe < 0 dua kuartal beruntun, atau tidak mengalahkan placebo peringkat-acak",
+   "universe": [
+    "BTCUSDT",
+    "ETHUSDT",
+    "BNBUSDT",
+    "SOLUSDT",
+    "XRPUSDT",
+    "DOGEUSDT",
+    "ADAUSDT",
+    "LINKUSDT",
+    "LTCUSDT",
+    "AVAXUSDT",
+    "TRXUSDT",
+    "DOTUSDT",
+    "BCHUSDT",
+    "ETCUSDT",
+    "ATOMUSDT",
+    "NEARUSDT"
+   ],
+   "kill_rules": [],
+   "status": "SEMENTARA",
+   "gate_v1": "TOLAK"
+  },
+  {
+   "id": "B3-CARRY",
+   "method": "long spot + short perp saat funding rata-rata 7 hari (disetahunkan) > theta, selain itu flat",
+   "param": "theta = 0.1",
+   "assets": 16,
+   "tier": "A (dorman)",
+   "spec_sha": "0xc528abf51585f401399ddb3279bced5adc4fd7f6dbde0aed0653e715352ef100",
+   "fingerprint": "0x9618db8e7a94d01bc4d953b5a955af88456fc10541f33f49058aa185cc72aed8",
+   "forward": true,
+   "killer": "hasil hedged negatif tiga bulan berjalan saat aktif, atau satu kejadian ADL pada kaki perp",
+   "universe": [
+    "BTCUSDT",
+    "ETHUSDT",
+    "BNBUSDT",
+    "SOLUSDT",
+    "XRPUSDT",
+    "DOGEUSDT",
+    "ADAUSDT",
+    "LINKUSDT",
+    "LTCUSDT",
+    "AVAXUSDT",
+    "TRXUSDT",
+    "DOTUSDT",
+    "BCHUSDT",
+    "ETCUSDT",
+    "ATOMUSDT",
+    "NEARUSDT"
+   ],
+   "kill_rules": [
+    {
+     "id": "B3-K1",
+     "rule": "terpicu bila tiga bulan kalender aktif terakhir (sudah lewat, >= 10 hari memegang posisi) masing-masing net < 0"
+    },
+    {
+     "id": "B3-K2",
+     "rule": "terpicu pada kejadian pertama; paper = tidak berlaku"
+    }
+   ],
+   "status": "SEMENTARA",
+   "gate_v1": "LOLOS_SHADOW"
+  },
+  {
+   "id": "B4-LISTING-FADE",
+   "method": "short perp yang baru onboard pada penutupan hari-1; tutup setelah H hari; ukuran kecil, margin isolated",
+   "param": "H = 14",
+   "assets": 1,
+   "tier": "B-",
+   "spec_sha": "0x78bb0e32b4e4f406120767ac0e6529f7708a26124000f0de53ab4135f3067386",
+   "fingerprint": "0x8cd5990b2250dbab2312095ad3e80404bb88ec7a80436d3cb8e8ba05ffc56100",
+   "forward": true,
+   "killer": "20 listing maju dengan rata-rata PnL short <= 0, atau satu trade lebih buruk dari -100% notional",
+   "universe": [
+    "event: perp baru di venue"
+   ],
+   "kill_rules": [],
+   "status": "SEMENTARA",
+   "gate_v1": "TIDAK_TERUKUR"
+  },
+  {
+   "id": "B5-CORE-RWA",
+   "method": "bobot BTC dan emas proporsional 1/sigma (sigma = simpangan baku return harian L hari); bobot diperbarui bulanan",
+   "param": "L = 90",
+   "assets": 2,
+   "tier": "B",
+   "spec_sha": "0x2dfb0fa4ae71a357aae4900944ad9a07d56eddd2904b861cc194a5d6755cd619",
+   "fingerprint": "0xc6d365b72f6aae7f6ed95d3efd9901dd85d6e61c62da85bff9b4f1a0894d7d71",
+   "forward": true,
+   "killer": "Sharpe < BTC buy&hold DAN MDD tidak lebih baik dari -50% dalam 12 bulan maju",
+   "universe": [
+    "BTCUSDT",
+    "XAUUSDT"
+   ],
+   "kill_rules": [],
+   "status": "SEMENTARA",
+   "gate_v1": "TOLAK"
+  },
+  {
+   "id": "B6-BOUNCE",
+   "method": "beli bila z-score harga (rerata dan simpangan baku N hari) < -z_masuk; keluar saat z >= 0 (long/flat)",
+   "param": "N = 10",
+   "assets": 16,
+   "tier": "C",
+   "spec_sha": "0x4a6d180d93ea34e7c1dcffbe2cd6abab9ffe7d648aa6b235096e9f85064a8370",
+   "fingerprint": "0x6695d8c46bc6593b16f4306bba2a9a81d2316413e7e92559a1f7f27a9b6bb5c9",
+   "forward": true,
+   "killer": "sinyal maju tidak menaikkan Sharpe EW, atau n >= 20 sinyal dengan rata-rata net <= 0",
+   "universe": [
+    "BTCUSDT",
+    "ETHUSDT",
+    "BNBUSDT",
+    "SOLUSDT",
+    "XRPUSDT",
+    "DOGEUSDT",
+    "ADAUSDT",
+    "LINKUSDT",
+    "LTCUSDT",
+    "AVAXUSDT",
+    "TRXUSDT",
+    "DOTUSDT",
+    "BCHUSDT",
+    "ETCUSDT",
+    "ATOMUSDT",
+    "NEARUSDT"
+   ],
+   "kill_rules": [],
+   "status": "SEMENTARA",
+   "gate_v1": "TOLAK"
+  }
+ ],
+ "ledger": {
+  "B1-TREND": {
+   "genesis": "2026-10-01",
+   "chain_ok": true,
+   "ticks": [
+    {
+     "date": "2026-10-01",
+     "signals": 0,
+     "held": 16,
+     "lag_s": 33201,
+     "emitted_utc": "2026-10-02T09:13:21Z"
+    },
+    {
+     "date": "2026-10-02",
+     "signals": 0,
+     "held": 16,
+     "lag_s": 31208,
+     "emitted_utc": "2026-10-03T08:40:08Z"
+    },
+    {
+     "date": "2026-10-03",
+     "signals": 0,
+     "held": 16,
+     "lag_s": 31450,
+     "emitted_utc": "2026-10-04T08:44:10Z"
+    },
+    {
+     "date": "2026-10-04",
+     "signals": 0,
+     "held": 16,
+     "lag_s": 39318,
+     "emitted_utc": "2026-10-05T10:55:18Z"
+    },
+    {
+     "date": "2026-10-05",
+     "signals": 0,
+     "held": 16,
+     "lag_s": 31338,
+     "emitted_utc": "2026-10-06T08:42:18Z"
+    },
+    {
+     "date": "2026-10-06",
+     "signals": 0,
+     "held": 16,
+     "lag_s": 36131,
+     "emitted_utc": "2026-10-07T10:02:11Z"
+    }
+   ],
+   "settles": [],
+   "gaps": [],
+   "n_signals": 0,
+   "n_settled_days": 0,
+   "n_months": 0,
+   "head": "0x716b117c27c6b319d37ccda803cbe78f1f118df5c8eb91f5ae2318a2f528eb05",
+   "days_live": 6,
+   "last_closed": "2026-10-06"
+  },
+  "B2-RS": {
+   "genesis": "2026-10-04",
+   "chain_ok": true,
+   "ticks": [
+    {
+     "date": "2026-10-04",
+     "signals": 6,
+     "held": 9,
+     "lag_s": 39318,
+     "emitted_utc": "2026-10-05T10:55:18Z"
+    },
+    {
+     "date": "2026-10-05",
+     "signals": 4,
+     "held": 9,
+     "lag_s": 31338,
+     "emitted_utc": "2026-10-06T08:42:18Z"
+    },
+    {
+     "date": "2026-10-06",
+     "signals": 5,
+     "held": 10,
+     "lag_s": 36131,
+     "emitted_utc": "2026-10-07T10:02:11Z"
+    }
+   ],
+   "settles": [],
+   "gaps": [],
+   "n_signals": 15,
+   "n_settled_days": 0,
+   "n_months": 0,
+   "head": "0x74ffdd10b32d89c5455c9f3477285ed16fccc82ea505447c70633bd652477a20",
+   "days_live": 3,
+   "last_closed": "2026-10-06"
+  },
+  "B3-CARRY": {
+   "genesis": "2026-10-01",
+   "chain_ok": true,
+   "ticks": [
+    {
+     "date": "2026-10-01",
+     "signals": 2,
+     "held": 2,
+     "lag_s": 36021,
+     "emitted_utc": "2026-10-02T10:00:21Z"
+    },
+    {
+     "date": "2026-10-02",
+     "signals": 1,
+     "held": 1,
+     "lag_s": 31208,
+     "emitted_utc": "2026-10-03T08:40:08Z"
+    },
+    {
+     "date": "2026-10-03",
+     "signals": 1,
+     "held": 0,
+     "lag_s": 31450,
+     "emitted_utc": "2026-10-04T08:44:10Z"
+    },
+    {
+     "date": "2026-10-04",
+     "signals": 0,
+     "held": 0,
+     "lag_s": 39939,
+     "emitted_utc": "2026-10-05T11:05:39Z"
+    },
+    {
+     "date": "2026-10-05",
+     "signals": 0,
+     "held": 0,
+     "lag_s": 31338,
+     "emitted_utc": "2026-10-06T08:42:18Z"
+    },
+    {
+     "date": "2026-10-06",
+     "signals": 0,
+     "held": 0,
+     "lag_s": 36131,
+     "emitted_utc": "2026-10-07T10:02:11Z"
+    }
+   ],
+   "settles": [
+    {
+     "date": "2026-10-04",
+     "net_bps": -0.88,
+     "held": 0
+    },
+    {
+     "date": "2026-10-05",
+     "net_bps": 0.0,
+     "held": 0
+    },
+    {
+     "date": "2026-10-06",
+     "net_bps": 0.0,
+     "held": 0
+    },
+    {
+     "date": "2026-10-07",
+     "net_bps": 0.0,
+     "held": 0
+    }
+   ],
+   "gaps": [],
+   "n_signals": 4,
+   "n_settled_days": 4,
+   "n_months": 1,
+   "head": "0x42a54caa75a2136083d1e5c9bbc04f4299805d4191ab5ffd49512a6755766a73",
+   "days_live": 6,
+   "last_closed": "2026-10-06"
+  },
+  "B4-LISTING-FADE": {
+   "genesis": "2026-10-04",
+   "chain_ok": true,
+   "ticks": [
+    {
+     "date": "2026-10-04",
+     "signals": 0,
+     "held": 5,
+     "lag_s": 31493,
+     "emitted_utc": "2026-10-05T08:44:53Z"
+    },
+    {
+     "date": "2026-10-05",
+     "signals": 1,
+     "held": 4,
+     "lag_s": 31338,
+     "emitted_utc": "2026-10-06T08:42:18Z"
+    },
+    {
+     "date": "2026-10-06",
+     "signals": 3,
+     "held": 5,
+     "lag_s": 31541,
+     "emitted_utc": "2026-10-07T08:45:41Z"
+    }
+   ],
+   "settles": [],
+   "gaps": [],
+   "n_signals": 4,
+   "n_settled_days": 0,
+   "n_months": 0,
+   "head": "0xfea221f12eeb692ed40c219555b150c3c5cfa446d8df466523af2403b50ad6d1",
+   "days_live": 3,
+   "last_closed": "2026-10-06"
+  },
+  "B5-CORE-RWA": {
+   "genesis": "2026-10-04",
+   "chain_ok": true,
+   "ticks": [
+    {
+     "date": "2026-10-04",
+     "signals": 0,
+     "held": 2,
+     "lag_s": 31493,
+     "emitted_utc": "2026-10-05T08:44:53Z"
+    },
+    {
+     "date": "2026-10-05",
+     "signals": 0,
+     "held": 2,
+     "lag_s": 31338,
+     "emitted_utc": "2026-10-06T08:42:18Z"
+    },
+    {
+     "date": "2026-10-06",
+     "signals": 0,
+     "held": 2,
+     "lag_s": 31541,
+     "emitted_utc": "2026-10-07T08:45:41Z"
+    }
+   ],
+   "settles": [
+    {
+     "date": "2026-10-05",
+     "net_bps": -50.88,
+     "held": 2
+    },
+    {
+     "date": "2026-10-06",
+     "net_bps": 31.97,
+     "held": 2
+    }
+   ],
+   "gaps": [],
+   "n_signals": 0,
+   "n_settled_days": 2,
+   "n_months": 1,
+   "head": "0xb8e47f6e080e41777d3a68b817493ad6274a96c902bd118eefbcfa69367ceed3",
+   "days_live": 3,
+   "last_closed": "2026-10-06"
+  },
+  "B6-BOUNCE": {
+   "genesis": "2026-10-04",
+   "chain_ok": true,
+   "ticks": [
+    {
+     "date": "2026-10-04",
+     "signals": 0,
+     "held": 0,
+     "lag_s": 39318,
+     "emitted_utc": "2026-10-05T10:55:18Z"
+    },
+    {
+     "date": "2026-10-05",
+     "signals": 0,
+     "held": 0,
+     "lag_s": 31338,
+     "emitted_utc": "2026-10-06T08:42:18Z"
+    },
+    {
+     "date": "2026-10-06",
+     "signals": 0,
+     "held": 0,
+     "lag_s": 36131,
+     "emitted_utc": "2026-10-07T10:02:11Z"
+    }
+   ],
+   "settles": [
+    {
+     "date": "2026-10-05",
+     "net_bps": 0.0,
+     "held": 0
+    },
+    {
+     "date": "2026-10-06",
+     "net_bps": 0.0,
+     "held": 0
+    },
+    {
+     "date": "2026-10-07",
+     "net_bps": 0.0,
+     "held": 0
+    }
+   ],
+   "gaps": [],
+   "n_signals": 0,
+   "n_settled_days": 3,
+   "n_months": 1,
+   "head": "0x8c6727be9a6d2178adc5f68a1faed4421c5dba6d620458f4b0e9cdfb6125b369",
+   "days_live": 3,
+   "last_closed": "2026-10-06"
+  }
+ },
+ "book": {
+  "epoch": 691,
+  "recorded_utc": "2026-10-04T08:44:19Z",
+  "capacity": 10,
+  "book_sha": "0xfe37d7595644fd7e23fc5cd2c9aa659db1b66e316069c7414dd478e231f6e05c",
+  "occupants": [
+   {
+    "id": "B1-TREND",
+    "identity": true
+   }
+  ],
+  "challengers": [
+   {
+    "id": "B3-CARRY",
+    "gate": "LOLOS_SHADOW",
+    "shadow_days": 3
+   }
+  ],
+  "decisions": [
+   {
+    "id": "B3-CARRY",
+    "action": "REJECT",
+    "reason": "shadow maju baru 3 hari < 60"
+   }
+  ],
+  "killers": {
+   "B1-TREND": "BELUM"
+  }
+ },
+ "locks": [
+  {
+   "label": "THRESHOLDS-v1",
+   "what": "gate thresholds",
+   "at_utc": "2026-10-02T08:17:48Z",
+   "tx": "0xf09d61e601e218017aa225ebaf3ae86429031cbf46042cc80de9c0e8af7ae45f",
+   "where": "DecisionAnchor"
+  },
+  {
+   "label": "SPEC B1-TREND",
+   "what": "bot specification",
+   "at_utc": "2026-10-02T15:49:20Z",
+   "tx": "0xae9e7132fe5c4691098b3d30fe95521378bc9480fa489029eb88b7ba6e965c35",
+   "where": "LockRegistry"
+  },
+  {
+   "label": "SPEC B3-CARRY",
+   "what": "bot specification",
+   "at_utc": "2026-10-02T15:49:25Z",
+   "tx": "0x03f42b78b3aa0e42cc635e7e5a1c723940754546ed5d8e580220fb9fe0355b1f",
+   "where": "LockRegistry"
+  },
+  {
+   "label": "FABIUS-FD16-MAJU-v1",
+   "what": "FABIUS-FD16-MAJU-v1",
+   "at_utc": "2026-10-02T17:10:57Z",
+   "tx": "0x6bf7d51201b956ec2869d4272b3066710c14af9d334b0e0984407d46c58b9cd0",
+   "where": "LockRegistry"
+  },
+  {
+   "label": "FABIUS-BUKU-E690",
+   "what": "FABIUS-BUKU-E690",
+   "at_utc": "2026-10-02T17:26:09Z",
+   "tx": "0x2d6b96726f66e6e73c1c202bc15ea6dcb637690b6e30c90d85debbc694553d7f",
+   "where": "LockRegistry"
+  },
+  {
+   "label": "FABIUS-PEMBUNUH-v1",
+   "what": "FABIUS-PEMBUNUH-v1",
+   "at_utc": "2026-10-03T06:26:28Z",
+   "tx": "0x7b053afcfdae9634856564cc81757eb30a669619fe6a5c35fcf74330412d960a",
+   "where": "LockRegistry"
+  },
+  {
+   "label": "FABIUS-ANGGARAN-v1",
+   "what": "FABIUS-ANGGARAN-v1",
+   "at_utc": "2026-10-03T07:55:41Z",
+   "tx": "0x3254212fb06a705465857f61d31e79f76abf697f389852ac6a6a1c9728253165",
+   "where": "LockRegistry"
+  },
+  {
+   "label": "SPEC B2-RS",
+   "what": "bot specification",
+   "at_utc": "2026-10-04T16:37:25Z",
+   "tx": "0x357d2b1b2a66b279324ecf1ff13445979e440e89cf07247971023aff9dcb994a",
+   "where": "LockRegistry"
+  },
+  {
+   "label": "SPEC B4-LISTING-FADE",
+   "what": "bot specification",
+   "at_utc": "2026-10-04T16:37:29Z",
+   "tx": "0x5075088f2cd8e123334b68caaaadd8cc225434300b8d0df2d060c1952914922c",
+   "where": "LockRegistry"
+  },
+  {
+   "label": "SPEC B5-CORE-RWA",
+   "what": "bot specification",
+   "at_utc": "2026-10-04T16:37:34Z",
+   "tx": "0x913c94b2602f4e8c4620825a510565ca795223b75756df764f67c5efa70c1683",
+   "where": "LockRegistry"
+  },
+  {
+   "label": "SPEC B6-BOUNCE",
+   "what": "bot specification",
+   "at_utc": "2026-10-04T16:37:38Z",
+   "tx": "0xce4328c36b4a52c64af426ecf1e6c13b99c3dfdd29d718c05426ad5736ee2789",
+   "where": "LockRegistry"
+  }
+ ],
+ "fd16": {
+  "required": {
+   "signals": 20,
+   "days": 20,
+   "months": 2
+  },
+  "bots": {
+   "B1-TREND": {
+    "signals": 0,
+    "days": 0,
+    "months": 0
+   },
+   "B2-RS": {
+    "signals": 15,
+    "days": 0,
+    "months": 0
+   },
+   "B3-CARRY": {
+    "signals": 4,
+    "days": 4,
+    "months": 1
+   },
+   "B4-LISTING-FADE": {
+    "signals": 4,
+    "days": 0,
+    "months": 0
+   },
+   "B5-CORE-RWA": {
+    "signals": 0,
+    "days": 2,
+    "months": 1
+   },
+   "B6-BOUNCE": {
+    "signals": 0,
+    "days": 3,
+    "months": 1
+   }
+  },
+  "lock": "TERKUNCI"
+ },
+ "confidence": {
+  "B1-TREND": {
+   "bot": "B1-TREND",
+   "confidence_pct": null,
+   "label": "belum terukur",
+   "dasar": "1 - p bootstrap blok F-D16 (H0: rerata net harian maju <= 0); bukan peluang sinyal hari ini benar",
+   "status": "INTI",
+   "gerbang_v1": "TOLAK",
+   "fd16": "BELUM CUKUP DATA",
+   "rekam": {
+    "mean_bps": null,
+    "ci_lo_bps": null,
+    "ci_hi_bps": null,
+    "p": null
+   },
+   "kematangan": {
+    "sinyal": [
+     0,
+     20
+    ],
+    "hari": [
+     0,
+     20
+    ],
+    "bulan": [
+     0,
+     2
+    ]
+   },
+   "alasan": [
+    "status INTI: bot identitas pilihan builder - peran di buku, bukan bukti bot terbaik",
+    "gerbang v1 (backtest terkunci, `engine/book.py::GATE_V1`): TOLAK",
+    "rekam jejak maju: 0 hari settle - butuh >= 2 untuk angka apa pun",
+    "F-D16 (syarat uang nyata / jual): BELUM CUKUP DATA - S1 sinyal maju 0 < 20; hari settle 0 < 20; bulan 0 < 2 (S4 butuh fold untuk dibuang)"
+   ]
+  },
+  "B2-RS": {
+   "bot": "B2-RS",
+   "confidence_pct": null,
+   "label": "belum terukur",
+   "dasar": "1 - p bootstrap blok F-D16 (H0: rerata net harian maju <= 0); bukan peluang sinyal hari ini benar",
+   "status": "SEMENTARA",
+   "gerbang_v1": "TOLAK",
+   "fd16": "BELUM CUKUP DATA",
+   "rekam": {
+    "mean_bps": null,
+    "ci_lo_bps": null,
+    "ci_hi_bps": null,
+    "p": null
+   },
+   "kematangan": {
+    "sinyal": [
+     15,
+     20
+    ],
+    "hari": [
+     0,
+     20
+    ],
+    "bulan": [
+     0,
+     2
+    ]
+   },
+   "alasan": [
+    "status SEMENTARA: berjalan untuk transparansi, bisa digantikan bot yang memenuhi kriteria",
+    "gerbang v1 (backtest terkunci, `engine/book.py::GATE_V1`): TOLAK",
+    "rekam jejak maju: 0 hari settle - butuh >= 2 untuk angka apa pun",
+    "F-D16 (syarat uang nyata / jual): BELUM CUKUP DATA - S1 sinyal maju 15 < 20; hari settle 0 < 20; bulan 0 < 2 (S4 butuh fold untuk dibuang)"
+   ]
+  },
+  "B3-CARRY": {
+   "bot": "B3-CARRY",
+   "confidence_pct": 0,
+   "label": "awal - belum bermakna",
+   "dasar": "1 - p bootstrap blok F-D16 (H0: rerata net harian maju <= 0); bukan peluang sinyal hari ini benar",
+   "status": "SEMENTARA",
+   "gerbang_v1": "LOLOS_SHADOW",
+   "fd16": "BELUM CUKUP DATA",
+   "rekam": {
+    "mean_bps": -0.21875,
+    "ci_lo_bps": -0.21875,
+    "ci_hi_bps": -0.21875,
+    "p": 1.0
+   },
+   "kematangan": {
+    "sinyal": [
+     4,
+     20
+    ],
+    "hari": [
+     4,
+     20
+    ],
+    "bulan": [
+     1,
+     2
+    ]
+   },
+   "alasan": [
+    "status SEMENTARA: berjalan untuk transparansi, bisa digantikan bot yang memenuhi kriteria",
+    "gerbang v1 (backtest terkunci, `engine/book.py::GATE_V1`): LOLOS_SHADOW",
+    "rekam jejak maju: 4 hari settle, rerata net -0.22 bps/hari, CI 95 % [-0.22, -0.22] bps",
+    "F-D16 (syarat uang nyata / jual): BELUM CUKUP DATA - S1 sinyal maju 4 < 20; hari settle 4 < 20; bulan 1 < 2 (S4 butuh fold untuk dibuang)"
+   ]
+  },
+  "B4-LISTING-FADE": {
+   "bot": "B4-LISTING-FADE",
+   "confidence_pct": null,
+   "label": "belum terukur",
+   "dasar": "1 - p bootstrap blok F-D16 (H0: rerata net harian maju <= 0); bukan peluang sinyal hari ini benar",
+   "status": "SEMENTARA",
+   "gerbang_v1": "TIDAK_TERUKUR",
+   "fd16": "BELUM CUKUP DATA",
+   "rekam": {
+    "mean_bps": null,
+    "ci_lo_bps": null,
+    "ci_hi_bps": null,
+    "p": null
+   },
+   "kematangan": {
+    "sinyal": [
+     4,
+     20
+    ],
+    "hari": [
+     0,
+     20
+    ],
+    "bulan": [
+     0,
+     2
+    ]
+   },
+   "alasan": [
+    "status SEMENTARA: berjalan untuk transparansi, bisa digantikan bot yang memenuhi kriteria",
+    "gerbang v1 (backtest terkunci, `engine/book.py::GATE_V1`): TIDAK_TERUKUR",
+    "rekam jejak maju: 0 hari settle - butuh >= 2 untuk angka apa pun",
+    "F-D16 (syarat uang nyata / jual): BELUM CUKUP DATA - S1 sinyal maju 4 < 20; hari settle 0 < 20; bulan 0 < 2 (S4 butuh fold untuk dibuang)"
+   ]
+  },
+  "B5-CORE-RWA": {
+   "bot": "B5-CORE-RWA",
+   "confidence_pct": 0,
+   "label": "awal - belum bermakna",
+   "dasar": "1 - p bootstrap blok F-D16 (H0: rerata net harian maju <= 0); bukan peluang sinyal hari ini benar",
+   "status": "SEMENTARA",
+   "gerbang_v1": "TOLAK",
+   "fd16": "BELUM CUKUP DATA",
+   "rekam": {
+    "mean_bps": -9.452417808715541,
+    "ci_lo_bps": -9.452417808715541,
+    "ci_hi_bps": -9.452417808715541,
+    "p": 1.0
+   },
+   "kematangan": {
+    "sinyal": [
+     0,
+     20
+    ],
+    "hari": [
+     2,
+     20
+    ],
+    "bulan": [
+     1,
+     2
+    ]
+   },
+   "alasan": [
+    "status SEMENTARA: berjalan untuk transparansi, bisa digantikan bot yang memenuhi kriteria",
+    "gerbang v1 (backtest terkunci, `engine/book.py::GATE_V1`): TOLAK",
+    "rekam jejak maju: 2 hari settle, rerata net -9.45 bps/hari, CI 95 % [-9.45, -9.45] bps",
+    "F-D16 (syarat uang nyata / jual): BELUM CUKUP DATA - S1 sinyal maju 0 < 20; hari settle 2 < 20; bulan 1 < 2 (S4 butuh fold untuk dibuang)"
+   ]
+  },
+  "B6-BOUNCE": {
+   "bot": "B6-BOUNCE",
+   "confidence_pct": 0,
+   "label": "awal - belum bermakna",
+   "dasar": "1 - p bootstrap blok F-D16 (H0: rerata net harian maju <= 0); bukan peluang sinyal hari ini benar",
+   "status": "SEMENTARA",
+   "gerbang_v1": "TOLAK",
+   "fd16": "BELUM CUKUP DATA",
+   "rekam": {
+    "mean_bps": 0.0,
+    "ci_lo_bps": 0.0,
+    "ci_hi_bps": 0.0,
+    "p": 1.0
+   },
+   "kematangan": {
+    "sinyal": [
+     0,
+     20
+    ],
+    "hari": [
+     3,
+     20
+    ],
+    "bulan": [
+     1,
+     2
+    ]
+   },
+   "alasan": [
+    "status SEMENTARA: berjalan untuk transparansi, bisa digantikan bot yang memenuhi kriteria",
+    "gerbang v1 (backtest terkunci, `engine/book.py::GATE_V1`): TOLAK",
+    "rekam jejak maju: 3 hari settle, rerata net +0.00 bps/hari, CI 95 % [+0.00, +0.00] bps",
+    "F-D16 (syarat uang nyata / jual): BELUM CUKUP DATA - S1 sinyal maju 0 < 20; hari settle 3 < 20; bulan 1 < 2 (S4 butuh fold untuk dibuang)"
+   ]
+  }
+ },
+ "lock_states": {
+  "thresholds": "TERKUNCI",
+  "fd16": "TERKUNCI",
+  "killers": "TERKUNCI",
+  "gate_budget": "TERKUNCI"
+ },
+ "chain": {
+  "id": 97,
+  "block": 135379370,
+  "block_utc": "2026-10-07T10:08:01Z",
+  "signal_anchor": "0x9B78200beFbbBe836585d31bd5b6dB32587064f3",
+  "lock_registry": "0xcF6fBF95fc04DEd8d670512CEc0723a2246Fbb0C",
+  "decision_anchor": "0xDD162AFB5F5f92d5092f845A93660e3B38259330",
+  "committer": "0xCA9c7322210E9a7F7d0953c862d4Ef60cC0D64A4",
+  "commit_count": 22,
+  "lock_count": 13,
+  "verdicts": [
+   {
+    "bot": "B1-TREND",
+    "bar": "2026-10-01",
+    "verdict": "SEBELUM KUNCI",
+    "n": null,
+    "revealed": null,
+    "lag_s": null
+   },
+   {
+    "bot": "B1-TREND",
+    "bar": "2026-10-02",
+    "verdict": "SAH",
+    "n": 0,
+    "revealed": 0,
+    "lag_s": 31431
+   },
+   {
+    "bot": "B1-TREND",
+    "bar": "2026-10-03",
+    "verdict": "SAH",
+    "n": 0,
+    "revealed": 0,
+    "lag_s": 31546
+   },
+   {
+    "bot": "B1-TREND",
+    "bar": "2026-10-04",
+    "verdict": "SAH",
+    "n": 0,
+    "revealed": 0,
+    "lag_s": 39551
+   },
+   {
+    "bot": "B1-TREND",
+    "bar": "2026-10-05",
+    "verdict": "SAH",
+    "n": 0,
+    "revealed": 0,
+    "lag_s": 31455
+   },
+   {
+    "bot": "B1-TREND",
+    "bar": "2026-10-06",
+    "verdict": "SAH",
+    "n": 0,
+    "revealed": 0,
+    "lag_s": 36402
+   },
+   {
+    "bot": "B2-RS",
+    "bar": "2026-10-04",
+    "verdict": "SAH",
+    "n": 6,
+    "revealed": 6,
+    "lag_s": 39554
+   },
+   {
+    "bot": "B2-RS",
+    "bar": "2026-10-05",
+    "verdict": "SAH",
+    "n": 4,
+    "revealed": 4,
+    "lag_s": 31458
+   },
+   {
+    "bot": "B2-RS",
+    "bar": "2026-10-06",
+    "verdict": "SAH",
+    "n": 5,
+    "revealed": 5,
+    "lag_s": 36405
+   },
+   {
+    "bot": "B3-CARRY",
+    "bar": "2026-10-01",
+    "verdict": "SEBELUM KUNCI",
+    "n": null,
+    "revealed": null,
+    "lag_s": null
+   },
+   {
+    "bot": "B3-CARRY",
+    "bar": "2026-10-02",
+    "verdict": "SAH",
+    "n": 1,
+    "revealed": 1,
+    "lag_s": 31434
+   },
+   {
+    "bot": "B3-CARRY",
+    "bar": "2026-10-03",
+    "verdict": "SAH",
+    "n": 1,
+    "revealed": 1,
+    "lag_s": 31550
+   },
+   {
+    "bot": "B3-CARRY",
+    "bar": "2026-10-04",
+    "verdict": "SAH",
+    "n": 0,
+    "revealed": 0,
+    "lag_s": 40150
+   },
+   {
+    "bot": "B3-CARRY",
+    "bar": "2026-10-05",
+    "verdict": "SAH",
+    "n": 0,
+    "revealed": 0,
+    "lag_s": 31479
+   },
+   {
+    "bot": "B3-CARRY",
+    "bar": "2026-10-06",
+    "verdict": "SAH",
+    "n": 0,
+    "revealed": 0,
+    "lag_s": 36431
+   },
+   {
+    "bot": "B4-LISTING-FADE",
+    "bar": "2026-10-04",
+    "verdict": "SAH",
+    "n": 0,
+    "revealed": 0,
+    "lag_s": 31749
+   },
+   {
+    "bot": "B4-LISTING-FADE",
+    "bar": "2026-10-05",
+    "verdict": "SAH",
+    "n": 1,
+    "revealed": 1,
+    "lag_s": 31482
+   },
+   {
+    "bot": "B4-LISTING-FADE",
+    "bar": "2026-10-06",
+    "verdict": "SAH",
+    "n": 3,
+    "revealed": 3,
+    "lag_s": 31598
+   },
+   {
+    "bot": "B5-CORE-RWA",
+    "bar": "2026-10-04",
+    "verdict": "SAH",
+    "n": 0,
+    "revealed": 0,
+    "lag_s": 31753
+   },
+   {
+    "bot": "B5-CORE-RWA",
+    "bar": "2026-10-05",
+    "verdict": "SAH",
+    "n": 0,
+    "revealed": 0,
+    "lag_s": 31493
+   },
+   {
+    "bot": "B5-CORE-RWA",
+    "bar": "2026-10-06",
+    "verdict": "SAH",
+    "n": 0,
+    "revealed": 0,
+    "lag_s": 31615
+   },
+   {
+    "bot": "B6-BOUNCE",
+    "bar": "2026-10-04",
+    "verdict": "SAH",
+    "n": 0,
+    "revealed": 0,
+    "lag_s": 39581
+   },
+   {
+    "bot": "B6-BOUNCE",
+    "bar": "2026-10-05",
+    "verdict": "SAH",
+    "n": 0,
+    "revealed": 0,
+    "lag_s": 31496
+   },
+   {
+    "bot": "B6-BOUNCE",
+    "bar": "2026-10-06",
+    "verdict": "SAH",
+    "n": 0,
+    "revealed": 0,
+    "lag_s": 36435
+   }
+  ],
+  "totals": {
+   "SAH": 22,
+   "BELUM DIUNGKAP": 0,
+   "TIDAK DIUNGKAP": 0,
+   "MENUNGGU KOMIT": 0,
+   "TIDAK DIKOMIT": 0,
+   "SEBELUM KUNCI": 2,
+   "ALARM": 0,
+   "komit_resmi": 22,
+   "komit_alamat_lain_untuk_bot_kita": 0,
+   "komit_total": 22
+  }
+ }
+}

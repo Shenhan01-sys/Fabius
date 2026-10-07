@@ -2,7 +2,7 @@
 tags: [generated]
 ---
 
-_Auto-Index — 6 halaman · 2026-10-07T13:23Z · dari `vault/scripts/sync_vault.py`_
+_Auto-Index — 6 halaman · 2026-10-07T13:58Z · dari `vault/scripts/sync_vault.py`_
 
 ### 00-Overview (8)
 - [[00-Overview/00 - Hub Overview]]
@@ -165,13 +165,14 @@ _Auto-Index — 6 halaman · 2026-10-07T13:23Z · dari `vault/scripts/sync_vault
 - [[08-Backlog/12 - Epik Pengajuan Terbuka dan Peninjau LLM]]
 - [[08-Backlog/13 - Langkah Builder Tertunda]]
 
-### 09-Inbox (6)
+### 09-Inbox (7)
 - [[09-Inbox/00 - Hub Inbox]]
 - [[09-Inbox/Session-2026-09-26-27]]
 - [[09-Inbox/Session-2026-09-27-siang]]
 - [[09-Inbox/Session-2026-09-28]]
 - [[09-Inbox/Session-2026-09-29]]
 - [[09-Inbox/Session-2026-10-02]]
+- [[09-Inbox/Session-2026-10-07-deck]]
 
 ### 10-Submissions (4)
 - [[10-Submissions/00 - Hub Submissions]]
@@ -183,6 +184,22 @@ _Auto-Index — 6 halaman · 2026-10-07T13:23Z · dari `vault/scripts/sync_vault
 - [[11-Notes/00 - Hub Notes]]
 - [[11-Notes/Astra-Quant-Agent]]
 - [[11-Notes/Laya-LLM]]
+
+### 13-SubmmisionsDocs (14)
+- [[13-SubmmisionsDocs/00 - Hub Submission Deck]]
+- [[13-SubmmisionsDocs/01 - Cover]]
+- [[13-SubmmisionsDocs/02 - The Problem]]
+- [[13-SubmmisionsDocs/03 - The Gap]]
+- [[13-SubmmisionsDocs/04 - The Idea]]
+- [[13-SubmmisionsDocs/05 - The Proof Engine]]
+- [[13-SubmmisionsDocs/06 - The Open Platform]]
+- [[13-SubmmisionsDocs/07 - The AI Desk]]
+- [[13-SubmmisionsDocs/08 - The Market]]
+- [[13-SubmmisionsDocs/09 - Live Product]]
+- [[13-SubmmisionsDocs/10 - On-Chain]]
+- [[13-SubmmisionsDocs/11 - Built to Be Doubted]]
+- [[13-SubmmisionsDocs/12 - Roadmap and Close]]
+- [[13-SubmmisionsDocs/99 - Design Style]]
 
 ### Concepts (8)
 - [[Concepts/00 - Hub Concepts]]

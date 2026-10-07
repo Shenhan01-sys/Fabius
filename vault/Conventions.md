@@ -102,6 +102,7 @@ kaidah · `S# I# V# U# O# M#` sinyal per keluarga · `ST#` setup · `QT#` quant 
 09-Inbox/      catatan sesi bertanggal (mentah, belum terstruktur)
 10-Submissions/ kalimat klaim, alamat, angka publik
 11-Notes/      catatan pendukung bertopik (mis. kandidat model)
+13-SubmmisionsDocs/ deck submission: 12 md slide + md gaya + generator PPT (`build/`); nama folder = ejaan permintaan builder
 TradingKnowledge/ lapisan pengetahuan trading (sendiri punya aturan: lihat halaman itu)
 Concepts/      catatan konsep atomik (#concept)
 Templates/     kerangka halaman

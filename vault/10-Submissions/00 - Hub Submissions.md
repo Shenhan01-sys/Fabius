@@ -22,5 +22,5 @@ LIST FROM #submission SORT file.name ASC
 
 ## Terkait
 
-- [[Quick-Reference]] · [[Index]] · [[Conventions]]
+- [[13-SubmmisionsDocs/00 - Hub Submission Deck]] (deck PPT dari markdown) · [[Quick-Reference]] · [[Index]] · [[Conventions]]
 
