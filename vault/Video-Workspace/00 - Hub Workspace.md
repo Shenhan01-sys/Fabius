@@ -12,6 +12,7 @@ Proyek video pitch 2 menit yang dirender dengan Remotion mengikuti alur Motion-a
 
 - [[Video-Workspace/README]] - cara menjalankan (studio, still, render), mengganti voiceover, menangkap ulang layar web, kredit
 - [[Video-Workspace/SCRIPT]] - naskah per baris dengan sumber tiap klaim + daftar objek yang tampil per plate
+- [[PLAN-v2]] — P172: rencana video v2 90-100 s (konsumen + agentic, imersif, banyak interaksi situs hidup dari berbagai POV), naskah USULAN, kriteria keluar, temuan proyek v1 tidak jalan dari repo
 
 <!-- di atas: append-only oleh scripts/sync_vault.py; gloss tulisan tangan utuh -->
 ```dataview

@@ -34,6 +34,9 @@ tags: [backlog, builder]
 | LB16 | P99 | ALIH penulis: config `"penulis": "railway"` + push -> `gh workflow disable paper-ledger.yml` + `paper-ledger-watchdog.yml` -> tidak ada run hidup -> `PENULIS_MODE=master`; balik kapan pun (TL47 *Balik*) | kata builder (mengganti penulis ledger produksi) | TL47 *Alih* langkah 1-6 | ⬜ |
 | LB17 | P151 / P166 | layanan Railway `agen-luar-uji`: hentikan penjawab laptop dulu -> service kosong + `RAILWAY_DOCKERFILE_PATH=railway/agen-luar-uji/Dockerfile` + `AGEN_LUAR_UJI_KEY` lewat dasbor + volume `/data` + domain (port 8080) -> `tools/agen_luar_uji.py kartu --domain <domain>` + commit + push -> isi dompet 2573 0,05 tBNB (USULAN) -> deploy | service + rahasia + isi dompet = tangan builder | [[04-Tools/TL48 - agent luar uji di Railway (P151 P166)]] *Cara memakai*; `python -X utf8 tools/railway_up.py --service agen-luar-uji` | ⬜ |
 | LB18 | P157 | uji deposit + kunci API sungguhan di `/account` (login Privy) | login Privy + dompet builder | web `/account` | ⬜ |
+| LB19 | P172 | putuskan Motion.so: saldo 0 kredit (7 Okt) - top-up Flex ±$5 = 200 kredit (±1-2 video) atau paket Pro ±$29 / bulan = 1.250 kredit, atau lewati | pembelian = uang builder | widget MCP Motion.so (`show_plans_and_credits`) atau motion.so | ⬜ |
+| LB20 | P172 | pilih suara voiceover: TTS USULAN (`edge-tts`, layanan Microsoft, wilayah lisensi abu-abu untuk publikasi) / Kokoro (Apache-2.0) / rekaman sendiri / ElevenLabs (butuh kunci + paket) | selera + lisensi = keputusan builder | `analysis/` (README *Swap the voiceover*) | ⬜ |
+| LB21 | P172 | tonton potongan akhir + kata push (video ±50 MB masuk git) | persetujuan builder | `render/fabius-pitch-v2.mp4` | ⬜ |
 
 
 **Terkait:** [[08-Backlog/01 - Backlog]] · [[Conventions]] · [[09-Inbox/Session-2026-10-02]] §140

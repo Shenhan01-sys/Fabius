@@ -2,7 +2,7 @@
 tags: [generated]
 ---
 
-_Auto-Index — 6 halaman · 2026-10-07T14:42Z · dari `vault/scripts/sync_vault.py`_
+_Auto-Index — 6 halaman · 2026-10-07T15:48Z · dari `vault/scripts/sync_vault.py`_
 
 ### 00-Overview (8)
 - [[00-Overview/00 - Hub Overview]]
@@ -206,7 +206,8 @@ _Auto-Index — 6 halaman · 2026-10-07T14:42Z · dari `vault/scripts/sync_vault
 - [[TradingKnowledge/Glossary-TK]]
 - [[TradingKnowledge/Sumber dan Jangkauan]]
 
-### Video-Workspace (3)
+### Video-Workspace (4)
 - [[Video-Workspace/00 - Hub Workspace]]
+- [[Video-Workspace/PLAN-v2]]
 - [[Video-Workspace/README]]
 - [[Video-Workspace/SCRIPT]]
