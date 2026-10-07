@@ -32,7 +32,10 @@ class RpcError(RuntimeError):
 
 
 def keccak(b: bytes) -> bytes:
-    from engine.chain import keccak256         # impor malas: modul ini bisa dipakai tanpa sys.path engine di pemanggil yang tidak butuh selector
+    try:
+        from engine.chain import keccak256     # impor malas: modul ini bisa dipakai tanpa sys.path engine di pemanggil yang tidak butuh selector
+    except ImportError:                        # image tanpa engine/ (layanan agen-luar-uji): Keccak-256 yang sama dari eth-account (eth_utils)
+        from eth_utils import keccak as keccak256
     return keccak256(b)
 
 

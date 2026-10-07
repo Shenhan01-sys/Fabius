@@ -6,7 +6,8 @@ dengan penjawab berbasis aturan (`tools/agen_luar_uji_jawab.py`, tanpa LLM). Tuj
 Kunci dompet di `.agen_luar_uji.env` (gitignored, tidak pernah dicetak). Transaksi hanya dengan `--send`.
 
   python -X utf8 tools/agen_luar_uji.py kunci            # buat dompet (sekali)
-  python -X utf8 tools/agen_luar_uji.py kartu            # tulis docs/agen-luar-uji.json (kartu ERC-8004 publik; commit + push sebelum daftar)
+  python -X utf8 tools/agen_luar_uji.py kartu [--domain <host layanan Railway>]   # tulis docs/agen-luar-uji.json (kartu ERC-8004 publik; commit +
+                                                          # push; dengan --domain / AGEN_LUAR_DOMAIN kartu memuat fabius.reasons untuk analis P151)
   python -X utf8 tools/agen_luar_uji.py daftar [--send]  # rencana / kirim: isi 0,01 tBNB dari committer + register(kartu) dari dompet ini
   python -X utf8 tools/agen_luar_uji.py join             # join meja sebagai agent luar (tanpa tx)
   python -X utf8 tools/agen_luar_uji.py jalan [--sekali] # jawab siklus meja (PULL) dengan penjawab aturan
@@ -59,9 +60,18 @@ def cmd_kunci(a) -> int:
     return 0
 
 
+def reasons_url(domain: str) -> str:
+    """Template `fabius.reasons` (P151): layanan Railway `agen-luar-uji` menyajikan alasan di /reasons/<bar_close>.json sesudah bar tutup."""
+    d = domain.strip().removeprefix("https://").removeprefix("http://").strip("/")
+    if not d or "/" in d or " " in d:
+        raise SystemExit("domain layanan tidak sah (contoh: agen-luar-uji-production.up.railway.app)")
+    return f"https://{d}/reasons/{{bar_close}}.json"
+
+
 def cmd_kartu(a) -> int:
     from eth_account import Account
     d = deploy()
+    domain = getattr(a, "domain", None) or os.environ.get("AGEN_LUAR_DOMAIN")
     card = {"protocol": "erc-8004/1", "name": "Fabius external test agent (rule-based)", "type": "analyst",
             "description": ("TEST agent operated by the Fabius builder to prove the PUBLIC external-agent path end to end (separate wallet and "
                             "ERC-8004 identity, not a house agent). It joins the 5-minute desk by signature and answers every cycle by PULL with a "
@@ -70,13 +80,17 @@ def cmd_kartu(a) -> int:
             "model": {"provider": "none", "id": "rules (tools/agen_luar_uji_jawab.py)", "effort": "n/a"},
             "wallet": Account.from_key(kunci()).address,
             "evidence": {"desk": "https://fabius-x402-production.up.railway.app/desk/external", "chain_id": 97,
-                         "selection_anchor": d.get("contracts", {}).get("SelectionAnchor"), "code": "tools/agen_luar_uji.py, tools/agen_luar_uji_jawab.py"},
+                         "selection_anchor": d.get("contracts", {}).get("SelectionAnchor"), "code": "tools/agen_luar_uji.py, tools/agen_luar_uji_jawab.py, tools/agen_luar_layanan.py (Railway service agen-luar-uji)"},
             "limits_stated_honestly": ["paper only, BNB testnet", "builder-operated test agent", "rule-based, no edge claimed"]}
+    if domain:                                                  # P151: alasan pilihan harian disajikan layanan Railway sesudah bar tutup
+        card["fabius"] = {"reasons": reasons_url(domain)}
+        card["description"] += " It also commits one rule-based daily pick to SelectionAnchor and serves the reasoning at fabius.reasons."
     os.makedirs(os.path.dirname(KARTU), exist_ok=True)
     with open(KARTU, "w", encoding="utf-8", newline="\n") as f:
         json.dump(card, f, indent=1, ensure_ascii=False)
         f.write("\n")
-    print(f"kartu ditulis: {os.path.relpath(KARTU, ROOT)} (wallet {card['wallet']}); commit + push sebelum `daftar --send` supaya URI-nya hidup")
+    print(f"kartu ditulis: {os.path.relpath(KARTU, ROOT)} (wallet {card['wallet']}; fabius.reasons {card.get('fabius', {}).get('reasons', '-')});"
+          " commit + push supaya URI-nya hidup")
     return 0
 
 
@@ -132,7 +146,8 @@ def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     sub = ap.add_subparsers(dest="cmd", required=True)
     sub.add_parser("kunci")
-    sub.add_parser("kartu")
+    k = sub.add_parser("kartu")
+    k.add_argument("--domain", help="host publik layanan Railway agen-luar-uji (atau AGEN_LUAR_DOMAIN)")
     d = sub.add_parser("daftar")
     d.add_argument("--send", action="store_true")
     sub.add_parser("join")
