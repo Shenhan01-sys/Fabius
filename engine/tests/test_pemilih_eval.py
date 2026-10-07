@@ -1,6 +1,8 @@
 """P74: evaluasi lapisan pemilih - pembanding IDENTITAS / EW / TRAILING / ACAK / NONE kausal, ongkos ganti, uji berpasangan + BH, Brier, vonis,
 pra-registrasi (status MENYIMPANG bila kode bergeser), dan perakitan data maju (pilihan dikomit + aturan hidup `engine/pemilih.py`)."""
+import contextlib
 import copy
+import io
 import json
 import os
 import random
@@ -43,7 +45,7 @@ class KebijakanTests(unittest.TestCase):
             ganggu = copy.deepcopy(net)
             for b in ganggu:
                 for T in cal[k:]:
-                    ganggu[b][T] = random.Random(T).uniform(-1, 1)            # masa depan (bar ke-k dan sesudahnya) diacak total
+                    ganggu[b][T] = random.Random(f"{b}:{T}").uniform(-1, 1)  # masa depan (bar ke-k dan sesudahnya) diacak total, beda per bot
             b2 = pe.kebijakan_trailing(ganggu, cal, sorted(net), ID, 20, 3)
             self.assertEqual([a[T] for T in cal[:k + 1]], [b2[T] for T in cal[:k + 1]])   # pilihan s/d bar k tidak berubah
 
@@ -284,6 +286,29 @@ class MajuTests(unittest.TestCase):
         d = self.tool.data_maju(provisional=False)
         self.assertEqual({k: v for k, v in d["rusak"].items() if "(provisional)" not in k}, {})
         self.assertTrue(all(isinstance(T, int) and isinstance(x, float) for xs in d["final"].values() for T, x in xs.items()))
+
+    def test_a_broken_forward_ledger_is_excluded_and_reported(self):
+        led = os.path.join(self.tmp, "paper")
+        os.makedirs(led)
+        with open(os.path.join(ROOT, "ledger", "paper", "B3-CARRY.jsonl"), encoding="utf-8") as f:
+            recs = [json.loads(x) for x in f if x.strip()]
+        settle = next(i for i, r in enumerate(recs) if r.get("type") == "settle")
+        recs[settle]["net"] = 0.5                                                      # isi diubah tanpa menyegel ulang = rantai putus
+        with open(os.path.join(led, "B3-CARRY.jsonl"), "w", encoding="utf-8", newline="\n") as f:
+            f.write("".join(json.dumps(r) + "\n" for r in recs))
+        d = self.tool.data_maju(led, provisional=False)
+        self.assertIn("B3-CARRY", d["rusak"])
+        self.assertNotIn("B3-CARRY", d["final"])                                       # angka dari ledger rusak tidak pernah dipakai
+
+    def test_forward_provisional_numbers_never_carry_a_verdict(self):
+        out = os.path.join(self.tmp, "maju.json")
+        with contextlib.redirect_stdout(io.StringIO()):
+            self.assertEqual(self.tool.main(["maju", "--json", out]), 0)
+        with open(out, encoding="utf-8") as f:
+            lap = json.load(f)
+        self.assertTrue(lap["provisional"]["subjek"])
+        self.assertEqual({s["vonis"] for s in lap["provisional"]["subjek"].values()}, {"PROVISIONAL (bukan vonis)"})
+        self.assertNotIn(pe.UNGGUL, {s["vonis"] for s in lap["final"]["subjek"].values()})
 
 
 if __name__ == "__main__":

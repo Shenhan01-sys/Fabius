@@ -63,9 +63,34 @@ python -X utf8 tools/pemilih_eval.py maju   [--json out.json]        # MENGIKAT:
 python -X utf8 tools/pemilih_eval.py kunci --catatan "disetujui Hans <tanggal>"   # hanya atas kata builder, sha = berkas usulan
 ```
 
-## Hasil
+## Hasil (7 Okt 2026, lari pertama SESUDAH pra-registrasi `0x4003c4befa0e609ecbc5ceeed3b7101387777dfbeeedd8d655645e5aa711045c`)
 
-(diisi sesudah lari pertama; angka dicetak perintah di atas)
+Urutan bukti: berkas usulan ditulis 06:37:05Z dan di-commit (`a54825d1` di cabang kerja) SEBELUM `mundur` / `maju` pertama dijalankan.
+
+**Mundur - EKSPLORATIF, dalam-sampel** (`python -X utf8 tools/pemilih_eval.py mundur`, 7,8 s): kalender 1.373 bar 2023-01-02 .. 2026-10-05
+(irisan lima bot harian; B5 mulai 2023 karena deret PAXG), jumlah + MDD = penjumlahan net harian (bukan majemuk).
+
+| kebijakan | rata bps / hari | jumlah % | Sharpe | MDD % | ganti | ongkos ganti % |
+|---|---|---|---|---|---|---|
+| IDENTITAS (B1-TREND) | +8,68 | +119,15 | 0,80 | 41,88 | 0 | 0,00 |
+| EW lima bot | +4,70 | +64,49 | 1,03 | 18,66 | 0 | 0,00 |
+| TRAILING 60 (jeda 5) | +2,30 | +31,52 | 0,19 | 100,28 | 84 | 12,14 |
+| NONE | 0,00 | 0,00 | - | 0,00 | 0 | 0,00 |
+| ACAK (1.000 tarikan, jeda 5) | jumlah % p05 -46,32 · p50 +34,05 · p95 +120,02 | | | | | |
+
+Per bot (konteks, bukan hipotesis): B1 +8,68 bps (Sharpe 0,80) · B2 +2,89 (0,20; MDD 96,10) · B3 +0,72 (4,77; MDD 0,74) · B5 +8,90 (1,47) · B6 +2,29 (0,35).
+Uji eksploratif TRAILING: vs ACAK p 0,5225 · vs EW p 0,6773 · vs IDENTITAS p 0,8736 - tidak ada yang lolos BH. Bacaan (bukan klaim, dalam-sampel):
+"bot terbaik 60 hari" adalah lantai yang rendah - 84 kali ganti memakan 12,14 poin persen - sedangkan EW (Sharpe 1,03, MDD 18,66) adalah pembanding
+yang sulit dikalahkan. Pemilih yang ingin UNGGUL harus mengalahkan keduanya SESUDAH ongkos ganti.
+
+**Maju - MENGIKAT** (`python -X utf8 tools/pemilih_eval.py maju`): FINAL - kandidat B3-CARRY, B5-CORE-RWA, B6-BOUNCE (yang punya settle final);
+bot identitas B1-TREND belum punya settle final (funding aktual Oktober belum terbit) -> PEMILIH, agent:berita, agent:glm, agent:qwen = **BELUM CUKUP
+DATA**. PROVISIONAL - lima bot, kalender 1 bar (2026-10-05); pilihan agent pertama (3 catatan, penutupan 2026-10-06) belum ber-settle -> bar terukur
+1 < 2, label PROVISIONAL (bukan vonis). Vonis maju pertama paling cepat sesudah >= 60 bar settle final bersama.
+
+**Tes:** `engine/tests/test_pemilih_eval.py` 27 lulus; lima mutasi (trailing membaca bar T, ongkos ganti dihapus, hari minimum diabaikan, BH
+diabaikan, pilihan di luar kandidat ditebak) semuanya membuat tes gagal (satu tes hampa ditemukan + diperbaiki: gangguan masa depan yang sama untuk
+semua bot tidak mengubah peringkat).
 
 **Terkait:** [[08-Backlog/05 - Epik Enam Bot]] §5 · [[04-Tools/TL33 - agent analis]] · [[04-Tools/TL9 - ledger paper maju]] · [[04-Tools/TL43 - evaluasi meja F4]] ·
 [[00-Overview/03 - Decisions]] F-D16 · F-D102

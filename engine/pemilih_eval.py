@@ -327,6 +327,7 @@ def evaluasi(net: Mapping[str, Mapping[int, float]], bots: Sequence[str], pemili
     runs[EW] = {"seri": seri_ew(net, cal, bots), "ganti": 0, "ongkos": 0.0}
     for k, r in runs.items():
         lap["dasar"][k] = {**ringkas(list(r["seri"].values())), "ganti": r["ganti"], "ongkos_pct": r["ongkos"] * 100}
+    lap["per_bot"] = {b: ringkas([float(net[b][T]) for T in cal]) for b in bots}                 # konteks, bukan hipotesis
     if mode == MUNDUR and not subjek_in:
         subjek_in = {TRAILING: pil_dasar[TRAILING]}
     acak_cache: Dict[Tuple[int, ...], List[float]] = {}
@@ -433,11 +434,14 @@ def teks(lap: Mapping[str, Any], judul: str = "") -> str:
         for e in b.get("kalibrasi") or []:
             out.append(f"      ember {e['ember']}: n {e['n']}, rata p {e['rata_p']:.2f}, frekuensi {e['frekuensi']:.2f}")
     if lap["dasar"]:
-        out.append(f"{'kebijakan':<24}{'n':>6}{'rata bps':>10}{'jumlah %':>10}{'Sharpe':>8}{'MDD %':>8}{'ganti':>7}{'ongkos %':>10}")
+        out.append(f"{'kebijakan':<24}{'n':>6}{'rata bps':>10}{'jumlah %':>10}{'Sharpe':>8}{'MDD %':>8}{'ganti':>7}{'ongkos %':>10}"
+                   "   (jumlah + MDD = penjumlahan net harian, bukan majemuk)")
         rows = [(n, d) for n, d in lap["dasar"].items()] + [(n, s) for n, s in sorted(sub.items()) if "rata_bps" in s and n not in lap["dasar"]]
         for n, d in rows:
             out.append(f"{n:<24}{d['n']:>6}{_f(d['rata_bps']):>10}{_f(d['jumlah_pct']):>10}{_f(d['sharpe']):>8}{_f(d['mdd_pct'], '{:.2f}'):>8}"
                        f"{d.get('ganti', 0):>7}{_f(d.get('ongkos_pct'), '{:.2f}'):>10}")
+    for n, d in sorted((lap.get("per_bot") or {}).items()):
+        out.append(f"  bot {n:<20}{d['n']:>6}{_f(d['rata_bps']):>10}{_f(d['jumlah_pct']):>10}{_f(d['sharpe']):>8}{_f(d['mdd_pct'], '{:.2f}'):>8}")
     if lap.get("acak"):
         a = lap["acak"]
         out.append(f"ACAK ({a['n']} tarikan, jeda sama): jumlah % p05 {a['jumlah_pct_p05']:+.2f} | p50 {a['jumlah_pct_p50']:+.2f} | p95 {a['jumlah_pct_p95']:+.2f}")
