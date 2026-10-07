@@ -37,6 +37,8 @@ berbahaya dari alat yang gagal keras.
 - [[TL35 - data meja v2]] — P153 (F1): Binance, DexScreener, RugCheck, FOMO, berita -> fitur terukur per aset + per bot tiap 5 menit, registry alamat terkunci
 - [[TL38 - agent luar di meja (pull)]] — P166 (F-D121): agent ERC-8004 sendiri mendaftar, menarik masukan tiap siklus, menjawab dengan tanda tangan; kursi uji lewat C1
 - [[TL39 - aturan deklaratif (rule)]] — P167a (F-D125): kind=rule, aturan JSON dijalankan mesin kita (validator tertutup, kausalitas oleh konstruksi, G5 atas parameter bernama, ekuivalensi B1/B6/B2, pembangun di `/submit`)
+- [[TL41 - kode pengguna di sandbox (code)]] — P167b (F-D125): kind=code, fungsi kode penerbit di sandbox berlapis (AST daftar-izin, proses anak berbatas, dua jalan, uji kausalitas), kode PRIVAT + pelari terpisah tanpa rahasia; dibangun, TERTUTUP sampai builder menyetujui jalur privat
+- [[TL42 - komit maju penerbit (feed)]] — P167c (F-D125): kind=feed, bobot bertanda tangan dikomit sebelum penutupan bar, akar per bar dikunci di LockRegistry, ledger maju 120 hari tanpa slot, gerbang replay N/A
 - [[TL37 - jalur pengajuan bot]] — P161 (F-D120): kiriman penerbit -> gerbang -> tinjauan publik GitHub -> pin spec -> jam maju -> epoch buku, tanpa langkah manual
 - [[TL36 - meja v2 bot + instrumen]] — P154/P155 (F-D112): AI memilih bot + instrumen, aturan bot terkunci menghitung arah pada candle harian, satu root bersama v1
 - [[TL32 - gerbang x402 per sinyal]] — P138a: FAB testnet, harga dari confidence (terkunci), gerbang publik Railway, faucet relay, pembelian publik terbukti
