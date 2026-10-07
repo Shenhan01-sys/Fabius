@@ -1071,7 +1071,10 @@ def make_handler(gate: Gate):
                     rows = gate.antrean.daftar(gate.registri_bot(), parts[2] if len(parts) == 3 else None,
                                                pj.baca_status(os.path.join(gate.data.workdir, "ledger", "pengajuan", "status.json")),
                                                pj.bayangan_dari(gate.data.workdir, int(gate.now())))
-                    rows = pl.hias(gate, rows)                                                      # P168: kartu peninjau LLM (teks biasa)
+                    try:
+                        rows = pl.hias(gate, rows)                                                  # P168: kartu peninjau LLM (teks biasa)
+                    except Exception as e:  # noqa: BLE001 - SK-N15: kartu gagal = antrean tetap tampil tanpa kartu
+                        gate.log(f"kartu peninjau gagal: {type(e).__name__}: {str(e)[:200]}")
                     if len(parts) == 3 and not rows:
                         return self._send(404, {"error": "no such submission"})
                     return self._send(200, rows[0] if len(parts) == 3 else {"submissions": rows, "review": "daily public review run on the repo (P161)"})

@@ -403,7 +403,10 @@ def kursi_evaluasi(st: dict, t0: int, luar: Optional[set] = None, tahan: Optiona
         if v["status"] == "uji" and (t0 - v["sejak"]) // meja.PARAMS["siklus_s"] >= w and sah >= P["naik_sah_min"] and ret >= median:
             calon.append((ret, s, sah))
     for ret, s, sah in sorted(calon, reverse=True):
-        ditahan = tahan(s, k[s]) if tahan else None
+        try:
+            ditahan = tahan(s, k[s]) if tahan else None
+        except Exception as e:  # noqa: BLE001 - SK-N15: galat peninjau = TAHAN (bukan naik, bukan siklus gagal)
+            ditahan = f"reviewer error: {type(e).__name__}"
         if ditahan:                                                                           # P168b: hanya MENAHAN (SK-N13)
             ev.append({"agent": s, "dari": "uji", "ke": "uji", "alasan": f"promotion held: {ditahan}"})
             continue
