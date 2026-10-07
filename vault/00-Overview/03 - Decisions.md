@@ -3566,3 +3566,31 @@ Calmar minimum; daya 0,31 -> 0,41, positif-palsu maks 1,45 %; saran: G8 saja): *
    (protokol `0x4587f1ef…`), bukan dicocokkan sesudah melihat data konfirmasi.
 
 **Terkait:** F-D88 · F-D126 · [[06-Results/34 - Hasil P90 Gelombang 2]] · [[08-Backlog/08 - Riset Optimasi Ambang]] · [[07-Testing/01 - Test Commands]] #135
+
+
+## F-D130 - Peninjau LLM P168: revisi brief terarah + kasus kalibrasi baik dibuat bersih + pemeriksa kutipan yang tepat · 7 Okt 2026 (WIB)
+
+Builder (7 Okt): *"P168 ... kerjakan sekarang"* (sesudah opsi revisi brief / ganti model / tunda). Diagnosis atas jawaban mentah kalibrasi sungguhan:
+(1) sebagian besar `evidence_key` "karangan" = KUTIPAN SAH berformat lain (beberapa jalur dalam satu kunci, jalur kiriman tanpa `submission.`,
+`jalur=nilai`, `jalur (catatan)`); (2) kasus "baik" CACAT: `bot-baik` tampak menyembunyikan percobaan (n_trials 11 = 6 dideklarasikan + 4 varian G5 + 1,
+rinciannya tidak diberikan) dan ditahan karena G11 yang memang tidak diukur pipeline; `agent-baik` dibangkitkan dengan satu template kalimat (itu
+sendiri BOILERPLATE) dan berganti bot 54 % siklus; (3) brief "kalau ragu TAHAN vs TOLAK pilih TAHAN" bertabrakan dengan "duplikat = TOLAK". Mengikat:
+
+1. **Brief bot + agent direvisi (dua kalimat, teks persis di epik 12 §5.3 / §5.4):** duplikat petahana = TOLAK; batas pipeline Fabius (gerbang di
+   `stage1.unmeasured`, ukuran yang tidak diambil Fabius, akuntansi `n_trials`, latensi tak dicatat, sampel jawaban, kartu tulisan pemilik, panjang masa uji
+   terkunci) masuk monitoring, bukan keberatan blocking; LANJUT vs TAHAN = ada keberatan blocking? sha bot `0x57b9f16e…` (sebelumnya `0xb72e1e77…`),
+   agent `0x016f6029…` (sebelumnya `0xe66fb05a…`).
+2. **Masukan bot:** `stage1.n_trials_breakdown` (dideklarasikan + varian G5 + pengajuan keluarga sebelumnya + 1; hanya bila jumlahnya cocok).
+3. **Pemeriksa kutipan (`kunci_sah`):** satu evidence_key boleh memuat beberapa jalur (`;` `,` `&` `+` `|`, atau ` vs ` / ` and ` diapit spasi), relatif
+   ke `submission`, dengan `=nilai` / `(catatan)`; SETIAP jalur tetap wajib ada (salah ketik, jalur yang tidak ada tetap karangan).
+4. **Kasus kalibrasi baik dibuat bersih:** agent baik = pilihan bot stabil, instrumen + faktor sesuai mekanisme bot, alasan beragam dengan nilai fitur
+   sungguhan. Kasus baik wajib LANJUT (F-D sebelumnya hari ini).
+5. **Panggilan:** suhu 0,2 -> 0 (USULAN asisten, demi konsistensi antar jalan); nonce body `user` per panggilan (cache xkiro); kalibrasi mengulang galat
+   JARINGAN maks 3x dan boleh paralel (`--paralel`).
+
+Hasil kalibrasi sungguhan sesudah perbaikan (kriteria ketat tidak diubah: semua kasus, 3 jalan konsisten, skema persis, nol kutipan karangan):
+**bot 5/8** (sebelumnya 2/8), **agent 4/6** (sebelumnya 0/6). Sisa = kesalahan model sungguhan (jalur salah ketik / tidak ada, `agent-baik` tetap
+ditahan, satu pelanggaran format). **Peninjau TETAP tidak aktif.** Keputusan builder berikutnya: tetap ketat (peninjau mati sampai model lebih baik),
+longgarkan kriteria lulus (mis. mayoritas 2/3 jalan per kasus), atau coba model lain.
+
+**Terkait:** F-D122 · F-D125 · P168 · [[08-Backlog/12 - Epik Pengajuan Terbuka dan Peninjau LLM]] §5.3-§5.4 · [[07-Testing/01 - Test Commands]] #137

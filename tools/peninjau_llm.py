@@ -426,7 +426,7 @@ def cmd_status(a) -> int:
 
 
 def jalankan_kalibrasi(jenis: str, panggil: Callable[[str, str], dict], *, jalan: int = pn.PARAMS["jalan_kalibrasi"], hanya: Optional[List[str]] = None,
-                       model: Optional[str] = None, now_s: Optional[int] = None, log: Callable[[str], None] = print) -> dict:
+                       model: Optional[str] = None, now_s: Optional[int] = None, log: Callable[[str], None] = print, paralel: int = 1) -> dict:
     """Set kasus `jenis` x `jalan` panggilan -> rekaman kalibrasi (jawaban mentah + sha + meta per jalan). Penilaian di rekaman hanya informasi: kunci jalur
     selalu menilai ULANG dari jawaban mentah (`peninjau.status_kalibrasi`)."""
     semua = pn.muat_kasus(jenis)
@@ -436,10 +436,29 @@ def jalankan_kalibrasi(jenis: str, panggil: Callable[[str, str], dict], *, jalan
            "model": model or pn.PARAMS["model"], "params_sha": pn.PARAMS_SHA, "brief_sha": pn.BRIEF_SHA[jenis], "skema_sha": pn.SKEMA_SHA,
            "kasus_sha": pn.kasus_sha(semua), "jalan_diminta": jalan, "sebagian": bool(hanya), "kasus": []}
     masuk = keluar = 0
-    for k in kasus:
+    tugas = [(n, i) for n in range(len(kasus)) for i in range(jalan)]
+
+    def satu(n: int, i: int) -> dict:
+        """Galat JARINGAN (DNS, koneksi diputus, batas waktu) diulang maks 3x dengan jeda: kalibrasi mengukur model, bukan jaringan mesin pemanggil.
+        Jawaban model yang buruk tidak pernah diulang."""
+        for coba in range(3):
+            r = pn.tinjau(jenis, kasus[n]["masukan"], panggil, kunci=f"kal-{kasus[n]['id']}-{i + 1}", now_s=now)
+            g = (r.get("hasil") or {}).get("galat") or ""
+            if r["hasil"]["sumber"] != "gagal_panggilan" or not any(x in g for x in ("URLError", "RemoteDisconnected", "timed out", "Timeout",
+                                                                                        "ConnectionReset", "HTTP 429", "HTTP 502", "HTTP 503")):
+                return r
+            time.sleep(5 * (coba + 1))
+        return r
+    if paralel > 1:                                                   # 7 Okt: tiap panggilan sungguhan 30-120 s; urutan rekaman tetap urutan kasus x jalan
+        import concurrent.futures as cf
+        with cf.ThreadPoolExecutor(max_workers=paralel) as ex:
+            hasil_r = dict(zip(tugas, ex.map(lambda t: satu(*t), tugas)))
+    else:
+        hasil_r = None
+    for n, k in enumerate(kasus):
         jl = []
         for i in range(jalan):
-            r = pn.tinjau(jenis, k["masukan"], panggil, kunci=f"kal-{k['id']}-{i + 1}", now_s=now)
+            r = hasil_r[(n, i)] if hasil_r is not None else satu(n, i)
             u = (r.get("meta") or {}).get("usage") or {}
             masuk += int(u.get("prompt_tokens") or 0)
             keluar += int(u.get("completion_tokens") or 0)
@@ -465,7 +484,8 @@ def cmd_kalibrasi(a) -> int:
                   f"tools/peninjau_llm.py kalibrasi --jenis {a.jenis}` (kunci hanya di Railway)")
             return 2
         panggil = panggil_xkiro
-    rec = jalankan_kalibrasi(a.jenis, panggil, jalan=a.jalan, hanya=a.kasus, model="palsu" if a.palsu else None, log=lambda m: print(m, flush=True))
+    rec = jalankan_kalibrasi(a.jenis, panggil, jalan=a.jalan, hanya=a.kasus, model="palsu" if a.palsu else None, log=lambda m: print(m, flush=True),
+                             paralel=max(1, a.paralel))
     n = pn.nilai_kalibrasi(rec)
     for p in n["kasus"]:
         print(f"{'LULUS' if p['lulus'] else 'GAGAL'} {p['id']}: vonis {p['vonis']}" + (f" | {'; '.join(p['masalah'][:3])}" if p["masalah"] else ""))
@@ -491,6 +511,7 @@ def main() -> int:
     k = sub.add_parser("kalibrasi")
     k.add_argument("--jenis", choices=pn.JENIS, required=True)
     k.add_argument("--jalan", type=int, default=pn.PARAMS["jalan_kalibrasi"])
+    k.add_argument("--paralel", type=int, default=1, help="panggilan model bersamaan (urutan rekaman tidak berubah)")
     k.add_argument("--kasus", nargs="*", help="hanya kasus ini (rekaman SEBAGIAN tidak pernah mengaktifkan peninjau)")
     k.add_argument("--palsu", action="store_true", help="model palsu tanpa biaya: menguji pipa, bukan kalibrasi")
     k.add_argument("--keluar", help="tulis rekaman ke berkas ini (bawaan: ledger/peninjau/kalibrasi/<UTC>-<jenis>.json)")

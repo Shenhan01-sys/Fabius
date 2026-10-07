@@ -442,6 +442,13 @@
     "identity_verified": true,
     "kind": "rule",
     "n_trials": 6,
+    "n_trials_breakdown": {
+     "declared_by_issuer": 1,
+     "g5_variants": 4,
+     "note": "Fabius accounting: declared trials + G5 variants run by Fabius + prior family submissions + 1. The gap between declared and total is added by Fabius, not hidden by the issuer.",
+     "prior_family_submissions": 0,
+     "total": 6
+    },
     "report_sha": "0x68bbe3a93f6918967f7c3786e20a7f1b34b932feeb1c6a16959cae6f459f1bed",
     "spec_sha": "0x4e18ce73fdcc97fa7089eb29806400543dbdd9fa6d31c0b03d44b280bdd4eaad",
     "submission_sha": "0x753a9edfc0697bbed5f2a75f4ec7ee8efc22c3e63aa03b320a175e70dc190412",

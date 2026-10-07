@@ -58,3 +58,5 @@ qwen-code-export-*.md
 
 # Obsidian: pengaturan tampilan lokal builder (dibuat Obsidian saat vault dibuka), bukan isi vault
 vault/.obsidian/
+# kunci dompet agent luar uji (P151/P166)
+.agen_luar_uji.env

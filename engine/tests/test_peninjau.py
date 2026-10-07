@@ -81,8 +81,8 @@ class BriefTests(unittest.TestCase):
         self.assertIn(pn.BRIEF_AGENT, blok)
         self.assertIn(pn.SKEMA, blok)
         # sha tercatat di epik 12 §5.3 / §5.4 (builder menyetujui teks dengan sha ini)
-        self.assertEqual(pn.sha_teks(pn.BRIEF_BOT), "0xb72e1e772887338458a05b44f58fc80338818909b20a8fcf53254e43f04ed331")
-        self.assertEqual(pn.sha_teks(pn.BRIEF_AGENT), "0xe66fb05aca4420f30d08caca12b9e1da18a1bd0c8245d662235d5e02c0e92702")
+        self.assertEqual(pn.sha_teks(pn.BRIEF_BOT), "0x57b9f16eb6ece85934e67f0d4217aacfc8eb2186c312d8743b89a636b61490d9")     # revisi F-D130
+        self.assertEqual(pn.sha_teks(pn.BRIEF_AGENT), "0x016f60296ac8b16baf39dfcfddd3ec58508545fc6bfb9826ee332ba2a735ab1f")   # revisi F-D130
         self.assertEqual({j: pn.sha_teks(pn.BRIEF[j]) for j in pn.JENIS}, pn.BRIEF_SHA)
         self.assertEqual(pn.sha_teks(pn.SKEMA), pn.SKEMA_SHA)
         for j in pn.JENIS:

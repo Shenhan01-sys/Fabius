@@ -16,7 +16,7 @@ import json
 import os
 import random
 import sys
-from typing import Dict, List
+from typing import Dict, List, Tuple
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(HERE)
@@ -330,12 +330,45 @@ def _kep(bot, skor, k, eks, ins, ringkasan, alasan, veto=()):
             "ringkasan": f"{bot} on {', '.join(i['aset'] for i in ins) or '-'}: {ringkasan}", "alasan": alasan, "ditolak": []}
 
 
+# 7 Okt (kalibrasi sungguhan): agent "baik" lama memakai SATU template kalimat untuk semua alasan dan berganti bot 54 % siklus - model menahannya dengan
+# benar (BOILERPLATE, NO_MECHANISM). Agent baik kini: pilihan bot stabil (berganti hanya saat rezim berganti), instrumen + faktor sesuai mekanisme bot,
+# alasan dari beberapa bentuk kalimat dengan nilai fitur sungguhan dan catatan risiko yang ikut data.
+MEKANISME = {"B1-TREND": ("trend continuation", "tren_60h", True, ["tren_60h", "r_4j"]),
+             "B2-RS": ("relative strength ranking", "r_4j", True, ["r_4j", "r_1j"]),
+             "B3-CARRY": ("funding carry", "funding", True, ["funding", "oi_ubah_1j"]),
+             "B4-LISTING-FADE": ("fading short-term spikes", "r_1j", True, ["r_1j", "vol_1j"]),
+             "B5-CORE-RWA": ("a calm core allocation", "vol_1j", False, ["vol_1j", "tren_60h"]),
+             "B6-BOUNCE": ("a rebound after a stretched drop", "z_10h", False, ["z_10h", "r_4j"])}
+
+
+def alasan_baik(bot: str, fs: Dict[str, dict], i: int) -> Tuple[List[str], List[str], str, str]:
+    """-> (dua aset, faktor, ringkasan, alasan) yang konsisten dengan mekanisme `bot` dan nilai fitur siklus ini."""
+    nama, kunci, turun, faktor = MEKANISME[bot]
+    pilih = sorted(ASET, key=lambda a: fs[a][kunci], reverse=turun)[:2]
+    a0, a1 = pilih
+    f0, f1 = fs[a0], fs[a1]
+    risiko = ("open interest is falling, so size stays moderate" if f0["oi_ubah_1j"] < 0 else
+              "funding is already elevated, so the position stays small" if f0["funding"] > 0.00015 else
+              "hourly volatility is above normal, so conviction is capped" if f0["vol_1j"] > 0.011 else "nothing on the input argues against it")
+    bentuk = i % 4
+    if bentuk == 0:
+        alasan = f"{bot} fits: {nama}. {a0} leads on {kunci} ({f0[kunci]:+.4f}), {a1} is second ({f1[kunci]:+.4f}). {risiko.capitalize()}."
+    elif bentuk == 1:
+        alasan = f"I keep {bot} because {a0} {kunci} {f0[kunci]:+.4f} and {faktor[1]} {f0[faktor[1]]:+.4f} still describe {nama}; {risiko}."
+    elif bentuk == 2:
+        alasan = f"{a0} and {a1} rank top on {kunci} ({f0[kunci]:+.4f}, {f1[kunci]:+.4f}). That is the {bot} setup ({nama}). Caveat: {risiko}."
+    else:
+        alasan = f"Same view as last cycle: {nama} on {a0} ({kunci} {f0[kunci]:+.4f}); {a1} adds breadth. {risiko.capitalize()}."
+    return pilih, faktor, f"{bot}: {nama} on {a0}, {a1}", alasan
+
+
 def rekaman_agent(perilaku: str, seed: int):
     """-> (rekaman meja, peta fitur per siklus). Agent luar x7001 duduk di kursi uji sejak SEJAK selama N siklus; tiga agent rumah aktif + konsensus."""
     rng = random.Random(seed)
     rek, fitur_siklus = [], {}
     eq, eq_h = 10_000.0, {h: 10_000.0 for h in RUMAH}
     benar, kons_lalu = rng.choice(BOTS), None
+    pegang = None
     for i in range(N):
         t = SEJAK + i * 300
         if i % 30 == 0:
@@ -360,16 +393,14 @@ def rekaman_agent(perilaku: str, seed: int):
         if perilaku == "baik":
             if i % 97 == 50:
                 status = "terlambat"
-            b = benar if rng.random() < 0.55 else rng.choice(BOTS)
-            pilih = sorted(ASET, key=lambda a: -fs[a]["r_4j"])[:2]
-            ins = [{"aset": a, "k": round(min(0.9, 0.5 + abs(fs[a]["r_4j"]) * 15), 2), "faktor": ["r_4j", "oi_ubah_1j", "funding"]} for a in pilih]
+            if pegang is None or (i % 30 == 0 and rng.random() < 0.8):      # berganti hanya saat rezim berganti
+                pegang = benar
+            b = pegang
+            pilih, faktor, ringkasan, alasan = alasan_baik(b, fs, i)
             k = round(rng.uniform(0.35, 0.85), 2)
             r = (k - 0.55) * 0.004 + rng.gauss(0.0001, 0.001)
-            a0 = pilih[0]
-            alasan = (f"{a0} r_4j {fs[a0]['r_4j']:+.4f} with oi_ubah_1j {fs[a0]['oi_ubah_1j']:+.3f}: positioning is building with the move; funding "
-                      f"{fs[a0]['funding']:+.6f} is not crowded. {pilih[1]} r_4j {fs[pilih[1]]['r_4j']:+.4f} as the second leg.")
-            kep = _kep(b, _skor(rng, b, 40, 75), k, round(rng.uniform(0.3, 0.7), 2), ins,
-                       f"{a0} r_4j {fs[a0]['r_4j']:+.4f}, open interest {fs[a0]['oi_ubah_1j']:+.3f}", alasan)
+            ins = [{"aset": a, "k": round(min(0.9, 0.45 + k / 2), 2), "faktor": faktor} for a in pilih]
+            kep = _kep(b, _skor(rng, b, 40, 75), k, round(rng.uniform(0.3, 0.7), 2), ins, ringkasan, alasan)
         elif perilaku == "herding":
             b = kons_lalu or kb
             nb = (rek[-1]["nilai_bot"])

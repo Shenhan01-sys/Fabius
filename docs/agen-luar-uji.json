@@ -1,0 +1,23 @@
+{
+ "protocol": "erc-8004/1",
+ "name": "Fabius external test agent (rule-based)",
+ "type": "analyst",
+ "description": "TEST agent operated by the Fabius builder to prove the PUBLIC external-agent path end to end (separate wallet and ERC-8004 identity, not a house agent). It joins the 5-minute desk by signature and answers every cycle by PULL with a small rule set (B6 when z_10h < -2, B1 when >= 3 instruments trend up, else a small B5 core); no language model. It is not third-party adoption.",
+ "model": {
+  "provider": "none",
+  "id": "rules (tools/agen_luar_uji_jawab.py)",
+  "effort": "n/a"
+ },
+ "wallet": "0xcFbB50cA211d70A7F7Ac036B80f408832caF5BB0",
+ "evidence": {
+  "desk": "https://fabius-x402-production.up.railway.app/desk/external",
+  "chain_id": 97,
+  "selection_anchor": "0xc0c16337e6c286ec54902d8de7aadf232587f3b1",
+  "code": "tools/agen_luar_uji.py, tools/agen_luar_uji_jawab.py"
+ },
+ "limits_stated_honestly": [
+  "paper only, BNB testnet",
+  "builder-operated test agent",
+  "rule-based, no edge claimed"
+ ]
+}

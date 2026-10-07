@@ -333,6 +333,13 @@
     "identity_verified": true,
     "kind": "code",
     "n_trials": 3,
+    "n_trials_breakdown": {
+     "declared_by_issuer": 2,
+     "g5_variants": 0,
+     "note": "Fabius accounting: declared trials + G5 variants run by Fabius + prior family submissions + 1. The gap between declared and total is added by Fabius, not hidden by the issuer.",
+     "prior_family_submissions": 0,
+     "total": 3
+    },
     "report_sha": "0x0eeeb414323b661ca44d1d8d73616bf5bf158e421c496219698e7b2d1a785c24",
     "spec_sha": "0x03dc256e630fb588684774e847fe763cf63721b8d039e2d6e3ee86718c9af3fd",
     "submission_sha": "0x4845bf8ab2e7476ee9380ca7175ad662fd43683b2723e5e9b0065ae01bd7c7b3",
