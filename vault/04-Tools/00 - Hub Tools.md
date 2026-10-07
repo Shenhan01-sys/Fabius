@@ -55,10 +55,11 @@ berbahaya dari alat yang gagal keras.
 - [[TL21 - waitlist]] — penampung daftar tunggu tingkat 1: bot Telegram dibaca rantai GitHub tiap 5 menit, pendaftar dikabarkan ke chat builder; log publik hanya hitungan (P115)
 - [[TL40 - peninjau LLM]] — P168a/P168b (F-D125): tahap 2 sesudah tahap teknis, xkiro GLM 5.3 effort bawaan, brief persis ber-sha, JSON ketat, hanya MENAHAN (LLM mati = TAHAN), set kalibrasi; BELUM DIKALIBRASI = tidak di jalur
 - [[TL43 - evaluasi meja F4]] — P156 (F4, BAYANGAN): IC / hit / kalibrasi per agent, bobot agent usulan (sha `0x41a1001d…`), buku ablasi per agent + per sumber yang wajib SETIA, rapor direkam, usulan evaluator hanya lewat bayangan + kunci; `FABIUS_F4=bayangan`, `tools/meja_eval.py rapor`
-- [[TL44 - gerbang seleksi bot (P161)]] ← tulis penjelasannya
-- [[TL46 - lapisan pemilih (P74)]] ← tulis penjelasannya
-- [[TL45 - MCP berbayar meja (P157)]] ← tulis penjelasannya
-- [[TL48 - agent luar uji di Railway (P151 P166)]] ← tulis penjelasannya
+- [[TL44 - gerbang seleksi bot (P161)]] — P161: jalur kandidat bot baru dari kiriman sampai slot buku, tiap langkah tercatat dan bisa diperiksa ulang; peta lima mata rantai + pemeriksa jejak
+- [[TL46 - lapisan pemilih (P74)]] — P74: mengukur pemilih bot (P143) terhadap EW enam bot / acak / terbaik-trailing, ongkos ganti, BH lintas bot, Brier rezim; hanya mengukur, tidak mengubah yang hidup
+- [[TL45 - MCP berbayar meja (P157)]] — P157 (F5, F-D111): MCP = sinyal + data lewat x402; deposit FAB -> kunci API dari tanda tangan dompet -> potong saldo per panggilan; gratis hanya pricing / account
+- [[TL48 - agent luar uji di Railway (P151 P166)]] — P151 + P166: layanan Railway `agen-luar-uji` untuk agent uji 2573: meja PULL 24/7, pilihan analis harian ke SelectionAnchor, alasan publik sesudah tutup; langkah builder LB17
+- [[TL47 - penulis ledger Railway (P99)]] — P99 + P100: penulis ledger di Railway menggantikan rantai GitHub `paper-ledger` (urutan + gerbang sama), penulis tunggal tiga lapis, mode BAYANGAN-TULIS, tick REST; belum alih (LB15 / LB16)
 
 <!-- di atas: append-only oleh scripts/sync_vault.py; gloss tulisan tangan utuh -->
 ```dataview
