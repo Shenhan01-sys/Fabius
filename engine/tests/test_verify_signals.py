@@ -94,8 +94,9 @@ class VerifyTests(unittest.TestCase):
 
     def test_official_commit_without_ledger_tick_is_alarm(self):
         cid, c, evs = scenario()
-        c2 = dict(c, asof=ASOF + 5 * 86_400)
-        cid2 = sc.commit_id(COMMITTER, "B3-CARRY", SPECS["B3-CARRY"].sha(), ASOF + 5 * 86_400)
+        jauh = ASOF + 3650 * 86_400                                  # bar yang tidak akan pernah punya tick ledger (dulu +5 hari: bom waktu, tick 10-06 masuk 7 Okt)
+        c2 = dict(c, asof=jauh)
+        cid2 = sc.commit_id(COMMITTER, "B3-CARRY", SPECS["B3-CARRY"].sha(), jauh)
         rows, st = self.run_v([(cid, c), (cid2, c2)], {cid: evs})
         self.assertEqual(st["ALARM"], 1)
         self.assertTrue(any(r.vonis == "ALARM" and "tanpa tick" in r.detail for r in rows))
