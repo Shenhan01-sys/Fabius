@@ -3,8 +3,11 @@
 Induk (`engine/kode.py::PelariLokal`) mengirim satu pekerjaan JSON lewat stdin: kode yang SUDAH lolos analisis statis dan SUDAH diinstrumentasi
 (panggilan `_l()` di tiap badan fungsi, badan perulangan, comprehension, lambda), bar publik per aset, varian parameter, sampel kausalitas, batas.
 Anak ini:
-  1. memasang batas sumber daya PADA DIRINYA SENDIRI sebelum membaca kode (CPU, memori, ukuran berkas 0, deskriptor, core 0) - tanpa `preexec_fn`
-     (tidak aman di proses induk ber-thread);
+  1. memasang batas sumber daya PADA DIRINYA SENDIRI sebelum membaca kode - tanpa `preexec_fn` (tidak aman di proses induk ber-thread):
+     Linux / POSIX (pelari Railway): `setrlimit` CPU, memori, ukuran berkas 0, deskriptor, core 0;
+     Windows (mesin builder): Job Object tanpa nama - waktu CPU per proses, memori ter-commit per proses, maksimal 1 proses (tidak bisa membuat
+     proses baru), mati tanpa dialog bila galat tak tertangani, UI terkunci; tanpa padanan ukuran berkas / deskriptor (kode tidak punya `open`,
+     analisis statis menolaknya). Pegangan job ditutup sesudah memasang -> kode tidak bisa melonggarkannya. Gagal memasang = gagal tertutup;
   2. menjalankan kode dengan builtins TERBATAS (daftar-izin; impor hanya `math` + `statistics` lewat proksi berisi anggota yang diizinkan);
   3. memanggil `target(bars, params)` SEKALI per bar i dengan data DIPOTONG <= i (pemetaan + tuple tak bisa diubah) -> kausal oleh konstruksi;
   4. sampel kausalitas: modul dieksekusi ULANG di namespace segar dan `target` dipanggil sekali pada data terpotong; bobot harus sama dengan jalan
@@ -16,13 +19,29 @@ import bisect
 import builtins
 import json
 import math
-import resource
+import os
 import statistics
 import sys
 from collections.abc import Mapping
 from types import MappingProxyType, SimpleNamespace
 
+if os.name == "nt":
+    import ctypes
+    from ctypes import wintypes
+else:
+    import resource
+
 TOL_GROSS = 1e-9
+
+# Windows: tanda batas Job Object (winnt.h) + kelas informasi (SetInformationJobObject).
+JOB_OBJECT_LIMIT_PROCESS_TIME = 0x00000002
+JOB_OBJECT_LIMIT_ACTIVE_PROCESS = 0x00000008
+JOB_OBJECT_LIMIT_PROCESS_MEMORY = 0x00000100
+JOB_OBJECT_LIMIT_DIE_ON_UNHANDLED_EXCEPTION = 0x00000400
+JOB_OBJECT_UILIMIT_ALL = 0x000000FF
+JOB_INFO_UI = 4                                                                 # JobObjectBasicUIRestrictions
+JOB_INFO_EXTENDED = 9                                                           # JobObjectExtendedLimitInformation
+SEM_TANPA_DIALOG = 0x0001 | 0x0002 | 0x8000                                    # FAILCRITICALERRORS | NOGPFAULTERRORBOX | NOOPENFILEERRORBOX
 
 
 class Habis(BaseException):
@@ -34,6 +53,8 @@ class Tolak(Exception):
 
 
 def _batasi(b):
+    if os.name == "nt":
+        return _batasi_windows(int(b["cpu_s"]), int(b["memori_mb"]) * 1024 * 1024)
     cpu = int(b["cpu_s"])
     resource.setrlimit(resource.RLIMIT_CPU, (cpu, cpu + 1))
     mem = int(b["memori_mb"]) * 1024 * 1024
@@ -41,6 +62,55 @@ def _batasi(b):
     resource.setrlimit(resource.RLIMIT_FSIZE, (0, 0))
     resource.setrlimit(resource.RLIMIT_CORE, (0, 0))
     resource.setrlimit(resource.RLIMIT_NOFILE, (16, 16))
+
+
+def _batasi_windows(cpu_s, mem_byte):
+    """Masukkan proses ini ke Job Object baru tanpa nama. Melewati batas CPU = dimatikan sistem (kode keluar STATUS_QUOTA_EXCEEDED); melewati
+    batas memori = alokasi gagal (MemoryError); membuat proses baru = ditolak. Galat Win32 apa pun = OSError (gagal tertutup di `main`)."""
+    class Dasar(ctypes.Structure):
+        _fields_ = [("PerProcessUserTimeLimit", ctypes.c_int64), ("PerJobUserTimeLimit", ctypes.c_int64), ("LimitFlags", wintypes.DWORD),
+                    ("MinimumWorkingSetSize", ctypes.c_size_t), ("MaximumWorkingSetSize", ctypes.c_size_t),
+                    ("ActiveProcessLimit", wintypes.DWORD), ("Affinity", ctypes.c_size_t), ("PriorityClass", wintypes.DWORD),
+                    ("SchedulingClass", wintypes.DWORD)]
+
+    class Io(ctypes.Structure):
+        _fields_ = [(n, ctypes.c_uint64) for n in ("Baca", "Tulis", "Lain", "BacaByte", "TulisByte", "LainByte")]
+
+    class Diperluas(ctypes.Structure):
+        _fields_ = [("Dasar", Dasar), ("Io", Io), ("ProcessMemoryLimit", ctypes.c_size_t), ("JobMemoryLimit", ctypes.c_size_t),
+                    ("PeakProcessMemoryUsed", ctypes.c_size_t), ("PeakJobMemoryUsed", ctypes.c_size_t)]
+
+    k32 = ctypes.WinDLL("kernel32", use_last_error=True)
+    k32.CreateJobObjectW.restype = wintypes.HANDLE
+    k32.CreateJobObjectW.argtypes = [ctypes.c_void_p, wintypes.LPCWSTR]
+    k32.SetInformationJobObject.restype = wintypes.BOOL
+    k32.SetInformationJobObject.argtypes = [wintypes.HANDLE, ctypes.c_int, ctypes.c_void_p, wintypes.DWORD]
+    k32.AssignProcessToJobObject.restype = wintypes.BOOL
+    k32.AssignProcessToJobObject.argtypes = [wintypes.HANDLE, wintypes.HANDLE]
+    k32.GetCurrentProcess.restype = wintypes.HANDLE
+    k32.CloseHandle.argtypes = [wintypes.HANDLE]
+    k32.SetErrorMode.argtypes = [wintypes.UINT]
+
+    def cek(ok, apa):
+        if not ok:
+            raise OSError(ctypes.get_last_error(), apa)
+
+    k32.SetErrorMode(SEM_TANPA_DIALOG)
+    job = k32.CreateJobObjectW(None, None)
+    cek(job, "CreateJobObject")
+    try:
+        x = Diperluas()
+        x.Dasar.LimitFlags = (JOB_OBJECT_LIMIT_PROCESS_TIME | JOB_OBJECT_LIMIT_ACTIVE_PROCESS | JOB_OBJECT_LIMIT_PROCESS_MEMORY
+                              | JOB_OBJECT_LIMIT_DIE_ON_UNHANDLED_EXCEPTION)
+        x.Dasar.PerProcessUserTimeLimit = cpu_s * 10_000_000                    # satuan 100 ns
+        x.Dasar.ActiveProcessLimit = 1
+        x.ProcessMemoryLimit = mem_byte
+        cek(k32.SetInformationJobObject(job, JOB_INFO_EXTENDED, ctypes.byref(x), ctypes.sizeof(x)), "SetInformationJobObject")
+        ui = wintypes.DWORD(JOB_OBJECT_UILIMIT_ALL)
+        cek(k32.SetInformationJobObject(job, JOB_INFO_UI, ctypes.byref(ui), ctypes.sizeof(ui)), "SetInformationJobObject UI")
+        cek(k32.AssignProcessToJobObject(job, k32.GetCurrentProcess()), "AssignProcessToJobObject")
+    finally:
+        k32.CloseHandle(job)                                                    # batas tetap berlaku selama proses ada di job
 
 
 def _proksi(modul, nama):
@@ -83,7 +153,12 @@ class _Aset(Mapping):
 def main():
     job = json.loads(sys.stdin.buffer.read().decode("ascii"))
     b = job["batas"]
-    _batasi(b)
+    try:
+        _batasi(b)
+    except (OSError, ValueError) as e:                                         # tanpa batas = tidak ada kode yang dijalankan
+        sys.stdout.write(json.dumps({"ok": False, "galat": f"batas sumber daya tidak terpasang ({type(e).__name__})", "bar": None}))
+        sys.stdout.flush()
+        return
     langkah_maks = int(b["langkah_per_panggilan"])
     kolom = {a: {k: tuple(v) for k, v in cols.items()} for a, cols in job["bars"].items()}
     aset = sorted(kolom)

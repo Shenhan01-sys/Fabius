@@ -355,6 +355,18 @@ def sampel_kausal(grid: Sequence[int], n: int, seed: int = 20261002) -> List[int
     return picks + [days[-1]]
 
 
+# Sebab proses anak berhenti dari kode keluarnya. POSIX: sinyal (kode negatif) dari setrlimit. Windows: NTSTATUS dari Job Object
+# (STATUS_QUOTA_EXCEEDED = waktu CPU per proses habis) atau kegagalan sistem lain.
+SINYAL_POSIX = {24: "batas CPU", 9: "dihentikan (batas CPU/memori)", 25: "batas ukuran berkas"}
+STATUS_WINDOWS = {0xC0000044: "batas CPU", 0xC0000017: "batas memori", 0xC00000FD: "rekursi terlalu dalam"}
+
+
+def sebab_keluar(returncode: int) -> str:
+    if os.name == "nt":
+        return STATUS_WINDOWS.get(returncode & 0xFFFFFFFF, f"proses anak keluar {returncode}")
+    return SINYAL_POSIX.get(-returncode if returncode < 0 else 0, f"proses anak keluar {returncode}")
+
+
 def _anak(job: Dict[str, Any], benih: int, batas: Dict[str, Any]) -> Dict[str, Any]:
     """Satu proses anak. Lingkungan kosong kecuali PYTHONHASHSEED; cwd = folder sementara kosong; tanpa jalur repo di sys.path."""
     payload = json.dumps(job, separators=(",", ":"), allow_nan=False).encode("ascii")
@@ -365,9 +377,7 @@ def _anak(job: Dict[str, Any], benih: int, batas: Dict[str, Any]) -> Dict[str, A
         except subprocess.TimeoutExpired:
             return {"ok": False, "galat": f"batas waktu dinding {batas['waktu_dinding_s']} s", "bar": None}
     if p.returncode != 0:
-        sig = -p.returncode if p.returncode < 0 else None
-        why = {24: "batas CPU", 9: "dihentikan (batas CPU/memori)", 25: "batas ukuran berkas"}.get(sig or 0, f"proses anak keluar {p.returncode}")
-        return {"ok": False, "galat": why, "bar": None}
+        return {"ok": False, "galat": sebab_keluar(p.returncode), "bar": None}
     if len(p.stdout) > int(batas["keluaran_maks_byte"]) + 1024:
         return {"ok": False, "galat": "keluaran terlalu besar", "bar": None}
     try:

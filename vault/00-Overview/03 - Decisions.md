@@ -3507,3 +3507,19 @@ Builder (6 Okt malam): *"Hapus F-D90, P90 gas, P170 di rebrand ke v2"* + *"F-D90
 
 **Terkait:** F-D90 (nisan) · F-D113 · F-D119 · F-D121 · F-D124 · F-D125 · [[08-Backlog/08 - Riset Optimasi Ambang]]
 
+
+## F-D127 - Sandbox `kind=code` jalan native di Windows; Railway tetap Linux · 7 Okt 2026 (WIB)
+
+Builder (7 Okt), sesudah cabang sesi cloud digabung dan 28 tes `code` gagal di mesin builder: *"Nah itu di migrate keluar dari linux aja, lalu test di local device saya ini"*
++ *"sources itu km migrate ke milik windows semua + sourcecode yg berbasis linux dan sandboxnya di migrate ke windows scope juga"*; ditanya ulang:
+*"1. benar sekali"* (pengaman TETAP ada, hanya pindah ke versi Windows - bukan dihapus) + *"2. ya kalau itu jelas railway dong, kan emg linux kalau itu udh bener"*. Mengikat:
+
+1. **Lapis OS sandbox `code` punya dua jalur yang sama kuat:** Linux / POSIX (gerbang + pelari Railway) tetap `setrlimit` (CPU, AS, FSIZE 0, NOFILE 16, CORE 0);
+   Windows (mesin builder) = Job Object tanpa nama (waktu CPU per proses, memori ter-commit per proses, maksimal 1 proses, mati tanpa dialog, UI terkunci).
+   Gagal memasang batas = tidak ada kode yang dijalankan. Lapis lain (analisis statis, anggaran langkah, builtins terbatas, dua jalan, uji kausal) tidak berubah.
+2. **Berkas kode privat:** POSIX mode 0600; Windows DACL terlindung berisi satu ACE untuk akun proses (folder ikut dikunci, berkas tertutup sejak dibuat).
+3. **Railway tetap Linux** (gerbang `fabius-x402`, pelari `railway/pelari/Dockerfile`) - tidak ada yang dipindah dari sana.
+4. **Bukti wajib di kedua jalur:** sensus Windows tanpa tes `code` yang dilewati; jalur Linux diuji di WSL Ubuntu mesin builder; mutasi bertanda platform
+   (`tools/mutasi_kode_feed.py`) menangkap pencabutan tiap batas di platformnya. Guard "lewati di luar POSIX" (commit lokal `b1ec54e1`) dicabut.
+
+**Terkait:** F-D122 · F-D125 · P167 · [[04-Tools/TL41 - kode pengguna di sandbox (code)]] · [[07-Testing/01 - Test Commands]] #128

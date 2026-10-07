@@ -2,7 +2,9 @@
 
 Untuk tiap mutasi: baca berkas, pastikan potongan asli ada TEPAT sekali, tulis versi bercacat, jalankan `engine.tests.test_kode` + `engine.tests.test_feed_kind`,
 lalu tulis kembali isi asli (sha256 diperiksa sesudahnya). Mencetak TERTANGKAP / LOLOS per mutasi dan ringkasannya. Kode keluar 0 hanya bila semua
-tertangkap dan semua berkas kembali utuh. Jalankan dengan `git status` bersih untuk berkas-berkas ini (alat menulis ke berkas sumber selama berjalan).
+tertangkap dan semua berkas kembali utuh. Mutasi bertanda platform ("nt" = Windows / Job Object + DACL, "posix" = Linux / setrlimit) hanya disuntik
+di platform itu (jalur platform lain tidak dijalankan tes di sini). Berkas dibaca + ditulis byte-persis: potongan berbaris jamak mengikuti akhir baris
+berkas (CRLF di working copy Windows). Jalankan dengan `git status` bersih untuk berkas-berkas ini (alat menulis ke berkas sumber selama berjalan).
 
 Pakai:  python -X utf8 tools/mutasi_kode_feed.py
 """
@@ -29,6 +31,18 @@ MUTASI = [
     ("engine/kode_anak.py", "        return MappingProxyType({a: _Aset(kolom[a], n_upto[a][i]) for a in aset if n_upto[a][i] > 0})",
      "        return MappingProxyType({a: _Aset(kolom[a], n_upto[a][i] + 1) for a in aset if n_upto[a][i] > 0})", "anak: satu bar masa depan bocor"),
     ("engine/kode_anak.py", "                i = pos[t]\n                f = namespace()", "                i = pos[t]", "anak: sampel kausal tanpa namespace segar"),
+    ("engine/kode_anak.py", "        return _batasi_windows(", "        return None and _batasi_windows(", "anak Windows: tanpa Job Object", "nt"),
+    ("engine/kode_anak.py", "(JOB_OBJECT_LIMIT_PROCESS_TIME | ", "(", "anak Windows: tanpa batas CPU", "nt"),
+    ("engine/kode_anak.py", "JOB_OBJECT_LIMIT_ACTIVE_PROCESS | JOB_OBJECT_LIMIT_PROCESS_MEMORY", "JOB_OBJECT_LIMIT_ACTIVE_PROCESS", "anak Windows: tanpa batas memori",
+     "nt"),
+    ("engine/kode_anak.py", "JOB_OBJECT_LIMIT_PROCESS_TIME | JOB_OBJECT_LIMIT_ACTIVE_PROCESS | ", "JOB_OBJECT_LIMIT_PROCESS_TIME | ",
+     "anak Windows: boleh membuat proses baru", "nt"),
+    ("engine/kode_anak.py", "    resource.setrlimit(resource.RLIMIT_CPU, (cpu, cpu + 1))", "    pass", "anak POSIX: tanpa batas CPU", "posix"),
+    ("engine/kode_anak.py", "    resource.setrlimit(resource.RLIMIT_AS, (mem, mem))", "    pass", "anak POSIX: tanpa batas memori", "posix"),
+    ("engine/kode.py", 'STATUS_WINDOWS = {0xC0000044: "batas CPU", ', "STATUS_WINDOWS = {", "induk Windows: batas CPU tak terbaca", "nt"),
+    ("engine/berkas_privat.py", "    _kunci(path, folder=False)", "    pass", "berkas privat Windows: berkas tanpa DACL terlindung", "nt"),
+    ("engine/berkas_privat.py", "    _kunci(os.path.dirname(os.path.abspath(path)), folder=True)", "    pass", "berkas privat Windows: folder tidak dikunci", "nt"),
+    ("engine/berkas_privat.py", "os.O_TRUNC, 0o600)", "os.O_TRUNC, 0o644)", "berkas privat POSIX: mode 0644", "posix"),
     ("engine/feed.py", "    if now_s >= bar_close - BATAS_SEBELUM_TUTUP_S:", "    if now_s >= bar_close:", "feed: batas terima = penutupan"),
     ("engine/feed.py", "        if isinstance(v, bool) or not isinstance(v, int):", "        if isinstance(v, bool) or not isinstance(v, (int, float)):", "feed: bobot desimal diterima"),
     ("engine/feed.py", "        if not isinstance(la, int) or not 0 < la < bc:", "        if not isinstance(la, int) or not 0 < la:", "feed: anchor sesudah penutupan diterima"),
@@ -53,7 +67,8 @@ def sha(p: str) -> str:
 
 def tes() -> int:
     env = dict(os.environ)
-    return subprocess.run([sys.executable, "-X", "utf8", "-m", "unittest", "engine.tests.test_kode", "engine.tests.test_feed_kind"], cwd=ROOT,
+    return subprocess.run([sys.executable, "-X", "utf8", "-m", "unittest", "engine.tests.test_kode", "engine.tests.test_feed_kind",
+                           "engine.tests.test_berkas_privat"], cwd=ROOT,
                           capture_output=True, text=True, timeout=900, env=env).returncode
 
 
@@ -61,11 +76,15 @@ def main() -> int:
     if tes() != 0:
         print("tes sudah gagal SEBELUM mutasi: hentikan (mutasi tidak bermakna)")
         return 2
+    plat = "nt" if os.name == "nt" else "posix"
+    berlaku = [m for m in MUTASI if len(m) < 5 or m[4] == plat]
     tangkap, utuh = 0, True
-    for rel, lama, baru, nama in MUTASI:
+    for rel, lama, baru, nama, *_ in berlaku:
         p = os.path.join(ROOT, rel)
-        with open(p, encoding="utf-8") as f:
+        with open(p, encoding="utf-8", newline="") as f:
             asli = f.read()
+        if "\r\n" in asli:
+            lama, baru = lama.replace("\n", "\r\n"), baru.replace("\n", "\r\n")
         if asli.count(lama) != 1:
             print(f"  ? {nama}: potongan asli tidak ditemukan tepat sekali di {rel} - mutasi dilewati (alat basi)")
             utuh = False
@@ -84,8 +103,8 @@ def main() -> int:
         kena = rc != 0
         tangkap += kena
         print(f"  {'TERTANGKAP' if kena else 'LOLOS (tes hampa?)'}: {nama} ({rel})")
-    print(f"mutasi: {len(MUTASI)} disuntik, {tangkap} tertangkap; berkas utuh {'ya' if utuh else 'TIDAK'}")
-    return 0 if tangkap == len(MUTASI) and utuh else 1
+    print(f"mutasi ({plat}): {len(berlaku)} disuntik (dari {len(MUTASI)}), {tangkap} tertangkap; berkas utuh {'ya' if utuh else 'TIDAK'}")
+    return 0 if tangkap == len(berlaku) and utuh else 1
 
 
 if __name__ == "__main__":

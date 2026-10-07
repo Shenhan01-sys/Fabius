@@ -20,7 +20,7 @@ import threading
 import time
 from typing import Callable, Dict, Iterable, List, Optional, Tuple
 
-from engine import kode as kodemod, rule as rulemod, submission
+from engine import berkas_privat, kode as kodemod, rule as rulemod, submission
 from engine.spec import SPECS
 
 import feed_gerbang                                                    # noqa: E402  P167c
@@ -99,8 +99,7 @@ class Antrean:
             if sub["kind"] == "code":                                          # privat: hanya pemegang volume + pelari terpisah yang membacanya
                 os.makedirs(self.kode_dir, exist_ok=True)
                 kp = os.path.join(self.kode_dir, sub["spec"]["kode"]["sha"][2:] + ".py")
-                with open(os.open(kp, os.O_WRONLY | os.O_CREAT | os.O_TRUNC, 0o600), "w", encoding="utf-8", newline="\n") as f:
-                    f.write(body["code"])
+                berkas_privat.tulis(kp, body["code"])                          # POSIX 0600 / Windows DACL hanya akun gerbang
         return 201, {"id": sha, "status": "received", "received_t": now, "bot_id": rec["bot_id"], "spec_sha": rec["spec_sha"],
                      "next": "reviewed by the daily public review run (gates G1-G11 + KPI on the repo's daily bars); status at /bots/submissions/" + sha}
 

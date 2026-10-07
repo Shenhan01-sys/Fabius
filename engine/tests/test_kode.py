@@ -5,11 +5,9 @@ Tes bermusuhan: tiap upaya kabur (impor, dunder, bingkai generator, format strin
 yang dinormalisasi ke `eval`), bom sumber daya (perulangan tanpa akhir, CPU di builtin, memori, int raksasa, rekursi, keluaran raksasa), dan
 nondeterminisme (urutan set lewat PYTHONHASHSEED, keadaan global, argumen bawaan yang bisa diubah)."""
 import copy
-import importlib.util
 import json
 import os
 import shutil
-import stat
 import sys
 import tempfile
 import threading
@@ -20,12 +18,7 @@ import urllib.request
 ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 sys.path[:0] = [os.path.join(ROOT, "tools"), ROOT]
 
-# Proses anak sandbox memasang batas lewat modul `resource` (hanya POSIX); pelari produksi = Linux. Di Windows anak keluar 1 (gagal tertutup),
-# jadi tes yang benar-benar menjalankan anak dilewati dengan alasan jelas, bukan dianggap gagal.
-POSIX = importlib.util.find_spec("resource") is not None
-butuh_posix = unittest.skipUnless(POSIX, "modul resource tidak ada (bukan POSIX): proses anak sandbox tidak bisa memasang batas di mesin ini")
-
-from engine import gates, kode, review as reviewmod, submission     # noqa: E402
+from engine import berkas_privat, gates, kode, review as reviewmod, submission  # noqa: E402
 from engine.bots import NULL_KIND, REGISTRY                       # noqa: E402
 from engine.series import DAY_MS                                  # noqa: E402
 from engine.spec import SPECS, BotSpec                            # noqa: E402
@@ -173,7 +166,6 @@ class StatikTests(unittest.TestCase):
         self.assertTrue(kode.validate_meta(dict(meta, sha="0x" + "AB" * 32)))
 
 
-@butuh_posix
 class SandboxTests(unittest.TestCase):
     """Lapis 2-5: proses anak berbatas, keluaran diperiksa, dua jalan identik, uji kausalitas namespace segar."""
 
@@ -253,8 +245,41 @@ class SandboxTests(unittest.TestCase):
             src = f.read()
         self.assertNotIn("from engine", src)
         self.assertNotIn("import engine", src)
-        for lim in ("RLIMIT_CPU", "RLIMIT_AS", "RLIMIT_FSIZE", "RLIMIT_NOFILE", "RLIMIT_CORE"):
+        for lim in ("RLIMIT_CPU", "RLIMIT_AS", "RLIMIT_FSIZE", "RLIMIT_NOFILE", "RLIMIT_CORE",          # Linux / pelari Railway
+                    "JOB_OBJECT_LIMIT_PROCESS_TIME", "JOB_OBJECT_LIMIT_PROCESS_MEMORY", "JOB_OBJECT_LIMIT_ACTIVE_PROCESS",  # Windows
+                    "JOB_OBJECT_LIMIT_DIE_ON_UNHANDLED_EXCEPTION", "JOB_OBJECT_UILIMIT_ALL"):
             self.assertIn(lim, src)
+
+    def test_the_os_limits_hold_even_without_the_restricted_builtins(self):
+        """Lapis OS diuji LANGSUNG: proses yang memasang `_batasi` lalu menjalankan Python bebas (tanpa analisis statis / builtins terbatas)
+        tetap dihentikan batas CPU, gagal mengalokasi melewati batas memori, dan (Windows) tidak bisa membuat proses baru."""
+        import subprocess
+        pre = ("import sys; sys.path.insert(0, sys.argv[1]); import kode_anak; "
+               "kode_anak._batasi({'cpu_s': 1, 'memori_mb': 128}); print('terpasang', flush=True); ")
+        badan = {"cpu": "x = 10 ** (10 ** 9)",
+                 "memori": "\ntry:\n    b = bytearray(512 * 1024 * 1024)\nexcept MemoryError:\n    print('MemoryError')",
+                 "proses": "\nimport subprocess\ntry:\n    subprocess.run([sys.executable, '-c', 'pass'])\nexcept OSError:\n    print('ditolak')"}
+        engine_dir = os.path.dirname(kode.ANAK)
+        for nama, kode_py in badan.items():
+            if nama == "proses" and os.name != "nt":
+                continue                                                                              # RLIMIT tidak membatasi jumlah proses
+            with self.subTest(nama=nama):
+                r = subprocess.run([sys.executable, "-I", "-c", pre + kode_py, engine_dir], capture_output=True, text=True, timeout=60)
+                self.assertIn("terpasang", r.stdout, r.stderr[-300:])
+                if nama == "cpu":
+                    self.assertNotEqual(r.returncode, 0)
+                    self.assertEqual(kode.sebab_keluar(r.returncode), "batas CPU")
+                else:
+                    self.assertIn({"memori": "MemoryError", "proses": "ditolak"}[nama], r.stdout, r.stderr[-300:])
+
+    def test_exit_codes_are_read_per_platform(self):
+        if os.name == "nt":
+            self.assertEqual(kode.sebab_keluar(0xC0000044), "batas CPU")                                 # Job Object: waktu CPU per proses habis
+            self.assertEqual(kode.sebab_keluar(0xC0000017), "batas memori")
+        else:
+            self.assertEqual(kode.sebab_keluar(-24), "batas CPU")                                        # SIGXCPU dari RLIMIT_CPU
+            self.assertEqual(kode.sebab_keluar(-25), "batas ukuran berkas")
+        self.assertEqual(kode.sebab_keluar(1), "proses anak keluar 1")
 
 
 class EngineTests(unittest.TestCase):
@@ -272,7 +297,6 @@ class EngineTests(unittest.TestCase):
                        konstanta={"kode": {"sha": sha, "ukuran": info["ukuran"], "params": params or info["params"]}}, universe=tuple(uni),
                        penggaris=dict(kode.PENGGARIS), template=kode.KODE_METHOD)
 
-    @butuh_posix
     def test_a_code_version_of_b1_gives_the_same_weights_as_the_template_on_the_same_bars(self):
         md = md_kecil(300)
         sp = self.spec(TREN, {"N": 20})
@@ -281,7 +305,6 @@ class EngineTests(unittest.TestCase):
         self.assertEqual([(t.t, t.weights) for t in got], [(t.t, t.weights) for t in b1])
         self.assertGreater(sum(1 for t in got if t.weights), 50)
 
-    @butuh_posix
     def test_g1_passes_a_clean_program_and_fails_a_history_dependent_one(self):
         md = md_kecil(160)
         c = gates._Ctx(self.spec(TREN), md, gates.GateParams.fast(), None)
@@ -291,7 +314,6 @@ class EngineTests(unittest.TestCase):
         self.assertEqual(r.status, gates.FAIL)
         self.assertIn("sampel identik", r.value)
 
-    @butuh_posix
     def test_g5_shifts_named_params_and_fails_decorative_or_missing_ones(self):
         md = md_kecil(400)
         c = gates._Ctx(self.spec(TREN), md, gates.GateParams.fast(), None)
@@ -308,7 +330,6 @@ class EngineTests(unittest.TestCase):
         self.assertEqual(kode.kelompok_plateau({"N": 20, "k": 0.5}, (0.5, 1.5))[0][1], [("10", {"N": 10, "k": 0.5}), ("30", {"N": 30, "k": 0.5})])
         self.assertEqual(kode.geser(-3, 0.25), -1)                                                    # bulat tetap bulat, tanda dipertahankan
 
-    @butuh_posix
     def test_g8_uses_the_default_time_placebo_for_code(self):
         self.assertNotIn(kode.KODE_METHOD, NULL_KIND)
         md = md_kecil(400)
@@ -373,7 +394,6 @@ class PrivatTests(unittest.TestCase):
         return {"submission": sub, "signature": "0x" + self.acct.sign_message(encode_typed_data(full_message=td)).signature.hex().removeprefix("0x"),
                 "nonce": nonce, "deadline": now + 600}, now
 
-    @butuh_posix
     def test_the_gate_keeps_code_private_and_closed_by_default(self):
         sub = code_sub(TREN)
         sub["identity"]["issuer_wallet"] = sub["identity"]["payout_wallet"] = self.acct.address
@@ -390,7 +410,7 @@ class PrivatTests(unittest.TestCase):
         kp = os.path.join(buka.kode_dir, sub["spec"]["kode"]["sha"][2:] + ".py")
         with open(kp, encoding="utf-8") as f:
             self.assertEqual(f.read(), TREN)
-        self.assertEqual(stat.S_IMODE(os.stat(kp).st_mode), 0o600)
+        self.assertTrue(berkas_privat.hanya_pemilik(kp))                                              # POSIX 0600 / Windows DACL hanya akun ini
         publik = json.dumps(buka.daftar())
         self.assertNotIn("def target", publik)
         self.assertIn(sub["spec"]["kode"]["sha"], publik)                                              # salinan publik = sha + ukuran + params
@@ -399,7 +419,6 @@ class PrivatTests(unittest.TestCase):
         self.assertIn("penyedia model peninjau", info["code"]["reviewer_note"])
         self.assertNotIn("code", info["kinds_open"])
 
-    @butuh_posix
     def test_the_separate_runner_returns_bounded_data_that_the_trusted_side_validates_and_gates(self):
         import pelari_kode as pk
         from http.server import ThreadingHTTPServer
@@ -452,7 +471,6 @@ class PrivatTests(unittest.TestCase):
         self.assertNotIn("requirements", dock)                                                         # tanpa pustaka tanda tangan / kunci
         self.assertNotIn("COPY engine engine", dock)                                                   # image minimal
 
-    @butuh_posix
     def test_the_runner_works_with_only_the_files_its_image_copies(self):
         import re
         import subprocess
