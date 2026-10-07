@@ -397,6 +397,9 @@ class ArchiveCliTests(unittest.TestCase):
         self.assertEqual(d["sumber"]["binance"]["disitasi"], d["sumber"]["binance"]["dari"])
         self.assertEqual((d["sumber"]["fomo"]["cakupan"], d["sumber"]["fomo"]["snapshot"], d["sumber"]["binance"]["cakupan"]), (0.75, 20, 1.0))   # kesehatan F1 per hari
         self.assertEqual(len(a["data_health"]), 20)
+        with open(os.path.join(self.g.meja_dir, "fitur", f"{self.date}.jsonl"), "a", encoding="utf-8") as f:
+            f.write('{"t": 1, "kesehat\n')                                                      # baris terpotong (proses mati di tengah tulis)
+        self.assertEqual(len(self.g.meja_archive(self.date)[1]["data_health"]), 20)             # dilewati; arsip tetap 200
         self.assertEqual(d["dunia"]["penuh"]["selisih_pp_vs_fabius"], 0.0)
         berkas = os.path.join(self.tmp, "arsip.json")
         with open(berkas, "w", encoding="utf-8") as f:
