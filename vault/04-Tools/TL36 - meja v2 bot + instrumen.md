@@ -51,7 +51,7 @@ SATU Merkle root yang dikomit ke DeskAnchor. v2 yang belum selesai sebelum komit
 Maks 7 kursi **aktif** + 3 kursi **uji**; state di `_v2_kursi` buku meja (ikut `buku.json`). `kursi_daftar`: agent yang ada saat state kursi masih
 kosong = aktif (agent awal), agent baru = uji, kursi uji penuh = `antre` (tidak dijalankan, tanpa biaya model, SK-M19). Agent uji tetap menjawab, rekamannya
 di-hash + dikomit dan bukunya hidup, tetapi suaranya tidak masuk konsensus (SK-M20). `kursi_catat` menyimpan jendela 288 siklus (jawaban sah 1/0 +
-ekuitas buku v2). `kursi_evaluasi` hanya di siklus 00:00 UTC (SK-M21): turun bila sah < 80 % (SK-M22); naik bila >= 288 siklus di kursi uji, sah >= 95 %
+ekuitas buku v2). `kursi_evaluasi` di siklus PERTAMA tiap hari UTC, normalnya 00:00 (SK-M21, SK-M44; F-D128 - sebelumnya hanya siklus yang tepat 00:00); tiap siklus `kursi_ambruk` menurunkan agent aktif yang ambruk (sah < 50 % dalam 36 siklus, median agent aktif lain >= 80 %, sisa >= 3 aktif; SK-M43, F-D128). Evaluasi harian: turun bila sah < 80 % (SK-M22); naik bila >= 288 siklus di kursi uji, sah >= 95 %
 dan hasil jendela >= median aktif; bila 7 aktif penuh, tukar dengan aktif terburuk (yang sudah >= 288 siklus) hanya bila unggul >= 0,5 pp. Tiap
 perubahan = rekaman `kursi` (peristiwa + kursi sekarang + `params_kursi_sha`) di Merkle root siklus itu. `PARAMS_KURSI` DIKUNCI 5 Okt malam
 (sha `0xf370c011…`, Decisions F-D113). Ambang konsensus `ambang(n_aktif)`: kuorum max(2, ceil(n/2)), instrumen + veto max(2, ceil(n/3)) agent, skor instrumen

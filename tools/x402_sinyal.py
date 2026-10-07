@@ -548,8 +548,10 @@ class Gate:
             time.strptime(date, "%Y-%m-%d")
         except ValueError:
             return 400, {"error": "date must be YYYY-MM-DD"}
-        out: Dict[str, list] = {"records": [], "cycles": [], "agent_records": [], "evaluation": [], "data_health": []}
-        for kind in ("rekaman", "siklus", "evaluasi", "fitur"):
+        import meja_eval
+        f4 = meja_eval.mode() == "bayangan"                                     # 7 Okt: tambahan P156 hanya tampil bila builder menyalakan F4 (LB12 belum
+        out: Dict[str, list] = {"records": [], "cycles": [], "agent_records": [], "evaluation": [], "data_health": []}     # diputus)
+        for kind in ("rekaman", "siklus") + (("evaluasi", "fitur") if f4 else ()):
             path = os.path.join(self.meja_dir, kind, f"{date}.jsonl")
             if not os.path.exists(path):
                 continue
@@ -573,6 +575,8 @@ class Gate:
                                               "status": s.get("status"), "leaves": s.get("n")})
         if not out["records"] and not out["cycles"]:
             return 404, {"error": f"no archive for {date}"}
+        if not f4:
+            out = {"records": out["records"], "cycles": out["cycles"]}                     # bentuk P163: rekaman per agent tidak ikut arsip publik
         return 200, {"date": date, **out, **({} if live else {"akses": self.akses_info(False)})}
 
     def meja_fabius_publik(self) -> dict:

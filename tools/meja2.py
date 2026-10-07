@@ -33,14 +33,19 @@ PARAMS2 = {"v": 4, "maks_instrumen": 8, "universe_top": 50, "hysteresis_poin": 1
            # r4 (F-D116, dikunci 6 Okt atas kata builder "Gas"): buku Fabius = slot posisi; target aturan tetap dihitung + direkam (pembanding r3)
            "eksekusi": "slot posisi meja_slot.PARAMS_SLOT; buka hanya dari konsensus sah (kuorum tercapai); aturan keluar gagal dibaca -> posisi tetap",
            "slot": ms.PARAMS_SLOT}
-# P160 (F-D113): kursi agent LLM, kriteria DIKUNCI atas kata builder 5 Okt ("Gas"); sha di Decisions F-D113. Kursi hanya berubah di evaluasi harian 00:00 UTC.
+# P160 (F-D113): kursi agent LLM, kriteria DIKUNCI atas kata builder 5 Okt ("Gas"); sha di Decisions F-D113. Kursi berubah di evaluasi harian (siklus
+# pertama tiap hari UTC, normalnya 00:00) - kecuali turun karena AMBRUK (F-D128), yang diperiksa tiap siklus.
 PARAMS_KURSI = {"v": 2, "status": "terkunci", "maks_aktif": 7, "maks_uji": 3, "jendela_siklus": 288, "naik_sah_min": 0.95, "tukar_unggul_min": 0.005,
                 "turun_sah_maks": 0.80,
                 # F-D119 (builder 6 Okt "< 80 % sah -> antre, 2x -> keluar"): kursi UJI yang terus gagal tidak lagi menahan antrean
                 "uji_turun_sah_maks": 0.80, "uji_amati_min": 144, "uji_gagal_keluar": 2, "antre_tunggu_s": 86_400,
                 # F-D121 #9 (builder 6 Okt "saya sepakat"; digabung ke v2 atas kata builder, F-D126: tidak ada v3): kursi uji tidak boleh ditahan tanpa batas waktu
                 # (>= 2016 siklus = 7 hari tanpa naik -> belakang antrean bila ada yang menunggu); agent luar paling banyak 2 dari 7 kursi aktif
-                "uji_maks_siklus": 2016, "maks_aktif_luar": 2}
+                "uji_maks_siklus": 2016, "maks_aktif_luar": 2,
+                # F-D128 (builder 7 Okt "betulkan gatenya yg menyeleksi agent ... kenapa tidak otomatis diturunkan"): agent AKTIF yang ambruk turun ke uji di
+                # siklus mana pun - sah < 50 % dalam 36 siklus terakhir (3 jam) SELAMA median agent aktif lain >= 80 % (gangguan penyedia yang kena semua
+                # bukan salah satu agent) dan sisa kursi aktif >= 3 (kuorum F-D113 tetap terbentuk). Naik kursi tetap hanya di evaluasi harian.
+                "ambruk_jendela": 36, "ambruk_sah_maks": 0.50, "ambruk_lain_min": 0.80, "ambruk_sisa_aktif_min": 3}
 
 
 def ambang(n_aktif: int) -> dict:
@@ -209,7 +214,30 @@ def prompt2(snap: Optional[dict], uni: List[str], tick: Dict[str, dict], buku: d
 
 
 def parse2(text: str, uni: List[str], fitur: List[str]) -> dict:
-    """Validasi format v2 (SK-M6, SK-M14). Salah struktural = ValueError (keputusan agent ditolak); entri salah per item = `ditolak`."""
+    """Validasi format v2 (SK-M6, SK-M14). Salah struktural = ValueError (keputusan agent ditolak); entri salah per item = `ditolak`.
+    Jenis nilai yang salah (daftar di tempat teks, dsb.) juga ValueError dengan pesan jelas - tidak pernah TypeError mentah (7 Okt: qwen
+    `unhashable type: 'list'` dari faktor veto berbentuk daftar)."""
+    try:
+        return _parse2(text, uni, fitur)
+    except (TypeError, AttributeError, KeyError) as e:
+        raise ValueError(f"malformed answer ({type(e).__name__})") from None
+
+
+def _teks(x) -> Optional[str]:
+    return x if isinstance(x, str) else None
+
+
+def _daftar(x, nama: str) -> list:
+    if x is None:
+        return []
+    if isinstance(x, str):
+        return [x]
+    if not isinstance(x, list):
+        raise ValueError(f"{nama} must be a list")
+    return x
+
+
+def _parse2(text: str, uni: List[str], fitur: List[str]) -> dict:
     m = re.search(r"\{.*\}", text or "", re.S)
     if not m:
         raise ValueError("no JSON")
@@ -230,22 +258,38 @@ def parse2(text: str, uni: List[str], fitur: List[str]) -> dict:
     if not (0 <= k <= 100 and 0 <= eks <= 100):
         raise ValueError("keyakinan / eksposur outside 0..100")
     fset, ditolak = set(fitur), []
-    fk = [f for f in (o.get("faktor") or []) if f in fset]
-    ditolak += [{"faktor": f, "galat": "not a feature name"} for f in (o.get("faktor") or []) if f not in fset]
+    faktor = _daftar(o.get("faktor"), "faktor")
+    fk = [f for f in faktor if _teks(f) in fset]
+    ditolak += [{"faktor": f if isinstance(f, str) else json.dumps(f)[:60], "galat": "not a feature name"} for f in faktor if _teks(f) not in fset]
     if not fk:
         raise ValueError("faktor empty / none from the feature list")
     ins = []
-    for it in (o.get("instrumen") or [])[:PARAMS2["maks_instrumen"]]:
-        a = str((it or {}).get("aset", "")).upper()
+    for it in _daftar(o.get("instrumen"), "instrumen")[:PARAMS2["maks_instrumen"]]:
+        if not isinstance(it, dict):
+            ditolak.append({"instrumen": json.dumps(it)[:60], "galat": "not an object"})
+            continue
+        a = str(it.get("aset", "")).upper()
         if a not in uni:
             ditolak.append({"aset": a, "galat": "outside universe"})
             continue
-        ins.append({"aset": a, "k": max(0, min(100, int(it.get("keyakinan", 0)))) / 100, "faktor": [f for f in (it.get("faktor") or []) if f in fset]})
+        try:
+            kyk = int(it.get("keyakinan", 0))
+        except (TypeError, ValueError):
+            ditolak.append({"aset": a, "galat": "keyakinan is not a number"})
+            continue
+        ins.append({"aset": a, "k": max(0, min(100, kyk)) / 100,
+                    "faktor": [f for f in (it.get("faktor") if isinstance(it.get("faktor"), list) else [it.get("faktor")]) if _teks(f) in fset]})
     mn = int(SPECS[bot].konstanta.get("min_aset", 0))
     if mn and len(ins) < mn:                                                                 # dicatat, bukan ditolak: buku agent ini datar menurut aturan
         ditolak.append({"bot": bot, "galat": f"{bot} needs >= {mn} instruments, got {len(ins)}"})
-    veto = [{"aset": str(v.get("aset", "")).upper(), "faktor": v.get("faktor")} for v in (o.get("veto_aset") or [])
-            if str(v.get("aset", "")).upper() in uni and v.get("faktor") in fset]
+    veto = []
+    for v in _daftar(o.get("veto_aset"), "veto_aset"):
+        if not isinstance(v, dict) or str(v.get("aset", "")).upper() not in uni:
+            continue
+        if _teks(v.get("faktor")) not in fset:                                               # satu nama fitur; daftar / karangan = veto ini ditolak
+            ditolak.append({"veto": str(v.get("aset", "")).upper(), "galat": "faktor must be one feature name"})
+            continue
+        veto.append({"aset": str(v["aset"]).upper(), "faktor": v["faktor"]})
     return {"ringkasan": ring, "bot": bot, "skor_bot": skor, "k": k / 100, "eksposur": eks / 100, "instrumen": ins, "veto": veto, "faktor": fk,
             "alasan": str(o.get("alasan", ""))[:400], "ditolak": ditolak}
 
@@ -356,6 +400,36 @@ def kursi_catat(st: dict, slug: str, sah: bool, ekuitas: float) -> None:
     w = PARAMS_KURSI["jendela_siklus"]
     h["sah"] = (h["sah"] + [1 if sah else 0])[-w:]
     h["eq"] = (h["eq"] + [round(ekuitas, 4)])[-(w + 1):]
+
+
+def kursi_ambruk(st: dict, t0: int) -> List[dict]:
+    """F-D128 (SK-M43): tiap siklus, sebelum agent dijalankan. Agent AKTIF dengan sah < `ambruk_sah_maks` dalam `ambruk_jendela` siklus terakhirnya turun
+    ke kursi uji saat itu juga (suaranya berhenti dihitung, SK-M20) - hanya bila median agent aktif lain pada jendela yang sama >= `ambruk_lain_min`
+    (bila semua ikut jatuh, itu gangguan bersama: tidak ada yang diturunkan) dan sesudahnya masih ada >= `ambruk_sisa_aktif_min` kursi aktif.
+    Yang terburuk diperiksa dulu. Sesudah turun, aturan kursi uji biasa berlaku di evaluasi harian (F-D119). -> peristiwa."""
+    P, k, r, ev = PARAMS_KURSI, st.get("kursi", {}), st.get("riwayat", {}), []
+    w = P["ambruk_jendela"]
+
+    def sah_akhir(s):
+        h = (r.get(s) or {}).get("sah") or []
+        return sum(h[-w:]) / w if len(h) >= w else None
+
+    def aktif():
+        return sorted(x for x, v in k.items() if v["status"] == "aktif")
+    calon = sorted((v, s) for s, v in ((s, sah_akhir(s)) for s in aktif()) if v is not None and v < P["ambruk_sah_maks"])
+    for sah, s in calon:
+        if len(aktif()) - 1 < P["ambruk_sisa_aktif_min"]:
+            break
+        lain = sorted(v for v in (sah_akhir(x) for x in aktif() if x != s) if v is not None)
+        if not lain:
+            continue
+        med = lain[len(lain) // 2] if len(lain) % 2 else (lain[len(lain) // 2 - 1] + lain[len(lain) // 2]) / 2
+        if med < P["ambruk_lain_min"]:
+            continue
+        ev.append({"agent": s, "dari": "aktif", "ke": "uji",
+                   "alasan": f"collapse: valid answers {sah:.0%} over its last {w} cycles while the other active agents' median is {med:.0%}"})
+        k[s] = {"status": "uji", "sejak": t0}
+    return ev
 
 
 def kursi_evaluasi(st: dict, t0: int, luar: Optional[set] = None, tahan: Optional[Callable[[str, dict], Optional[str]]] = None) -> List[dict]:
@@ -471,9 +545,14 @@ def siklus2(t0: int, agents: List[dict], books: Dict[str, dict], ring: Dict[str,
     ev_paksa = kursi_paksa(kst, paksa, t0)                                                   # SK-M24: keputusan builder, sekali, tercatat
     if ev_paksa:
         ev_kursi += ev_paksa + kursi_daftar(kst, [ag["slug"] for ag in agents], t0)           # kursi uji yang kosong diisi antrean
-    if t0 % 86_400 == 0:                                                                     # SK-M21: kursi hanya berubah di siklus 00:00 UTC
+    hari = t0 // 86_400
+    if "eval_hari" not in kst and t0 % 86_400:                                               # migrasi F-D128: evaluasi hari ini sudah jalan di 00:00
+        kst["eval_hari"] = hari
+    if kst.get("eval_hari") != hari:                                                         # SK-M21: evaluasi harian di siklus PERTAMA tiap hari UTC
+        kst["eval_hari"] = hari                                                              # (00:00 terlewat -> siklus berikutnya, tetap sekali sehari)
         ev_kursi += kursi_evaluasi(kst, t0, {ag["slug"] for ag in agents if ag.get("luar")}, tahan=tahan_naik)      # P168b: peninjau LLM boleh MENAHAN naik
         ev_kursi += kursi_daftar(kst, [ag["slug"] for ag in agents], t0)                     # F-D119: kursi uji yang dilepas langsung diisi antrean
+    ev_kursi += kursi_ambruk(kst, t0)                                                        # SK-M43 (F-D128): agent aktif yang ambruk turun tanpa menunggu 00:00
     kursi = {s: v["status"] for s, v in kst["kursi"].items()}
     agents = [ag for ag in agents if kursi.get(ag["slug"]) in ("aktif", "uji")]               # SK-M19: antre tidak dijalankan
     uni, tk = p.universe(), p.tick()

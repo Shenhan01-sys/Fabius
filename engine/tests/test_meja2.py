@@ -67,6 +67,23 @@ class FormatTests(unittest.TestCase):
         with self.assertRaises(ValueError):                                                     # faktor karangan semua
             meja2.parse2(out(faktor=("sentimen_bulan",)), UNI, FIT)
 
+    def test_wrong_value_types_never_crash_the_parser_and_bad_items_are_rejected_one_by_one(self):
+        """7 Okt (F-D128): qwen gagal dengan `TypeError: unhashable type: 'list'` - faktor veto berbentuk daftar. Entri salah per item = ditolak
+        per item (keputusan tetap sah); jenis salah pada bidang struktural = ValueError berpesan jelas, tidak pernah TypeError mentah."""
+        o = json.loads(out(veto=[{"aset": "WIFUSDT", "faktor": ["rug_bahaya", "r_1j"]}, {"aset": "SOLUSDT", "faktor": "rug_bahaya"}]))
+        o["instrumen"] += ["NEARUSDT", {"aset": "WIFUSDT", "keyakinan": [70]}]
+        o["faktor"] = ["r_1j", ["r_4j"]]
+        d = meja2.parse2(json.dumps(o), UNI, FIT)
+        self.assertEqual([v["aset"] for v in d["veto"]], ["SOLUSDT"])                             # veto bernama satu fitur tetap dipakai
+        self.assertIn({"veto": "WIFUSDT", "galat": "faktor must be one feature name"}, d["ditolak"])
+        self.assertIn({"instrumen": '"NEARUSDT"', "galat": "not an object"}, d["ditolak"])
+        self.assertIn({"aset": "WIFUSDT", "galat": "keyakinan is not a number"}, d["ditolak"])
+        self.assertIn({"faktor": '["r_4j"]', "galat": "not a feature name"}, d["ditolak"])
+        self.assertEqual(([i["aset"] for i in d["instrumen"]], d["faktor"]), (["SOLUSDT", "NEARUSDT"], ["r_1j"]))
+        for rusak in ({"skor_bot": {b: [90] for b in meja2.BOTS}}, {"keyakinan": [70]}, {"instrumen": {"aset": "SOLUSDT"}}, {"skor_bot": ["B1-TREND"]}):
+            with self.subTest(rusak=rusak), self.assertRaises(ValueError):
+                meja2.parse2(json.dumps({**json.loads(out()), **rusak}), UNI, FIT)
+
 
 class ConsensusTests(unittest.TestCase):
     def test_dominant_bot_instruments_veto_and_hysteresis(self):
@@ -246,6 +263,70 @@ class KursiTests(unittest.TestCase):
         st2["riwayat"]["u1"] = hist(1.0, 0.02)
         moves = [(e["agent"], e["ke"]) for e in meja2.kursi_evaluasi(st2, t0)]
         self.assertEqual(moves, [("a0", "uji"), ("u1", "aktif")])                                 # tukar dengan aktif terburuk
+
+    def test_a_collapsing_active_agent_drops_in_any_cycle_unless_everyone_falls_or_too_few_seats_remain(self):
+        """F-D128 (SK-M43): 7 Okt qwen 81 % pada evaluasi 00:00 lalu ambruk (13 sah dari 75 siklus) tetapi tetap aktif sampai evaluasi berikutnya."""
+        w, t0 = meja2.PARAMS_KURSI["ambruk_jendela"], 1_791_351_900                                # 05:45 UTC: bukan siklus evaluasi harian
+
+        def dunia(sah_akhir: dict, n: int = 288):
+            return {"kursi": {s: {"status": "aktif", "sejak": 0} for s in sah_akhir},
+                    "riwayat": {s: {"sah": [1] * (n - w) + [1] * round(w * v) + [0] * (w - round(w * v)), "eq": [10_000.0] * (n + 1)} for s, v in sah_akhir.items()}}
+        st = dunia({"qwen": 5 / 36, "glm": 1.0, "muse": 0.97, "berita": 0.9, "plus": 0.95})
+        ev = meja2.kursi_ambruk(st, t0)
+        self.assertEqual([(e["agent"], e["dari"], e["ke"]) for e in ev], [("qwen", "aktif", "uji")])
+        self.assertIn("collapse: valid answers 14%", ev[0]["alasan"])
+        self.assertEqual(st["kursi"]["qwen"], {"status": "uji", "sejak": t0})
+        self.assertEqual(meja2.kursi_ambruk(st, t0 + 300), [])                                       # sekali; sesudahnya aturan kursi uji biasa
+        dua = dunia({"qwen": 0.1, "plus": 0.2, "glm": 1.0, "muse": 1.0, "berita": 1.0})
+        self.assertEqual([e["agent"] for e in meja2.kursi_ambruk(dua, t0)], ["qwen", "plus"])       # terburuk dulu; sisa 3 aktif
+        semua = dunia({s: 0.1 for s in ("qwen", "plus", "glm", "muse", "berita")})
+        self.assertEqual(meja2.kursi_ambruk(semua, t0), [])                                         # semua jatuh = gangguan bersama: tidak ada yang diturunkan
+        tiga = dunia({"qwen": 0.0, "glm": 1.0, "muse": 1.0})
+        self.assertEqual(meja2.kursi_ambruk(tiga, t0), [])                                          # turun berarti sisa 2 aktif < 3: kuorum F-D113 dijaga
+        batas = dunia({"qwen": 0.5, "glm": 1.0, "muse": 1.0, "berita": 1.0})
+        self.assertEqual(meja2.kursi_ambruk(batas, t0), [])                                         # tepat 50 % bukan < 50 %
+        baru = dunia({"qwen": 0.0, "glm": 1.0, "muse": 1.0, "berita": 1.0})
+        baru["riwayat"]["qwen"]["sah"] = [0] * (w - 1)
+        self.assertEqual(meja2.kursi_ambruk(baru, t0), [])                                          # < 36 siklus teramati: belum dinilai
+        uji = dunia({"qwen": 0.0, "glm": 1.0, "muse": 1.0, "berita": 1.0})
+        uji["kursi"]["qwen"]["status"] = "uji"
+        self.assertEqual(meja2.kursi_ambruk(uji, t0), [])                                           # hanya kursi aktif; kursi uji dinilai harian
+
+    def test_the_daily_evaluation_runs_once_on_the_first_cycle_of_a_utc_day_even_when_midnight_is_missed(self):
+        def get(url):
+            return [{"symbol": a, "markPrice": "100", "lastFundingRate": "0"} for a in UNI]
+        w, mid = meja2.PARAMS_KURSI["jendela_siklus"], 1_791_244_800
+        lama = mid - (w + 1) * 300
+        agents = [{"slug": s, "agent_id": i, "model": "m"} for i, s in enumerate(["a", "b", "u"], 1)]
+        hist = {"sah": [1] * w, "eq": [10_000.0] * w + [10_100.0]}
+        books = {"_v2_kursi": {"kursi": {"a": {"status": "aktif", "sejak": lama}, "b": {"status": "aktif", "sejak": lama}, "u": {"status": "uji", "sejak": lama}},
+                               "riwayat": {"a": dict(hist, eq=[10_000.0] * (w + 1)), "b": dict(hist, eq=[10_000.0] * (w + 1)), "u": hist},
+                               "eval_hari": mid // 86_400 - 1}}
+        snap = {"sha": "0x1", "fitur_aset": {"SOLUSDT": {"r_1j": 0.01}}, "fitur_bot": {}}
+        rek, _ = meja2.siklus2(mid + 300, agents, books, {}, lambda ag, sy, us: out(), snap, FakePasar(), get=get, log=lambda m: None)   # 00:00 terlewat
+        self.assertEqual(books["_v2_kursi"]["kursi"]["u"]["status"], "aktif")                     # dievaluasi di 00:05
+        self.assertEqual(books["_v2_kursi"]["eval_hari"], mid // 86_400)
+        rek, _ = meja2.siklus2(mid + 600, agents, books, {}, lambda ag, sy, us: out(), snap, FakePasar(), get=get, log=lambda m: None)
+        self.assertNotIn("kursi", {r["agent"] for r in rek})                                      # sekali sehari
+        baru = {"_v2_kursi": {k: v for k, v in books["_v2_kursi"].items() if k != "eval_hari"}}
+        meja2.siklus2(mid + 36_000, agents, baru, {}, lambda ag, sy, us: out(), snap, FakePasar(), get=get, log=lambda m: None)
+        self.assertEqual(baru["_v2_kursi"]["eval_hari"], mid // 86_400)                           # migrasi siang hari: tidak mengevaluasi ulang hari ini
+
+    def test_a_collapsed_agent_is_moved_before_the_cycle_so_its_vote_no_longer_counts(self):
+        def get(url):
+            return [{"symbol": a, "markPrice": "100", "lastFundingRate": "0"} for a in UNI]
+        w = meja2.PARAMS_KURSI["ambruk_jendela"]
+        agents = [{"slug": s, "agent_id": i, "model": "m"} for i, s in enumerate(["a", "b", "c", "q"], 1)]
+        ok = {"sah": [1] * 288, "eq": [10_000.0] * 289}
+        books = {"_v2_kursi": {"kursi": {s: {"status": "aktif", "sejak": 0} for s in ("a", "b", "c", "q")},
+                               "riwayat": {"a": ok, "b": ok, "c": ok, "q": {"sah": [1] * (288 - w) + [0] * w, "eq": [10_000.0] * 289}},
+                               "eval_hari": 1_791_351_900 // 86_400}}
+        snap = {"sha": "0x1", "fitur_aset": {"SOLUSDT": {"r_1j": 0.01}}, "fitur_bot": {}}
+        rek, _ = meja2.siklus2(1_791_351_900, agents, books, {}, lambda ag, sy, us: out(), snap, FakePasar(), get=get, log=lambda m: None)
+        by = {r["agent"]: r for r in rek}
+        self.assertEqual([(e["agent"], e["ke"]) for e in by["kursi"]["peristiwa"]], [("q", "uji")])   # peristiwa ikut rekaman `kursi` yang di-hash
+        self.assertEqual(by["v2:q"]["kursi"], "uji")
+        self.assertEqual(by["v2"]["masuk"], ["a", "b", "c"])                                       # SK-M20: suaranya tidak dihitung lagi
 
     def test_a_failing_trial_seat_goes_to_the_back_of_the_queue_then_out_and_frees_the_seat(self):
         t0 = 1_791_244_800                                                                        # 00:00 UTC

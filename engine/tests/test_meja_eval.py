@@ -352,6 +352,9 @@ class ArchiveCliTests(unittest.TestCase):
         old, os.environ["ANALIS_DIR"] = os.environ.get("ANALIS_DIR"), os.path.join(self.tmp, "analis")
         self.addCleanup(lambda: os.environ.pop("ANALIS_DIR") if old is None else os.environ.update(ANALIS_DIR=old))
         self.addCleanup(shutil.rmtree, self.tmp, True)
+        f4 = mock.patch.dict(os.environ, {"FABIUS_F4": "bayangan"})                                  # tambahan arsip P156 hanya saat F4 dinyalakan
+        f4.start()
+        self.addCleanup(f4.stop)
         self.g = xs.Gate(xs.Data(ROOT), "0xk", "https://g", "https://w", log=lambda m: None, now=lambda: T0 + 20 * 300 + xs.TUNDA_PUBLIK_S)
         books, ring, st = {}, {}, None
         for i in range(20):
@@ -424,6 +427,15 @@ class ArchiveCliTests(unittest.TestCase):
         self.assertEqual(code, 200)
         self.assertEqual({r["siklus"] for r in a["agent_records"]} | {e["siklus"] for e in a["evaluation"]}, {T0 + i * 300 for i in range(11)})
         self.assertEqual(len(self.g.meja_archive(self.date, live=True)[1]["evaluation"]), 20)
+
+    def test_with_f4_off_the_archive_keeps_the_p163_shape_without_agent_records(self):
+        """7 Okt: builder "push kecuali P156" + LB12 (rekaman per agent di arsip publik) belum diputus -> tanpa FABIUS_F4 arsip tetap bentuk P163."""
+        for nilai in ("", "mati", "hidup"):
+            with self.subTest(nilai=nilai), mock.patch.dict(os.environ, {"FABIUS_F4": nilai}):
+                code, a = self.g.meja_archive(self.date, live=True)
+                self.assertEqual(code, 200)
+                self.assertEqual(set(a) - {"akses"}, {"date", "records", "cycles"})
+                self.assertEqual(len(a["records"]), 20)
 
 
 class GovernanceTests(unittest.TestCase):

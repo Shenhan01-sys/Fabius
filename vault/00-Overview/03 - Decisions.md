@@ -3523,3 +3523,29 @@ Builder (7 Okt), sesudah cabang sesi cloud digabung dan 28 tes `code` gagal di m
    (`tools/mutasi_kode_feed.py`) menangkap pencabutan tiap batas di platformnya. Guard "lewati di luar POSIX" (commit lokal `b1ec54e1`) dicabut.
 
 **Terkait:** F-D122 · F-D125 · P167 · [[04-Tools/TL41 - kode pengguna di sandbox (code)]] · [[07-Testing/01 - Test Commands]] #128
+
+
+## F-D128 - Gerbang kursi agent: turun karena AMBRUK tiap siklus + evaluasi harian di siklus pertama hari UTC · 7 Okt 2026 (WIB)
+
+Builder (7 Okt), sesudah audit menemukan qwen 64 % sah dalam 24 jam tetapi kursinya tetap aktif: *"betulkan gatenya yg menyeleksi agent, cari tahu kenapa
+tidak otomatis diturunkan dan betulkan"*. Sebab (dicetak dari log 20 deployment gerbang 6 Okt 00:00 - 7 Okt 06:10Z, Test Commands #129):
+(1) kursi hanya dievaluasi SEKALI sehari dan pada evaluasi 00:00 UTC 7 Okt qwen masih 81,0 % (221 / 273 siklus 6 Okt) = di atas ambang 80 %, sesudahnya
+ambruk (13 sah dari 75 siklus sesudah 00:00) tetapi tetap memegang kursi aktif sampai evaluasi berikutnya; (2) evaluasi hanya di siklus yang TEPAT
+00:00:00 - siklus itu terlewat (gerbang di-deploy 20 kali pada 6 Okt) = evaluasi hari itu hilang; (3) sebagian kegagalan qwen = `TypeError: unhashable
+type: 'list'` dari `parse2` (faktor veto berbentuk daftar) - kontrak SK-M14 "entri salah per item = ditolak per item" dilanggar parser. Mengikat:
+
+1. **Turun karena ambruk (SK-M43), diperiksa tiap siklus sebelum agent dijalankan:** agent AKTIF dengan sah < 50 % dalam 36 siklus terakhirnya (3 jam)
+   turun ke kursi uji saat itu juga - hanya bila median agent aktif lain >= 80 % pada jendela yang sama (semua jatuh = gangguan bersama, tidak ada yang
+   diturunkan) dan sesudahnya masih >= 3 kursi aktif (kuorum F-D113). Terburuk dulu. Sesudah turun, aturan kursi uji F-D119 berlaku di evaluasi harian.
+   Angka 36 / 50 % / 80 % / 3 = **USULAN asisten, aktif atas kata builder "betulkan"**; bisa diubah builder.
+2. **Evaluasi harian (SK-M21, SK-M44) di siklus PERTAMA tiap hari UTC** (normalnya 00:00; terlewat -> siklus berikutnya), tetap sekali sehari (`eval_hari`
+   di state kursi). Naik kursi tetap hanya di evaluasi harian.
+3. **`parse2` (SK-M45):** jenis nilai salah tidak pernah TypeError mentah; per item (instrumen bukan objek, keyakinan bukan angka, faktor veto bukan satu
+   nama fitur, faktor berbentuk daftar) = `ditolak` per item; bidang struktural berjenis salah = ValueError berpesan jelas.
+4. `PARAMS_KURSI` tetap `v` 2 (F-D126: tidak ada v3): sha `0x3bbee1c0a7ce4be8bab9710f7099e056cd4e925eae65354ac84719a5bef8545e` ->
+   `0x19f525f6e506b4e0d922300a560976ed291d61a8ba11420d3a046cd19963fa39`.
+
+Dry run atas status per siklus produksi 6 Okt 00:00 - 7 Okt 06:10Z (348 siklus): tepat satu peristiwa - qwen aktif -> uji pada 7 Okt 00:00 UTC
+(sah 47 % dalam 36 siklus, median agent lain 96 %); tidak ada agent lain yang turun.
+
+**Terkait:** F-D113 · F-D119 · F-D126 · P154 · P160 · [[04-Tools/TL36 - meja v2 bot + instrumen]] · [[07-Testing/01 - Test Commands]] #129
