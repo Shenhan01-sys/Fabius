@@ -23,7 +23,15 @@ formulir tanpa kontak (peninjau memakai pengganti "disimpan privat"; sha + tanda
 
 **P167a (7 Okt, selesai di lokal, belum di-push):** skema pengajuan v2 (`kind` = template / rule / code / feed; dibuka template + rule; domain EIP-712 `version` "2"). Metode SEPENUHNYA dari penerbit: `kind=rule` membawa aturan JSON yang dijalankan mesin kita; `/submit` tidak lagi memaksa memilih template (jalur API template tetap sah). Rincian: [[04-Tools/TL39 - aturan deklaratif (rule)]].
 
+**P167b / P167c (7 Okt, lokal, belum di-push):** `kind=code` dibangun (sandbox berlapis, pelari terpisah tanpa rahasia, kode PRIVAT di volume gerbang;
+formulir publik hanya sha + ukuran + PARAMS) tetapi TETAP TERTUTUP sampai builder menyetujui jalur privat: [[04-Tools/TL41 - kode pengguna di sandbox (code)]].
+`kind=feed` dibuka di kode: komit bobot bertanda tangan ke `POST /bots/feed/commit` sebelum penutupan tiap bar, akar per bar dikunci di LockRegistry,
+ledger maju `ledger/feed/` (rantai `paper-ledger` -> `tools/feed_tick.py`), vonis tinjauan `MAJU_FEED` (gerbang replay N/A), bayangan 120 hari, tanpa
+slot: [[04-Tools/TL42 - komit maju penerbit (feed)]]. Perbaikan sampingan: `terdaftar` kini menerima `spec_sha` registri = sha `BotSpec` (yang memang
+ditulis `registri.record`), bukan hanya sha `spec` formulir.
+
 **Belum (berikutnya):** sinyal bot penerbit yang masuk slot belum dikomit/dijual worker (FABIUS_BOTS); bot intraday
-(B2); jenis `code` (P167b) dan `feed` (P167c); peninjau LLM (P168). Semantik kegagalan: [[07-Testing/T8 - Semantik Kegagalan Operator]] SK-J1..J13.
+(B2); pembukaan `code` (persetujuan builder + deploy pelari); jalur slot feed yang "terbukti"; peninjau LLM (P168). Semantik kegagalan:
+[[07-Testing/T8 - Semantik Kegagalan Operator]] SK-J1..J32.
 
 **Terkait:** [[00-Overview/03 - Decisions]] F-D120 · F-D71 · F-D72 · F-D85 · F-D88 · [[TL36 - meja v2 bot + instrumen]]

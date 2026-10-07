@@ -26,7 +26,7 @@ for _s in (sys.stdout, sys.stderr):
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 if not os.path.isdir(os.path.join(ROOT, "00-Overview")):
     sys.exit(f"ROOT bukan folder vault: {ROOT}")
-SKIP_DIRS = {"Sessions", "_archive", "scripts", "Templates"}
+SKIP_DIRS = {"Sessions", "_archive", "scripts", "Templates", "node_modules"}   # node_modules: proyek JS di vault (Video-Workspace)
 ORDER = re.compile(r"^(\d{2}|[A-Z]{1,3}\d+)")
 
 

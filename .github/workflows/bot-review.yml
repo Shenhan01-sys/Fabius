@@ -4,6 +4,8 @@ name: bot-review
 # Mengambil antrean publik gerbang (GET /bots/submissions), meninjau tiap kiriman baru dengan gerbang G1-G11 + KPI pada bar harian repo
 # (identitas EIP-712 diverifikasi ulang pada waktu terima), lalu meng-commit registri P83 + laporan + spesifikasi lolos ke repo publik.
 # Pin spec_sha ke LockRegistry dikerjakan worker Railway (tools/pin_spec.py lewat operator_loop).
+# P168: laporan peninjau LLM dari gerbang (GET /bots/analysis, /desk/external/review) diperiksa ulang lalu ditulis ke ledger/pengajuan/analisis/
+# (tools/peninjau_llm.py::tarik); tanpa rahasia baru - kunci model hanya di Railway.
 
 on:
   workflow_dispatch:

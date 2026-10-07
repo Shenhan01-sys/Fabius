@@ -70,6 +70,7 @@ ditiru.
   Kalau peran alat perlu dicatat, itu isi dokumen - bukan metadata yang dibaca orang sebagai klaim
   kontribusi. Alat yang menghapus trailer dari riwayat juga wajib menghitung **biayanya** lebih
   dulu (`git rev-list --count <base>..HEAD`): satu commit lama bisa menyeret ratusan.
+- **Jangan `git stash` / `checkout` / `reset` selama ada proses yang MENULIS ke berkas yang dilacak git.** 7 Okt: `git stash` dipakai untuk membandingkan gerbang dengan keadaan awal saat riset P90 sedang menulis `riset/p90/g2-setel-fp.jsonl`; stash mengganti berkas itu, runner terus menulis ke inode yang sudah terhapus (`/proc/<pid>/fd` menunjukkan `(deleted)`), dan hasil sesudahnya akan hilang saat proses selesai. Diselamatkan dengan menyalin `/proc/<pid>/fd/<n>`, memastikan isi di disk = awalan data yang diselamatkan, lalu melanjutkan lari (riset itu bisa dilanjutkan). Pembanding keadaan awal yang aman = `git worktree add` di folder lain, bukan stash di folder kerja. Juga: **author commit ikut diperiksa**, bukan hanya pesannya - `prepush_check` hanya membaca pesan (lihat [[00-Overview/05 - Corrections]] 7 Okt).
 - **Gerbang bentuk, bukan hanya gerbang tautan.** `check_links.py` tetap melaporkan `Broken: 0` ketika `sync_vault.py` sedang menelan heading `## Terkait` di 11 hub: tautannya valid, tempatnya yang pindah. Karena itu ada `scripts/hub_shape.py` (exit non-zero kalau hub kehilangan `## Bagian` / `## Terkait` / `**Sumber:**` / blok dataview, atau ada baris tautan murni terseret ke daftar bagian) dan ia dijalankan setelah setiap perubahan alat.
 
 ## Beda sadar dari vault Lencana (dan alasannya)
@@ -138,6 +139,17 @@ Frontmatter `tags` (kategori + identitas, mis. `tags: [kontrak, "C2"]`), lalu
 - Jebakan yang sudah menghantam vault ini (kode yang tertulis sebagai fakta tapi tidak diverifikasi,
   salinan lokal dianggap keadaan sistem) dicatat di [[Concepts/Stale Local Copy]] — baca sebelum
   menyimpulkan "mati" dari satu sumber.
+
+## Alur kerja pengembangan (baku untuk setiap item backlog; dirangkum 7 Okt atas permintaan builder)
+
+Builder 7 Okt: *"planning -> executing -> testing unit-E2E -> audit -> recap all to vault"*. Asalnya [[08-Backlog/10 - Epik Eksekusi Venue]] §8 dan [[08-Backlog/11 - Epik Meja AI v2]] §10; di sini dirangkum supaya berlaku untuk semua item, bukan hanya dua epik itu.
+
+1. **Rencana** - kriteria keluar di rumah item (epik), baris T8 rencana, status 🟡 di [[08-Backlog/01 - Backlog]], dan satu bagian Inbox "rencana sesi" (apa, urutan, batas lingkungan) SEBELUM kode.
+2. **Eksekusi** - kode + tes; fungsi murni, jaringan dipalsukan; tidak ada deploy, transaksi, atau uang (itu langkah builder).
+3. **Tes unit + ujung-ke-ujung** - tes unit per modul; uji ujung-ke-ujung lokal (alur HTTP / CLI penuh, anvil untuk kontrak); uji kering dengan data / model asli bila terjangkau. Bukti = perintah + keluaran di [[07-Testing/01 - Test Commands]].
+4. **Audit** - sensus `tools/test_census.py --wajib-semua`, `forge test`, T8 `check_failure_semantics.py --run`, gerbang vault (`sync_vault`, `check_links`, `hub_shape`, `check_tool_citations`), tinjauan diff sendiri yang mencari cacat (bukan membenarkan), klaim dicek ke [[10-Submissions/01 - Claims Cheat Sheet]].
+5. **Rekap ke vault** - backlog (status + bukti), catatan TL / C, Decisions bila ada keputusan, Inbox, Test Commands, Run It / Quick-Reference, hub. Yang TIDAK bisa dikerjakan asisten (deploy, kunci, transaksi, uji di produksi, kata builder) masuk [[08-Backlog/13 - Langkah Builder Tertunda]] dengan perintah persisnya, supaya tidak terlupa.
+6. **Kirim** - commit tanpa atribusi AI -> kabari builder -> `prepush_check` -> push.
 
 ## Pivot dan status `N/A` (P76, 3 Okt 2026)
 

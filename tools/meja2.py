@@ -358,10 +358,12 @@ def kursi_catat(st: dict, slug: str, sah: bool, ekuitas: float) -> None:
     h["eq"] = (h["eq"] + [round(ekuitas, 4)])[-(w + 1):]
 
 
-def kursi_evaluasi(st: dict, t0: int, luar: Optional[set] = None) -> List[dict]:
+def kursi_evaluasi(st: dict, t0: int, luar: Optional[set] = None, tahan: Optional[Callable[[str, dict], Optional[str]]] = None) -> List[dict]:
     """P160 evaluasi harian (SK-M21, SK-M22): turun bila sah < 80 % dalam jendela penuh; naik bila >= jendela siklus di kursi uji, sah >= 95 % dan hasil
     jendela >= median aktif (kursi aktif kosong) atau unggul >= 0,5 pp dari aktif terburuk (tukar). `luar` = slug agent luar (F-D121 #9): paling banyak
-    `maks_aktif_luar` kursi aktif; kursi uji yang >= `uji_maks_siklus` tanpa naik bergeser ke belakang antrean bila ada yang menunggu. -> peristiwa."""
+    `maks_aktif_luar` kursi aktif; kursi uji yang >= `uji_maks_siklus` tanpa naik bergeser ke belakang antrean bila ada yang menunggu. -> peristiwa.
+    P168b: `tahan(slug, entri_kursi)` -> alasan = peninjau LLM MENAHAN kenaikan calon yang SUDAH memenuhi aturan numerik (tercatat sebagai peristiwa);
+    ia tidak pernah menaikkan siapa pun dan tidak mengubah PARAMS_KURSI."""
     P, k, r, ev = PARAMS_KURSI, st.get("kursi", {}), st.get("riwayat", {}), []
     w, luar = P["jendela_siklus"], set(luar or ())
 
@@ -401,6 +403,13 @@ def kursi_evaluasi(st: dict, t0: int, luar: Optional[set] = None) -> List[dict]:
         if v["status"] == "uji" and (t0 - v["sejak"]) // meja.PARAMS["siklus_s"] >= w and sah >= P["naik_sah_min"] and ret >= median:
             calon.append((ret, s, sah))
     for ret, s, sah in sorted(calon, reverse=True):
+        try:
+            ditahan = tahan(s, k[s]) if tahan else None
+        except Exception as e:  # noqa: BLE001 - SK-N15: galat peninjau = TAHAN (bukan naik, bukan siklus gagal)
+            ditahan = f"reviewer error: {type(e).__name__}"
+        if ditahan:                                                                           # P168b: hanya MENAHAN (SK-N13)
+            ev.append({"agent": s, "dari": "uji", "ke": "uji", "alasan": f"promotion held: {ditahan}"})
+            continue
         aktif = [x for x, v in k.items() if v["status"] == "aktif"]
         aktif_luar = [x for x in aktif if x in luar]
         batas_luar = s in luar and len(aktif_luar) >= P["maks_aktif_luar"]                    # F-D121 #9b: agent luar paling banyak maks_aktif_luar kursi aktif
@@ -450,7 +459,8 @@ def posisi(bot: Optional[str], ins: List[str], eks: float, veto: List[str], p: P
 def siklus2(t0: int, agents: List[dict], books: Dict[str, dict], ring: Dict[str, str], call: Callable[[dict, str, str], str], snap: Optional[dict],
             p: Pasar2, get: Callable = None, log: Callable[[str], None] = print, sampai: Optional[float] = None,
             keluar: Optional[List[str]] = None, paksa: Optional[List[dict]] = None,
-            bukti: Optional[Callable[[str, int], Optional[dict]]] = None) -> Tuple[List[dict], Dict[str, float]]:
+            bukti: Optional[Callable[[str, int], Optional[dict]]] = None,
+            tahan_naik: Optional[Callable[[str, dict], Optional[str]]] = None) -> Tuple[List[dict], Dict[str, float]]:
     """-> (rekaman per agent v2 + konsensus v2, harga isi). `sampai` = waktu mutlak batas jawab model (gerbang memasangnya supaya komit siklus tetap
     sempat); dihitung SESUDAH data aturan + harga dibaca, jadi cache dingin tidak memakan jatah komit."""
     import concurrent.futures as cf
@@ -462,7 +472,7 @@ def siklus2(t0: int, agents: List[dict], books: Dict[str, dict], ring: Dict[str,
     if ev_paksa:
         ev_kursi += ev_paksa + kursi_daftar(kst, [ag["slug"] for ag in agents], t0)           # kursi uji yang kosong diisi antrean
     if t0 % 86_400 == 0:                                                                     # SK-M21: kursi hanya berubah di siklus 00:00 UTC
-        ev_kursi += kursi_evaluasi(kst, t0, {ag["slug"] for ag in agents if ag.get("luar")})
+        ev_kursi += kursi_evaluasi(kst, t0, {ag["slug"] for ag in agents if ag.get("luar")}, tahan=tahan_naik)      # P168b: peninjau LLM boleh MENAHAN naik
         ev_kursi += kursi_daftar(kst, [ag["slug"] for ag in agents], t0)                     # F-D119: kursi uji yang dilepas langsung diisi antrean
     kursi = {s: v["status"] for s, v in kst["kursi"].items()}
     agents = [ag for ag in agents if kursi.get(ag["slug"]) in ("aktif", "uji")]               # SK-M19: antre tidak dijalankan

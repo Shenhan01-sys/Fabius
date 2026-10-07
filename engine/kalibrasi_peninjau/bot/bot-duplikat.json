@@ -1,0 +1,380 @@
+{
+ "harus": {
+  "tag": [
+   "DUPLICATE"
+  ],
+  "vonis": [
+   "TOLAK"
+  ]
+ },
+ "id": "bot-duplikat",
+ "jenis": "bot",
+ "judul": "B1-TREND dinyatakan ulang dengan ID baru dan parameter sama (N 60, universe sama)",
+ "masukan": {
+  "jenis": "bot",
+  "submission": {
+   "declarations": {
+    "izin_publikasi": true,
+    "lisensi": "terbuka",
+    "menerima_protokol": true,
+    "tanpa_info_orang_dalam": true,
+    "tanpa_lookahead": true,
+    "tanpa_wash_trading": true
+   },
+   "evidence": {
+    "insample_akhir": "2023-12-31",
+    "insample_mulai": "2020-01-01",
+    "klaim": {
+     "mdd_pct": -45,
+     "n_sinyal": 600,
+     "sharpe_net": 0.9,
+     "tahunan_pct": 30
+    },
+    "oos_akhir": "2026-08-31",
+    "oos_mulai": "2024-01-01",
+    "percobaan": 3,
+    "sumber_data": [
+     "data.binance.vision klines harian 1d"
+    ]
+   },
+   "identity": {
+    "conflicts": "none",
+    "entity_type": "individu",
+    "handle": "penerbit",
+    "issuer_wallet": "0x2222222222222222222222222222222222222222",
+    "payout_wallet": "0x2222222222222222222222222222222222222222"
+   },
+   "kind": "rule",
+   "spec": {
+    "bot_id": "MOMO-SIXTY",
+    "horizon": "1d",
+    "metode": "Long each asset whose 60-day return is positive, otherwise flat; equal weight.",
+    "rule": {
+     "bobot": {
+      "gross_maks": 1.0,
+      "skema": "sama"
+     },
+     "masuk_long": {
+      "a": {
+       "f": "ret",
+       "n": {
+        "p": "N"
+       }
+      },
+      "b": {
+       "c": 0
+      },
+      "cmp": ">"
+     },
+     "mode": "per_aset",
+     "params": {
+      "N": 60
+     }
+    },
+    "universe": [
+     "BTCUSDT",
+     "ETHUSDT",
+     "BNBUSDT",
+     "SOLUSDT",
+     "XRPUSDT",
+     "DOGEUSDT",
+     "ADAUSDT",
+     "LINKUSDT",
+     "LTCUSDT",
+     "AVAXUSDT",
+     "TRXUSDT",
+     "DOTUSDT",
+     "BCHUSDT",
+     "ETCUSDT",
+     "ATOMUSDT",
+     "NEARUSDT"
+    ]
+   },
+   "theory": {
+    "mekanisme": "A novel momentum signal we discovered: assets that went up over the last two months keep going up because investors under-react to news. Holding only the risers captures this new effect.",
+    "mekanisme_jenis": "perilaku",
+    "mode_gagal": "Sharp reversals after long rallies.",
+    "peluruhan": "Still works in the last 24 months according to our backtest.",
+    "pembunuh": {
+     "comparator": "<",
+     "metric": "net_pnl_bps",
+     "threshold": -500,
+     "window_sinyal": 60
+    },
+    "pihak_seberang": "Investors who under-react to information and sell winners too early.",
+    "referensi": [
+     {
+      "judul": "Time series momentum (Moskowitz, Ooi, Pedersen 2012)",
+      "klaim": "Time-series momentum is positive across dozens of asset classes over 1-12 month horizons.",
+      "url": "https://doi.org/10.1016/j.jfineco.2011.11.003"
+     }
+    ],
+    "rezim": "Works in trending markets; suffers in sideways chop."
+   },
+   "v": 2
+  },
+  "tepercaya": {
+   "attribution": {
+    "annual_turnover": 18.0,
+    "available": true,
+    "beta_vs_BTCUSDT": 0.61,
+    "corr_daily_pnl_vs_BTCUSDT": 0.74,
+    "corr_daily_pnl_vs_equal_weight_universe": 0.86,
+    "days": 2469,
+    "mean_gross_exposure": 0.58,
+    "mean_net_exposure": 0.58,
+    "share_days_flat_pct": 30.0,
+    "share_days_net_long_pct": 71.0
+   },
+   "book": {
+    "members": [
+     "B3-CARRY"
+    ]
+   },
+   "fabius_bots": {
+    "B1-TREND": {
+     "gate_v1_verdict": "TOLAK",
+     "method": "long bila penutupan > penutupan N hari lalu, selain itu flat (momentum deret waktu, long/flat)",
+     "param": 60,
+     "param_name": "N",
+     "status": "INTI",
+     "universe": [
+      "BTCUSDT",
+      "ETHUSDT",
+      "BNBUSDT",
+      "SOLUSDT",
+      "XRPUSDT",
+      "DOGEUSDT",
+      "ADAUSDT",
+      "LINKUSDT",
+      "LTCUSDT",
+      "AVAXUSDT",
+      "TRXUSDT",
+      "DOTUSDT",
+      "BCHUSDT",
+      "ETCUSDT",
+      "ATOMUSDT",
+      "NEARUSDT"
+     ]
+    },
+    "B2-RS": {
+     "gate_v1_verdict": "TOLAK",
+     "method": "long k teratas, short k terbawah menurut return L hari (rotasi kekuatan relatif, dollar-neutral); 7 sub-buku, masing-masing dirotasi mingguan pada hari-UTC berbeda (tanpa pilihan hari)",
+     "param": 28,
+     "param_name": "L",
+     "status": "SEMENTARA",
+     "universe": [
+      "BTCUSDT",
+      "ETHUSDT",
+      "BNBUSDT",
+      "SOLUSDT",
+      "XRPUSDT",
+      "DOGEUSDT",
+      "ADAUSDT",
+      "LINKUSDT",
+      "LTCUSDT",
+      "AVAXUSDT",
+      "TRXUSDT",
+      "DOTUSDT",
+      "BCHUSDT",
+      "ETCUSDT",
+      "ATOMUSDT",
+      "NEARUSDT"
+     ]
+    },
+    "B3-CARRY": {
+     "gate_v1_verdict": "LOLOS_SHADOW",
+     "method": "long spot + short perp saat funding rata-rata 7 hari (disetahunkan) > theta, selain itu flat",
+     "param": 0.1,
+     "param_name": "theta",
+     "status": "SEMENTARA",
+     "universe": [
+      "BTCUSDT",
+      "ETHUSDT",
+      "BNBUSDT",
+      "SOLUSDT",
+      "XRPUSDT",
+      "DOGEUSDT",
+      "ADAUSDT",
+      "LINKUSDT",
+      "LTCUSDT",
+      "AVAXUSDT",
+      "TRXUSDT",
+      "DOTUSDT",
+      "BCHUSDT",
+      "ETCUSDT",
+      "ATOMUSDT",
+      "NEARUSDT"
+     ]
+    },
+    "B4-LISTING-FADE": {
+     "gate_v1_verdict": "TIDAK_TERUKUR",
+     "method": "short perp yang baru onboard pada penutupan hari-1; tutup setelah H hari; ukuran kecil, margin isolated",
+     "param": 14,
+     "param_name": "H",
+     "status": "SEMENTARA",
+     "universe": [
+      "event: perp baru di venue"
+     ]
+    },
+    "B5-CORE-RWA": {
+     "gate_v1_verdict": "TOLAK",
+     "method": "bobot BTC dan emas proporsional 1/sigma (sigma = simpangan baku return harian L hari); bobot diperbarui bulanan",
+     "param": 90,
+     "param_name": "L",
+     "status": "SEMENTARA",
+     "universe": [
+      "BTCUSDT",
+      "XAUUSDT"
+     ]
+    },
+    "B6-BOUNCE": {
+     "gate_v1_verdict": "TOLAK",
+     "method": "beli bila z-score harga (rerata dan simpangan baku N hari) < -z_masuk; keluar saat z >= 0 (long/flat)",
+     "param": 10,
+     "param_name": "N",
+     "status": "SEMENTARA",
+     "universe": [
+      "BTCUSDT",
+      "ETHUSDT",
+      "BNBUSDT",
+      "SOLUSDT",
+      "XRPUSDT",
+      "DOGEUSDT",
+      "ADAUSDT",
+      "LINKUSDT",
+      "LTCUSDT",
+      "AVAXUSDT",
+      "TRXUSDT",
+      "DOTUSDT",
+      "BCHUSDT",
+      "ETCUSDT",
+      "ATOMUSDT",
+      "NEARUSDT"
+     ]
+    }
+   },
+   "gates": {
+    "G1": {
+     "name": "PIT",
+     "rule": "semua titik-potong identik dan hasil berulang identik",
+     "status": "PASS",
+     "value": "11/11 hari identik; deterministik ya"
+    },
+    "G10": {
+     "name": "MARGINAL",
+     "rule": "dSharpe EW petahana >= +0.05 dan korelasi maks <= 0.7 (petahana = BUKU SLOT SEKARANG + antrean)",
+     "status": "PASS",
+     "value": "dSharpe EW +0.08; korelasi maks +0.12 (2469 hari bersama, 1 petahana)"
+    },
+    "G11": {
+     "name": "CAPACITY",
+     "rule": "diukur sebelum uang nyata",
+     "status": "NA",
+     "value": "kapasitas dan likuiditas per venue belum terukur (butuh volume kuotasi dan kedalaman buku)"
+    },
+    "G2": {
+     "name": "DATA",
+     "rule": "hari-pnl >= 1095; bolong gabungan <= 1% dan per seri <= 5%",
+     "status": "PASS",
+     "value": "2469 hari-pnl; bolong 10/39612 = 0.03%; terburuk per seri 0.23% (perp:SOLUSDT)"
+    },
+    "G3": {
+     "name": "NET",
+     "rule": "Sharpe net >= max(0.5, ambang terdeflasi untuk N percobaan) dan persentil-5 bootstrap blok > 0",
+     "status": "PASS",
+     "value": "Sharpe +0.81; p5 +0.12; ambang 0.70 (N=5)"
+    },
+    "G4": {
+     "name": "RECENT",
+     "rule": "Sharpe 24 bulan terakhir > 0.0 dan >= 0.25 x Sharpe penuh; 12 bulan terakhir negatif = PERINGATAN (tidak menggagalkan)",
+     "status": "PASS",
+     "value": "24b +0.60 (n=730; penuh +0.81); 12b +0.22"
+    },
+    "G5": {
+     "name": "PLATEAU",
+     "rule": "tiap parameter bernama x0.5..x1.5 SATU per SATU + SEMUA bersama (bila > 1): tiap kelompok >= 3 varian BERBEDA, Sharpe >= 0.5 x dasar dan > 0 pada >= 3; parameter dekoratif atau tanpa parameter bernama = GAGAL",
+     "status": "PASS",
+     "value": "dasar +0.81 | N: 30:+0.55 45:+0.70 75:+0.78 90:+0.66"
+    },
+    "G6": {
+     "name": "PHASE",
+     "rule": "rerata semua fase >= 0.5 dan fase terburuk > 0",
+     "status": "TB",
+     "value": "tidak berlaku (bot tanpa jadwal berfase)"
+    },
+    "G7": {
+     "name": "FOLD",
+     "rule": "Sharpe > 0 setelah tahun kalender terbaik dibuang",
+     "status": "PASS",
+     "value": "tanpa 2021: Sharpe +0.41"
+    },
+    "G8": {
+     "name": "NULL",
+     "rule": "batas atas 95% (galat Monte Carlo) dari p <= 0.05 terhadap 200 pergeseran waktu melingkar (eksposur sama); titik taksir p saja bergantung seed",
+     "status": "PASS",
+     "value": "placebo p = 0.015, batas atas 95% 0.031 (3/200 acak >= +0.81)"
+    },
+    "G9": {
+     "name": "COST",
+     "rule": "Sharpe > 0 pada semua biaya (kunci *bps*, *pct*) 2x",
+     "status": "PASS",
+     "value": "Sharpe +0.74 pada 2x"
+    },
+    "K1": {
+     "name": "ANN_NET",
+     "rule": "imbal hasil tahunan net >= hurdle bebas-risiko + margin",
+     "status": "PASS",
+     "value": "tahunan net +24.0% vs ambang 6.0% (hurdle 4% + margin 2%)"
+    },
+    "K2": {
+     "name": "CALMAR",
+     "rule": "tahunan net / |MDD| >= 0.5",
+     "status": "PASS",
+     "value": "Calmar 0.55 (tahunan +24.0% / MDD -43.6%)"
+    },
+    "K3": {
+     "name": "AKTIVITAS",
+     "rule": ">= 12 sinyal/tahun dan >= 20 total",
+     "status": "PASS",
+     "value": "596 sinyal (88.1/tahun)"
+    },
+    "K4": {
+     "name": "KLAIM",
+     "rule": "Sharpe klaim <= terukur + 0.5; |MDD| klaim >= terukur - 10 poin",
+     "status": "PASS",
+     "value": "klaim dalam toleransi (terukur Sharpe +0.81, MDD -44%)"
+    },
+    "K5": {
+     "name": "BAGI-LABA",
+     "rule": "informatif; menjadi gerbang hanya bila fee_base='profit'",
+     "status": "TB",
+     "value": "tidak berlaku (basis = pendapatan penjualan)"
+    }
+   },
+   "stage1": {
+    "binding": true,
+    "bot_id": "MOMO-SIXTY",
+    "data_hash": "0xd64c41a549055875f1fd9899514a575eaea41e98a7b933cb9ff5ca7cd240873e",
+    "failed": [],
+    "family": {
+     "alpha": 0.05,
+     "k": 1,
+     "sumber": "registri"
+    },
+    "fingerprint": "0x6969d36c4c5c34b61bea6ff812b6f052511626a9e0a89d40dd8401cadd9f5834",
+    "g5_variants": 4,
+    "identity_verified": true,
+    "kind": "rule",
+    "n_trials": 5,
+    "report_sha": "0xa64e1f93ae86f9e2977485c84f31c0ad5acc52d189a5c43045c2b953e87ae299",
+    "spec_sha": "0x01703cab9363abf2add03bb90ea56b9a0cf010fa7789015979a4eda58489f0d1",
+    "submission_sha": "0x7c9fe71385198bda8fb81c39de0afa538e290cc1b56a9203c56a9b4a6ee52355",
+    "unmeasured": [
+     "G11"
+    ],
+    "verdict": "LOLOS_SHADOW"
+   }
+  }
+ }
+}

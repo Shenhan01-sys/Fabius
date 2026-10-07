@@ -34,6 +34,8 @@ TYPE = "pengajuan"
 DAY_S = 86_400
 TANPA_UJI = ("TOLAK_FORMULIR",)          # vonis yang tidak menjalankan gerbang: tidak memakan alpha, tidak memicu masa tunggu
 LOLOS = "LOLOS_SHADOW"
+MAJU_FEED = "MAJU_FEED"                  # P167c: feed tercatat (jam maju 120 hari) tetapi TANPA uji statistik: tidak memakan alpha, bukan penolakan
+TANPA_STATISTIK = TANPA_UJI + (MAJU_FEED,)
 FIELDS = ("type", "t_s", "t_utc", "issuer", "payout", "bot_id", "submission_sha", "spec_sha", "fingerprint", "report_sha", "vonis", "k", "alpha", "n_trials")
 
 
@@ -73,7 +75,7 @@ def status_keluarga(entries: Sequence[dict], issuer: str, payout: str, now_s: in
     """k untuk pengajuan berikut keluarga ini + apakah ia boleh mengajukan sekarang (masa tunggu sesudah penolakan)."""
     fam = _keluarga(entries, issuer, payout)
     mine = [e for e in entries if e["issuer"].lower() in fam or e["payout"].lower() in fam]
-    diuji = [e for e in mine if e["vonis"] not in TANPA_UJI]
+    diuji = [e for e in mine if e["vonis"] not in TANPA_STATISTIK]
     jendela = [e for e in diuji if now_s - int(e["t_s"]) < a.jendela_hari * DAY_S]
     k = len(jendela) + 1
     tolak = [int(e["t_s"]) for e in diuji if e["vonis"] != LOLOS]

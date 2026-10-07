@@ -1,0 +1,884 @@
+{
+ "harus": {
+  "tag": [
+   "BOILERPLATE"
+  ],
+  "vonis": [
+   "TAHAN",
+   "TOLAK"
+  ]
+ },
+ "id": "agent-boilerplate",
+ "jenis": "agent",
+ "judul": "alasan identik tiap siklus",
+ "masukan": {
+  "jenis": "agent",
+  "submission": {
+   "answers": [
+    {
+     "bot": "B1-TREND",
+     "confidence_pct": 70,
+     "cycle": 1791000000,
+     "exposure_pct": 50,
+     "factors": [
+      "tren_60h"
+     ],
+     "instruments": [
+      {
+       "asset": "BTCUSDT",
+       "confidence_pct": 70,
+       "factors": [
+        "tren_60h"
+       ]
+      }
+     ],
+     "items_rejected": 0,
+     "reason": "Market conditions favor trend following. Risk is manageable. We stay disciplined.",
+     "status": "ok",
+     "summary": "Market conditions favor trend following.",
+     "veto": []
+    },
+    {
+     "bot": "B1-TREND",
+     "confidence_pct": 70,
+     "cycle": 1791003600,
+     "exposure_pct": 50,
+     "factors": [
+      "tren_60h"
+     ],
+     "instruments": [
+      {
+       "asset": "BTCUSDT",
+       "confidence_pct": 70,
+       "factors": [
+        "tren_60h"
+       ]
+      }
+     ],
+     "items_rejected": 0,
+     "reason": "Market conditions favor trend following. Risk is manageable. We stay disciplined.",
+     "status": "ok",
+     "summary": "Market conditions favor trend following.",
+     "veto": []
+    },
+    {
+     "bot": "B1-TREND",
+     "confidence_pct": 70,
+     "cycle": 1791007500,
+     "exposure_pct": 50,
+     "factors": [
+      "tren_60h"
+     ],
+     "instruments": [
+      {
+       "asset": "BTCUSDT",
+       "confidence_pct": 70,
+       "factors": [
+        "tren_60h"
+       ]
+      }
+     ],
+     "items_rejected": 0,
+     "reason": "Market conditions favor trend following. Risk is manageable. We stay disciplined.",
+     "status": "ok",
+     "summary": "Market conditions favor trend following.",
+     "veto": []
+    },
+    {
+     "bot": "B1-TREND",
+     "confidence_pct": 70,
+     "cycle": 1791011100,
+     "exposure_pct": 50,
+     "factors": [
+      "tren_60h"
+     ],
+     "instruments": [
+      {
+       "asset": "BTCUSDT",
+       "confidence_pct": 70,
+       "factors": [
+        "tren_60h"
+       ]
+      }
+     ],
+     "items_rejected": 0,
+     "reason": "Market conditions favor trend following. Risk is manageable. We stay disciplined.",
+     "status": "ok",
+     "summary": "Market conditions favor trend following.",
+     "veto": []
+    },
+    {
+     "bot": "B1-TREND",
+     "confidence_pct": 70,
+     "cycle": 1791015000,
+     "exposure_pct": 50,
+     "factors": [
+      "tren_60h"
+     ],
+     "instruments": [
+      {
+       "asset": "BTCUSDT",
+       "confidence_pct": 70,
+       "factors": [
+        "tren_60h"
+       ]
+      }
+     ],
+     "items_rejected": 0,
+     "reason": "Market conditions favor trend following. Risk is manageable. We stay disciplined.",
+     "status": "ok",
+     "summary": "Market conditions favor trend following.",
+     "veto": []
+    },
+    {
+     "bot": "B6-BOUNCE",
+     "confidence_pct": 70,
+     "cycle": 1791018600,
+     "exposure_pct": 50,
+     "factors": [
+      "tren_60h"
+     ],
+     "instruments": [
+      {
+       "asset": "BTCUSDT",
+       "confidence_pct": 70,
+       "factors": [
+        "tren_60h"
+       ]
+      }
+     ],
+     "items_rejected": 0,
+     "reason": "Market conditions favor trend following. Risk is manageable. We stay disciplined.",
+     "status": "ok",
+     "summary": "Market conditions favor trend following.",
+     "veto": []
+    },
+    {
+     "bot": "B1-TREND",
+     "confidence_pct": 70,
+     "cycle": 1791022500,
+     "exposure_pct": 50,
+     "factors": [
+      "tren_60h"
+     ],
+     "instruments": [
+      {
+       "asset": "BTCUSDT",
+       "confidence_pct": 70,
+       "factors": [
+        "tren_60h"
+       ]
+      }
+     ],
+     "items_rejected": 0,
+     "reason": "Market conditions favor trend following. Risk is manageable. We stay disciplined.",
+     "status": "ok",
+     "summary": "Market conditions favor trend following.",
+     "veto": []
+    },
+    {
+     "bot": "B1-TREND",
+     "confidence_pct": 70,
+     "cycle": 1791026100,
+     "exposure_pct": 50,
+     "factors": [
+      "tren_60h"
+     ],
+     "instruments": [
+      {
+       "asset": "BTCUSDT",
+       "confidence_pct": 70,
+       "factors": [
+        "tren_60h"
+       ]
+      }
+     ],
+     "items_rejected": 0,
+     "reason": "Market conditions favor trend following. Risk is manageable. We stay disciplined.",
+     "status": "ok",
+     "summary": "Market conditions favor trend following.",
+     "veto": []
+    },
+    {
+     "bot": "B1-TREND",
+     "confidence_pct": 70,
+     "cycle": 1791030000,
+     "exposure_pct": 50,
+     "factors": [
+      "tren_60h"
+     ],
+     "instruments": [
+      {
+       "asset": "BTCUSDT",
+       "confidence_pct": 70,
+       "factors": [
+        "tren_60h"
+       ]
+      }
+     ],
+     "items_rejected": 0,
+     "reason": "Market conditions favor trend following. Risk is manageable. We stay disciplined.",
+     "status": "ok",
+     "summary": "Market conditions favor trend following.",
+     "veto": []
+    },
+    {
+     "bot": "B1-TREND",
+     "confidence_pct": 70,
+     "cycle": 1791033600,
+     "exposure_pct": 50,
+     "factors": [
+      "tren_60h"
+     ],
+     "instruments": [
+      {
+       "asset": "BTCUSDT",
+       "confidence_pct": 70,
+       "factors": [
+        "tren_60h"
+       ]
+      }
+     ],
+     "items_rejected": 0,
+     "reason": "Market conditions favor trend following. Risk is manageable. We stay disciplined.",
+     "status": "ok",
+     "summary": "Market conditions favor trend following.",
+     "veto": []
+    },
+    {
+     "bot": "B3-CARRY",
+     "confidence_pct": 70,
+     "cycle": 1791037500,
+     "exposure_pct": 50,
+     "factors": [
+      "tren_60h"
+     ],
+     "instruments": [
+      {
+       "asset": "BTCUSDT",
+       "confidence_pct": 70,
+       "factors": [
+        "tren_60h"
+       ]
+      }
+     ],
+     "items_rejected": 0,
+     "reason": "Market conditions favor trend following. Risk is manageable. We stay disciplined.",
+     "status": "ok",
+     "summary": "Market conditions favor trend following.",
+     "veto": []
+    },
+    {
+     "bot": "B1-TREND",
+     "confidence_pct": 70,
+     "cycle": 1791041100,
+     "exposure_pct": 50,
+     "factors": [
+      "tren_60h"
+     ],
+     "instruments": [
+      {
+       "asset": "BTCUSDT",
+       "confidence_pct": 70,
+       "factors": [
+        "tren_60h"
+       ]
+      }
+     ],
+     "items_rejected": 0,
+     "reason": "Market conditions favor trend following. Risk is manageable. We stay disciplined.",
+     "status": "ok",
+     "summary": "Market conditions favor trend following.",
+     "veto": []
+    },
+    {
+     "bot": "B1-TREND",
+     "confidence_pct": 70,
+     "cycle": 1791045000,
+     "exposure_pct": 50,
+     "factors": [
+      "tren_60h"
+     ],
+     "instruments": [
+      {
+       "asset": "BTCUSDT",
+       "confidence_pct": 70,
+       "factors": [
+        "tren_60h"
+       ]
+      }
+     ],
+     "items_rejected": 0,
+     "reason": "Market conditions favor trend following. Risk is manageable. We stay disciplined.",
+     "status": "ok",
+     "summary": "Market conditions favor trend following.",
+     "veto": []
+    },
+    {
+     "bot": "B1-TREND",
+     "confidence_pct": 70,
+     "cycle": 1791048600,
+     "exposure_pct": 50,
+     "factors": [
+      "tren_60h"
+     ],
+     "instruments": [
+      {
+       "asset": "BTCUSDT",
+       "confidence_pct": 70,
+       "factors": [
+        "tren_60h"
+       ]
+      }
+     ],
+     "items_rejected": 0,
+     "reason": "Market conditions favor trend following. Risk is manageable. We stay disciplined.",
+     "status": "ok",
+     "summary": "Market conditions favor trend following.",
+     "veto": []
+    },
+    {
+     "bot": "B1-TREND",
+     "confidence_pct": 70,
+     "cycle": 1791052500,
+     "exposure_pct": 50,
+     "factors": [
+      "tren_60h"
+     ],
+     "instruments": [
+      {
+       "asset": "BTCUSDT",
+       "confidence_pct": 70,
+       "factors": [
+        "tren_60h"
+       ]
+      }
+     ],
+     "items_rejected": 0,
+     "reason": "Market conditions favor trend following. Risk is manageable. We stay disciplined.",
+     "status": "ok",
+     "summary": "Market conditions favor trend following.",
+     "veto": []
+    },
+    {
+     "bot": "B1-TREND",
+     "confidence_pct": 70,
+     "cycle": 1791056100,
+     "exposure_pct": 50,
+     "factors": [
+      "tren_60h"
+     ],
+     "instruments": [
+      {
+       "asset": "BTCUSDT",
+       "confidence_pct": 70,
+       "factors": [
+        "tren_60h"
+       ]
+      }
+     ],
+     "items_rejected": 0,
+     "reason": "Market conditions favor trend following. Risk is manageable. We stay disciplined.",
+     "status": "ok",
+     "summary": "Market conditions favor trend following.",
+     "veto": []
+    },
+    {
+     "bot": "B1-TREND",
+     "confidence_pct": 70,
+     "cycle": 1791060000,
+     "exposure_pct": 50,
+     "factors": [
+      "tren_60h"
+     ],
+     "instruments": [
+      {
+       "asset": "BTCUSDT",
+       "confidence_pct": 70,
+       "factors": [
+        "tren_60h"
+       ]
+      }
+     ],
+     "items_rejected": 0,
+     "reason": "Market conditions favor trend following. Risk is manageable. We stay disciplined.",
+     "status": "ok",
+     "summary": "Market conditions favor trend following.",
+     "veto": []
+    },
+    {
+     "bot": "B1-TREND",
+     "confidence_pct": 70,
+     "cycle": 1791063600,
+     "exposure_pct": 50,
+     "factors": [
+      "tren_60h"
+     ],
+     "instruments": [
+      {
+       "asset": "BTCUSDT",
+       "confidence_pct": 70,
+       "factors": [
+        "tren_60h"
+       ]
+      }
+     ],
+     "items_rejected": 0,
+     "reason": "Market conditions favor trend following. Risk is manageable. We stay disciplined.",
+     "status": "ok",
+     "summary": "Market conditions favor trend following.",
+     "veto": []
+    },
+    {
+     "bot": "B1-TREND",
+     "confidence_pct": 70,
+     "cycle": 1791067500,
+     "exposure_pct": 50,
+     "factors": [
+      "tren_60h"
+     ],
+     "instruments": [
+      {
+       "asset": "BTCUSDT",
+       "confidence_pct": 70,
+       "factors": [
+        "tren_60h"
+       ]
+      }
+     ],
+     "items_rejected": 0,
+     "reason": "Market conditions favor trend following. Risk is manageable. We stay disciplined.",
+     "status": "ok",
+     "summary": "Market conditions favor trend following.",
+     "veto": []
+    },
+    {
+     "bot": "B1-TREND",
+     "confidence_pct": 70,
+     "cycle": 1791071100,
+     "exposure_pct": 50,
+     "factors": [
+      "tren_60h"
+     ],
+     "instruments": [
+      {
+       "asset": "BTCUSDT",
+       "confidence_pct": 70,
+       "factors": [
+        "tren_60h"
+       ]
+      }
+     ],
+     "items_rejected": 0,
+     "reason": "Market conditions favor trend following. Risk is manageable. We stay disciplined.",
+     "status": "ok",
+     "summary": "Market conditions favor trend following.",
+     "veto": []
+    },
+    {
+     "bot": "B1-TREND",
+     "confidence_pct": 70,
+     "cycle": 1791075000,
+     "exposure_pct": 50,
+     "factors": [
+      "tren_60h"
+     ],
+     "instruments": [
+      {
+       "asset": "BTCUSDT",
+       "confidence_pct": 70,
+       "factors": [
+        "tren_60h"
+       ]
+      }
+     ],
+     "items_rejected": 0,
+     "reason": "Market conditions favor trend following. Risk is manageable. We stay disciplined.",
+     "status": "ok",
+     "summary": "Market conditions favor trend following.",
+     "veto": []
+    },
+    {
+     "bot": "B1-TREND",
+     "confidence_pct": 70,
+     "cycle": 1791078600,
+     "exposure_pct": 50,
+     "factors": [
+      "tren_60h"
+     ],
+     "instruments": [
+      {
+       "asset": "BTCUSDT",
+       "confidence_pct": 70,
+       "factors": [
+        "tren_60h"
+       ]
+      }
+     ],
+     "items_rejected": 0,
+     "reason": "Market conditions favor trend following. Risk is manageable. We stay disciplined.",
+     "status": "ok",
+     "summary": "Market conditions favor trend following.",
+     "veto": []
+    },
+    {
+     "bot": "B1-TREND",
+     "confidence_pct": 70,
+     "cycle": 1791082500,
+     "exposure_pct": 50,
+     "factors": [
+      "tren_60h"
+     ],
+     "instruments": [
+      {
+       "asset": "BTCUSDT",
+       "confidence_pct": 70,
+       "factors": [
+        "tren_60h"
+       ]
+      }
+     ],
+     "items_rejected": 0,
+     "reason": "Market conditions favor trend following. Risk is manageable. We stay disciplined.",
+     "status": "ok",
+     "summary": "Market conditions favor trend following.",
+     "veto": []
+    },
+    {
+     "bot": "B1-TREND",
+     "confidence_pct": 70,
+     "cycle": 1791086100,
+     "exposure_pct": 50,
+     "factors": [
+      "tren_60h"
+     ],
+     "instruments": [
+      {
+       "asset": "BTCUSDT",
+       "confidence_pct": 70,
+       "factors": [
+        "tren_60h"
+       ]
+      }
+     ],
+     "items_rejected": 0,
+     "reason": "Market conditions favor trend following. Risk is manageable. We stay disciplined.",
+     "status": "ok",
+     "summary": "Market conditions favor trend following.",
+     "veto": []
+    }
+   ],
+   "card": {
+    "name": "Alpha Agent"
+   }
+  },
+  "tepercaya": {
+   "stage1": {
+    "agent": {
+     "agent_id": 7001,
+     "agent_wallet": null,
+     "identity_source": "ERC-8004 IdentityRegistry ownerOf / getAgentWallet read at registration",
+     "owner": "0x7001000000000000000000000000000000007001",
+     "registered_t": 1790999400,
+     "slug": "x7001"
+    },
+    "answers": {
+     "failed": 0,
+     "items_rejected_by_validator": 0,
+     "late": 0,
+     "n": 288,
+     "valid": 288,
+     "valid_pct": 100.0
+    },
+    "confidence": {
+     "at_100_pct": 0.0,
+     "at_or_above_90_pct": 0.0,
+     "buckets": [
+      {
+       "confidence_range": "0-49",
+       "hit_pct": null,
+       "mean_next_cycle_return_bps": null,
+       "n": 0
+      },
+      {
+       "confidence_range": "50-69",
+       "hit_pct": null,
+       "mean_next_cycle_return_bps": null,
+       "n": 0
+      },
+      {
+       "confidence_range": "70-89",
+       "hit_pct": 50.2,
+       "mean_next_cycle_return_bps": 0.11,
+       "n": 287
+      },
+      {
+       "confidence_range": "90-100",
+       "hit_pct": null,
+       "mean_next_cycle_return_bps": null,
+       "n": 0
+      }
+     ],
+     "mean_pct": 70.0,
+     "outcome_definition": "change of this agent's own desk book equity from the cycle to its next reviewed cycle"
+    },
+    "counterfactual": {
+     "cycles_scored": 288,
+     "method": "mean(k x bot score) over the cycle's valid active answers, with vs without this agent; hysteresis ignored",
+     "top_bot_changed_if_counted": 29
+    },
+    "independence": {
+     "cycles_with_consensus": 288,
+     "house_agents": {
+      "glm": {
+       "cycles_both_valid": 288,
+       "mean_score_corr": 0.044,
+       "same_bot_pct": 25.7
+      },
+      "muse": {
+       "cycles_both_valid": 288,
+       "mean_score_corr": 0.034,
+       "same_bot_pct": 25.7
+      },
+      "qwen": {
+       "cycles_both_valid": 288,
+       "mean_score_corr": 0.037,
+       "same_bot_pct": 23.3
+      }
+     },
+     "mean_score_corr_with_consensus": 0.041,
+     "same_bot_as_consensus_pct": 27.1,
+     "same_bot_as_previous_cycle_consensus_pct": 28.2
+    },
+    "manipulation": {
+     "bots_chosen": {
+      "B1-TREND": 233,
+      "B2-RS": 9,
+      "B3-CARRY": 16,
+      "B4-LISTING-FADE": 9,
+      "B5-CORE-RWA": 11,
+      "B6-BOUNCE": 10
+     },
+     "exposure_100_pct": 0.0,
+     "mean_instruments": 1.0,
+     "veto_total": 0
+    },
+    "sample_inputs": [
+     {
+      "cycle": 1791000000,
+      "features_given": {
+       "BTCUSDT": {
+        "tren_60h": 0.0793
+       }
+      }
+     },
+     {
+      "cycle": 1791003600,
+      "features_given": {
+       "BTCUSDT": {
+        "tren_60h": 0.385
+       }
+      }
+     },
+     {
+      "cycle": 1791007500,
+      "features_given": {
+       "BTCUSDT": {
+        "tren_60h": -0.2754
+       }
+      }
+     },
+     {
+      "cycle": 1791011100,
+      "features_given": {
+       "BTCUSDT": {
+        "tren_60h": 0.1379
+       }
+      }
+     },
+     {
+      "cycle": 1791015000,
+      "features_given": {
+       "BTCUSDT": {
+        "tren_60h": 0.1126
+       }
+      }
+     },
+     {
+      "cycle": 1791018600,
+      "features_given": {
+       "BTCUSDT": {
+        "tren_60h": -0.0629
+       }
+      }
+     },
+     {
+      "cycle": 1791022500,
+      "features_given": {
+       "BTCUSDT": {
+        "tren_60h": -0.1387
+       }
+      }
+     },
+     {
+      "cycle": 1791026100,
+      "features_given": {
+       "BTCUSDT": {
+        "tren_60h": 0.1701
+       }
+      }
+     },
+     {
+      "cycle": 1791030000,
+      "features_given": {
+       "BTCUSDT": {
+        "tren_60h": 0.1998
+       }
+      }
+     },
+     {
+      "cycle": 1791033600,
+      "features_given": {
+       "BTCUSDT": {
+        "tren_60h": -0.3765
+       }
+      }
+     },
+     {
+      "cycle": 1791037500,
+      "features_given": {
+       "BTCUSDT": {
+        "tren_60h": -0.4008
+       }
+      }
+     },
+     {
+      "cycle": 1791041100,
+      "features_given": {
+       "BTCUSDT": {
+        "tren_60h": -0.0031
+       }
+      }
+     },
+     {
+      "cycle": 1791045000,
+      "features_given": {
+       "BTCUSDT": {
+        "tren_60h": 0.1502
+       }
+      }
+     },
+     {
+      "cycle": 1791048600,
+      "features_given": {
+       "BTCUSDT": {
+        "tren_60h": 0.3771
+       }
+      }
+     },
+     {
+      "cycle": 1791052500,
+      "features_given": {
+       "BTCUSDT": {
+        "tren_60h": -0.0785
+       }
+      }
+     },
+     {
+      "cycle": 1791056100,
+      "features_given": {
+       "BTCUSDT": {
+        "tren_60h": 0.0965
+       }
+      }
+     },
+     {
+      "cycle": 1791060000,
+      "features_given": {
+       "BTCUSDT": {
+        "tren_60h": -0.0788
+       }
+      }
+     },
+     {
+      "cycle": 1791063600,
+      "features_given": {
+       "BTCUSDT": {
+        "tren_60h": -0.0918
+       }
+      }
+     },
+     {
+      "cycle": 1791067500,
+      "features_given": {
+       "BTCUSDT": {
+        "tren_60h": 0.2897
+       }
+      }
+     },
+     {
+      "cycle": 1791071100,
+      "features_given": {
+       "BTCUSDT": {
+        "tren_60h": -0.2674
+       }
+      }
+     },
+     {
+      "cycle": 1791075000,
+      "features_given": {
+       "BTCUSDT": {
+        "tren_60h": 0.4822
+       }
+      }
+     },
+     {
+      "cycle": 1791078600,
+      "features_given": {
+       "BTCUSDT": {
+        "tren_60h": -0.2431
+       }
+      }
+     },
+     {
+      "cycle": 1791082500,
+      "features_given": {
+       "BTCUSDT": {
+        "tren_60h": -0.0753
+       }
+      }
+     },
+     {
+      "cycle": 1791086100,
+      "features_given": {
+       "BTCUSDT": {
+        "tren_60h": -0.1144
+       }
+      }
+     }
+    ],
+    "seat_rules": "promotion still requires the locked F-D113 numeric rules (PARAMS_KURSI); this review can only hold it",
+    "signatures": {
+     "signer_matches_registered_owner_or_wallet": 288,
+     "valid_answers_with_signature": 288
+    },
+    "stability": {
+     "bot_switch_pct": 35.9,
+     "bot_switches": 103,
+     "latency": "not recorded in desk records (only ok / late / failed status per cycle)"
+    },
+    "text": {
+     "distinct_reasons": 1,
+     "distinct_summaries": 1,
+     "most_common_reason_share_pct": 100.0
+    },
+    "trial": {
+     "cycles_reviewed": 288,
+     "first_cycle": 1791000000,
+     "last_cycle": 1791086100,
+     "seat_since": 1791000000
+    }
+   }
+  }
+ }
+}

@@ -183,7 +183,7 @@ class ArchiveReplayIntegrationTests(ArsipHTTP):
     def test_archive_route_is_english_and_serves_the_hashed_fabius_records_and_cycle_prices(self):
         code, a = self._get(f"/desk/archive/{self.date}")
         self.assertEqual(code, 200)
-        self.assertEqual(sorted(a), ["akses", "cycles", "date", "records"])                                   # publik: akses.live = false
+        self.assertEqual(sorted(a), ["agent_records", "akses", "cycles", "data_health", "date", "evaluation", "records"])   # publik; P156 + agent/evaluasi/kesehatan
         self.assertFalse(a["akses"]["live"])
         self.assertEqual(len(a["records"]), 17)                                                              # 18 siklus - 1 terlambat, v1 tidak ikut
         self.assertEqual({r["agent"] for r in a["records"]}, {"v2"})

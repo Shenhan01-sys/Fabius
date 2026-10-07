@@ -6,7 +6,8 @@ Untuk tiap kiriman di antrean gerbang (`GET /bots/submissions`) yang belum ada d
      (tanda tangan berlaku <= 1 jam; gerbang sudah memeriksanya saat masuk, di sini siapa pun bisa mengulangnya) -> registri hash-berantai + vonis;
   3. laporan ber-sha -> `ledger/pengajuan/laporan/<sha>.json`;
   4. vonis LOLOS_SHADOW -> spesifikasi tercatat `ledger/pengajuan/spec/<bot_id>.json` (sumber ledger maju B1c; sha-nya di-pin on-chain oleh worker);
-  5. kiriman yang tidak dijalankan gerbang (masa tunggu keluarga, formulir ditolak sebelum gerbang) -> `ledger/pengajuan/status.json`.
+  5. kiriman yang tidak dijalankan gerbang (masa tunggu keluarga, formulir ditolak sebelum gerbang) -> `ledger/pengajuan/status.json`;
+  6. (P168) laporan peninjau LLM dari gerbang (`/bots/analysis`, `/desk/external/review`) yang lolos pemeriksaan ulang -> `ledger/pengajuan/analisis/`.
 Kontak penerbit tidak ikut hash dan tidak pernah sampai ke repo: validasi memakai pengganti "disimpan privat".
 
 Pakai:  python -X utf8 tools/tinjau_pengajuan.py [--gerbang URL] [--maks 5]
@@ -101,6 +102,8 @@ def main() -> int:
     a = ap.parse_args()
     from engine import cli
     from engine.data import load_csv_dir
+    import peninjau_llm                                                                   # P168: laporan peninjau LLM -> ledger/pengajuan/analisis/
+    print("analisis peninjau LLM:", json.dumps(peninjau_llm.tarik(a.gerbang, DIR), ensure_ascii=False))
     rows = ambil(a.gerbang)
     baru = [r for r in rows if r["status"] in ("waiting for review", "queued")]          # tertahan masa tunggu dicoba lagi tiap hari
     print(f"antrean gerbang: {len(rows)} kiriman, {len(baru)} menunggu tinjauan")

@@ -84,9 +84,9 @@ class AntreanTests(unittest.TestCase):
         code, out = self.a.terima(tanda(self.acct, bad, nonce=2))
         self.assertEqual(code, 400)
         self.assertTrue(any("spec.rule" in m for m in out["problems"]), out)
-        feed = contoh_rule(self.acct, "PULLBACK-TREND-3")
-        feed["kind"] = "feed"
-        self.assertEqual(self.a.terima(tanda(self.acct, feed, nonce=3))[0], 400)                        # jenis yang belum dibuka tetap ditolak di gerbang
+        kode = contoh_rule(self.acct, "PULLBACK-TREND-3")
+        kode["kind"] = "code"
+        self.assertEqual(self.a.terima(tanda(self.acct, kode, nonce=3))[0], 400)                        # jenis yang belum dibuka (code) tetap ditolak di gerbang
 
     def test_bad_forms_wrong_signers_replays_duplicates_and_limits_are_refused(self):
         sub = contoh(self.acct)
@@ -143,7 +143,7 @@ class HttpTests(unittest.TestCase):
     def test_the_web_can_get_the_message_to_sign_submit_and_follow_the_status(self):
         code, schema = self.call("/bots/schema")
         self.assertEqual((code, schema["chain_id"], schema["eip712_name"]), (200, 97, submission.EIP712_NAME))
-        self.assertEqual((schema["version"], schema["kinds_open"]), ("2", ["template", "rule"]))
+        self.assertEqual((schema["version"], schema["kinds_open"]), ("2", ["template", "rule", "feed"]))       # code (P167b) tertutup
         self.assertEqual(schema["rule"]["modes"], ["per_aset", "peringkat"])                                # pembangun aturan di web memakai kosakata ini
         self.assertIn("zscore", schema["rule"]["window"])
         self.assertEqual(schema["schema"]["spec"]["rule"]["t"], "rule")

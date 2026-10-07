@@ -47,4 +47,4 @@ Metode bot SEPENUHNYA dari penerbit tanpa kode asing: penerbit menulis aturan JS
 - Hanya validasi: `python -X utf8 -c "import json; from engine import submission; print(submission.validate(json.load(open('engine/examples/submission.rule.example.json', encoding='utf-8'))))"`.
 - Tes: `python -X utf8 -m unittest engine.tests.test_rule` (kontrak web butuh Node >= 22.6; tanpa itu tes kontrak dilewati dan tercetak). Perintah dan angka: [[07-Testing/01 - Test Commands]] #111-#113.
 
-**Terkait:** [[00-Overview/03 - Decisions]] F-D122 · F-D125 · [[04-Tools/TL8 - engine]] · [[04-Tools/TL37 - jalur pengajuan bot]]
+**Terkait:** [[00-Overview/03 - Decisions]] F-D122 · F-D125 · [[04-Tools/TL8 - engine]] · [[04-Tools/TL37 - jalur pengajuan bot]] · [[04-Tools/TL41 - kode pengguna di sandbox (code)]] · [[04-Tools/TL42 - komit maju penerbit (feed)]]
