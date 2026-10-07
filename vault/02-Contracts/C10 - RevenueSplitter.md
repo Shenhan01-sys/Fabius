@@ -39,6 +39,9 @@ payee, dan tidak tahu status slot bot.
   hanya menetapkan "bagian Fabius hanya turun"). Karena ada dua floor terpisah, penerbit bisa menerima 1 wei LEBIH SEDIKIT dibanding versi yang
   di-checkpoint. Fuzz menemukannya: a = 22.473, b = 4, c = 24.160, bagian Fabius 3.091 → 30.177 vs 30.178. Uji memastikan selisihnya tidak pernah lebih
   dari 1 wei, dan komentar kontrak menyebut hal ini.
+  Fuzz juga menangkap cacat UJI saya sendiri (bukan kontrak): "turun" ke nilai yang sama tidak membuka segmen baru, jadi harapan dua-floor di uji
+  itu salah (2.226 + 7.887 + 2.087 → kontrak 7.320 = floor(12.200 × 0,6), harapan uji 7.319). Harapannya diperbaiki; sesudah itu kelima uji fuzz
+  lulus 20.000 run masing-masing (`FOUNDRY_FUZZ_RUNS=20000 forge test --offline --match-contract RevenueSplitterTest --match-test testFuzz`).
 - Vektor lintas bahasa (Python → kontrak): 98 vektor `split` (jumlah 0 .. 2^256-1 × bps 0 .. 10000), 70 vektor `share_change_allowed`, dan 8 skenario
   setor / release / turunkan tarif. Harapan skenario dihitung model segmen yang membagi setiap segmen dengan `economics.split`.
   `python -X utf8 tools/gen_splitter_vectors.py --check` mencetak `bagian Python COCOK dengan engine` dan `vektor evm COCOK dengan prediksi Python`.

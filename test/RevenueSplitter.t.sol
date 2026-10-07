@@ -292,14 +292,17 @@ contract RevenueSplitterTest is Test {
         _pay(fab, s, c);
         s.release(fab);
         uint256 nb = BPS - newFabius;
-        uint256 wantI = cp ? Math.mulDiv(uint256(a) + b, 6000, BPS) + Math.mulDiv(c, nb, BPS)
-                           : Math.mulDiv(a, 6000, BPS) + Math.mulDiv(uint256(b) + c, nb, BPS);
-        assertEq(fab.balanceOf(issuerPayee), wantI, "tiap segmen = economics.split atas total segmen");
         assertEq(fab.balanceOf(issuerPayee) + fab.balanceOf(fabiusPayee), uint256(a) + b + c, "tidak ada wei hilang");
-        // tanpa checkpoint, saldo yang belum dibukukan ikut tarif baru (lebih tinggi untuk penerbit). Karena dua floor terpisah, penerbit bisa
-        // menerima 1 wei LEBIH SEDIKIT daripada dengan checkpoint (contoh fuzz: a=22473 b=4 c=24160 bps Fabius 3091 -> 30177 vs 30178); tidak lebih.
+        if (newFabius == 4000) {
+            // "turun" ke nilai yang sama = tarif tidak berubah = SATU segmen (contoh fuzz: 2226 + 7887 + 2087 -> floor(12200 x 0,6) = 7320)
+            assertEq(fab.balanceOf(issuerPayee), Math.mulDiv(uint256(a) + b + c, 6000, BPS), "tarif sama: satu split atas total");
+            return;
+        }
         uint256 noCp = Math.mulDiv(a, 6000, BPS) + Math.mulDiv(uint256(b) + c, nb, BPS);
         uint256 withCp = Math.mulDiv(uint256(a) + b, 6000, BPS) + Math.mulDiv(c, nb, BPS);
+        assertEq(fab.balanceOf(issuerPayee), cp ? withCp : noCp, "tiap segmen = economics.split atas total segmen");
+        // tanpa checkpoint, saldo yang belum dibukukan ikut tarif baru (lebih tinggi untuk penerbit). Karena dua floor terpisah, penerbit bisa
+        // menerima 1 wei LEBIH SEDIKIT daripada dengan checkpoint (contoh fuzz: a=22473 b=4 c=24160 bps Fabius 3091 -> 30177 vs 30178); tidak lebih.
         assertGe(noCp + 1, withCp);
     }
 
