@@ -425,6 +425,21 @@ class AgentTests(unittest.TestCase):
         meja2.kursi_evaluasi(s, t0, {"x9"})                                                  # tanpa kait = perilaku lama
         self.assertEqual(s["kursi"]["x9"]["status"], "aktif")
 
+    def test_reviewer_error_holds_the_promotion_and_the_seat_evaluation_still_runs(self):
+        import meja
+        import meja2
+        w = meja2.PARAMS_KURSI["jendela_siklus"]
+        t0 = 1_900_022_400 // 86_400 * 86_400
+        sejak = t0 - (w + 10) * meja.PARAMS["siklus_s"]
+        s = {"kursi": {"a": {"status": "aktif", "sejak": sejak - 10**6}, "x9": {"status": "uji", "sejak": sejak}},
+             "riwayat": {"a": {"sah": [1] * w, "eq": [1.0] * (w + 1)}, "x9": {"sah": [1] * w, "eq": [1.0] * w + [1.05]}}}
+
+        def rusak(slug, e):
+            raise OSError("volume tak terbaca")
+        ev = meja2.kursi_evaluasi(s, t0, {"x9"}, tahan=rusak)                               # SK-N15: tidak melempar
+        self.assertEqual(s["kursi"]["x9"]["status"], "uji")
+        self.assertTrue(any(e["agent"] == "x9" and e["alasan"] == "promotion held: reviewer error: OSError" for e in ev))
+
 
 class KalibrasiTests(unittest.TestCase):
     def setUp(self):
