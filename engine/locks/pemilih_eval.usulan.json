@@ -1,0 +1,37 @@
+{
+  "catatan": "P74 (epik 05 §5 + §12): aturan + angka evaluasi lapisan pemilih (pembanding IDENTITAS / EW / TRAILING 60 / ACAK / NONE, ongkos ganti, uji berpasangan + BH lintas semua hipotesis, Brier, vonis) dipra-registrasi 7 Okt SEBELUM replay mundur atau laporan maju pertama dijalankan; butir jeda 5, model ongkos ganti, alpha 0,10, hari min 60, Brier min 30 = USULAN. Dikunci (tools/pemilih_eval.py kunci) hanya atas kata builder.",
+  "diusulkan": "2026-10-07T06:37:05Z",
+  "params": {
+    "angka": {
+      "alpha_bh": 0.1,
+      "blok_hari": 5,
+      "boot_n": 10000,
+      "brier_acuan_biner": 0.5,
+      "brier_min_n": 30,
+      "hari_min": 60,
+      "identitas": "B1-TREND",
+      "jeda_min": 5,
+      "jendela_trailing": 60,
+      "kalibrasi_ember": 5,
+      "n_acak": 1000
+    },
+    "aturan": {
+      "ACAK": "tiap jeda_min bar pilih seragam (random.Random(benih), kandidat urut abjad); distribusi n_acak tarikan, benih = sha masukan + nomor tarikan",
+      "EW": "rata-rata net harian semua kandidat; tanpa ongkos ganti",
+      "IDENTITAS": "selalu bot identitas",
+      "NONE": "datar, net 0, gross 0",
+      "TRAILING": "bot dengan jumlah net jendela_trailing bar kalender terakhir (< T) tertinggi; seri -> identitas bila ikut seri, selain itu abjad; riwayat < jendela -> identitas; ganti hanya bila >= jeda_min bar sejak ganti terakhir",
+      "bh": "Benjamini-Hochberg alpha_bh lintas SEMUA hipotesis (pemilih x pembanding) dalam satu laporan",
+      "brier": "dicetak SEBELUM PnL. Biner: p = keyakinan/100 untuk 'net bot pilihan > net bot identitas' (pilihan = identitas / net sama dikecualikan), acuan p = 0,5. Multi: p per bot, kelas = bot terbaik bar itu (seri dibagi rata), acuan seragam 1/N. skill = 1 - Brier / Brier acuan",
+      "kalender": "bar tempat SEMUA kandidat punya net (irisan)",
+      "ongkos_ganti": "bar pertama sesudah ganti A -> B: gross_A(bar sebelumnya) x biaya_A + gross_B(bar itu) x biaya_B (keluar + masuk penuh, tanpa netting); biaya = penggaris spesifikasi per sisi (per kaki x 2 untuk dua kaki); gross tanpa data = 1,0",
+      "tanpa_pilihan": "pemilih tanpa pilihan pada satu bar = bot identitas; pilihan bot di luar kandidat = bar itu tak terukur untuk pemilih itu (dicetak)",
+      "uji": "rerata selisih net harian pemilih - pembanding pada bar bersama; p satu sisi bootstrap blok melingkar terpusat; vs ACAK: p = (1 + #tarikan dengan jumlah net >= pemilih) / (n_acak + 1)",
+      "vonis": "maju: hari < hari_min -> BELUM CUKUP DATA; prakiraan ada tetapi n < brier_min_n -> BELUM CUKUP DATA; semua hipotesis lolos BH dan (bila ada prakiraan) skill > 0 -> UNGGUL; selain itu TIDAK UNGGUL. mundur -> EKSPLORATIF (dalam-sampel, tanpa vonis)",
+      "waktu": "net[bot][T] = net paper bar T (waktu buka) dari target penutupan bar sebelumnya; kebijakan untuk bar T hanya dari net bar < T"
+    },
+    "v": 1
+  },
+  "sha": "0x4003c4befa0e609ecbc5ceeed3b7101387777dfbeeedd8d655645e5aa711045c",
+  "status": "usulan"
+}
