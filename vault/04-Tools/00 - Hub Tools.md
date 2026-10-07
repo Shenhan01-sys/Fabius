@@ -51,6 +51,7 @@ berbahaya dari alat yang gagal keras.
 - [[TL25 - halaman bot]] — /bot/[id]: satu bot = satu mesin terkunci; aturan asli + kunci, buku paper live (kubus universe), hari demi hari -> /verify, F-D16, pembunuh terkunci
 - [[TL24 - halaman verify]] — /verify: pemeriksaan publik satu (bot, bar) di peramban, empat stasiun tick -> komit -> dibuka -> dihitung ulang; kode sama dengan MCP
 - [[TL21 - waitlist]] — penampung daftar tunggu tingkat 1: bot Telegram dibaca rantai GitHub tiap 5 menit, pendaftar dikabarkan ke chat builder; log publik hanya hitungan (P115)
+- [[TL40 - peninjau LLM]] — P168a/P168b (F-D125): tahap 2 sesudah tahap teknis, xkiro GLM 5.3 effort bawaan, brief persis ber-sha, JSON ketat, hanya MENAHAN (LLM mati = TAHAN), set kalibrasi; BELUM DIKALIBRASI = tidak di jalur
 
 <!-- di atas: append-only oleh scripts/sync_vault.py; gloss tulisan tangan utuh -->
 ```dataview
