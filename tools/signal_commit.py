@@ -46,7 +46,7 @@ from engine import chain, ledger                       # noqa: E402
 from engine.freshness import StaleBars                 # noqa: E402
 from engine.series import DAY_MS                       # noqa: E402
 from engine.sinyal import Batch, Entry, Signal, build_batch, signals_at     # noqa: E402
-from engine.spec import SPECS                          # noqa: E402
+from engine.spec import SPECS, BotSpec                 # noqa: E402
 
 BOTS_DEFAULT = ("B1-TREND", "B2-RS", "B3-CARRY", "B4-LISTING-FADE", "B5-CORE-RWA", "B6-BOUNCE")     # F-D95: keenamnya (spesifikasi B2/B4/B5/B6 dikunci 4 Okt 16:37Z)
 CHAIN_ID = 97
@@ -174,15 +174,17 @@ class Action:
 
 
 def plan(bots: Sequence[str], ledger_dir: str, views, cv, committer: str, seed: Optional[bytes], now_s: int,
-         reveal_delay_s: int = 0, lookback_days: int = LOOKBACK_DAYS) -> List[Action]:
+         reveal_delay_s: int = 0, lookback_days: int = LOOKBACK_DAYS, specs: Optional[Dict[str, BotSpec]] = None) -> List[Action]:
     """Apa yang harus dikirim sekarang. Murni terhadap `cv` (keadaan chain) dan berkas ledger/bar; tidak mengirim apa pun.
-    Tanpa `seed` (rencana tanpa kunci) akar tidak bisa dihitung: komit yang dibutuhkan tetap dilaporkan, tanpa batch."""
+    Tanpa `seed` (rencana tanpa kunci) akar tidak bisa dihitung: komit yang dibutuhkan tetap dilaporkan, tanpa batch.
+    P161: `specs` = spesifikasi yang boleh dikomit (bawaan `SPECS`; worker menambah bot penerbit dari registri sah bila `KOMIT_PENERBIT` menyala)."""
     out: List[Action] = []
+    specs = SPECS if specs is None else specs
     max_lag = int(cv.max_lag())
     for bot in bots:
-        spec = SPECS.get(bot)
+        spec = specs.get(bot)
         if spec is None:
-            out.append(Action("alarm", bot, "-", "bot tidak dikenal di engine/spec.py"))
+            out.append(Action("alarm", bot, "-", "bot tidak dikenal (engine/spec.py maupun registri penerbit)"))
             continue
         path = os.path.join(ledger_dir, f"{bot}.jsonl")
         try:

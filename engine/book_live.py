@@ -93,6 +93,10 @@ def verify_book(records: Sequence[dict], params: SlotParams = SlotParams()) -> L
         if r.get("type") != "epoch":
             p.append(f"#{i}: jenis {r.get('type')} tidak dikenal")
             continue
+        kurang = [k for k in ("epoch", "now_s", "ujung_bar", "penghuni", "skor", "penantang", "pembunuh") if k not in r]
+        if kurang:                                                    # P161: catatan rusak dilaporkan, pemeriksa tidak berhenti dengan galat
+            p.append(f"#{i}: catatan epoch tidak lengkap ({', '.join(kurang)})")
+            continue
         if last_epoch is not None and r["epoch"] <= last_epoch:
             p.append(f"#{i}: epoch {r['epoch']} tidak naik")
         last_epoch = r["epoch"]
@@ -122,6 +126,8 @@ def fmt_epoch(r: dict) -> str:
                      f"-> {act}{' menggantikan ' + ev if ev else ''}: {why}")
     if not r["penantang"]:
         lines.append("  tidak ada penantang")
+    for d in r.get("dilewati") or []:                          # P161: berhak menantang tetapi dilewati (ledger maju / peninjau LLM)
+        lines.append(f"  dilewati  {d['bot']:12s} {d['alasan']}")
     if r["dikeluarkan"]:
         lines.append(f"  DIKELUARKAN oleh pembunuhnya: {r['dikeluarkan']}")
     return "\n".join(lines)
