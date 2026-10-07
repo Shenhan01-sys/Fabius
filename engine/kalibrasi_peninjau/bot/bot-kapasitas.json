@@ -1,0 +1,382 @@
+{
+ "harus": {
+  "tag": [
+   "CAPACITY"
+  ],
+  "vonis": [
+   "TAHAN",
+   "TOLAK"
+  ]
+ },
+ "id": "bot-kapasitas",
+ "jenis": "bot",
+ "judul": "edge hanya untuk order < $300 per aset di buku tipis; kapasitas klaim $2.500; perputaran 950x/tahun",
+ "masukan": {
+  "jenis": "bot",
+  "submission": {
+   "declarations": {
+    "izin_publikasi": true,
+    "lisensi": "terbuka",
+    "menerima_protokol": true,
+    "tanpa_info_orang_dalam": true,
+    "tanpa_lookahead": true,
+    "tanpa_wash_trading": true
+   },
+   "evidence": {
+    "insample_akhir": "2023-12-31",
+    "insample_mulai": "2020-01-01",
+    "klaim": {
+     "mdd_pct": -15,
+     "n_sinyal": 2100,
+     "sharpe_net": 1.4,
+     "tahunan_pct": 22
+    },
+    "oos_akhir": "2026-08-31",
+    "oos_mulai": "2024-01-01",
+    "percobaan": 4,
+    "sumber_data": [
+     "data.binance.vision klines harian 1d"
+    ]
+   },
+   "identity": {
+    "conflicts": "none",
+    "entity_type": "individu",
+    "handle": "penerbit",
+    "issuer_wallet": "0x2222222222222222222222222222222222222222",
+    "payout_wallet": "0x2222222222222222222222222222222222222222"
+   },
+   "kind": "rule",
+   "spec": {
+    "bot_id": "THIN-BOOK-SNIPER",
+    "horizon": "1d",
+    "metode": "Enter on the first prints after the daily close where the order book is thinnest; exit the next day.",
+    "rule": {
+     "bobot": {
+      "gross_maks": 1.0,
+      "skema": "sama"
+     },
+     "keluar_long": {
+      "a": {
+       "f": "ret",
+       "n": 1
+      },
+      "b": {
+       "c": 0
+      },
+      "cmp": ">"
+     },
+     "masuk_long": {
+      "a": {
+       "f": "ret",
+       "n": {
+        "p": "N"
+       }
+      },
+      "b": {
+       "c": -0.01
+      },
+      "cmp": "<"
+     },
+     "mode": "per_aset",
+     "params": {
+      "N": 3
+     }
+    },
+    "universe": [
+     "BTCUSDT",
+     "ETHUSDT",
+     "BNBUSDT",
+     "SOLUSDT",
+     "XRPUSDT",
+     "DOGEUSDT"
+    ]
+   },
+   "theory": {
+    "kapasitas_usd": 2500,
+    "mekanisme": "Right after the daily close the order book is very thin and our small orders get filled at stale prices before market makers re-quote. The edge exists only for orders below about 300 USD per asset; larger orders move the price and erase it.",
+    "mekanisme_jenis": "perilaku",
+    "mode_gagal": "Any size above 300 USD per asset removes the edge.",
+    "peluruhan": "Measured on our own 200 USD orders in the last 6 months.",
+    "pembunuh": {
+     "comparator": "<",
+     "metric": "net_pnl_bps",
+     "threshold": -500,
+     "window_sinyal": 60
+    },
+    "pihak_seberang": "Market makers who are slow to re-quote in the first seconds after the close.",
+    "referensi": [
+     {
+      "judul": "Time series momentum (Moskowitz, Ooi, Pedersen 2012)",
+      "klaim": "Time-series momentum is positive across dozens of asset classes over 1-12 month horizons.",
+      "url": "https://doi.org/10.1016/j.jfineco.2011.11.003"
+     }
+    ],
+    "rezim": "Works as long as books stay thin after the close."
+   },
+   "v": 2
+  },
+  "tepercaya": {
+   "attribution": {
+    "annual_turnover": 950.0,
+    "available": true,
+    "beta_vs_BTCUSDT": 0.09,
+    "corr_daily_pnl_vs_BTCUSDT": 0.18,
+    "corr_daily_pnl_vs_equal_weight_universe": 0.21,
+    "days": 2469,
+    "mean_gross_exposure": 0.35,
+    "mean_net_exposure": 0.35,
+    "share_days_flat_pct": 52.0,
+    "share_days_net_long_pct": 70.0
+   },
+   "book": {
+    "members": [
+     "B1-TREND"
+    ]
+   },
+   "fabius_bots": {
+    "B1-TREND": {
+     "gate_v1_verdict": "TOLAK",
+     "method": "long bila penutupan > penutupan N hari lalu, selain itu flat (momentum deret waktu, long/flat)",
+     "param": 60,
+     "param_name": "N",
+     "status": "INTI",
+     "universe": [
+      "BTCUSDT",
+      "ETHUSDT",
+      "BNBUSDT",
+      "SOLUSDT",
+      "XRPUSDT",
+      "DOGEUSDT",
+      "ADAUSDT",
+      "LINKUSDT",
+      "LTCUSDT",
+      "AVAXUSDT",
+      "TRXUSDT",
+      "DOTUSDT",
+      "BCHUSDT",
+      "ETCUSDT",
+      "ATOMUSDT",
+      "NEARUSDT"
+     ]
+    },
+    "B2-RS": {
+     "gate_v1_verdict": "TOLAK",
+     "method": "long k teratas, short k terbawah menurut return L hari (rotasi kekuatan relatif, dollar-neutral); 7 sub-buku, masing-masing dirotasi mingguan pada hari-UTC berbeda (tanpa pilihan hari)",
+     "param": 28,
+     "param_name": "L",
+     "status": "SEMENTARA",
+     "universe": [
+      "BTCUSDT",
+      "ETHUSDT",
+      "BNBUSDT",
+      "SOLUSDT",
+      "XRPUSDT",
+      "DOGEUSDT",
+      "ADAUSDT",
+      "LINKUSDT",
+      "LTCUSDT",
+      "AVAXUSDT",
+      "TRXUSDT",
+      "DOTUSDT",
+      "BCHUSDT",
+      "ETCUSDT",
+      "ATOMUSDT",
+      "NEARUSDT"
+     ]
+    },
+    "B3-CARRY": {
+     "gate_v1_verdict": "LOLOS_SHADOW",
+     "method": "long spot + short perp saat funding rata-rata 7 hari (disetahunkan) > theta, selain itu flat",
+     "param": 0.1,
+     "param_name": "theta",
+     "status": "SEMENTARA",
+     "universe": [
+      "BTCUSDT",
+      "ETHUSDT",
+      "BNBUSDT",
+      "SOLUSDT",
+      "XRPUSDT",
+      "DOGEUSDT",
+      "ADAUSDT",
+      "LINKUSDT",
+      "LTCUSDT",
+      "AVAXUSDT",
+      "TRXUSDT",
+      "DOTUSDT",
+      "BCHUSDT",
+      "ETCUSDT",
+      "ATOMUSDT",
+      "NEARUSDT"
+     ]
+    },
+    "B4-LISTING-FADE": {
+     "gate_v1_verdict": "TIDAK_TERUKUR",
+     "method": "short perp yang baru onboard pada penutupan hari-1; tutup setelah H hari; ukuran kecil, margin isolated",
+     "param": 14,
+     "param_name": "H",
+     "status": "SEMENTARA",
+     "universe": [
+      "event: perp baru di venue"
+     ]
+    },
+    "B5-CORE-RWA": {
+     "gate_v1_verdict": "TOLAK",
+     "method": "bobot BTC dan emas proporsional 1/sigma (sigma = simpangan baku return harian L hari); bobot diperbarui bulanan",
+     "param": 90,
+     "param_name": "L",
+     "status": "SEMENTARA",
+     "universe": [
+      "BTCUSDT",
+      "XAUUSDT"
+     ]
+    },
+    "B6-BOUNCE": {
+     "gate_v1_verdict": "TOLAK",
+     "method": "beli bila z-score harga (rerata dan simpangan baku N hari) < -z_masuk; keluar saat z >= 0 (long/flat)",
+     "param": 10,
+     "param_name": "N",
+     "status": "SEMENTARA",
+     "universe": [
+      "BTCUSDT",
+      "ETHUSDT",
+      "BNBUSDT",
+      "SOLUSDT",
+      "XRPUSDT",
+      "DOGEUSDT",
+      "ADAUSDT",
+      "LINKUSDT",
+      "LTCUSDT",
+      "AVAXUSDT",
+      "TRXUSDT",
+      "DOTUSDT",
+      "BCHUSDT",
+      "ETCUSDT",
+      "ATOMUSDT",
+      "NEARUSDT"
+     ]
+    }
+   },
+   "gates": {
+    "G1": {
+     "name": "PIT",
+     "rule": "semua titik-potong identik dan hasil berulang identik",
+     "status": "PASS",
+     "value": "11/11 hari identik; deterministik ya"
+    },
+    "G10": {
+     "name": "MARGINAL",
+     "rule": "dSharpe EW petahana >= +0.05 dan korelasi maks <= 0.7 (petahana = BUKU SLOT SEKARANG + antrean)",
+     "status": "PASS",
+     "value": "dSharpe EW +0.10; korelasi maks +0.08 (2469 hari bersama, 1 petahana)"
+    },
+    "G11": {
+     "name": "CAPACITY",
+     "rule": "diukur sebelum uang nyata",
+     "status": "NA",
+     "value": "kapasitas dan likuiditas per venue belum terukur (butuh volume kuotasi dan kedalaman buku)"
+    },
+    "G2": {
+     "name": "DATA",
+     "rule": "hari-pnl >= 1095; bolong gabungan <= 1% dan per seri <= 5%",
+     "status": "PASS",
+     "value": "2469 hari-pnl; bolong 6/14814 = 0.04%; terburuk per seri 0.23% (perp:SOLUSDT)"
+    },
+    "G3": {
+     "name": "NET",
+     "rule": "Sharpe net >= max(0.5, ambang terdeflasi untuk N percobaan) dan persentil-5 bootstrap blok > 0",
+     "status": "PASS",
+     "value": "Sharpe +1.12; p5 +0.30; ambang 0.70 (N=6)"
+    },
+    "G4": {
+     "name": "RECENT",
+     "rule": "Sharpe 24 bulan terakhir > 0.0 dan >= 0.25 x Sharpe penuh; 12 bulan terakhir negatif = PERINGATAN (tidak menggagalkan)",
+     "status": "PASS",
+     "value": "24b +0.95 (n=730; penuh +1.12); 12b +0.80"
+    },
+    "G5": {
+     "name": "PLATEAU",
+     "rule": "tiap parameter bernama x0.5..x1.5 SATU per SATU + SEMUA bersama (bila > 1): tiap kelompok >= 3 varian BERBEDA, Sharpe >= 0.5 x dasar dan > 0 pada >= 3; parameter dekoratif atau tanpa parameter bernama = GAGAL",
+     "status": "PASS",
+     "value": "dasar +1.12 | N: 2:+0.90 3:+1.12 4:+0.97 5:+0.81"
+    },
+    "G6": {
+     "name": "PHASE",
+     "rule": "rerata semua fase >= 0.5 dan fase terburuk > 0",
+     "status": "TB",
+     "value": "tidak berlaku (bot tanpa jadwal berfase)"
+    },
+    "G7": {
+     "name": "FOLD",
+     "rule": "Sharpe > 0 setelah tahun kalender terbaik dibuang",
+     "status": "PASS",
+     "value": "tanpa 2021: Sharpe +0.92"
+    },
+    "G8": {
+     "name": "NULL",
+     "rule": "batas atas 95% (galat Monte Carlo) dari p <= 0.05 terhadap 200 pergeseran waktu melingkar (eksposur sama); titik taksir p saja bergantung seed",
+     "status": "PASS",
+     "value": "placebo p = 0.005, batas atas 95% 0.020 (1/200 acak >= +1.12)"
+    },
+    "G9": {
+     "name": "COST",
+     "rule": "Sharpe > 0 pada semua biaya (kunci *bps*, *pct*) 2x",
+     "status": "PASS",
+     "value": "Sharpe +0.19 pada 2x"
+    },
+    "K1": {
+     "name": "ANN_NET",
+     "rule": "imbal hasil tahunan net >= hurdle bebas-risiko + margin",
+     "status": "PASS",
+     "value": "tahunan net +19.0% vs ambang 6.0% (hurdle 4% + margin 2%)"
+    },
+    "K2": {
+     "name": "CALMAR",
+     "rule": "tahunan net / |MDD| >= 0.5",
+     "status": "PASS",
+     "value": "Calmar 1.27 (tahunan +19.0% / MDD -15.0%)"
+    },
+    "K3": {
+     "name": "AKTIVITAS",
+     "rule": ">= 12 sinyal/tahun dan >= 20 total",
+     "status": "PASS",
+     "value": "2100 sinyal (310.5/tahun)"
+    },
+    "K4": {
+     "name": "KLAIM",
+     "rule": "Sharpe klaim <= terukur + 0.5; |MDD| klaim >= terukur - 10 poin",
+     "status": "PASS",
+     "value": "klaim dalam toleransi (terukur Sharpe +1.12, MDD -15%)"
+    },
+    "K5": {
+     "name": "BAGI-LABA",
+     "rule": "informatif; menjadi gerbang hanya bila fee_base='profit'",
+     "status": "TB",
+     "value": "tidak berlaku (basis = pendapatan penjualan)"
+    }
+   },
+   "stage1": {
+    "binding": true,
+    "bot_id": "THIN-BOOK-SNIPER",
+    "data_hash": "0x1a0f00f2f6fe66cb50c20c703c8fd23b361515cbeb28534bac5b490985335821",
+    "failed": [],
+    "family": {
+     "alpha": 0.05,
+     "k": 1,
+     "sumber": "registri"
+    },
+    "fingerprint": "0x4e1c1eeda0a8db3246107a6ba91042c1f26422fd8cd66ae08566e5fb8306b36d",
+    "g5_variants": 4,
+    "identity_verified": true,
+    "kind": "rule",
+    "n_trials": 6,
+    "report_sha": "0x12971113e2be30ee7af7c2c7b7abdf797af9a3e332e642c7757b3044df8a0b1b",
+    "spec_sha": "0xcc996112df228b430892a654403b44efe5acd9795176757d2bf22427b31d8653",
+    "submission_sha": "0xf7a7ff2c67bb847b5250a7800bc575f596e11c6d8fbb5021e2d347062a87b6e2",
+    "unmeasured": [
+     "G11"
+    ],
+    "verdict": "LOLOS_SHADOW"
+   }
+  }
+ }
+}

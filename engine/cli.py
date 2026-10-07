@@ -299,8 +299,13 @@ def _book_epoch(a) -> int:
     challengers = []
     from . import terdaftar
     luar = terdaftar.rincian()[0]                              # P161 B1d: penantang penerbit dari registri (LOLOS_SHADOW + ledger maju sah)
+    from . import peninjau
     for bot in list(bookmod.SHADOW_ELIGIBLE) + sorted(luar):
         if bot in in_book or bot not in ok:
+            continue
+        tahan = peninjau.tahan_bot(REPO_ROOT, luar[bot]["submission_sha"]) if bot in luar else None
+        if tahan:                                              # P168a (SK-N10): peninjau LLM hanya MENAHAN; LANJUT tidak pernah memberi slot
+            print(f"  {bot}: bukan penantang - {tahan}")
             continue
         spec = luar[bot]["spec"] if bot in luar else SPECS[bot]
         if a.no_gates:

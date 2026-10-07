@@ -11,7 +11,7 @@ COPY railway/requirements.txt railway/requirements.txt
 RUN pip install --no-cache-dir -r railway/requirements.txt
 
 COPY engine engine
-COPY tools/evm.py tools/signal_commit.py tools/operator_loop.py tools/paper_tick.py tools/rest_vs_vision.py tools/rest_latency.py tools/shadow_tick.py tools/feed_bars.py tools/pin_book.py tools/alert.py tools/eksekutor.py tools/venue_binance.py tools/exec_feed.py tools/canary.py tools/erc8004_validasi.py tools/x402_sinyal.py tools/sinyal_gambar.py tools/analis.py tools/privy_server.py tools/kabar.py tools/meja.py tools/meja_data.py tools/meja2.py tools/meja_slot.py tools/pengajuan.py tools/pin_spec.py tools/agen_luar.py tools/
+COPY tools/evm.py tools/signal_commit.py tools/operator_loop.py tools/paper_tick.py tools/rest_vs_vision.py tools/rest_latency.py tools/shadow_tick.py tools/feed_bars.py tools/pin_book.py tools/alert.py tools/eksekutor.py tools/venue_binance.py tools/exec_feed.py tools/canary.py tools/erc8004_validasi.py tools/x402_sinyal.py tools/sinyal_gambar.py tools/analis.py tools/privy_server.py tools/kabar.py tools/meja.py tools/meja_data.py tools/meja2.py tools/meja_slot.py tools/pengajuan.py tools/pin_spec.py tools/agen_luar.py tools/peninjau_llm.py tools/
 COPY config/agents.json config/agents.json
 
 ENV PYTHONUTF8=1 PYTHONUNBUFFERED=1 WORKDIR=/tmp/fabius-ledger

@@ -56,6 +56,7 @@ import privy_server as pv                                                     # 
 import meja                                                                   # noqa: E402
 import pengajuan as pj                                                        # noqa: E402
 import agen_luar as al                                                        # noqa: E402
+import peninjau_llm as pl                                                     # noqa: E402  P168: peninjau LLM (tahap 2)
 
 NETWORK = "eip155:97"
 PROXY = "0x402085c248EeA27D92E8b30b2C58ed07f9E20001"      # x402ExactPermit2Proxy kanonis (56 & 97)
@@ -1022,6 +1023,9 @@ def make_handler(gate: Gate):
                     parts[1] = RUTE_EN.get(parts[1], parts[1])
             qs = urllib.parse.parse_qs(u.query)
             try:
+                r_pn = pl.rute(gate, parts, int(gate.now()), TUNDA_PUBLIK_S) if parts else None   # P168: /bots/analysis, /desk/external/review
+                if r_pn:
+                    return self._send(*r_pn)
                 if not parts:
                     gate.data.refresh()
                     led, cfg = gate.data.ledgers(), gate.data.cfg()
@@ -1067,6 +1071,7 @@ def make_handler(gate: Gate):
                     rows = gate.antrean.daftar(gate.registri_bot(), parts[2] if len(parts) == 3 else None,
                                                pj.baca_status(os.path.join(gate.data.workdir, "ledger", "pengajuan", "status.json")),
                                                pj.bayangan_dari(gate.data.workdir, int(gate.now())))
+                    rows = pl.hias(gate, rows)                                                      # P168: kartu peninjau LLM (teks biasa)
                     if len(parts) == 3 and not rows:
                         return self._send(404, {"error": "no such submission"})
                     return self._send(200, rows[0] if len(parts) == 3 else {"submissions": rows, "review": "daily public review run on the repo (P161)"})
@@ -1620,6 +1625,9 @@ def main() -> int:
     import meja_data as md
     gate.log(f"data meja v2 (F1): NYALA | registry {md.registry_sha()[:18]} ({len(md.REGISTRY)} token) | FOMO {'ada kunci' if os.environ.get('FOMO_API_KEY') else 'tanpa kunci'}")
     threading.Thread(target=data_loop, args=(gate, stop), daemon=True).start()
+    st_pn = {j: pl.pn.status_kalibrasi(data.workdir, j) for j in pl.pn.JENIS}
+    gate.log("peninjau LLM (P168): " + " | ".join(f"{j} {v['status']}" for j, v in st_pn.items()) + f" | model {pl.pn.PARAMS['model']} | arsip {pl.arsip(gate).folder}")
+    threading.Thread(target=pl.loop, args=(gate, stop), daemon=True).start()        # belum dikalibrasi = tidak memanggil model, tidak menahan apa pun
     ThreadingHTTPServer(("0.0.0.0", a.port), make_handler(gate)).serve_forever()
     return 0
 
