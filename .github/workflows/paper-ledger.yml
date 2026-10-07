@@ -112,6 +112,11 @@ jobs:
               if ! python -u -X utf8 -m engine.cli ledger verify; then
                 echo "::error::ledger verify GAGAL - tidak commit; rantai berhenti"; exit 1
               fi
+              # P167c: bot feed (komit bertanda tangan ter-anchor sebelum penutupan) -> ledger/feed. Gagal / TUNDA di sini tidak menghentikan rantai ledger.
+              python -u -X utf8 tools/feed_tick.py
+              FRC=$?
+              if [ "$FRC" != "0" ]; then echo "::warning::feed_tick rc=$FRC (4 = TUNDA: gerbang/RPC tidak terbaca, diulang 5 menit lagi)"; fi
+              if [ -d ledger/feed ]; then git add ledger/feed; fi
               git add ledger/paper ledger/bars
               if ! git diff --cached --quiet; then
                 git commit -q -m "ledger paper $(date -u +%Y-%m-%dT%H:%M:%SZ) [skip ci]"

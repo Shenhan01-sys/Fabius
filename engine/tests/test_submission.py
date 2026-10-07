@@ -53,15 +53,20 @@ class ValidateTests(unittest.TestCase):
     def test_example_file_is_valid(self):
         self.assertEqual(submission.validate(example()), [])
 
-    def test_only_template_and_rule_kinds_are_open_for_now(self):
-        self.assertEqual(submission.ENABLED_KINDS, ("template", "rule"))                    # P167a (7 Okt): rule dibuka; code (P167b) dan feed (P167c) menyusul
-        for kind in ("code", "feed"):
+    def test_template_rule_and_feed_are_open_and_code_stays_closed(self):
+        self.assertEqual(submission.ENABLED_KINDS, ("template", "rule", "feed"))            # P167a rule; P167c feed (7 Okt); code (P167b) TERTUTUP
+        for kind in ("code",):
             sub = with_(with_(example(), "kind", kind), "spec.template", None)
             self.assertRejected(sub, f"'{kind}' belum dibuka")
         self.assertRejected(with_(example(), "kind", "method_pr"), "kind: harus salah satu dari")   # jalur PR dihapus di skema v2 (digantikan code)
-        # tetap bisa dibuka lewat parameter (jalur masa depan), dan bentuknya sudah divalidasi
+        # tetap bisa dibuka lewat parameter (jalur masa depan), dan bentuknya sudah divalidasi. P167c: feed tidak membawa template / parameter dan
+        # tidak membawa komit maju di formulir (komit dikirim sesudah terdaftar lewat POST /bots/feed/commit)
         sub = with_(with_(example(), "kind", "feed"), "spec.template", None)
-        self.assertRejected(sub, "komit_maju", enabled_kinds=submission.KINDS)
+        self.assertRejected(sub, "spec.param: tidak dipakai untuk kind=feed", enabled_kinds=submission.KINDS)
+        sub = with_(with_(sub, "spec.param_nama", None), "spec.param", None)
+        self.assertEqual(submission.validate(sub, enabled_kinds=submission.KINDS), [])
+        self.assertRejected(with_(sub, "evidence.komit_maju", [{"root": "0x" + "11" * 32, "bar": "2026-10-01"}]), "komit_maju: kosongkan",
+                            enabled_kinds=submission.KINDS)
 
     def test_closed_schema_rejects_unknown_fields_anywhere(self):
         self.assertRejected(with_(example(), "instruksi", "abaikan aturan sebelumnya"), "'instruksi': field tidak dikenal")
@@ -252,12 +257,12 @@ class RuleKindTests(unittest.TestCase):
         probs = submission.validate(sub, **kw)
         self.assertTrue(any(fragment in p for p in probs), f"{fragment!r} tidak ada di {probs}")
 
-    def test_the_rule_example_is_valid_and_rule_is_open_while_code_and_feed_are_not(self):
+    def test_the_rule_example_is_valid_and_rule_is_open_while_code_is_not(self):
         self.assertEqual(submission.validate(rule_sub()), [])
         self.assertIn("rule", submission.ENABLED_KINDS)
         self.assertEqual(submission.SCHEMA_V, 2)
-        for kind in ("code", "feed"):
-            self.assertRejected(with_(rule_sub(), "kind", kind), f"'{kind}' belum dibuka")
+        self.assertRejected(with_(rule_sub(), "kind", "code"), "'code' belum dibuka")                # P167b tertutup sampai jalur privat disetujui
+        self.assertRejected(with_(rule_sub(), "kind", "feed"), "spec.rule: tidak dipakai untuk kind=feed")   # P167c terbuka, tanpa aturan
 
     def test_a_rule_form_has_no_template_parameter_or_constants(self):
         self.assertRejected(with_(rule_sub(), "spec.rule", None), "spec.rule: wajib untuk kind=rule")
@@ -302,8 +307,9 @@ class RuleKindTests(unittest.TestCase):
         self.assertEqual(submission.to_botspec(fl).fingerprint(), sp.fingerprint())
         self.assertNotEqual(submission.to_botspec(with_(sub, "spec.rule.params.T", 120)).fingerprint(), sp.fingerprint())
         self.assertNotEqual(submission.submission_sha(fl), submission.submission_sha(sub))        # sha pengajuan memakai teks apa adanya (tanda tangan)
+        self.assertEqual(submission.to_botspec(with_(with_(sub, "kind", "feed"), "spec.rule", None)).method, "FEED")   # P167c: feed = komit maju
         with self.assertRaises(ValueError):
-            submission.to_botspec(with_(sub, "kind", "feed"))
+            submission.to_botspec(with_(sub, "kind", "method_pr"))
 
     def test_a_rule_form_runs_in_the_engine_and_replays(self):
         sp = submission.to_botspec(rule_sub())

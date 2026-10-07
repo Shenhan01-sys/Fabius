@@ -308,7 +308,7 @@ class ReviewTests(unittest.TestCase):
             self.assertFalse(rep3["mengikat"])
 
     def test_invalid_or_closed_kinds_are_rejected_before_any_computation(self):
-        bad = self.run_review(self.sub(kind="feed", spec__template=None))
+        bad = self.run_review(self.sub(kind="code", spec__template=None))          # code (P167b) tertutup; feed (P167c) kini dibuka
         self.assertEqual(bad["vonis"], "TOLAK_FORMULIR")
         self.assertTrue(any("belum dibuka" in p for p in bad["masalah_formulir"]))
         self.assertEqual(bad["gerbang"], [])

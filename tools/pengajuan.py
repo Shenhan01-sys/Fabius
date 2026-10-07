@@ -6,6 +6,10 @@ Penyimpanan (volume gerbang):
   masuk.jsonl   antrean publik: formulir TANPA `identity.contact` (kontak tidak ikut hash, jadi sha tetap bisa dicek) + tanda tangan + nonce + deadline
   kontak.jsonl  kontak penerbit (privat; tidak pernah dikirim lewat API)
 Batas: <= 2 kiriman belum ditinjau per penerbit, <= 50 kiriman per hari UTC (semua penerbit); nonce per penerbit tidak boleh dipakai ulang.
+
+P167b (`kind=code`, TERTUTUP sampai builder menyetujui jalur privat): teks kode dikirim di `body.code` (DI LUAR formulir yang di-hash); harus cocok
+dengan `spec.kode` {sha, ukuran, params} yang ditandatangani dan lolos analisis statis. Disimpan PRIVAT di `kode/<sha>.py` (volume gerbang), tidak
+pernah lewat API publik / repo; antrean publik hanya memuat sha + ukuran + params.
 """
 from __future__ import annotations
 
@@ -16,8 +20,10 @@ import threading
 import time
 from typing import Callable, Dict, Iterable, List, Optional, Tuple
 
-from engine import rule as rulemod, submission
+from engine import kode as kodemod, rule as rulemod, submission
 from engine.spec import SPECS
+
+import feed_gerbang                                                    # noqa: E402  P167c
 
 CHAIN_ID = 97
 MAX_BODY = 64 * 1024
@@ -26,11 +32,12 @@ MAKS_PER_HARI = 50
 
 
 class Antrean:
-    def __init__(self, folder: str, now: Callable[[], float] = time.time):
-        self.folder, self.now = folder, now
+    def __init__(self, folder: str, now: Callable[[], float] = time.time, kinds: Iterable[str] = submission.ENABLED_KINDS):
+        self.folder, self.now, self.kinds = folder, now, tuple(kinds)
         self.lock = threading.Lock()
         self.masuk = os.path.join(folder, "masuk.jsonl")
         self.kontak = os.path.join(folder, "kontak.jsonl")
+        self.kode_dir = os.path.join(folder, "kode")                     # P167b: kode PRIVAT (tidak pernah dilayani API publik)
 
     def semua(self) -> List[dict]:
         if not os.path.exists(self.masuk):
@@ -60,7 +67,10 @@ class Antrean:
             if sha and any(r["submission_sha"] == sha for r in ada):
                 return 409, {"error": "this submission was already received", "id": sha}
             ids = {r["bot_id"] for r in ada} | {r.get("bot_id") for r in reg} | set(SPECS)
-            masalah = submission.validate(sub, existing_ids=ids)
+            masalah = submission.validate(sub, existing_ids=ids, enabled_kinds=self.kinds)
+            if not masalah and sub["kind"] == "code":
+                masalah = kodemod.cocok_meta(body.get("code"), sub["spec"]["kode"]) if isinstance(body.get("code"), str) else [
+                    "code: teks kode wajib dikirim di body.code (privat; tidak ikut formulir publik)"]
             if masalah:
                 return 400, {"error": "form rejected", "problems": masalah}
             issuer = sub["identity"]["issuer_wallet"]
@@ -86,6 +96,11 @@ class Antrean:
             if kontak:
                 with open(self.kontak, "a", encoding="utf-8", newline="\n") as f:
                     f.write(json.dumps({"submission_sha": sha, "contact": kontak}, ensure_ascii=False) + "\n")
+            if sub["kind"] == "code":                                          # privat: hanya pemegang volume + pelari terpisah yang membacanya
+                os.makedirs(self.kode_dir, exist_ok=True)
+                kp = os.path.join(self.kode_dir, sub["spec"]["kode"]["sha"][2:] + ".py")
+                with open(os.open(kp, os.O_WRONLY | os.O_CREAT | os.O_TRUNC, 0o600), "w", encoding="utf-8", newline="\n") as f:
+                    f.write(body["code"])
         return 201, {"id": sha, "status": "received", "received_t": now, "bot_id": rec["bot_id"], "spec_sha": rec["spec_sha"],
                      "next": "reviewed by the daily public review run (gates G1-G11 + KPI on the repo's daily bars); status at /bots/submissions/" + sha}
 
@@ -100,7 +115,7 @@ class Antrean:
                 continue
             g, x = by.get(r["submission_sha"]), st.get(r["submission_sha"])
             label = "reviewed" if g else ("rejected" if x and x.get("final") else "queued" if x else "waiting for review")
-            sh = (bayangan or {}).get(r["bot_id"]) if g and g.get("vonis") == "LOLOS_SHADOW" else None
+            sh = (bayangan or {}).get(r["bot_id"]) if g and g.get("vonis") in ("LOLOS_SHADOW", "MAJU_FEED") else None
             if sh:
                 label = "in slot" if sh.get("slot") else "shadow"
             out.append({**r, "status": label, "review": {k: g.get(k) for k in ("vonis", "report_sha", "k", "alpha", "t_utc")} if g else None,
@@ -128,13 +143,47 @@ def info_tanda_tangan() -> Dict[str, object]:
             "max_ttl_s": 3600, "templates": {k: {"param_nama": v.param_nama, "param": v.param, "metode": v.metode} for k, v in sorted(SPECS.items())
                                               if k in submission.REGISTRY},
             "symbols": sorted(submission.KNOWN_SYMBOLS), "kill_bounds": submission.KILL_BOUNDS, "shadow_days": 60,
-            "kinds_open": list(submission.ENABLED_KINDS), "rule": rulemod.vocabulary(), "schema": submission.schema_json()}
+            "kinds_open": list(submission.ENABLED_KINDS), "rule": rulemod.vocabulary(), "schema": submission.schema_json(),
+            "code": info_kode(), "feed": feed_gerbang.info()}
+
+
+KODE_CONTOH = '''PARAMS = {"N": 60}
+
+
+def target(bars, params):
+    """Called once per daily bar with bars up to that bar only. Return {symbol: weight}; gross <= 1."""
+    n = params["N"]
+    out = {}
+    for sym in sorted(bars):
+        c = bars[sym]["c"]
+        if len(c) > n and c[-1] > c[-1 - n]:
+            out[sym] = 1.0 / len(bars)
+    return out
+'''
+
+
+def info_kode() -> Dict[str, object]:
+    """Kontrak `kind=code` untuk editor web (P167b). Kode PRIVAT dan jenis ini TERTUTUP sampai builder menyetujui jalur privat."""
+    return {"open": "code" in submission.ENABLED_KINDS, "label": kodemod.LABEL_KEPERCAYAAN, "reviewer_note": kodemod.CATATAN_PENINJAU,
+            "max_bytes": kodemod.LIMITS["ukuran_maks"], "max_params": kodemod.LIMITS["max_parameter"], "imports": list(kodemod.MODUL),
+            "builtins": list(kodemod.BUILTINS), "template": KODE_CONTOH,
+            "limits": {k: kodemod.LIMITS[k] for k in ("langkah_per_panggilan", "cpu_s", "memori_mb", "waktu_dinding_s")},
+            "public_copy": "sha + size + PARAMS only; the code text never enters the public repo"}
 
 
 def bayangan_dari(workdir: str, now_s: int) -> Dict[str, dict]:
-    """Progres bot penerbit sesudah lolos: hari bayangan sejak genesis ledger maju + apakah sudah di slot buku hidup (B1e)."""
-    from engine import book_live, ledger, terdaftar
+    """Progres bot penerbit sesudah lolos: hari bayangan sejak genesis ledger maju + apakah sudah di slot buku hidup (B1e). P167c: bot feed = bayangan
+    120 hari dari `ledger/feed/<bot>.jsonl`, tanpa slot, berlabel "tidak bisa diverifikasi ulang"."""
+    from engine import book_live, feed as feedmod, ledger, terdaftar
     out: Dict[str, dict] = {}
+    try:
+        for b in terdaftar.feed_rincian(workdir)[0]:
+            p = os.path.join(workdir, "ledger", "feed", f"{b}.jsonl")
+            g = ledger.load(p)[0] if os.path.exists(p) else None
+            hari = max(0, (now_s * 1000 - int(g["first_asof"])) // 86_400_000) if g and g.get("first_asof") is not None else 0
+            out[b] = {"days": int(hari), "of": feedmod.BAYANGAN_HARI, "slot": False, "started": bool(g), "label": feedmod.LABEL_KEPERCAYAAN}
+    except Exception:  # noqa: BLE001 - status tampilan saja
+        pass
     try:
         luar = terdaftar.penerbit(workdir)[0]
         buku_path = os.path.join(workdir, "ledger", "book", "buku.jsonl")

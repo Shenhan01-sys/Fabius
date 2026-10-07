@@ -70,7 +70,7 @@ class SpecTests(unittest.TestCase):
 
     def test_one_method_one_parameter_and_registered(self):
         self.assertEqual(len(SPECS), 6)
-        self.assertEqual(set(SPECS) | {RULE_METHOD}, set(REGISTRY))             # + mesin bot rule (P167a): satu fungsi untuk semua aturan, tanpa spec statis
+        self.assertEqual(set(SPECS) | {RULE_METHOD, "CODE", "FEED"}, set(REGISTRY))   # + rule (P167a), code (P167b: sandbox), feed (P167c: tanpa replay)
         for k, sp in SPECS.items():
             self.assertEqual(sp.bot_id, k)
             self.assertTrue(sp.param_nama and sp.metode)

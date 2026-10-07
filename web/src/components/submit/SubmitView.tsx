@@ -11,8 +11,10 @@ import { useAkses } from "@/components/akses";
 import Nav from "@/components/Nav";
 import { LangProvider, useLang } from "@/components/lang";
 import { isField, kiriman, schemaInfo, submit, typedData, type Field, type Kiriman, type Node, type SchemaInfo } from "@/lib/pengajuan";
+import { meta as kodeMeta } from "@/lib/kode";
 import { startRule, toJson, type RuleState } from "@/lib/rule";
 import OwnerReview from "./OwnerReview";
+import { CodeEditor, FeedPanel } from "./KindPanels";
 import RuleBuilder from "./RuleBuilder";
 
 const panel = "min-w-0 rounded-2xl border border-ink/10 bg-white/70 p-5";
@@ -22,9 +24,10 @@ const inp = "w-full rounded-xl border border-ink/15 bg-white px-3 py-2 text-sm t
 const short = (a: string) => `${a.slice(0, 6)}…${a.slice(-4)}`;
 const day = (s: number) => new Date(s * 1000).toISOString().slice(0, 16).replace("T", " ") + "Z";
 // field yang diisi otomatis atau punya kontrol sendiri
-const SKIP = new Set(["v", "kind", "spec.template", "spec.param_nama", "spec.param", "spec.konstanta", "spec.rule", "spec.horizon", "spec.universe",
+const SKIP = new Set(["v", "kind", "spec.template", "spec.param_nama", "spec.param", "spec.konstanta", "spec.rule", "spec.kode", "spec.horizon", "spec.universe",
   "identity.issuer_wallet", "identity.payout_wallet", "evidence.komit_maju"]);
 const KINDS = ["rule", "code", "feed"] as const;
+type Jenis = (typeof KINDS)[number];
 
 type V = Record<string, unknown>;
 
@@ -64,7 +67,8 @@ function Body() {
 function tahap(k: Kiriman): { i: number; gagal: boolean } {
   if (k.status === "in slot") return { i: 3, gagal: false };
   if (k.status === "shadow") return { i: 2, gagal: false };
-  if (k.status === "rejected" || (k.status === "reviewed" && k.review?.vonis !== "LOLOS_SHADOW")) return { i: 1, gagal: true };
+  const lolos = k.review?.vonis === "LOLOS_SHADOW" || k.review?.vonis === "MAJU_FEED";      // MAJU_FEED: gerbang replay N/A, bayangan maju
+  if (k.status === "rejected" || (k.status === "reviewed" && !lolos)) return { i: 1, gagal: true };
   if (k.status === "reviewed") return { i: 2, gagal: false };
   return { i: 0, gagal: false };
 }
@@ -143,7 +147,10 @@ function Board() {
                     <div className="h-1.5 flex-1 rounded-full bg-ink/10">
                       <div className="h-full rounded-full bg-violet" style={{ width: `${Math.min(100, (k.shadow.days / k.shadow.of) * 100)}%` }} />
                     </div>
-                    <span className="font-mono text-[10px] text-ink/50">{v.days.replace("{n}", String(k.shadow.days)).replace("{m}", String(k.shadow.of))}</span>
+                    <span className="font-mono text-[10px] text-ink/50">
+                      {v.days.replace("{n}", String(k.shadow.days)).replace("{m}", String(k.shadow.of))}
+                      {k.shadow.label ? ` · ${k.shadow.label}` : ""}
+                    </span>
                   </div>
                 )}
               </div>
@@ -196,6 +203,8 @@ function Form() {
   const [nilai, setNilai] = useState<V>({ "evidence.percobaan": "1", "evidence.sumber_data": [""], "theory.referensi": [{}] });
   const [uni, setUni] = useState<string[]>([]);
   const [rule, setRule] = useState<RuleState>(startRule);
+  const [jenis, setJenis] = useState<Jenis>("rule");
+  const [kode, setKode] = useState<string | null>(null);
   const [fase, setFase] = useState<"" | "cek" | "tanda" | "kirim">("");
   const [masalah, setMasalah] = useState<string[]>([]);
   const [id, setId] = useState("");
@@ -214,15 +223,21 @@ function Form() {
   if (!info) return <div className={panel}>{masalah.length ? <p className="text-sm text-ink/60">{masalah[0]}</p> : <p className="text-sm text-ink/50">…</p>}</div>;
 
   const tulis = (p: string, f: Field) => v.labels[p] || f.label;
-  const sub = () => {
+  const teksKode = kode ?? info.code.template;
+  const sub = async () => {
     const base = bangun(info.schema as Node, "", nilai) as V;
     const spec = base.spec as V;
-    spec.rule = toJson(rule);
+    if (jenis === "rule") spec.rule = toJson(rule);
+    if (jenis === "code") {
+      const m = await kodeMeta(teksKode);
+      if (!m) throw new Error(t.submit.code.paramsUnread);
+      spec.kode = m;
+    }
     spec.horizon = "1d";
     spec.universe = uni;
     (base.identity as V).issuer_wallet = wallet;
     (base.identity as V).payout_wallet = wallet;
-    base.kind = "rule";
+    base.kind = jenis;
     return base;
   };
 
@@ -231,7 +246,7 @@ function Form() {
     setId("");
     try {
       setFase("cek");
-      const s = sub();
+      const s = await sub();
       const nonce = Math.floor(Math.random() * 1_000_000_000);
       const deadline = Math.floor(Date.now() / 1000) + 1800;
       const td = await typedData(s, nonce, deadline);
@@ -239,7 +254,7 @@ function Form() {
       setFase("tanda");
       const { signature } = await signTypedData(td.body as unknown as Parameters<typeof signTypedData>[0], { address: wallet ?? undefined });
       setFase("kirim");
-      const r = await submit(s, signature, nonce, deadline);
+      const r = await submit(s, signature, nonce, deadline, jenis === "code" ? teksKode : undefined);
       if (!r.ok) return setMasalah((r.body.problems as string[]) ?? [String(r.body.error)]);
       setId(String(r.body.id));
     } catch (e) {
@@ -362,10 +377,11 @@ function Form() {
                     key={k}
                     type="button"
                     role="radio"
-                    aria-checked={k === "rule"}
+                    aria-checked={k === jenis}
                     aria-disabled={!open}
                     disabled={!open}
-                    className={`rounded-xl border p-3 text-left transition-colors ${k === "rule" ? "border-violet bg-violet/10" : "border-ink/10 bg-ink/[0.03] opacity-60"}`}
+                    onClick={() => open && setJenis(k)}
+                    className={`rounded-xl border p-3 text-left transition-colors ${k === jenis ? "border-violet bg-violet/10" : open ? "border-ink/15 bg-white hover:border-violet" : "border-ink/10 bg-ink/[0.03] opacity-60"}`}
                   >
                     <span className="flex items-center justify-between gap-2 text-sm font-medium text-ink">
                       {v.rule.kinds[k].name}
@@ -397,7 +413,9 @@ function Form() {
               })}
             </div>
           </div>
-          {info.rule ? <RuleBuilder vocab={info.rule} state={rule} setState={setRule} /> : <p className="text-sm text-ink/60">…</p>}
+          {jenis === "rule" && (info.rule ? <RuleBuilder vocab={info.rule} state={rule} setState={setRule} /> : <p className="text-sm text-ink/60">…</p>)}
+          {jenis === "code" && info.code && <CodeEditor info={info.code} value={teksKode} onChange={setKode} />}
+          {jenis === "feed" && info.feed && <FeedPanel info={info.feed} />}
         </fieldset>
         {(["identity", "theory", "evidence", "declarations"] as const).map((sec) => (
           <fieldset key={sec} className="space-y-4">
