@@ -5,6 +5,7 @@ Tes bermusuhan: tiap upaya kabur (impor, dunder, bingkai generator, format strin
 yang dinormalisasi ke `eval`), bom sumber daya (perulangan tanpa akhir, CPU di builtin, memori, int raksasa, rekursi, keluaran raksasa), dan
 nondeterminisme (urutan set lewat PYTHONHASHSEED, keadaan global, argumen bawaan yang bisa diubah)."""
 import copy
+import importlib.util
 import json
 import os
 import shutil
@@ -18,6 +19,11 @@ import urllib.request
 
 ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 sys.path[:0] = [os.path.join(ROOT, "tools"), ROOT]
+
+# Proses anak sandbox memasang batas lewat modul `resource` (hanya POSIX); pelari produksi = Linux. Di Windows anak keluar 1 (gagal tertutup),
+# jadi tes yang benar-benar menjalankan anak dilewati dengan alasan jelas, bukan dianggap gagal.
+POSIX = importlib.util.find_spec("resource") is not None
+butuh_posix = unittest.skipUnless(POSIX, "modul resource tidak ada (bukan POSIX): proses anak sandbox tidak bisa memasang batas di mesin ini")
 
 from engine import gates, kode, review as reviewmod, submission     # noqa: E402
 from engine.bots import NULL_KIND, REGISTRY                       # noqa: E402
@@ -167,6 +173,7 @@ class StatikTests(unittest.TestCase):
         self.assertTrue(kode.validate_meta(dict(meta, sha="0x" + "AB" * 32)))
 
 
+@butuh_posix
 class SandboxTests(unittest.TestCase):
     """Lapis 2-5: proses anak berbatas, keluaran diperiksa, dua jalan identik, uji kausalitas namespace segar."""
 
@@ -265,6 +272,7 @@ class EngineTests(unittest.TestCase):
                        konstanta={"kode": {"sha": sha, "ukuran": info["ukuran"], "params": params or info["params"]}}, universe=tuple(uni),
                        penggaris=dict(kode.PENGGARIS), template=kode.KODE_METHOD)
 
+    @butuh_posix
     def test_a_code_version_of_b1_gives_the_same_weights_as_the_template_on_the_same_bars(self):
         md = md_kecil(300)
         sp = self.spec(TREN, {"N": 20})
@@ -273,6 +281,7 @@ class EngineTests(unittest.TestCase):
         self.assertEqual([(t.t, t.weights) for t in got], [(t.t, t.weights) for t in b1])
         self.assertGreater(sum(1 for t in got if t.weights), 50)
 
+    @butuh_posix
     def test_g1_passes_a_clean_program_and_fails_a_history_dependent_one(self):
         md = md_kecil(160)
         c = gates._Ctx(self.spec(TREN), md, gates.GateParams.fast(), None)
@@ -282,6 +291,7 @@ class EngineTests(unittest.TestCase):
         self.assertEqual(r.status, gates.FAIL)
         self.assertIn("sampel identik", r.value)
 
+    @butuh_posix
     def test_g5_shifts_named_params_and_fails_decorative_or_missing_ones(self):
         md = md_kecil(400)
         c = gates._Ctx(self.spec(TREN), md, gates.GateParams.fast(), None)
@@ -298,6 +308,7 @@ class EngineTests(unittest.TestCase):
         self.assertEqual(kode.kelompok_plateau({"N": 20, "k": 0.5}, (0.5, 1.5))[0][1], [("10", {"N": 10, "k": 0.5}), ("30", {"N": 30, "k": 0.5})])
         self.assertEqual(kode.geser(-3, 0.25), -1)                                                    # bulat tetap bulat, tanda dipertahankan
 
+    @butuh_posix
     def test_g8_uses_the_default_time_placebo_for_code(self):
         self.assertNotIn(kode.KODE_METHOD, NULL_KIND)
         md = md_kecil(400)
@@ -362,6 +373,7 @@ class PrivatTests(unittest.TestCase):
         return {"submission": sub, "signature": "0x" + self.acct.sign_message(encode_typed_data(full_message=td)).signature.hex().removeprefix("0x"),
                 "nonce": nonce, "deadline": now + 600}, now
 
+    @butuh_posix
     def test_the_gate_keeps_code_private_and_closed_by_default(self):
         sub = code_sub(TREN)
         sub["identity"]["issuer_wallet"] = sub["identity"]["payout_wallet"] = self.acct.address
@@ -387,6 +399,7 @@ class PrivatTests(unittest.TestCase):
         self.assertIn("penyedia model peninjau", info["code"]["reviewer_note"])
         self.assertNotIn("code", info["kinds_open"])
 
+    @butuh_posix
     def test_the_separate_runner_returns_bounded_data_that_the_trusted_side_validates_and_gates(self):
         import pelari_kode as pk
         from http.server import ThreadingHTTPServer
@@ -439,6 +452,7 @@ class PrivatTests(unittest.TestCase):
         self.assertNotIn("requirements", dock)                                                         # tanpa pustaka tanda tangan / kunci
         self.assertNotIn("COPY engine engine", dock)                                                   # image minimal
 
+    @butuh_posix
     def test_the_runner_works_with_only_the_files_its_image_copies(self):
         import re
         import subprocess
