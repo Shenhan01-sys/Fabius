@@ -16,6 +16,7 @@ from __future__ import annotations
 import argparse
 import json
 import os
+import secrets
 import sys
 import time
 import urllib.error
@@ -49,14 +50,18 @@ def _bersih(s: str, kunci: str) -> str:
 
 def panggil_xkiro(system: str, user: str, post: Optional[Callable] = None, timeout: Optional[int] = None) -> dict:
     """Satu panggilan: `analis.call_model` dengan effort BAWAAN (`reasoning_effort` DIHILANGKAN). -> {"teks", "meta"}. Galat apa pun (kunci tidak ada,
-    HTTP 402 saldo habis, 429, batas waktu, jaringan) dinaikkan sebagai RuntimeError tanpa kunci di pesannya -> `peninjau.tinjau` mencatatnya TAHAN."""
+    HTTP 402 saldo habis, 429, batas waktu, jaringan) dinaikkan sebagai RuntimeError tanpa kunci di pesannya -> `peninjau.tinjau` mencatatnya TAHAN.
+    7 Okt: xkiro menyajikan jawaban dari CACHE untuk body identik (0,1 s, `usage` sama persis); header Cache-Control tidak menembusnya, medan body
+    `user` yang berbeda menembusnya. Tiap panggilan membawa `user` acak sendiri -> jalan kalibrasi dan percobaan ulang benar-benar memanggil model.
+    Prompt (system + user message) tidak berubah, jadi `prompt_sha` tetap bisa dihitung ulang dari masukan."""
     import analis as an
     p = pn.PARAMS
     kunci = os.environ.get(an.PROVIDERS[p["provider"]]["key_var"]) or ""
     tangkap: Dict[str, dict] = {}
+    nonce = "fabius-" + secrets.token_hex(8)
 
     def post_tangkap(url, headers, body, t):
-        r = (post or an._post)(url, headers, body, t)
+        r = (post or an._post)(url, headers, {**body, "user": nonce}, t)
         tangkap["r"] = r
         return r
     agent = {"provider": p["provider"], "model": p["model"], "effort": an.EFFORT_BAWAAN, "max_tokens": p["max_tokens"], "temperature": p["temperature"]}
@@ -74,7 +79,8 @@ def panggil_xkiro(system: str, user: str, post: Optional[Callable] = None, timeo
     ch = (r.get("choices") or [{}])[0] if isinstance(r, dict) else {}
     msg = ch.get("message") or {}
     return {"teks": teks, "meta": {"finish_reason": ch.get("finish_reason"), "usage": r.get("usage") if isinstance(r, dict) else None,
-                                   "ada_penalaran": bool(msg.get("reasoning_content")), "model": r.get("model") if isinstance(r, dict) else None}}
+                                   "ada_penalaran": bool(msg.get("reasoning_content")), "model": r.get("model") if isinstance(r, dict) else None,
+                                   "nonce": nonce}}
 
 
 def contoh_jawaban(masukan: dict, vonis: str = "TAHAN", tags: Iterable[str] = ("OTHER", "OTHER", "OTHER"), severity: str = "major",

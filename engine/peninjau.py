@@ -476,7 +476,7 @@ def tinjau(jenis: str, masukan: dict, panggil: Callable[[str, str], dict], *, ku
                           "paksa": ["panggilan model gagal -> TAHAN otomatis (tidak pernah lolos karena LLM mati)"]})
         return segel(rek)
     hasil, laporan = periksa(teks, jenis, masukan)
-    meta = {k: v for k, v in (out.get("meta") or {}).items() if k in ("finish_reason", "usage", "ada_penalaran", "model")}
+    meta = {k: v for k, v in (out.get("meta") or {}).items() if k in ("finish_reason", "usage", "ada_penalaran", "model", "nonce")}
     rek.update(jawaban_mentah=teks, jawaban_sha=sha_teks(teks), meta={**meta, "detik": round(time.monotonic() - t0, 1)}, hasil=hasil, laporan=laporan)
     return segel(rek)
 

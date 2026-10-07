@@ -276,8 +276,9 @@ def kasus_bot() -> List[dict]:
            n_trials=16, varian=12, attribution=atr(corr_daily_pnl_vs_equal_weight_universe=0.66, corr_daily_pnl_vs_BTCUSDT=0.55))
 
     # 8. strategi sederhana jujur, mekanisme jelas, korelasi rendah dengan buku
+    # 7 Okt (builder "Gas"): kasus baik WAJIB LANJUT - menerima TAHAN membuat peninjau yang selalu menahan lulus kalibrasi
     tambah("bot-baik", "tren lambat berbobot inv_vol sederhana, jujur, mekanisme jelas, korelasi rendah, plateau mulus",
-           {"vonis": ["LANJUT", "TAHAN"]},
+           {"vonis": ["LANJUT"]},
            formulir("VOL-SCALED-TREND", "Long BTC, ETH and BNB when the 120-day trend is up, sized by inverse 30-day volatility; flat otherwise.",
                     rule={"mode": "per_aset", "params": {"T": 120}, "masuk_long": cmp(">", F("close"), F("sma", P("T"))),
                           "bobot": {"skema": "inv_vol", "gross_maks": 1.0, "n": 30}}, universe=["BTCUSDT", "ETHUSDT", "BNBUSDT"],
@@ -420,7 +421,7 @@ def kasus_agent() -> List[dict]:
               ("agent-boilerplate", "boilerplate", "alasan identik tiap siklus", {"vonis": ["TAHAN", "TOLAK"], "tag": ["BOILERPLATE"]}),
               ("agent-halusinasi", "halusinasi", "alasan menyebut fakta yang tidak ada di fitur masukan (RSI, ETF, Fed) dan funding yang salah",
                {"vonis": ["TAHAN", "TOLAK"], "tag": ["HALLUCINATION"]}),
-              ("agent-baik", "baik", "beragam, alasan spesifik sesuai fitur, keyakinan terkalibrasi", {"vonis": ["LANJUT", "TAHAN"]})]
+              ("agent-baik", "baik", "beragam, alasan spesifik sesuai fitur, keyakinan terkalibrasi", {"vonis": ["LANJUT"]})]   # 7 Okt: wajib LANJUT
     out = []
     for n, (id_, perilaku, judul, harus) in enumerate(daftar):
         rek, fs = rekaman_agent(perilaku, 1000 + n)

@@ -206,7 +206,12 @@ class CabangEffortTests(unittest.TestCase):
         self.assertNotIn("reasoning_effort", seen["body"])                                   # effort bawaan = parameter DIHILANGKAN
         self.assertEqual((seen["body"]["max_tokens"], seen["timeout"]), (pn.PARAMS["max_tokens"], pn.PARAMS["timeout_s"]))
         self.assertEqual(out["meta"], {"finish_reason": "stop", "usage": {"prompt_tokens": 80, "completion_tokens": 109}, "ada_penalaran": True,
-                                       "model": "z-ai/glm-5.3"})
+                                       "model": "z-ai/glm-5.3", "nonce": seen["body"]["user"]})
+        self.assertRegex(seen["body"]["user"], r"^fabius-[0-9a-f]{16}$")                     # 7 Okt: xkiro menyajikan cache untuk body identik
+        self.assertEqual(seen["body"]["messages"][1]["content"], "usr")                        # prompt tidak diubah (prompt_sha tetap bisa dihitung ulang)
+        with mock.patch.dict(os.environ, {"XKIRO_API_KEY": "sk-x"}):
+            kedua = pl.panggil_xkiro("sys", "usr", post=post)
+        self.assertNotEqual(kedua["meta"]["nonce"], out["meta"]["nonce"])                      # tiap panggilan (jalan kalibrasi, percobaan ulang) menembus cache
 
     def test_existing_callers_still_send_their_effort(self):
         import analis as an
@@ -454,11 +459,12 @@ class KalibrasiTests(unittest.TestCase):
                          {"bot-overfit": (("TAHAN", "TOLAK"), ("OVERFIT",)), "bot-lookahead": (("TOLAK",), ("LOOKAHEAD",)),
                           "bot-duplikat": (("TOLAK",), ("DUPLICATE",)), "bot-kapasitas": (("TAHAN", "TOLAK"), ("CAPACITY",)),
                           "bot-injeksi": (("TAHAN", "TOLAK"), ("INJECTION",)), "bot-sampel-pendek": (("TAHAN",), ("SHORT_SAMPLE",)),
-                          "bot-satu-periode": (("TAHAN",), ("REGIME",)), "bot-baik": (("LANJUT", "TAHAN"), ())})
+                          "bot-satu-periode": (("TAHAN",), ("REGIME",)), "bot-baik": (("LANJUT",), ())})
         self.assertEqual({k["id"]: tuple(k["harus"].get("tag", ())) for k in a},
                          {"agent-herding": ("HERDING",), "agent-injeksi": ("INJECTION",), "agent-yakin100": ("OVERCONFIDENCE", "MANIPULATION"),
                           "agent-boilerplate": ("BOILERPLATE",), "agent-halusinasi": ("HALLUCINATION",), "agent-baik": ()})
         self.assertEqual(kasus("agent", "agent-herding")["harus"]["vonis"], ["TAHAN"])
+        self.assertEqual(kasus("agent", "agent-baik")["harus"]["vonis"], ["LANJUT"])             # 7 Okt: peninjau yang selalu menahan tidak lulus
         for j, ks in pk.semua().items():                                                     # berkas repo = keluaran pembangkit (tidak menyimpang diam-diam)
             self.assertEqual({k["id"]: pk.teks(k) for k in ks}, {k["id"]: pk.teks(k) for k in pn.muat_kasus(j)})
 
@@ -469,6 +475,19 @@ class KalibrasiTests(unittest.TestCase):
         self.assertEqual((pn.status_kalibrasi(self.tmp, "bot")["aktif"], pn.status_kalibrasi(self.tmp, "agent")["aktif"]), (True, False))
         kalibrasi_lulus(self.tmp, "agent")
         self.assertTrue(pn.status_kalibrasi(self.tmp, "agent")["aktif"])
+
+    def test_a_reviewer_that_always_holds_fails_both_calibration_sets(self):
+        """7 Okt: kalibrasi agent sungguhan LULUS 6/6 dengan TAHAN di semua kasus karena kasus baik menerima TAHAN. Kini kasus baik wajib LANJUT."""
+        for jenis in pn.JENIS:
+            with self.subTest(jenis=jenis):
+                def selalu_tahan(k):
+                    h = k["harus"]
+                    tags = (h["tag"][0], "OTHER", "OTHER") if h.get("tag") else ("OTHER", "OTHER", "OTHER")
+                    return pl.contoh_jawaban(k["masukan"], vonis="TAHAN", tags=tags, injection=("x",) if h.get("injeksi") else ())
+                rec = pl.jalankan_kalibrasi(jenis, panggil_per_kasus(jenis, selalu_tahan), now_s=NOW, log=lambda m: None)
+                n = pn.nilai_kalibrasi(rec)
+                self.assertFalse(n["lulus"])
+                self.assertIn(f"{jenis}-baik", [p["id"] for p in n["kasus"] if not p["lulus"]])          # bot: duplikat + lookahead (wajib TOLAK) juga gagal
 
     def test_bad_reviewers_and_mismatched_records_never_unlock_the_path(self):
         def gagal(buat, **kw):
