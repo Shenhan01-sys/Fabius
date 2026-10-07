@@ -50,9 +50,11 @@ for _s in (sys.stdout, sys.stderr):
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(HERE)
 sys.path.insert(0, HERE)
+sys.path.insert(1, ROOT)
 
 import bars  # noqa: E402  (tools/bars.py)
 import flow_gate  # noqa: E402  (gerbang [7] sebagai perilaku: kerumunan jual = VETO masuk)
+from engine.freshness import StaleBars, cek_umur  # noqa: E402  (P71: guard umur bar yang SAMA dengan mesin)
 
 _spec = importlib.util.spec_from_file_location("judge", os.path.join(HERE, "judge.py"))
 judge = importlib.util.module_from_spec(_spec)
@@ -89,6 +91,10 @@ TIME_STOP_H = 24            # hard time-stop utk rezim "tidak yakin"
 ATR_MULT_STOP = 1.5
 ATR_MULT_TP = 3.0
 STALE_UNIVERSE_H = 2.0      # di atas ini: universe cukup basi untuk dicatat DI DALAM hash-nya
+BAR_MS = 3_600_000          # deret arah = bar 1 jam Aster
+MAX_LAG_BAR_H = 2.0         # P71 (USULAN): bar 1 jam terakhir harus tertutup <= 2 jam lalu. Lebih tua = cache basi -> ambil ulang;
+                            # masih basi sesudah ambil = simbol TIDAK dinilai. Temuan 27 Sep: MARSCOIN di-anchor 08:08Z dengan bar
+                            # terakhir 18:00Z kemarin (14 jam), stop-nya sudah tersentuh 8 jam sebelum anchor.
 
 # Diisi di main() dari snapshot yang sedang dipakai. Dibawa lewat modul karena `snap_hash_for`
 # harus MENYIMPANNYA ke dalam snapshotHash: kalau "seberapa tua datanya" hanya dicetak di layar,
@@ -144,6 +150,39 @@ def age_hours(stamp):
     except (TypeError, ValueError):
         return None
     return (datetime.now(timezone.utc) - then).total_seconds() / 3600.0
+
+
+def muat_bar(psym, now_ms=None, load=None, fetch=None, save=None):
+    """P71: deret 1 jam satu simbol DENGAN guard umur (`engine/freshness.cek_umur`, aturan yang sama dengan mesin).
+
+    Cache dipakai hanya bila bar terakhirnya sudah tertutup dan <= MAX_LAG_BAR_H jam sejak penutupan; selain itu (termasuk cache tidak ada)
+    deret diambil ulang dari venue. Hasil ambil yang MASIH basi dikembalikan dengan tanda `basi` - pemanggil tidak boleh menilainya: "flat
+    karena tidak ada sinyal" dan "tidak dinilai karena datanya basi" adalah dua hal berbeda. -> (bars, {sumber, t_last, umur_jam, basi})."""
+    load, fetch, save = load or bars.load, fetch or bars.fetch, save or bars.save
+    now_ms = int(time.time() * 1000) if now_ms is None else int(now_ms)
+    maks = int(MAX_LAG_BAR_H * 3_600_000)
+
+    def umur(deret):
+        try:
+            return cek_umur(psym, deret[-1]["t"] if deret else None, now_ms, BAR_MS, maks), None
+        except StaleBars as e:
+            return None, str(e)
+
+    # bars.load() mengembalikan DICT {"meta":…, "bars":[…]} - bukan tuple. Meng-unpack-nya
+    # jadi (bs, _) akan menghasilkan karakter dict dan memaksa fetch ulang 7 halaman tiap siklus.
+    data, sumber = (load(psym, "1h") or {}).get("bars") or [], "cache"
+    lag, basi = umur(data)
+    if basi:
+        baru, meta_fetch = fetch(psym, "1h", 400, verbose=False)
+        if baru:
+            # Meta dari fetch() diteruskan APA ADANYA - jumlah halaman, endpoint, masalah HTTP.
+            # Baris ini sebelumnya mengarang {"pages": 1} untuk deret 400 hari yang butuh 7
+            # halaman DAN membuang meta aslinya, jadi cache menyimpan provenance palsu.
+            save(psym, "1h", baru, meta_fetch)
+            data, sumber = baru, "ambil"
+            lag, basi = umur(data)
+    return data, {"sumber": sumber, "t_last": data[-1]["t"] if data else None,
+                  "umur_jam": None if lag is None else round(lag / 3_600_000, 2), "basi": basi}
 
 
 def feats(closes, highs, lows, opens=None):
@@ -305,7 +344,7 @@ def snap_hash_for(symbol, f, fund):
     """snapshotHash utk keputusan arah = ikatan ke data yang benar-benar dipakai saat itu."""
     # Fitur yang BENAR-BENAR dipakai keputusan ikut di-hash, bukan hanya harga mentahnya.
     # Alasannya: kalau nanti orang mau mereplikasi "kenapa side=short", cukup data ini + kode.
-    obj = {"src": "aster", "symbol": symbol, "last_bar_t": f.get("t_last"),
+    obj = {"src": "aster", "symbol": symbol, "last_bar_t": f.get("t_last"), "last_bar_age_h": f.get("umur_bar_jam"),
            "bars": f.get("n"), "funding_4h": fund.get("funding_4h"),
            "oi": fund.get("oi"), "next_funding_ms": fund.get("next_funding_ms"),
            "last": f.get("last"), "ret24": f.get("ret24"), "acf_abs": f.get("acf_abs"),
@@ -352,25 +391,17 @@ def main():
             continue
         seen.add(sym)
         psym = cand[0]
-        # bars.load() mengembalikan DICT {"meta":…, "bars":[…]} - bukan tuple. Meng-unpack-nya
-        # jadi (bs, _) akan menghasilkan karakter dict dan memaksa fetch ulang 7 halaman tiap siklus.
-        cached = bars.load(psym, "1h")
-        data = (cached or {}).get("bars") or []
-        if not data:
-            data, meta_fetch = bars.fetch(psym, "1h", 400, verbose=False)
-            if data:
-                # Meta dari fetch() diteruskan APA ADANYA - jumlah halaman, endpoint, masalah HTTP.
-                # Baris ini sebelumnya mengarang {"pages": 1} untuk deret 400 hari yang butuh 7
-                # halaman DAN membuang meta aslinya, jadi cache menyimpan provenance palsu.
-                bars.save(psym, "1h", data, meta_fetch)
-        if not data:
-            rows.append({"symbol": psym, "base": sym, "bars": 0, "ok": False})
+        data, umur_bar = muat_bar(psym)                       # P71: cache basi tidak pernah dipakai diam-diam
+        if umur_bar["basi"]:
+            print(f"  BASI {psym}: {umur_bar['basi']} (sumber {umur_bar['sumber']}) -> TIDAK dinilai, tidak memakan kursi")
+            rows.append({"symbol": psym, "base": sym, "bars": len(data), "ok": False, "basi": umur_bar["basi"]})
             continue
         closes = [b["c"] for b in data]
         highs = [b["h"] for b in data]
         lows = [b["l"] for b in data]
         f = feats(closes, highs, lows)
         f["t_last"] = data[-1]["t"]
+        f["umur_bar_jam"] = umur_bar["umur_jam"]
         fund = funding_and_oi(psym)
         liq = r.get("liquidity")
         rows.append({"symbol": psym, "base": sym, "tags": (by_base[sym][0],), "liq_usd": liq,
@@ -389,8 +420,8 @@ def main():
     thin = len(judged) - len(scored)
     scored.sort(key=lambda x: (abs(x.get("acf_abs") or 0)), reverse=True)
     pick = scored[:a.top]
-    print(f"tertangkap {len(rows)} kandidat yang punya kontrak perp; dinilai {len(judged)}; "
-          f"layak kursi {len(scored)} (buang {thin} karena bar<{MIN_BARS_TINY}); "
+    print(f"tertangkap {len(rows)} kandidat yang punya kontrak perp; basi {sum(1 for r in rows if r.get('basi'))} (P71, tidak dinilai); "
+          f"dinilai {len(judged)}; layak kursi {len(scored)} (buang {thin} karena bar<{MIN_BARS_TINY}); "
           f"dipilih {len(pick)} (urut |acf| terbesar)\n")
 
     # Bidang ④: keamanan kontrak TOKEN DASAR, diukur sebelum keputusan apa pun dibuat.
