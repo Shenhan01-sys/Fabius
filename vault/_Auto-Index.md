@@ -2,7 +2,7 @@
 tags: [generated]
 ---
 
-_Auto-Index — 6 halaman · 2026-10-07T01:31Z · dari `vault/scripts/sync_vault.py`_
+_Auto-Index — 6 halaman · 2026-10-07T01:54Z · dari `vault/scripts/sync_vault.py`_
 
 ### 00-Overview (8)
 - [[00-Overview/00 - Hub Overview]]
@@ -21,14 +21,16 @@ _Auto-Index — 6 halaman · 2026-10-07T01:31Z · dari `vault/scripts/sync_vault
 - [[01-Agent/A4 - Trust Gating and Real-Money Rules]]
 - [[01-Agent/01 - Asset Classes and Seats]]
 
-### 02-Contracts (9)
+### 02-Contracts (11)
 - [[02-Contracts/00 - Hub Contracts]]
+- [[02-Contracts/C10 - RevenueSplitter]]
 - [[02-Contracts/C3 - ExecutionVault]]
 - [[02-Contracts/C4 - DemoPair and DemoAsset]]
 - [[02-Contracts/C5 - Vendored x402 Sources]]
 - [[02-Contracts/C6 - LockRegistry]]
 - [[02-Contracts/C7 - SignalAnchor]]
 - [[02-Contracts/C8 - ExecutionAnchor]]
+- [[02-Contracts/C9 - BotRegistry]]
 - [[02-Contracts/01 - DecisionAnchor]]
 - [[02-Contracts/02 - Deployed on 97]]
 
