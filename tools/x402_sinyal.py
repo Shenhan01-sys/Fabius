@@ -554,10 +554,12 @@ class Gate:
                     elif kind == "evaluasi":
                         if ln.strip() and ((e := json.loads(ln)) and (live or e["siklus"] <= self.batas_publik())):                      # P165: sama
                             out["evaluation"].append(e)
-                    elif kind == "fitur":
-                        if ln.strip():
+                    elif kind == "fitur":                                                    # tambahan F4: baris rusak dilewati, arsip tetap 200
+                        try:
                             s = json.loads(ln)
                             out["data_health"].append({"t": s.get("t"), "kesehatan": s.get("kesehatan"), "durasi_s": s.get("durasi_s")})
+                        except (ValueError, AttributeError):
+                            continue
                     elif ln.strip():
                         s = json.loads(ln)
                         out["cycles"].append({"cycle": s["siklus"], "prices": s.get("harga_v2") or {}, "root": s.get("root"), "tx": s.get("tx"),
