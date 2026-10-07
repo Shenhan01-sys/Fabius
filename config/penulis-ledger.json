@@ -1,0 +1,4 @@
+{
+  "penulis": "github",
+  "catatan": "Sakelar penulis TUNGGAL ledger/ (P99, F-D86 tahap 2; SK-R3). github = rantai .github/workflows/paper-ledger.yml menulis (perilaku sejak F-D78). railway = job Railway tools/penulis_ledger.py (PENULIS_MODE=master) yang menulis, dan rantai GitHub + watchdog-nya keluar tanpa menulis dan tanpa menyambung diri. Railway tetap menolak menulis selama workflow paper-ledger.yml masih aktif atau punya run hidup, dan hanya satu proses yang memegang sewa refs/penulis/kunci-master. Riwayat berkas ini = riwayat publik kapan penulis berpindah. Alih + balik: vault/04-Tools/TL47."
+}

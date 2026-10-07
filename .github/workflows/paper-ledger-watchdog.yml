@@ -27,6 +27,11 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
+          # P99 (SK-R3): penulis = Railway -> rantai GitHub tidak dinyalakan. Galat baca apa pun = github (perilaku lama).
+          P=$(gh api -H "Accept: application/vnd.github.raw" "repos/$GITHUB_REPOSITORY/contents/config/penulis-ledger.json?ref=$GITHUB_REF_NAME" 2>/dev/null \
+              | python3 -c "import json,sys; p=json.load(sys.stdin).get('penulis'); print(p if p in ('github','railway') else 'github')" 2>/dev/null || echo github)
+          echo "penulis ledger menurut config/penulis-ledger.json: [$P]"
+          if [ "$P" = "railway" ]; then echo "penulis = Railway (P99) -> watchdog tidak menyalakan rantai GitHub"; exit 0; fi
           N=$(gh api "repos/$GITHUB_REPOSITORY/actions/workflows/paper-ledger.yml/runs?per_page=20" \
               --jq '[.workflow_runs[] | select(.status=="in_progress" or .status=="queued" or .status=="waiting" or .status=="pending" or .status=="requested")] | length')
           echo "run paper-ledger yang hidup/antre: [$N]"

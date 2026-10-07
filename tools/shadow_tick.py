@@ -185,6 +185,41 @@ def build_rows(snap: dict, bars: str, day_ms: int, est_fn: Callable = None) -> T
     return rows, problems
 
 
+def append_rows(bars: str, rows: Dict[str, list]) -> int:
+    """P100: baris `build_rows` ditambahkan DI TEMPAT ke `ledger/bars` klon penulis Railway (`tools/penulis_ledger.py`), dengan aturan yang sama
+    dengan `make_shadow_bars` (format `feed_bars`; berkas funding AKTUAL `fund_<SYM>.csv` tidak pernah ditambah, SK-R2). -> jumlah baris."""
+    n = 0
+    for key, rs in rows.items():
+        if not rs:
+            continue
+        kind, sym = key.split(":")
+        path = os.path.join(bars, f"fund_est_{sym}.csv" if kind == "fest" else f"{kind}_{sym}_1d.csv")
+        new_file = not os.path.exists(path)
+        with open(path, "a", newline="", encoding="utf-8") as f:
+            w = csv.writer(f, lineterminator="\n")
+            if new_file and kind == "fest":
+                w.writerow(["t", "rate"])
+            for r in rs:
+                w.writerow(list(r))
+                n += 1
+    return n
+
+
+def needs_rest(bars: str, day_ms: int) -> bool:
+    """Tanpa jaringan: adakah deret (aturan `read_snapshot`) yang belum sampai bar `day_ms`? False = bar resmi sudah lengkap, REST tak perlu dibaca."""
+    import feed_bars as fb
+    for kind, sym in series_files(bars):
+        if kind in ("fut", "spot"):
+            lt = fb.last_t(os.path.join(bars, f"{kind}_{sym}_1d.csv"))
+            if lt is not None and lt < day_ms:
+                return True
+        else:
+            nxt = est_start(bars, sym)
+            if nxt is not None and nxt <= day_ms:
+                return True
+    return False
+
+
 def make_shadow_bars(official: str, rows: Dict[str, list], out: str) -> str:
     """Salinan bar resmi + baris REST. Berkas funding AKTUAL (`fund_<SYM>.csv`) disalin apa adanya dan tidak pernah ditambah (SK-R2)."""
     if os.path.exists(out):

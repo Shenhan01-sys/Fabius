@@ -33,6 +33,9 @@ name: paper-ledger
 # (b) Tidak ada kunci, tidak ada transaksi chain, tidak ada rahasia di sini. (c) Paper penuh; angka maju bukan klaim edge (F-D16).
 # (d) Tick keluar ±9-10 jam sesudah 00:00Z karena berkas baru terbit selama itu; `settle` mengandaikan masuk di harga penutupan.
 # (e) Rantai ini hidup terus selama workflow aktif; menghentikannya = `gh workflow disable paper-ledger.yml` (dan watchdog-nya).
+# (f) P99 (SK-R3): `config/penulis-ledger.json` = sakelar penulis TUNGGAL. "github" (bawaan; berkas hilang / rusak juga dibaca github) = perilaku di atas.
+#     "railway" = job Railway `tools/penulis_ledger.py` yang menulis: mata rantai ini keluar tanpa menulis dan TIDAK menyambung diri (diperiksa di awal
+#     dan di awal setiap putaran dari ujung cabang). Alih + balik: vault/04-Tools/TL47.
 
 on:
   workflow_dispatch:
@@ -77,9 +80,16 @@ jobs:
           else
             echo "RANTAI_ADA=0" >> "$GITHUB_ENV"
           fi
+          # P99: penulis tunggal. Galat apa pun saat membaca = "github" (perilaku lama).
+          P=$(python -X utf8 tools/penulis_ledger.py siapa 2>/dev/null || echo github)
+          echo "penulis ledger menurut config/penulis-ledger.json: [$P]"
+          if [ "$P" = "railway" ]; then
+            echo "penulis = Railway (P99) -> rantai GitHub tidak menulis dan tidak menyambung diri"
+            echo "PENULIS_LAIN=1" >> "$GITHUB_ENV"
+          fi
 
       - name: Loop ±5 jam - pada jendela 08:40-11:58Z jalankan tick/settle tiap 5 menit sampai beres
-        if: env.RANTAI_ADA == '0'
+        if: env.RANTAI_ADA == '0' && env.PENULIS_LAIN != '1'
         env:
           ALERT_TELEGRAM_TOKEN: ${{ secrets.ALERT_TELEGRAM_TOKEN }}
           ALERT_TELEGRAM_CHAT: ${{ secrets.ALERT_TELEGRAM_CHAT }}
@@ -94,6 +104,13 @@ jobs:
           WATCHED=""
           K=0
           while [ "$(date +%s)" -lt "$END" ]; do
+            # P99: sakelar dibaca dari UJUNG cabang (bukan checkout awal) tiap putaran; gagal baca = github (perilaku lama)
+            if git fetch -q origin "$GITHUB_REF_NAME" 2>/dev/null \
+               && [ "$(python -X utf8 tools/penulis_ledger.py siapa --ref FETCH_HEAD 2>/dev/null || echo github)" = "railway" ]; then
+              echo "config/penulis-ledger.json berkata railway -> mata rantai ini berhenti tanpa menulis dan tanpa menyambung"
+              echo "PENULIS_LAIN=1" >> "$GITHUB_ENV"
+              break
+            fi
             TODAY=$(date -u +%F)
             HM=$((10#$(date -u +%H%M)))
             if [ "$HM" -ge 840 ] && [ "$HM" -le 1158 ] && [ "$DONE" != "$TODAY" ]; then
@@ -238,7 +255,7 @@ jobs:
           echo "putaran kerja di mata rantai ini: $K"
 
       - name: Sambung rantai
-        if: env.RANTAI_ADA == '0'
+        if: env.RANTAI_ADA == '0' && env.PENULIS_LAIN != '1'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           CHAIN_IN: ${{ github.event.inputs.chain_started }}

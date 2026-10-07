@@ -28,4 +28,11 @@ REST beda dari Vision (hanya mencatat ALARM).
 **Cara membaca hasil:** `railway logs --service fabius-probe --lines 80`, cari baris `bayangan`, `VONIS bayangan`, `VONIS baris REST`. Keadaan disimpan di
 `/tmp` container: hilang saat deploy ulang, jadi log adalah catatannya.
 
+**Sesudah P99/P100 ([[04-Tools/TL47 - penulis ledger Railway (P99)]], 7 Okt):** penulis ledger Railway memakai fungsi yang sama dari berkas ini
+(`read_final`, `build_rows`, `compare_tick`, `compare_rows`) plus dua fungsi baru: `append_rows` (baris REST ditambahkan DI TEMPAT ke `ledger/bars` klon
+penulis, aturan sama dengan `make_shadow_bars`) dan `needs_rest` (tanpa jaringan: bar resmi sudah lengkap -> REST tidak dibaca). Begitu tahap 3
+(`PENULIS_SUMBER=rest`) menjadi penulis resmi, tick resmi sendiri berasal dari REST, jadi vonis bayangan di sini membandingkan REST dengan REST dan berhenti
+menjadi bukti; pemeriksa REST-vs-Vision pindah ke penulis (`Penulis.cek_vision`, `VONIS baris REST vs Vision`). Mematikan atau mempertahankan bayangan
+`fabius-probe` sesudah itu = **USULAN** (keputusan builder).
+
 **Terkait:** [[TL13 - rest_vs_vision]] · [[TL9 - ledger paper maju]] · [[07-Testing/T8 - Semantik Kegagalan Operator]] · [[00-Overview/03 - Decisions]] F-D83/F-D86

@@ -3,7 +3,8 @@
 Sumber publik tanpa kunci:
   kline harian perp  https://data.binance.vision/data/futures/um/daily/klines/<SYM>/1d/<SYM>-1d-<YYYY-MM-DD>.zip   (berkas statis, terbit sesudah hari UTC itu tutup)
   kline harian spot  .../data/spot/daily/klines/...     (opsional, --spot; dibutuhkan B3/B5)
-  funding            REST publik https://fapi.binance.com/fapi/v1/fundingRate (dicoba lebih dulu; dari jaringan tertentu bisa 451/403)
+  funding            REST publik https://fapi.binance.com/fapi/v1/fundingRate (dicoba lebih dulu; dari jaringan tertentu bisa 451/403;
+                     FABIUS_FUNDING_REST=0 = tidak dicoba sama sekali - penulis Railway P99, SK-R2)
                      lalu zip BULANAN .../futures/um/monthly/fundingRate/... untuk bulan yang sudah tutup (terbit beberapa hari sesudahnya)
   estimasi funding   berkas harian .../futures/um/daily/premiumIndexKlines/<SYM>/1m/... (terbit ±09:10Z hari berikutnya) -> `ledger/bars/fund_est_<SYM>.csv` lewat
                      `engine/funding_est.py` (P92/F-D76). ESTIMASI, bukan funding: galat terukur ±0,1 bps/hari/aset; dipakai untuk laporan PROVISIONAL dan target B3 saja.
@@ -56,6 +57,13 @@ VISION = "https://data.binance.vision/data"
 FAPI = "https://fapi.binance.com"
 UA = {"User-Agent": "Mozilla/5.0 (fabius-feed/1.0)"}
 FUND_DEDUPE_MS = 60_000      # peristiwa funding yang sama dari REST dan zip bulanan beda hitungan milidetik; interval nyata >= 1 jam
+FUNDING_REST_ENV = "FABIUS_FUNDING_REST"     # P99/P100 (SK-R2): "0" = funding AKTUAL hanya dari zip bulanan, seperti di runner GitHub (REST 451)
+
+
+def funding_rest_on() -> bool:
+    """Di Railway REST terbuka: aktual hari kemarin akan masuk SEBELUM estimasinya dan `update_funding_est` (mulai sesudah aktual terakhir) tidak pernah
+    membentuk estimasi hari itu -> target B3 berbeda dari rantai GitHub. Penulis Railway (`tools/penulis_ledger.py`) selalu memasang 0."""
+    return os.environ.get(FUNDING_REST_ENV, "1").strip().lower() not in ("0", "mati", "off", "false")
 
 
 class FeedError(Exception):
@@ -209,8 +217,10 @@ def update_funding(bars_dir: str, sym: str, today_ms: int, fetch: Callable[[str]
     new: List[Tuple[int, float]] = []
     rest_err = None
     cursor = lt + 1
+    if not funding_rest_on():
+        rest_err = f"REST dimatikan ({FUNDING_REST_ENV}=0)"
     try:
-        while True:                                   # REST: sampai 1000 baris per panggilan, naik menurut waktu
+        while rest_err is None:                       # REST: sampai 1000 baris per panggilan, naik menurut waktu
             blob = fetch(f"{FAPI}/fapi/v1/fundingRate?symbol={sym}&startTime={cursor}&limit=1000")
             if blob is None:
                 break
