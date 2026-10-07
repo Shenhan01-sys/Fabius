@@ -17,6 +17,9 @@ tags: [backlog, builder]
 | ID | item | langkah builder | kenapa asisten tidak bisa | perintah / tempat | status |
 |---|---|---|---|---|---|
 | LB1 | umum | kata push + deploy untuk hasil sesi 7 Okt (gerbang `fabius-x402` lewat `tools/railway_up.py`, web Vercel) | tidak ada token Railway / Vercel; host ditolak proxy | `python -X utf8 tools/railway_up.py` (dari mesin builder) | ⬜ |
+| LB2 | P81 | deploy `BotRegistry` (memasang implementasi `RevenueSplitter` sendiri) ke chain 97: pemilik = alamat Fabius, `LockRegistry` yang sudah ter-deploy, anchorer = committer M3, dompet Fabius, bagian Fabius awal 4000 bps | butuh kunci deployer + tBNB + kata builder (deploy kontrak = keputusan builder) | `script/DeployBotRegistry.s.sol` (`forge script ... --rpc-url bscTestnet --broadcast`); lalu catat alamat di [[02-Contracts/02 - Deployed on 97]] + `deployments/97.json` | ⬜ |
+| LB3 | P81 | setujui / tolak butir USULAN (a)-(g): salt mengikat penerbit + dompet + spesifikasi, `deploySplitter` tanpa izin, tabel transisi, aturan pin laporan, tarif turun tanpa checkpoint (selisih <= 1 wei), `releaseIssuer` / `releaseFabius` terpisah, dompet Fabius bisa diganti | keputusan desain milik builder | [[08-Backlog/07 - Epik Kolaborasi Bot Terbuka]] §8, [[02-Contracts/C9 - BotRegistry]], [[02-Contracts/C10 - RevenueSplitter]] | ⬜ |
+| LB4 | P81 | sesudah LB2: gerbang x402 menawarkan `payTo` = klon bot (`engine/splitter.py` menghitung alamatnya) + perkakas operator register / transisi + label pin laporan | butuh alamat registry yang ter-deploy | (kerja asisten sesudah LB2) | ⬜ |
 
 (Baris per item P81 / P90 / P156 / P167 / P168 ditambahkan saat audit sesi 7 Okt selesai.)
 
