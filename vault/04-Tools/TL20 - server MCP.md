@@ -60,6 +60,8 @@ Claude Code: `claude mcp add --transport http fabius https://fabius-one.vercel.a
 
 **Sejak 4 Okt (alat ke-9):** `fabius_status` - kesehatan operasi hari ini (tick, komit, ungkap, kertas, gas, detak rantai GitHub), kode sama dengan halaman /status (`web/src/lib/status.ts`, [[TL26 - halaman status]]); `fabius_overview` ikut mendaftarkannya. Lokal: `tools/list` -> 9 alat.
 
+**Sejak 7 Okt (P157 F5, DIBANGUN lokal, BELUM dibuka):** `FABIUS_MCP_BERBAYAR=hidup` (env Vercel; bawaan MATI) mengganti set alat: gratis hanya `fabius_pricing` + `fabius_account`; `fabius_signal` / `fabius_signal_explain` / `fabius_data` dari gerbang `/account/call`; 13 alat di atas dipotong 0,005 FAB (USULAN) lewat `/account/charge` sesudah berhasil; alat data P140 + `fabius_overview` + `fabius_signal_offer` tidak terdaftar. Kunci dari header `Authorization: Bearer fabk_...`. Selama mati, server ini persis seperti di atas (19 alat, versi 0.1.0). Rincian: [[04-Tools/TL45 - MCP berbayar meja (P157)]].
+
 **Belum:** tingkat 1 x402 (terkunci); snapshot otomatis (P113).
 
 **Terkait:** [[TL19 - web landing]] · [[TL14 - verify_signals]] · [[02-Contracts/C7 - SignalAnchor]] · [[07-Testing/T8 - Semantik Kegagalan Operator]] ·

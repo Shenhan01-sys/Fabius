@@ -86,7 +86,12 @@ function randomNonce(): string {
 
 /** 402 -> tanda tangani dua pesan -> ulangi permintaan dengan PAYMENT-SIGNATURE -> paket. `tg` = tautan bertanda dari bot Telegram (opsional). */
 export async function buy(bot: string, bar: string, owner: Hex, sign: SignFn, tg?: string | null): Promise<Package> {
-  const url = `${GATE}/signal/${bot}/${bar}${tg ? `?tg=${encodeURIComponent(tg)}` : ""}`;
+  return bayarX402<Package>(`${GATE}/signal/${bot}/${bar}${tg ? `?tg=${encodeURIComponent(tg)}` : ""}`, owner, sign);
+}
+
+/** Satu alur x402 untuk sumber apa pun di gerbang (paket sinyal `/signal/...`, deposit MCP `/account/deposit/<atomik>` P157): GET -> 402 -> dua tanda
+ *  tangan EIP-712 untuk TEPAT jumlah di PAYMENT-REQUIRED -> GET ulang dengan PAYMENT-SIGNATURE -> isi jawaban. */
+export async function bayarX402<T>(url: string, owner: Hex, sign: SignFn): Promise<T> {
   const first = await fetch(url, { cache: "no-store" });
   if (first.status !== 402) throw new Error(`expected 402, got ${first.status}`);
   const req = JSON.parse(atob(first.headers.get("payment-required") ?? "")) as { accepts: Accept[] };
@@ -159,7 +164,7 @@ export async function buy(bot: string, bar: string, owner: Hex, sign: SignFn, tg
     },
   };
   const paid = await fetch(url, { cache: "no-store", headers: { "PAYMENT-SIGNATURE": btoa(JSON.stringify(payment)) } });
-  const body = (await paid.json()) as Package & { error?: string };
+  const body = (await paid.json()) as T & { error?: string };
   if (!paid.ok) throw new Error(body.error ?? `gate HTTP ${paid.status}`);
   return body;
 }

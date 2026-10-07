@@ -15,6 +15,7 @@ tags: [backlog, epik, "meja-ai", llm, x402, mcp]
 - *"mcp fabius itu hanya menyediakan signal dan data yg mendukung/menjelaskan lebih detail mengenai sinyal itu dan mcpnya itu hanya bisa dipakai dengan
   melalui x402, jadi user bisa deposit dulu ... nanti tiap call mcp maka akan lgsg otomatis terpotong dari akunnya"*
 
+**Status (7 Okt, P157 F5):** F5 dibangun + diuji LOKAL, sakelar `FABIUS_F5` (gerbang) + `FABIUS_MCP_BERBAYAR` (web) bawaan MATI ([[04-Tools/TL45 - MCP berbayar meja (P157)]], bukti §14): deposit FAB x402 -> saldo (sekali kredit per otorisasi), kunci API dari tanda tangan EIP-191 (hanya sha256 disimpan), potong per panggilan (sekali per call_id), buku besar akun berantai hash, lima alat F5 + 13 alat lama berbayar (harga USULAN) + alat data P140 dicabut di mode berbayar, halaman `/account`. Belum: deploy + uji testnet sungguhan, kontribusi di `/desk`.
 **Status (7 Okt, P156 F4):** F4 dibangun + diuji LOKAL sebagai BAYANGAN (`tools/meja_eval.py`, [[04-Tools/TL43 - evaluasi meja F4]], bukti §13): nilai per agent, bobot agent bayangan (rumus dipra-registrasi sha `0x41a1001d…`, status USULAN, kunci menunggu kata builder), buku ablasi per agent + per sumber, rapor direkam, usulan evaluator lewat versi bayangan. Mesin hidup TIDAK berubah (rumus r4 F-D116, bobot sama). Belum: push + deploy gerbang, `FABIUS_F4=bayangan` di Railway, kriteria 3 hari berturut (§13).
 **Status (5 Okt sore):** F1 HIDUP (P153, cek 24 jam ±6 Okt 11:40Z); F2 + F3 opsi D dibangun dan diuji kering (P154/P155,
 [[04-Tools/TL36 - meja v2 bot + instrumen]]), menunggu push + deploy; F4/F5 belum. Rencana E0 disetujui builder 5 Okt (*"Gasss"*, workflow: *"OKe nice, gas catat ke vault"*). Keputusan F-D110
@@ -206,5 +207,22 @@ hanya ada di dunia bayangan `bobot`. Rumus + parameter F4 dipra-registrasi sebel
 Yang TIDAK dibuktikan: bahwa agent mana pun punya IC positif di meja hidup, bahwa bobot dinamis atau rapor memperbaiki hasil (belum ada data produksi),
 dan bahwa ablasi sitasi sama dengan kontrafaktual "tanpa melihat sumber Y" (butuh panggilan model kedua).
 
+## 14. Bukti F5 (P157) - 7 Okt 2026, lokal Windows (gerbang, Railway, Vercel, chain TIDAK disentuh; angka dicetak perintahnya hari itu)
+
+Rincian: [[04-Tools/TL45 - MCP berbayar meja (P157)]]. Status kriteria keluar §8 F5:
+
+| kriteria F5 (§8) | bukti 7 Okt | status |
+|---|---|---|
+| deposit -> saldo -> potong per panggilan teruji ujung-ke-ujung **di testnet** | lokal: `python -X utf8 tools/akun_mcp.py uji-kering` 15 langkah HTTP lewat handler gerbang ASLI + chain palsu (receipt dari calldata settle sungguhan), tanda tangan EIP-712 / EIP-191 sungguhan dompet buangan, `semua_sesuai: true`, buku 10 rekaman masalah 0; server MCP sungguhan (`next dev`, mode berbayar) -> 18 alat, potongan 0,01 / 0,02 / 0,005 / 0,005, saldo habis -> 402 tanpa data | lokal LULUS; **testnet menunggu deploy + sakelar (builder)** |
+| alat data publik tercabut | mode berbayar: `fabius_dexscreener`, `fabius_rugcheck`, `fabius_bubblemaps`, `fabius_fomo` tidak terdaftar (`tools/list` 18 alat); mode bawaan tetap 19 alat lama | lokal LULUS (berlaku saat `FABIUS_MCP_BERBAYAR=hidup`) |
+| `/desk` v2 menampilkan kontribusi | kontribusi dihitung (`akun_mcp.kontribusi`, rumus `konsensus2`, bagian berjumlah 1,0) dan dijual lewat `fabius_signal_explain`; halaman `/desk` BELUM menampilkannya | BELUM (perlu keputusan tampilan publik vs tunda 24 jam P165) |
+
+Tes: `engine/tests/test_akun_mcp.py` 22 lulus; sensus worktree `JALAN: 840 tes | lulus 840 | DILEWATI 0 | GAGAL 0 | ERROR 0`; tsc 0, eslint 0. T8: SK-M11 +
+SK-M12 berjangkar ke kode + tes (bukan lagi rencana) + 7 baris baru (deposit sekali kredit, deposit buruk, pesan kunci, call_id, data gagal, buku rusak, sakelar).
+
+Langkah builder F5: deploy gerbang -> `railway variable set FABIUS_F5=hidup --service fabius-x402` -> deposit + kunci di `/account` sebagai pengguna ->
+`FABIUS_MCP_BERBAYAR=hidup` di Vercel + redeploy; putuskan butir USULAN (batas deposit, harga alat lama, kunci per dompet, peleburan `fabius_overview` /
+`fabius_signal_offer`, tampilan kontribusi di `/desk`).
+
 **Terkait:** [[00-Overview/03 - Decisions]] F-D110 / F-D111 · [[08-Backlog/01 - Backlog]] P153-P157 · [[04-Tools/TL34 - meja AI 5 menit]] ·
-[[04-Tools/TL20 - server MCP]] · [[04-Tools/TL43 - evaluasi meja F4]] · [[08-Backlog/06 - Epik Gerbang Sinyal]] · [[07-Testing/T8 - Semantik Kegagalan Operator]]
+[[04-Tools/TL20 - server MCP]] · [[04-Tools/TL43 - evaluasi meja F4]] · [[04-Tools/TL45 - MCP berbayar meja (P157)]] · [[08-Backlog/06 - Epik Gerbang Sinyal]] · [[07-Testing/T8 - Semantik Kegagalan Operator]]
