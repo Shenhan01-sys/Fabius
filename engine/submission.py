@@ -15,10 +15,13 @@ Prinsip:
   - Angka di bagian `evidence.klaim` adalah KLAIM penerbit; yang dihitung sebagai bukti hanya keluaran peninjau-bot kami.
   - **Dibuka bertahap** (`ENABLED_KINDS`; jenis yang belum dibuka ada di skema tetapi ditolak `validate`): `template` (2 Okt malam), `rule`
     (P167a, 7 Okt; epik 12). Skema v2 (7 Okt): metode SEPENUHNYA dari penerbit (builder: "biarkan semua input itu dari user").
+    `code` (P167b) dibangun tetapi TETAP TERTUTUP sampai builder menyetujui jalur privat / repo privat; `feed` (P167c) lihat `ENABLED_KINDS`.
 
 Jenis bot: `template` (metode yang sudah ada di mesin + SATU parameter; dipertahankan, tidak lagi jalur utama), `rule` (aturan deklaratif JSON,
-`engine/rule.py`, dijalankan mesin kami; replay penuh), `code` (fungsi kode pengguna di sandbox; PRIVAT; P167b), `feed` (penerbit menjalankan bot
-sendiri dan mengomit sinyalnya ke chain; satu-satunya bukti = rekam jejak maju yang ter-anchor; P167c).
+`engine/rule.py`, dijalankan mesin kami; replay penuh), `code` (fungsi kode pengguna di sandbox, `engine/kode.py`; PRIVAT: formulir publik hanya
+memuat `spec.kode` = {sha, ukuran, params}, teks kode dikirim terpisah dan disimpan privat; P167b), `feed` (penerbit menjalankan programnya sendiri
+dan mengomit bobot target bertanda tangan SEBELUM penutupan tiap bar lewat `POST /bots/feed/commit`, `engine/feed.py`; satu-satunya bukti = rekam
+jejak maju yang ter-anchor; gerbang replay N/A; P167c).
 """
 from __future__ import annotations
 
@@ -32,13 +35,13 @@ import unicodedata
 from typing import Any, Dict, Iterable, List, Optional
 from urllib.parse import urlsplit
 
-from . import chain, rule as rulemod
+from . import chain, feed as feedmod, kode as kodemod, rule as rulemod
 from .bots import REGISTRY
 from .spec import PERP_UNIVERSE, SPECS, BotSpec, sha0x
 
 SCHEMA_V = 2
 KINDS = ("template", "rule", "code", "feed")
-ENABLED_KINDS = ("template", "rule")
+ENABLED_KINDS = ("template", "rule", "feed")        # P167c dibuka 7 Okt (deploy = langkah builder); code (P167b) TERTUTUP
 TEMPLATES = tuple(sorted(k for k in SPECS if k in REGISTRY))     # metode bawaan mesin untuk kind=template (RULE bukan template)
 MECHANISMS = ("premi_risiko", "perilaku", "arus_paksa_struktural", "informasi", "lainnya")
 KILL_METRICS = ("net_pnl_bps", "sharpe", "mdd_pct", "rata_net_per_sinyal_bps")
@@ -65,8 +68,10 @@ def _f(t: str, label: str, **kw: Any) -> Dict[str, Any]:
 SCHEMA: Dict[str, Any] = {
     "v": _f("int", "Versi skema", const=SCHEMA_V),
     "kind": _f("enum", "Jenis bot", values=KINDS,
-               help="rule = aturan deklaratif Anda sendiri, dijalankan mesin kami (dibuka); template = metode bawaan mesin + satu parameter (dibuka, "
-                    "bukan jalur utama); code = fungsi kode Anda di sandbox (segera, privat); feed = Anda menjalankan bot sendiri dan mengomit sinyal ke chain (segera)"),
+               help="rule = aturan deklaratif Anda sendiri, dijalankan mesin kami; template = metode bawaan mesin + satu parameter (bukan jalur "
+                    "utama); code = fungsi kode Anda di sandbox (privat; kode dikirim ke penyedia model peninjau); feed = program Anda sendiri mengomit "
+                    "bobot target bertanda tangan sebelum penutupan tiap bar, dinilai maju saja (120 hari bayangan, tanpa slot sampai terbukti). "
+                    "Jenis yang dibuka: lihat kinds_open"),
     "spec": {
         "bot_id": _f("str", "ID bot", pattern=r"[A-Z][A-Z0-9-]{2,30}", help="Awalan B<angka>- dicadangkan untuk bot Fabius"),
         "metode": _f("text", "Metode dalam satu kalimat", min=20, max=300),
@@ -75,6 +80,7 @@ SCHEMA: Dict[str, Any] = {
         "param": _f("number", "Nilai parameter (hanya kind=template)", optional=True, min=0, max=1_000_000),
         "konstanta": _f("object", "Konstanta terkunci (kosong untuk kind=template dan rule)", optional=True),
         "rule": _f("rule", "Aturan deklaratif (hanya kind=rule; kosakata di `rule.vocabulary()`)", optional=True),
+        "kode": _f("kode", "Kode (hanya kind=code): {sha, ukuran, params}; teks kode dikirim terpisah, privat, tidak ikut formulir publik", optional=True),
         "universe": _f("list", "Universe simbol", min=1, max=40,
                        item=_f("str", "Simbol", pattern=r"[A-Z0-9]{3,20}")),
         "horizon": _f("enum", "Ukuran bar", values=("1d",), help="Mesin saat ini hanya bar harian"),
@@ -289,6 +295,8 @@ def _leaf(n: Dict[str, Any], v: Any, path: str, out: List[str]) -> None:
                 out.append(f"{path}.{_safe(k)}: nilai harus skalar sederhana")
     elif t == "rule":
         out.extend(rulemod.validate(v, path))
+    elif t == "kode":
+        out.extend(kodemod.validate_meta(v, path))
     elif t == "list":
         if not isinstance(v, list):
             out.append(f"{path}: harus daftar")
@@ -390,15 +398,19 @@ def _semantic(sub: Dict[str, Any], taken: set, enabled: tuple) -> List[str]:
                 out.append(f"spec.{f}: tidak dipakai untuk kind=rule (parameter bernama ada di dalam spec.rule.params)")
         if kons:
             out.append("spec.konstanta: untuk kind=rule kosongkan (konstanta ditulis di dalam aturan)")
-    else:
-        if sp.get("template"):
-            out.append("spec.template: hanya untuk kind=template")
-        if sp.get("rule") is not None:
-            out.append("spec.rule: hanya untuk kind=rule")
-    if kind in ("template", "rule"):
-        for s in sp["universe"]:
-            if s not in KNOWN_SYMBOLS:
-                out.append(f"spec.universe: {_safe(s)} tidak punya data di mesin")
+    else:                                                   # code / feed: metode di luar formulir (kode privat / program penerbit)
+        if kind == "code" and sp.get("kode") is None:
+            out.append("spec.kode: wajib untuk kind=code ({sha, ukuran, params}; teks kode dikirim terpisah)")
+        for f in ("template", "param_nama", "param", "rule") + (("kode",) if kind == "feed" else ()):
+            if sp.get(f) is not None:
+                out.append(f"spec.{f}: tidak dipakai untuk kind={kind}")
+        if kons:
+            out.append(f"spec.konstanta: untuk kind={kind} kosongkan")
+    if kind in ("template", "rule") and sp.get("kode") is not None:
+        out.append("spec.kode: hanya untuk kind=code")
+    for s in sp["universe"]:
+        if s not in KNOWN_SYMBOLS:
+            out.append(f"spec.universe: {_safe(s)} tidak punya data di mesin")
     if len(set(sp["universe"])) != len(sp["universe"]):
         out.append("spec.universe: simbol ganda")
     a, b = _date(ev["insample_mulai"]), _date(ev["insample_akhir"])
@@ -420,8 +432,8 @@ def _semantic(sub: Dict[str, Any], taken: set, enabled: tuple) -> List[str]:
     lo, hi = KILL_BOUNDS[k["metric"]]
     if not lo <= k["threshold"] <= hi:
         out.append(f"theory.pembunuh.threshold: untuk {k['metric']} harus dalam [{lo:g}, {hi:g}] (cegah pembunuh yang hampa atau langsung terpicu)")
-    if kind == "feed" and not ev.get("komit_maju"):
-        out.append("evidence.komit_maju: kind=feed wajib membawa komit maju (satu-satunya bukti yang bisa kami periksa)")
+    if kind == "feed" and ev.get("komit_maju"):
+        out.append("evidence.komit_maju: kosongkan; komit maju feed dikirim SESUDAH terdaftar lewat POST /bots/feed/commit (sebelum penutupan tiap bar)")
     if ident["issuer_wallet"] == chain.to_checksum_address("0x" + "00" * 20) or ident["payout_wallet"] == chain.to_checksum_address("0x" + "00" * 20):
         out.append("identity: alamat nol")
     return out
@@ -459,8 +471,19 @@ def to_botspec(sub: Dict[str, Any]) -> BotSpec:
         return BotSpec(bot_id=sp["bot_id"], metode=sp["metode"], param_nama=rulemod.PARAM_NAMA, param=sha0x(rc), konstanta={"rule": rc},
                        universe=tuple(sp["universe"]), penggaris=dict(rulemod.PENGGARIS), tier="?", pembunuh=pembunuh, versi=1,
                        template=rulemod.RULE_METHOD)
+    if sub["kind"] == "code":                              # P167b: kode PRIVAT; spesifikasi publik hanya memuat sha + ukuran + params
+        meta = sp["kode"]
+        km = {"sha": meta["sha"], "ukuran": int(meta["ukuran"]), "params": kodemod.canonical_params(meta["params"])}
+        return BotSpec(bot_id=sp["bot_id"], metode=sp["metode"], param_nama=kodemod.PARAM_NAMA, param=meta["sha"], konstanta={"kode": km},
+                       universe=tuple(sp["universe"]), penggaris=dict(kodemod.PENGGARIS), tier="?", pembunuh=pembunuh, versi=1,
+                       template=kodemod.KODE_METHOD)
+    if sub["kind"] == "feed":                              # P167c: tidak ada metode yang dijalankan; target = komit maju bertanda tangan
+        return BotSpec(bot_id=sp["bot_id"], metode=sp["metode"], param_nama=feedmod.PARAM_NAMA, param=spec_sha_of(sub),
+                       konstanta={"feed": {"bayangan_hari": feedmod.BAYANGAN_HARI, "anchor": feedmod.LABEL_ANCHOR}},
+                       universe=tuple(sp["universe"]), penggaris=dict(feedmod.PENGGARIS), tier="?", pembunuh=pembunuh, versi=1,
+                       template=feedmod.FEED_METHOD)
     if sub["kind"] != "template":
-        raise ValueError("hanya kind=template dan kind=rule yang bisa dijalankan mesin kami")
+        raise ValueError("kind tidak dikenal")
     base = SPECS[sp["template"]]
     p = sp["param"]
     p = int(p) if isinstance(base.param, int) and not isinstance(base.param, bool) else float(p)

@@ -14,12 +14,13 @@ sampel yang sungguhan; (3) uang/penjualan berbayar menuntut F-D16 pada data maju
 Status: PASS | FAIL | NA | TB. NA = tidak terukur (menghalangi, kecuali gerbang yang diizinkan NA); TB = tidak berlaku secara struktural
 (mis. G6 untuk bot tanpa jadwal berfase, K4 tanpa klaim). Vonis gagal-tertutup: semua gerbang wajib harus ada dan PASS/TB.
 
-G1 PIT        memotong data di hari D tidak mengubah target hari D (deteksi look-ahead; hari dipilih dari seed) + deterministik
+G1 PIT        memotong data di hari D tidak mengubah target hari D (deteksi look-ahead; hari dipilih dari seed) + deterministik; bot code (P167b):
+              sampel bar dihitung ulang di namespace SEGAR pada data terpotong + dua proses PYTHONHASHSEED berbeda (`kode.uji_kausal`)
 G2 DATA       riwayat cukup panjang; bolong bar kecil (gabungan DAN per seri)
 G3 NET        Sharpe net >= max(ambang dasar, ambang terdeflasi N percobaan) DAN persentil-5 bootstrap blok > 0
 G4 RECENT     24 bulan terakhir > 0 DAN >= seperempat Sharpe penuh (peluruhan); 12 bulan terakhir negatif = PERINGATAN
-G5 PLATEAU    parameter x0,5 ... x1,5 (tipe parameter dihormati; butuh cukup varian berbeda) tetap menghasilkan; bot rule (P167a): tiap parameter
-              BERNAMA satu per satu + semuanya bersama; parameter dekoratif atau tanpa parameter bernama = gagal
+G5 PLATEAU    parameter x0,5 ... x1,5 (tipe parameter dihormati; butuh cukup varian berbeda) tetap menghasilkan; bot rule (P167a) dan code (P167b):
+              tiap parameter BERNAMA satu per satu + semuanya bersama; parameter dekoratif atau tanpa parameter bernama = gagal
 G6 PHASE      hasil tidak bergantung pada fase jadwal (hari-minggu / tanggal); RERATA fase, bukan fase terbaik
 G7 FOLD       tetap positif setelah tahun terbaik dibuang (F-D16)
 G8 NULL       lebih baik dari hipotesis nol: pengacakan waktu (pergeseran melingkar, eksposur sama; batas atas 95 % galat Monte Carlo);
@@ -39,6 +40,7 @@ import statistics
 from dataclasses import dataclass
 from typing import Callable, Dict, List, Optional, Sequence, Tuple
 
+from . import kode as kodemod
 from . import kpi as kpimod
 from . import rule as rulemod
 from .bots import NULL_KIND, PHASE_VARIANTS, REGISTRY
@@ -144,6 +146,9 @@ def _fmt(x: float) -> str:
 
 def g1_pit(c: _Ctx) -> GateResult:
     rule = "semua titik-potong identik dan hasil berulang identik"
+    if c.spec.method == kodemod.KODE_METHOD:                  # P167b: kausal oleh konstruksi; uji ini menangkap keadaan global + nondeterminisme
+        ok, val = kodemod.uji_kausal(c.spec, c.data, c.p.pit_days, c.p.seed)
+        return GateResult("G1", "PIT", PASS if ok else FAIL, val, "sampel bar di namespace segar identik dengan jalan berurutan dan dua proses identik")
     tg = c.tg()
     if not tg:
         return GateResult("G1", "PIT", FAIL, "tidak ada target", rule)
@@ -253,13 +258,25 @@ def _vary(base, f, like=None):
 def _g5_rule(c: _Ctx) -> GateResult:
     """G5 untuk bot `rule` (epik 12 §4): tiap parameter bernama x0,5..x1,5 SATU per SATU + SEMUA bersama; tiap kelompok lolos seperti G5 biasa.
     Tanpa parameter bernama = tidak ada klaim kekokohan = GAGAL; parameter yang tidak mengubah target sama sekali (dekoratif) = GAGAL."""
+    return _g5_bernama(c, rulemod.kelompok_plateau(c.spec.konstanta["rule"], c.p.plateau_factors),
+                       lambda r: dataclasses.replace(c.spec, konstanta={"rule": r}))
+
+
+def _g5_kode(c: _Ctx) -> GateResult:
+    """G5 untuk bot `code` (P167b): sama dengan rule, atas `PARAMS` bernama di kode (bulat tetap bulat). Parameter yang dibaca dari global PARAMS
+    alih-alih argumen `params` tidak mengubah target = dekoratif = GAGAL."""
+    meta = c.spec.konstanta["kode"]
+    return _g5_bernama(c, kodemod.kelompok_plateau(meta["params"], c.p.plateau_factors),
+                       lambda prm: dataclasses.replace(c.spec, konstanta={"kode": dict(meta, params=prm)}))
+
+
+def _g5_bernama(c: _Ctx, groups, spec_of) -> GateResult:
     p = c.p
     rule = (f"tiap parameter bernama x{p.plateau_factors[0]}..x{p.plateau_factors[-1]} SATU per SATU + SEMUA bersama (bila > 1): tiap kelompok >= {p.plateau_min_ok} "
             f"varian BERBEDA, Sharpe >= {p.plateau_ratio} x dasar dan > 0 pada >= {p.plateau_min_ok}; parameter dekoratif atau tanpa parameter bernama = GAGAL")
     base = _sh(c.pnl())
     if math.isnan(base) or base <= 0:
         return GateResult("G5", "PLATEAU", FAIL, f"dasar {_fmt(base)}", rule)
-    groups = rulemod.kelompok_plateau(c.spec.konstanta["rule"], p.plateau_factors)
     if not groups:
         return GateResult("G5", "PLATEAU", FAIL, f"dasar {_fmt(base)} | tanpa parameter bernama: tidak ada klaim kekokohan yang bisa diuji", rule)
     base_w = [t.weights for t in c.tg()]
@@ -269,7 +286,7 @@ def _g5_rule(c: _Ctx) -> GateResult:
         res: List[Tuple[str, float]] = []
         berubah = False
         for label, r in rows:
-            sp2 = dataclasses.replace(c.spec, konstanta={"rule": r})
+            sp2 = spec_of(r)
             try:
                 tg2 = REGISTRY[sp2.method](sp2, c.data)
                 berubah = berubah or [t.weights for t in tg2] != base_w
@@ -291,6 +308,8 @@ def _g5_rule(c: _Ctx) -> GateResult:
 def g5_plateau(c: _Ctx) -> GateResult:
     if c.spec.method == rulemod.RULE_METHOD:
         return _g5_rule(c)
+    if c.spec.method == kodemod.KODE_METHOD:
+        return _g5_kode(c)
     p = c.p
     rule = (f">= {p.plateau_min_ok} varian BERBEDA yang dievaluasi (param x{p.plateau_factors[0]}..x{p.plateau_factors[-1]}), dengan "
             f"Sharpe >= {p.plateau_ratio} x dasar dan > 0 pada >= {p.plateau_min_ok} di antaranya")

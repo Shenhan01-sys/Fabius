@@ -1,7 +1,7 @@
 """Registri bot: bot_id -> fungsi `targets(spec, data) -> list[Target]`. Satu jalur kode untuk live dan replay."""
 from __future__ import annotations
 
-from .. import rule
+from .. import feed, kode, rule
 from . import b1_trend, b2_rs, b3_carry, b4_listing_fade, b5_core_rwa, b6_bounce
 
 REGISTRY = {
@@ -12,6 +12,8 @@ REGISTRY = {
     "B5-CORE-RWA": b5_core_rwa.targets,
     "B6-BOUNCE": b6_bounce.targets,
     rule.RULE_METHOD: rule.targets,                  # P167a: bot kind=rule; aturannya di `spec.konstanta["rule"]`
+    kode.KODE_METHOD: kode.targets,                  # P167b: bot kind=code; bobot dari pelari sandbox (kode privat, `spec.konstanta["kode"]` = sha)
+    feed.FEED_METHOD: feed.targets,                  # P167c: bot kind=feed TIDAK bisa direplay; fungsi ini melempar NotImplementedError (G* tak terukur)
 }
 
 # Hipotesis nol yang bermakna per metode (gerbang G8). Bawaan "waktu": bot mengklaim keterampilan timing/seleksi, jadi

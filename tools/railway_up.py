@@ -22,7 +22,7 @@ ROOT = os.path.dirname(HERE)
 PATHS = ["railway", "engine", "tools/evm.py", "tools/signal_commit.py", "tools/operator_loop.py", "tools/paper_tick.py", "tools/rest_vs_vision.py", "tools/rest_latency.py",
          "tools/shadow_tick.py", "tools/feed_bars.py", "tools/pin_book.py", "tools/alert.py",
          "tools/eksekutor.py", "tools/venue_binance.py", "tools/exec_feed.py", "tools/canary.py",
-         "tools/erc8004_validasi.py", "tools/x402_sinyal.py", "tools/sinyal_gambar.py", "tools/analis.py", "tools/privy_server.py", "tools/kabar.py", "tools/meja.py", "tools/meja_data.py", "tools/meja2.py", "tools/meja_slot.py", "tools/meja_eval.py", "tools/pengajuan.py", "tools/pin_spec.py", "tools/agen_luar.py", "tools/peninjau_llm.py", "config/agents.json"]  # P118 eksekutor (F-D93) + P119 umpan Gist (F-D94) + P133 canary (F-D96) + P136 validasi ERC-8004 (F-D98)
+         "tools/erc8004_validasi.py", "tools/x402_sinyal.py", "tools/sinyal_gambar.py", "tools/analis.py", "tools/privy_server.py", "tools/kabar.py", "tools/meja.py", "tools/meja_data.py", "tools/meja2.py", "tools/meja_slot.py", "tools/meja_eval.py", "tools/pengajuan.py", "tools/feed_gerbang.py", "tools/pin_spec.py", "tools/agen_luar.py", "tools/peninjau_llm.py", "config/agents.json"]  # P118 eksekutor (F-D93) + P119 umpan Gist (F-D94) + P133 canary (F-D96) + P136 validasi ERC-8004 (F-D98)
 
 
 def main() -> int:

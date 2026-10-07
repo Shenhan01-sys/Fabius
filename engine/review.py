@@ -12,13 +12,16 @@ k keluarga berasal dari REGISTRI pengajuan (`engine/registri.py`) - bukan diketi
 (berguna untuk penerbit dan pengembangan, tidak membuka apa pun).
 
 P83 / F-D88: pengajuan ke-k keluarga dalam 365 hari dinilai dengan alpha A1/k pada G3 dan G8 (`anggaran.gate_params_for`); k = 1 = gerbang v1 apa adanya.
+
+P167b/P167c (epik 12): `code` menghitung varian G5 `PARAMS`-nya seperti rule dan membawa label kepercayaan "kode privat"; `feed` TIDAK menjalankan
+gerbang replay: semua baris G1-G11 + K1-K5 ditulis N/A (status TB + alasan; N/A bukan LOLOS) dan vonisnya `MAJU_FEED` = bayangan maju 120 hari.
 """
 from __future__ import annotations
 
 import dataclasses
 from typing import Any, Dict, Iterable, List, Optional, Tuple
 
-from . import anggaran, locks, rule as rulemod, submission
+from . import anggaran, feed as feedmod, kode as kodemod, locks, rule as rulemod, submission
 from .data import MarketData
 from .gates import GateParams, Pnl, format_results, run_gates, verdict
 from .kpi import KpiParams
@@ -55,7 +58,8 @@ def review(sub: Dict[str, Any], data: MarketData, incumbents: Optional[Dict[str,
         prior, sumber = int(prior_family_submissions), "manual"
     k = prior + 1
     percobaan = int(sub["evidence"]["percobaan"]) + prior + 1
-    varian = rulemod.varian_g5(sub["spec"]["rule"], len(gp.plateau_factors)) if sub["kind"] == "rule" else 0
+    varian = (rulemod.varian_g5(sub["spec"]["rule"], len(gp.plateau_factors)) if sub["kind"] == "rule" else
+              kodemod.varian_g5(sub["spec"]["kode"]["params"], len(gp.plateau_factors)) if sub["kind"] == "code" else 0)
     percobaan += varian                                   # P167a: kebebasan menyusun aturan = derajat kebebasan lebih banyak = ambang Sharpe G3 ikut naik
     gp2 = dataclasses.replace(anggaran.gate_params_for(k, gp), n_trials=max(gp.n_trials, percobaan), seed=epoch_seed if epoch_seed is not None else gp.seed)
     spec = submission.to_botspec(sub)
@@ -65,6 +69,8 @@ def review(sub: Dict[str, Any], data: MarketData, incumbents: Optional[Dict[str,
             sub, identity["signature"], identity["chain_id"], identity["nonce"], identity["deadline"], identity["now_s"],
             used_nonces=identity.get("used_nonces"), payout_signature_hex=identity.get("payout_signature"))
         ident = {"diverifikasi": not probs, "masalah": probs}
+    if sub["kind"] == "feed":                              # P167c: tanpa replay -> N/A eksplisit, bukan LOLOS
+        return _seal(_laporan_feed(sub, spec, data, ident, k, gp2, kunci, sumber, identity))
     results = run_gates(spec, data, incumbents, gp2, kp, claims=sub["evidence"].get("klaim"))
     v, fails, nas = verdict(results)
     if identity and ident["masalah"]:
@@ -76,9 +82,32 @@ def review(sub: Dict[str, Any], data: MarketData, incumbents: Optional[Dict[str,
               "identitas": ident, "kunci": {"state": kunci["state"], "sha_kini": kunci["sha_kini"], "sha_kunci": kunci["sha_kunci"]},
               "gerbang": [dataclasses.asdict(r) for r in results],
               "mengikat": bool(ident["diverifikasi"] and kunci["state"] == "TERKUNCI" and v == "LOLOS_SHADOW" and sumber == "registri")}
-    if sub["kind"] == "rule":                              # hanya bot rule: laporan template tidak berubah (sha laporan lama tetap sah)
+    if sub["kind"] in ("rule", "code"):                    # hanya bot rule / code: laporan template tidak berubah (sha laporan lama tetap sah)
         report["varian_g5"] = varian
+    if sub["kind"] == "code":
+        report["label_kepercayaan"] = kodemod.LABEL_KEPERCAYAAN
+        report["kode"] = {"sha": sub["spec"]["kode"]["sha"], "ukuran": sub["spec"]["kode"]["ukuran"]}     # TANPA teks kode (privat)
     return _seal(report)
+
+
+KPI_FEED = (("K1", "ANN_NET"), ("K2", "CALMAR"), ("K3", "AKTIVITAS"), ("K4", "KLAIM"), ("K5", "BAGI-LABA"))
+FEED_NA = ("N/A: feed tidak bisa direplay (metode di luar mesin kami, tanpa riwayat yang bisa dihitung ulang); satu-satunya bukti = komit maju "
+           "bertanda tangan sebelum penutupan bar, ter-anchor, dinilai di ledger paper")
+
+
+def _laporan_feed(sub, spec, data, ident, k, gp2, kunci, sumber, identity) -> Dict[str, Any]:
+    """Laporan feed: SEMUA gerbang replay + KPI = N/A (status TB dengan alasan; N/A bukan LOLOS, bukan GAGAL); vonis `MAJU_FEED` (bayangan maju
+    `feed.BAYANGAN_HARI` hari, tanpa slot) atau TOLAK_IDENTITAS. Tidak ada uji statistik = tidak memakan alpha keluarga (`registri`)."""
+    from .gates import GATES, TB
+    rows = [{"gate": g, "name": n, "status": TB, "value": FEED_NA, "rule": "tidak berlaku untuk kind=feed (epik 12 §4)"} for g, n, _ in GATES]
+    rows += [{"gate": g, "name": n, "status": TB, "value": FEED_NA, "rule": "tidak berlaku untuk kind=feed (epik 12 §4)"} for g, n in KPI_FEED]
+    v = "TOLAK_IDENTITAS" if (identity and ident["masalah"]) else feedmod.VONIS
+    return {"v": REPORT_V, "bot_id": spec.bot_id, "template": spec.template, "spec_sha": spec.sha(), "fingerprint": spec.fingerprint(),
+            "submission_sha": submission.submission_sha(sub), "data_hash": data_fingerprint(spec, data), "vonis": v, "gagal": [],
+            "tak_terukur": [], "n_trials": gp2.n_trials, "seed": gp2.seed, "keluarga": {"k": k, "alpha": gp2.boot_q, "sumber": sumber},
+            "identitas": ident, "kunci": {"state": kunci["state"], "sha_kini": kunci["sha_kini"], "sha_kunci": kunci["sha_kunci"]},
+            "gerbang": rows, "label_kepercayaan": feedmod.LABEL_KEPERCAYAAN, "bayangan_hari": feedmod.BAYANGAN_HARI, "slot": "tidak (sampai terbukti)",
+            "mengikat": bool(ident["diverifikasi"] and v == feedmod.VONIS and sumber == "registri")}
 
 
 def _seal(report: Dict[str, Any]) -> Dict[str, Any]:
@@ -95,8 +124,16 @@ def render(report: Dict[str, Any]) -> str:
         return "\n".join(lines)
     from .gates import GateResult
     results: List[GateResult] = [GateResult(**g) for g in report["gerbang"]]
-    head = f"{report['bot_id']} ({'rule' if report['template'] == rulemod.RULE_METHOD else 'template ' + report['template']})"
-    text = format_results(head, results)
+    jenis = {rulemod.RULE_METHOD: "rule", kodemod.KODE_METHOD: "code", feedmod.FEED_METHOD: "feed"}.get(report["template"], "template " + report["template"])
+    head = f"{report['bot_id']} ({jenis})"
+    if report["template"] == feedmod.FEED_METHOD:          # N/A bukan LOLOS: jangan biarkan `verdict` membaca TB sebagai lolos
+        text = "\n".join([f"== {head} =="] + [f"{r.gate:4} {r.name:9} N/A  {r.value}" for r in results]
+                         + [f"VONIS: {report['vonis']} (bayangan maju {report.get('bayangan_hari')} hari; tanpa slot sampai terbukti; "
+                            f"label: {report.get('label_kepercayaan')})"])
+    else:
+        text = format_results(head, results)
+    if report.get("label_kepercayaan") and report["template"] != feedmod.FEED_METHOD:
+        text += f"\nLABEL KEPERCAYAAN: {report['label_kepercayaan']}"
     ident = report["identitas"]
     text += (f"\nIDENTITAS: {'terverifikasi' if ident['diverifikasi'] else 'BELUM terverifikasi'}"
              + (f" - {'; '.join(ident['masalah'])}" if ident["masalah"] else ""))
