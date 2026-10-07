@@ -30,9 +30,16 @@ tags: [perkakas, "TL2"]
   pun.
 - Umur snapshot (`universe_age_h`) masuk `snapshotHash`: keputusan di atas data basi tetap terbaca
   basi **sampai ke hash-nya** — ini yang membuat klaim point-in-time tidak bisa disamarkan.
+- **P71 (7 Okt): guard umur bar.** Dulu cache bar 1 jam dipakai tanpa melihat umurnya (temuan MARSCOIN 27 Sep: di-anchor 08:08Z dengan bar
+  yang tertutup 18:00Z kemarin, 14 jam; stop-nya sudah tersentuh 8 jam sebelum anchor). Sekarang `muat_bar` memakai `engine/freshness.cek_umur`
+  (inti yang SAMA dengan mesin harian): cache dipakai hanya bila bar terakhirnya sudah tertutup dan <= `MAX_LAG_BAR_H` = 2 jam (**USULAN**);
+  selain itu deret diambil ulang dari venue; masih basi sesudah ambil = simbol **TIDAK dinilai** (tercetak `BASI <simbol> -> TIDAK dinilai`,
+  tidak memakan kursi) - "tidak dinilai karena data basi" bukan "flat karena tidak ada sinyal". Umur bar ikut `snapshotHash`
+  (`last_bar_age_h`, jadi juga `decisionHash`; keputusan lama tidak ditulis ulang). Tes `engine/tests/test_direction_umur.py`; tanpa guard
+  (cache basi dipakai) 2 tes gagal.
 - Berkas keluar `decisions/direction-<UTC>Z.jsonl`; nama file pakai UTC (pernah lokal WIB sehingga
   "20260925" berisi data "2026-09-24T18:00Z").
 - Status penting: **aturan yang dihasilkan alat ini sudah diuji dan rugi setelah ongkos**
   ([[06-Results/04 - Negative Results]]) — jangan kutip keluarannya seolah sinyal.
 
-**Terkait:** [[01-Agent/A2 - Decision Spine]] · [[04-Tools/TL5 - ledger]]
+**Terkait:** [[01-Agent/A2 - Decision Spine]] · [[04-Tools/TL5 - ledger]] · [[04-Tools/TL8 - engine]] (guard umur bar mesin)
