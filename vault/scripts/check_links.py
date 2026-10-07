@@ -24,7 +24,7 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 if not os.path.isdir(os.path.join(ROOT, "00-Overview")):
     sys.exit(f"ROOT bukan folder vault: {ROOT}")
 WIKILINK = re.compile(r"\[\[([^\]|#]+)(?:#[^\]|]*)?(?:\|[^\]]*)?\]\]")
-SKIP = {"_archive", "scripts"}
+SKIP = {"_archive", "scripts", "node_modules"}   # node_modules: proyek JS di vault (Video-Workspace), bukan catatan
 
 
 def md_all():

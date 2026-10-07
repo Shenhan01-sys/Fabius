@@ -47,6 +47,7 @@ nama filenya. Itu lubang navigasi, bukan lubang data; sekarang ditutup, dan gerb
   sebelum riset** (enam bot Fabius bukan target), anggaran positif-palsu/daya yang usulannya menunggu builder, plafon daya aritmetika (edge Sharpe ≤ 0,5 tak terpisahkan dari noise oleh riwayat beberapa tahun),
   garis dasar kalibrasi nol (`run13_null_calibration.py`: penambang diam lolos 4 dari 340, percobaan diakui 0 dari 340), pertanyaan R1-R11, urutan kerja, jalur ke kunci v2; P90-P91
 - [[09 - Usulan P107 Pembunuh Terstruktur]] — terjemahan mesin untuk kalimat pembunuh B1/B3, kunci terpisah dari spesifikasi; 4 pilihan tafsir menunggu builder
+- [[13 - Langkah Builder Tertunda]] ← tulis penjelasannya
 
 <!-- di atas: append-only oleh scripts/sync_vault.py; gloss tulisan tangan utuh -->
 ## Yang menunggu di folder ini
