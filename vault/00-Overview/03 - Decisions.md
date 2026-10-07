@@ -3549,3 +3549,20 @@ Dry run atas status per siklus produksi 6 Okt 00:00 - 7 Okt 06:10Z (348 siklus):
 (sah 47 % dalam 36 siklus, median agent lain 96 %); tidak ada agent lain yang turun.
 
 **Terkait:** F-D113 · F-D119 · F-D126 · P154 · P160 · [[04-Tools/TL36 - meja v2 bot + instrumen]] · [[07-Testing/01 - Test Commands]] #129
+
+
+## F-D129 - P90 gelombang 2: kunci baru G8 c = 2,0 (placebo_max_p 0,10 pada k = 1); K2 tetap 0,5 · 7 Okt 2026 (WIB)
+
+Builder (7 Okt), sesudah ditanya "P90 ini kunci untuk apa" dan dijelaskan (ambang gerbang tinjauan setiap bot yang diajukan: G8 uji placebo waktu + K2
+Calmar minimum; daya 0,31 -> 0,41, positif-palsu maks 1,45 %; saran: G8 saja): *"Boleh"*. Mengikat:
+
+1. **G8:** batas atas 95 % p placebo <= c x alpha, **c = 2,0**; pada pengajuan pertama keluarga (k = 1) = 0,10 (sebelumnya 0,05), pada pengajuan ke-k = 2,0 x A1/k
+   (`engine/anggaran.py::gate_params_for` kini menerapkan pengali pada alpha, seperti yang diuji riset). G3 (bootstrap) tetap pada alpha A1/k.
+2. **K2 `min_calmar` TETAP 0,5** - di set konfirmasi K2 0,4 hanya menambah daya +0,005 dan melonggarkan pagar ekonomi.
+3. Kunci gerbang lama `0xf145b70abd251b9fcf421bfb811bcf3788dade347c37b3bea331a09fedfe5f32` pindah ke `engine/locks/history/`; kunci baru
+   `0xc0192ebd073436323416bdb0deba82658b079b6f5082cad9034352eaae48eaec` (2026-10-07T09:01:56Z). Anchor on-chain = satu tx `tools/anchor_lock.py --send` dari
+   agen `0x4bb3…c862` (kunci di `.agent.env`) - dijalankan builder; rencana: id `0xfa07c6ad…`, belum di chain.
+4. Bot yang sudah divonis memakai kunci lama tidak dinilai ulang; tinjauan baru memakai kunci ini. Pilihan c = 2,0 adalah hasil aturan pra-registrasi
+   (protokol `0x4587f1ef…`), bukan dicocokkan sesudah melihat data konfirmasi.
+
+**Terkait:** F-D88 · F-D126 · [[06-Results/34 - Hasil P90 Gelombang 2]] · [[08-Backlog/08 - Riset Optimasi Ambang]] · [[07-Testing/01 - Test Commands]] #135

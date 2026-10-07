@@ -52,13 +52,17 @@ def gate_params_for(k: int, base: GateParams = GateParams(), a: Anggaran = Angga
     Harganya daya: pengajuan ke-k lebih sulit lolos untuk bot yang BERedge juga.
 
     Jumlah resampling dinaikkan sebanding (x base_q/alpha = x k): jumlah sampel di ekor tetap sama, dan G8 tetap MUNGKIN lolos (dengan 0 placebo
-    di atas Sharpe asli, batas atas p ~ 2,6/N; tanpa penskalaan N=200 tidak pernah bisa <= 0,05/4). k = 1 mengembalikan `base` apa adanya."""
+    di atas Sharpe asli, batas atas p ~ 2,6/N; tanpa penskalaan N=200 tidak pernah bisa <= 0,05/4). k = 1 mengembalikan `base` apa adanya.
+    F-D129 (P90 gelombang 2): G8 dinilai pada c x alpha, c = base.placebo_max_p / A1 (dikunci 2,0) - pengali berlaku pada alpha A1/k, jadi skala per
+    keluarga tetap (seperti yang diuji riset: "c berlaku sebagai pengali alpha"). G3 tetap pada alpha."""
     alpha = alpha_for(k, a)
-    if k == 1 and base.boot_q == alpha and base.placebo_max_p == alpha:
+    c = base.placebo_max_p / a.a1_per_pengajuan
+    p_g8 = c * alpha
+    if k == 1 and base.boot_q == alpha and math.isclose(base.placebo_max_p, p_g8):
         return base
-    return dataclasses.replace(base, boot_q=alpha, placebo_max_p=alpha,
+    return dataclasses.replace(base, boot_q=alpha, placebo_max_p=p_g8,
                                boot_n=math.ceil(base.boot_n * base.boot_q / alpha - 1e-9),
-                               placebo_n=math.ceil(base.placebo_n * base.placebo_max_p / alpha - 1e-9))
+                               placebo_n=math.ceil(base.placebo_n * base.placebo_max_p / p_g8 - 1e-9))
 
 
 def max_pengajuan_per_tahun(p: SlotParams = SlotParams(), a: Anggaran = Anggaran()) -> int:

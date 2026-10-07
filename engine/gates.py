@@ -76,7 +76,7 @@ class GateParams:
     plateau_ratio: float = 0.5             # varian lolos bila Sharpe >= rasio x Sharpe dasar (dan > 0)
     phase_min_mean: float = 0.5            # rerata semua fase; fase terburuk harus > 0
     placebo_n: int = 200
-    placebo_max_p: float = 0.05
+    placebo_max_p: float = 0.10            # F-D129 (P90 gelombang 2, kata builder 7 Okt): G8 = c x A1 dengan c = 2,0 (sebelumnya 0,05 = 1 x A1)
     cost_mult: float = 2.0
     marginal_min_dsharpe: float = 0.05
     marginal_max_corr: float = 0.7
@@ -340,7 +340,9 @@ def g5_plateau(c: _Ctx) -> GateResult:
 def g6_phase(c: _Ctx) -> GateResult:
     p = c.p
     rule = f"rerata semua fase >= {p.phase_min_mean} dan fase terburuk > 0"
-    fn = PHASE_VARIANTS.get(c.spec.method)
+    if c.spec.method not in PHASE_VARIANTS:                    # P89: tanpa deklarasi = gagal tertutup, bukan "tidak berlaku" diam-diam
+        return GateResult("G6", "PHASE", FAIL, f"varian fase metode {c.spec.method} belum dideklarasikan (engine/bots PHASE_VARIANTS)", rule)
+    fn = PHASE_VARIANTS[c.spec.method]
     if fn is None:
         return GateResult("G6", "PHASE", TB, "tidak berlaku (bot tanpa jadwal berfase)", rule)
     shs = [_sh(replay(v, c.data, None, c.tables)) for v in fn(c.spec)]
@@ -406,7 +408,12 @@ def _placebo(c: _Ctx) -> Tuple[bool, str]:
 
 def g8_null(c: _Ctx) -> GateResult:
     p = c.p
-    kind = NULL_KIND.get(c.spec.method, ("waktu", ""))
+    if c.spec.method not in NULL_KIND:                         # P89: tanpa deklarasi = gagal tertutup, bukan placebo waktu diam-diam
+        return GateResult("G8", "NULL", FAIL, f"jenis hipotesis nol metode {c.spec.method} belum dideklarasikan (engine/bots NULL_KIND)",
+                          "setiap metode wajib mendeklarasikan jenis nolnya")
+    kind = NULL_KIND[c.spec.method]
+    if kind[0] == "tidak_berlaku":
+        return GateResult("G8", "NULL", TB, f"tidak berlaku: {kind[1]}", "bot yang tidak bisa direplay tidak diuji placebo")
     if kind[0] == "alokasi":
         rule = ("bot alokasi: (a) mengalahkan buy&hold aset risiko utama pada Sharpe DAN MDD, dan (b) placebo bobot yang sama "
                 f"(batas atas 95% dari p <= {p.placebo_max_p}): campuran saja tidak cukup, ATURANNYA harus menambah nilai")

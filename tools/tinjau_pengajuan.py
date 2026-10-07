@@ -46,8 +46,11 @@ def _tulis(path: str, obj) -> None:
         f.write("\n")
 
 
-def tinjau(rows: List[dict], folder: str, data, incumbents, gate_params=None, maks: int = 5, log: Callable[[str], None] = print) -> List[dict]:
-    """-> ringkasan per kiriman yang diproses. Berkas ditulis di `folder` (biasanya ledger/pengajuan)."""
+def tinjau(rows: List[dict], folder: str, data, incumbents, gate_params=None, maks: int = 5, log: Callable[[str], None] = print,
+           periksa_rujukan: Optional[Callable[[dict, str], dict]] = None) -> List[dict]:
+    """-> ringkasan per kiriman yang diproses. Berkas ditulis di `folder` (biasanya ledger/pengajuan).
+    P82: `periksa_rujukan` (jalur produksi: `engine.rujukan.periksa_pengajuan`) mencatat keberadaan URL rujukan ke `rujukan/<sha>.json`; galat apa pun
+    hanya dicatat - tinjauan tidak pernah berhenti karenanya, dan vonis gerbang tidak berubah."""
     reg_path = os.path.join(folder, "registri.jsonl")
     status_path = os.path.join(folder, "status.json")
     status: Dict[str, dict] = json.load(open(status_path, encoding="utf-8")) if os.path.exists(status_path) else {}
@@ -69,6 +72,13 @@ def tinjau(rows: List[dict], folder: str, data, incumbents, gate_params=None, ma
         _tulis(os.path.join(folder, "masuk", f"{sha}.json"), {k: row[k] for k in ("t", "submission_sha", "spec_sha", "bot_id", "issuer", "payout",
                                                                                      "chain_id", "nonce", "deadline", "signature", "payout_signature",
                                                                                      "submission")})
+        if periksa_rujukan is not None:
+            try:
+                rj = periksa_rujukan(pub, sha)
+            except Exception as e:  # noqa: BLE001 - pemeriksa rujukan tidak boleh menghentikan tinjauan
+                rj = {"v": 1, "submission_sha": sha, "rujukan": [], "galat": f"pemeriksa rujukan gagal: {type(e).__name__}"}
+            _tulis(os.path.join(folder, "rujukan", f"{sha}.json"), rj)
+            log(f"{row['bot_id']}: rujukan {rj.get('ringkasan') or rj.get('galat')}")
         ident = {"signature": row["signature"], "payout_signature": row.get("payout_signature"), "chain_id": row.get("chain_id", 97),
                  "nonce": row["nonce"], "deadline": row["deadline"], "now_s": row["t"]}
         rc, rep, msgs = reviewmod.tinjau_tercatat(sub, data, incumbents, path=reg_path, now_s=row["t"], catat=True, identity=ident,
@@ -110,7 +120,8 @@ def main() -> int:
     if not baru:
         return 0
     md = load_csv_dir(a.data, cli.DATA_SYMBOLS)
-    hasil = tinjau(baru, DIR, md, cli._incumbents(md, "book"), maks=a.maks)
+    from engine import rujukan
+    hasil = tinjau(baru, DIR, md, cli._incumbents(md, "book"), maks=a.maks, periksa_rujukan=rujukan.periksa_pengajuan)
     for h in hasil:
         print(json.dumps(h, ensure_ascii=False))
     return 0

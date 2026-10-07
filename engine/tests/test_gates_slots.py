@@ -62,11 +62,11 @@ class GateTests(unittest.TestCase):
         self.assertEqual({"K1", "K2", "K3", "K4", "K5"} <= set(r), True)
 
     def test_placebo_verdict_uses_conservative_upper_bound_not_lucky_point_estimate(self):
-        few = dataclasses.replace(FAST, placebo_n=30)              # 30 acak: p terkecil 0,032 tetapi batas atas ~0,084 > 0,05
+        few = dataclasses.replace(FAST, placebo_n=30, placebo_max_p=0.05)   # 30 acak: p terkecil 0,032 tetapi batas atas ~0,084 > 0,05 (ambang dipasang tetap; F-D129 mengubah bawaan ke 0,10)
         g8 = by_gate(gates.run_gates(b1(), trending(), None, few))["G8"]
         self.assertEqual(g8.status, gates.FAIL, g8.value)
         self.assertIn("batas atas 95%", g8.value)
-        many = dataclasses.replace(FAST, placebo_n=150)
+        many = dataclasses.replace(FAST, placebo_n=150, placebo_max_p=0.05)
         self.assertEqual(by_gate(gates.run_gates(b1(), trending(), None, many))["G8"].status, gates.PASS)
 
     def test_no_edge_market_is_rejected(self):
@@ -284,6 +284,29 @@ STRONG = (500.0, 4.0)
 
 def beats(book, who="BOT1", stat=STRONG):
     return {who: stat}
+
+
+class DeklarasiTests(unittest.TestCase):
+    """P89: jenis nol (G8) dan varian fase (G6) dideklarasikan EKSPLISIT untuk setiap metode; tanpa deklarasi = gagal tertutup."""
+
+    def test_every_registered_method_declares_its_null_and_phase_variants(self):
+        from engine import bots
+        self.assertEqual(bots.deklarasi_kurang(), [])
+        self.assertEqual(set(bots.NULL_KIND), set(REGISTRY))
+        self.assertEqual(set(bots.PHASE_VARIANTS), set(REGISTRY))
+        self.assertEqual({m for m, (k, _) in bots.NULL_KIND.items() if k == "alokasi"}, {"B5-CORE-RWA"})        # nilai sama dengan sebelum P89
+        self.assertEqual({m for m, f in bots.PHASE_VARIANTS.items() if f is not None}, {"B2-RS", "B5-CORE-RWA"})
+
+    def test_an_undeclared_method_fails_g6_and_g8_instead_of_using_a_silent_default(self):
+        from engine import bots
+        with mock.patch.dict(bots.NULL_KIND), mock.patch.dict(bots.PHASE_VARIANTS):
+            del bots.NULL_KIND["B1-TREND"], bots.PHASE_VARIANTS["B1-TREND"]
+            self.assertEqual(bots.deklarasi_kurang(), ["B1-TREND"])
+            g = by_gate(gates.run_gates(b1(), trending(), None, FAST))
+            self.assertEqual((g["G6"].status, g["G8"].status), (gates.FAIL, gates.FAIL))
+            self.assertIn("belum dideklarasikan", g["G8"].value)
+        g = by_gate(gates.run_gates(b1(), trending(), None, FAST))
+        self.assertEqual(g["G6"].status, gates.TB)                                                  # dideklarasikan None = tidak berfase
 
 
 class SlotTests(unittest.TestCase):

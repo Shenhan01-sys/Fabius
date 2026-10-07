@@ -20,13 +20,35 @@ REGISTRY = {
 # dibandingkan dengan pengacakan waktu (pergeseran melingkar) pada eksposur yang sama. "alokasi": bot menjual CAMPURAN aset yang
 # bobotnya nyaris konstan - placebo waktu tidak bermakna (bobot yang digeser hampir sama) - jadi dibandingkan dengan memegang
 # aset risiko utamanya saja (buy&hold) pada Sharpe DAN MDD, sama dengan pembunuh B5 yang sudah tertulis di spesifikasinya.
-# Metode baru (method_pr) WAJIB mendeklarasikan jenis nolnya di sini.
+# P89: SETIAP metode di REGISTRY mendeklarasikan jenis nolnya secara EKSPLISIT (tanpa bawaan diam-diam); metode tanpa deklarasi = G8 GAGAL.
+# "tidak_berlaku" = bot yang tidak bisa direplay (feed): gerbang replay ditulis N/A, bukan diuji.
 NULL_KIND = {
+    "B1-TREND": ("waktu", ""),
+    "B2-RS": ("waktu", ""),
+    "B3-CARRY": ("waktu", ""),
+    "B4-LISTING-FADE": ("waktu", ""),
     "B5-CORE-RWA": ("alokasi", "BTCUSDT"),
+    "B6-BOUNCE": ("waktu", ""),
+    rule.RULE_METHOD: ("waktu", ""),
+    kode.KODE_METHOD: ("waktu", ""),
+    feed.FEED_METHOD: ("tidak_berlaku", "bot feed tidak bisa direplay"),
 }
 
 # Bot dengan jadwal berfase mendeklarasikan varian fasenya; gerbang G6 menuntut hasil tidak bergantung pada satu fase.
+# P89: SETIAP metode dideklarasikan; None = TIDAK berfase (G6 tidak berlaku); metode tanpa deklarasi = G6 GAGAL.
 PHASE_VARIANTS = {
+    "B1-TREND": None,
     "B2-RS": b2_rs.phase_variants,
+    "B3-CARRY": None,
+    "B4-LISTING-FADE": None,
     "B5-CORE-RWA": b5_core_rwa.phase_variants,
+    "B6-BOUNCE": None,
+    rule.RULE_METHOD: None,
+    kode.KODE_METHOD: None,
+    feed.FEED_METHOD: None,
 }
+
+
+def deklarasi_kurang() -> list:
+    """Metode di REGISTRY yang belum mendeklarasikan jenis nol (G8) atau varian fase (G6). Harus kosong (tes)."""
+    return sorted(m for m in REGISTRY if m not in NULL_KIND or m not in PHASE_VARIANTS)

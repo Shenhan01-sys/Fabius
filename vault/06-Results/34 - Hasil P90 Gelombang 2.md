@@ -59,6 +59,6 @@ Daya per sel (lolos / 300), terpilih vs terkunci:
 1. 4 pekerja, bukan 14 (lingkungan sesi); hanya waktu (1 jam 44 menit dinding), tidak mengubah hasil.
 2. Set setel positif-palsu dihentikan dan dilanjutkan sekali (insiden `git stash`, [[Conventions]]): data diselamatkan dari handle proses, berkas di disk terbukti awalan data itu, 924 pasar sisanya dijalankan dengan benih yang sama (lari bisa dilanjutkan oleh rancangan); 3.000 baris unik, konsistensi 0 beda.
 
-**Langkah berikut = kata builder:** kunci baru lewat `engine.cli lock --write --supersede` (aturan riset #8) atau tetap terkunci ([[08-Backlog/13 - Langkah Builder Tertunda]] LB14).
+**Keputusan builder 7 Okt (F-D129):** G8 c = 2,0 DIKUNCI (kunci gerbang `0xc0192ebd…`), K2 tetap 0,5. Sebelumnya - **Langkah berikut = kata builder:** kunci baru lewat `engine.cli lock --write --supersede` (aturan riset #8) atau tetap terkunci ([[08-Backlog/13 - Langkah Builder Tertunda]] LB14).
 
 **Terkait:** [[06-Results/33 - Pra-Registrasi P90 Gelombang 2]] · [[06-Results/32 - Hasil P90 R1+R2]] · [[08-Backlog/08 - Riset Optimasi Ambang]] · [[00-Overview/03 - Decisions]] F-D88 / F-D126

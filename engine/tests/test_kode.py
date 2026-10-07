@@ -331,7 +331,7 @@ class EngineTests(unittest.TestCase):
         self.assertEqual(kode.geser(-3, 0.25), -1)                                                    # bulat tetap bulat, tanda dipertahankan
 
     def test_g8_uses_the_default_time_placebo_for_code(self):
-        self.assertNotIn(kode.KODE_METHOD, NULL_KIND)
+        self.assertEqual(NULL_KIND[kode.KODE_METHOD], ("waktu", ""))                                     # P89: dideklarasikan eksplisit (placebo waktu)
         md = md_kecil(400)
         r = gates.g8_null(gates._Ctx(self.spec(TREN), md, gates.GateParams.fast(), None))
         self.assertIn("pergeseran waktu", r.rule)

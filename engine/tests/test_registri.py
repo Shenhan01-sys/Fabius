@@ -34,10 +34,13 @@ def chain(*entries):
 class BudgetTests(unittest.TestCase):
     def test_gate_v1_is_the_first_submission_and_the_kth_is_judged_at_a1_over_k(self):
         base = GateParams()
-        self.assertEqual((base.boot_q, base.placebo_max_p), (anggaran.Anggaran().a1_per_pengajuan,) * 2)   # A1 = taraf uji gerbang v1
+        a1 = anggaran.Anggaran().a1_per_pengajuan
+        self.assertEqual((base.boot_q, base.placebo_max_p), (a1, 2.0 * a1))                    # G3 pada A1; G8 pada c x A1, c = 2,0 (F-D129)
         self.assertIs(anggaran.gate_params_for(1, base), base)
         g = anggaran.gate_params_for(4, base)
-        self.assertEqual((g.boot_q, g.placebo_max_p), (0.0125, 0.0125))
+        self.assertEqual((g.boot_q, g.placebo_max_p), (0.0125, 0.025))                          # pengali c berlaku pada alpha A1/k
+        lama = anggaran.gate_params_for(4, GateParams(placebo_max_p=a1))
+        self.assertEqual(lama.placebo_max_p, 0.0125)                                             # c = 1 = perilaku kunci sebelumnya
         self.assertEqual((g.boot_n, g.placebo_n), (4 * base.boot_n, 4 * base.placebo_n))
         # dengan 0 placebo di atas Sharpe asli, batas atas p ~ 2,6/N harus bisa <= alpha: tanpa penskalaan G8 mustahil lolos
         g26 = anggaran.gate_params_for(26, base)
