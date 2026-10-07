@@ -1499,7 +1499,8 @@ def v2_siklus(gate: "Gate", books: Dict[str, dict], ring: Dict[str, str], pasar2
             return an.call_model({**ag, "effort": meja.PARAMS["effort"]}, system, user, timeout=max(20, int(sampai - time.time()) - 5))
         rek, harga = meja2.siklus2(t0, agents + gate.luar.agents(), b2, r2, call2, snap, pasar2, log=gate.log, sampai=sampai, bukti=gate.luar.bukti,
                                    keluar=[a["slug"] for a in an.AGENTS if a.get("nonaktif")],    # SK-M23: kursi agent nonaktif dilepas
-                                   paksa=an.muat_kursi_builder())                                 # SK-M24: keputusan kursi builder
+                                   paksa=an.muat_kursi_builder(),                                 # SK-M24: keputusan kursi builder
+                                   tahan_naik=lambda s_, e_: pl.tahan_naik(gate, s_, e_))         # P168b (SK-N13): peninjau LLM hanya MENAHAN naik
         hasil.update(rek=rek, harga=harga, books=b2, ring=r2)
     except Exception as e:  # noqa: BLE001 - v2 gagal tidak boleh mengganggu v1 / komit
         gate.log(f"meja v2 gagal: {type(e).__name__}: {str(e)[:200]}")
