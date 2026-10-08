@@ -1,7 +1,7 @@
 {
  "v": 1,
- "generated_utc": "2026-10-07T10:08:01Z",
- "repo_head": "ae4c5baf3382b9bbc5db0a06fe599fa5aa2fa605",
+ "generated_utc": "2026-10-08T08:46:51Z",
+ "repo_head": "32e0567a352e62d5df492d662b5f5c9320da4566",
  "bots": [
   {
    "id": "B1-TREND",
@@ -231,6 +231,13 @@
      "held": 16,
      "lag_s": 36131,
      "emitted_utc": "2026-10-07T10:02:11Z"
+    },
+    {
+     "date": "2026-10-07",
+     "signals": 0,
+     "held": 16,
+     "lag_s": 31245,
+     "emitted_utc": "2026-10-08T08:40:45Z"
     }
    ],
    "settles": [],
@@ -238,9 +245,9 @@
    "n_signals": 0,
    "n_settled_days": 0,
    "n_months": 0,
-   "head": "0x716b117c27c6b319d37ccda803cbe78f1f118df5c8eb91f5ae2318a2f528eb05",
-   "days_live": 6,
-   "last_closed": "2026-10-06"
+   "head": "0x47de637ea911f534daabee6f4b6e997f937cca10c57795bd6f1ba99d0bac97c7",
+   "days_live": 7,
+   "last_closed": "2026-10-07"
   },
   "B2-RS": {
    "genesis": "2026-10-04",
@@ -266,16 +273,23 @@
      "held": 10,
      "lag_s": 36131,
      "emitted_utc": "2026-10-07T10:02:11Z"
+    },
+    {
+     "date": "2026-10-07",
+     "signals": 5,
+     "held": 9,
+     "lag_s": 31245,
+     "emitted_utc": "2026-10-08T08:40:45Z"
     }
    ],
    "settles": [],
    "gaps": [],
-   "n_signals": 15,
+   "n_signals": 20,
    "n_settled_days": 0,
    "n_months": 0,
-   "head": "0x74ffdd10b32d89c5455c9f3477285ed16fccc82ea505447c70633bd652477a20",
-   "days_live": 3,
-   "last_closed": "2026-10-06"
+   "head": "0x8aa0fd19d331c874b32c9169501ef1245fe09717ff79b0fcdc50f73107b4034a",
+   "days_live": 4,
+   "last_closed": "2026-10-07"
   },
   "B3-CARRY": {
    "genesis": "2026-10-01",
@@ -322,6 +336,13 @@
      "held": 0,
      "lag_s": 36131,
      "emitted_utc": "2026-10-07T10:02:11Z"
+    },
+    {
+     "date": "2026-10-07",
+     "signals": 0,
+     "held": 0,
+     "lag_s": 31245,
+     "emitted_utc": "2026-10-08T08:40:45Z"
     }
    ],
    "settles": [
@@ -344,15 +365,20 @@
      "date": "2026-10-07",
      "net_bps": 0.0,
      "held": 0
+    },
+    {
+     "date": "2026-10-08",
+     "net_bps": 0.0,
+     "held": 0
     }
    ],
    "gaps": [],
    "n_signals": 4,
-   "n_settled_days": 4,
+   "n_settled_days": 5,
    "n_months": 1,
-   "head": "0x42a54caa75a2136083d1e5c9bbc04f4299805d4191ab5ffd49512a6755766a73",
-   "days_live": 6,
-   "last_closed": "2026-10-06"
+   "head": "0x3a226f41e4d96617ea1f1c8aef46291b0864ec8cfbf24e7ecb0f7211ff4532d6",
+   "days_live": 7,
+   "last_closed": "2026-10-07"
   },
   "B4-LISTING-FADE": {
    "genesis": "2026-10-04",
@@ -378,16 +404,23 @@
      "held": 5,
      "lag_s": 31541,
      "emitted_utc": "2026-10-07T08:45:41Z"
+    },
+    {
+     "date": "2026-10-07",
+     "signals": 1,
+     "held": 4,
+     "lag_s": 31245,
+     "emitted_utc": "2026-10-08T08:40:45Z"
     }
    ],
    "settles": [],
    "gaps": [],
-   "n_signals": 4,
+   "n_signals": 5,
    "n_settled_days": 0,
    "n_months": 0,
-   "head": "0xfea221f12eeb692ed40c219555b150c3c5cfa446d8df466523af2403b50ad6d1",
-   "days_live": 3,
-   "last_closed": "2026-10-06"
+   "head": "0x02e451d343a1d533c14fd786dcf611794f14d6b0c40f790ff982a58d222a7d19",
+   "days_live": 4,
+   "last_closed": "2026-10-07"
   },
   "B5-CORE-RWA": {
    "genesis": "2026-10-04",
@@ -413,6 +446,13 @@
      "held": 2,
      "lag_s": 31541,
      "emitted_utc": "2026-10-07T08:45:41Z"
+    },
+    {
+     "date": "2026-10-07",
+     "signals": 0,
+     "held": 2,
+     "lag_s": 31245,
+     "emitted_utc": "2026-10-08T08:40:45Z"
     }
    ],
    "settles": [
@@ -425,15 +465,20 @@
      "date": "2026-10-06",
      "net_bps": 31.97,
      "held": 2
+    },
+    {
+     "date": "2026-10-07",
+     "net_bps": -173.9,
+     "held": 2
     }
    ],
    "gaps": [],
    "n_signals": 0,
-   "n_settled_days": 2,
+   "n_settled_days": 3,
    "n_months": 1,
-   "head": "0xb8e47f6e080e41777d3a68b817493ad6274a96c902bd118eefbcfa69367ceed3",
-   "days_live": 3,
-   "last_closed": "2026-10-06"
+   "head": "0xd563844db005b9acfa143bf6ec6da22bc4834eed3848ba6d7963652640864c99",
+   "days_live": 4,
+   "last_closed": "2026-10-07"
   },
   "B6-BOUNCE": {
    "genesis": "2026-10-04",
@@ -459,6 +504,13 @@
      "held": 0,
      "lag_s": 36131,
      "emitted_utc": "2026-10-07T10:02:11Z"
+    },
+    {
+     "date": "2026-10-07",
+     "signals": 5,
+     "held": 5,
+     "lag_s": 31245,
+     "emitted_utc": "2026-10-08T08:40:45Z"
     }
    ],
    "settles": [
@@ -479,12 +531,12 @@
     }
    ],
    "gaps": [],
-   "n_signals": 0,
+   "n_signals": 5,
    "n_settled_days": 3,
    "n_months": 1,
-   "head": "0x8c6727be9a6d2178adc5f68a1faed4421c5dba6d620458f4b0e9cdfb6125b369",
-   "days_live": 3,
-   "last_closed": "2026-10-06"
+   "head": "0x85f79ee67c332a94265b65c56011b21ec9872059ea6a1ad4fb7dc22e52b43200",
+   "days_live": 4,
+   "last_closed": "2026-10-07"
   }
  },
  "book": {
@@ -608,27 +660,27 @@
     "months": 0
    },
    "B2-RS": {
-    "signals": 15,
+    "signals": 20,
     "days": 0,
     "months": 0
    },
    "B3-CARRY": {
     "signals": 4,
-    "days": 4,
+    "days": 5,
     "months": 1
    },
    "B4-LISTING-FADE": {
-    "signals": 4,
+    "signals": 5,
     "days": 0,
     "months": 0
    },
    "B5-CORE-RWA": {
     "signals": 0,
-    "days": 2,
+    "days": 3,
     "months": 1
    },
    "B6-BOUNCE": {
-    "signals": 0,
+    "signals": 5,
     "days": 3,
     "months": 1
    }
@@ -687,7 +739,7 @@
    },
    "kematangan": {
     "sinyal": [
-     15,
+     20,
      20
     ],
     "hari": [
@@ -703,7 +755,7 @@
     "status SEMENTARA: berjalan untuk transparansi, bisa digantikan bot yang memenuhi kriteria",
     "gerbang v1 (backtest terkunci, `engine/book.py::GATE_V1`): TOLAK",
     "rekam jejak maju: 0 hari settle - butuh >= 2 untuk angka apa pun",
-    "F-D16 (syarat uang nyata / jual): BELUM CUKUP DATA - S1 sinyal maju 15 < 20; hari settle 0 < 20; bulan 0 < 2 (S4 butuh fold untuk dibuang)"
+    "F-D16 (syarat uang nyata / jual): BELUM CUKUP DATA - hari settle 0 < 20; bulan 0 < 2 (S4 butuh fold untuk dibuang)"
    ]
   },
   "B3-CARRY": {
@@ -715,9 +767,9 @@
    "gerbang_v1": "LOLOS_SHADOW",
    "fd16": "BELUM CUKUP DATA",
    "rekam": {
-    "mean_bps": -0.21875,
-    "ci_lo_bps": -0.21875,
-    "ci_hi_bps": -0.21875,
+    "mean_bps": -0.175,
+    "ci_lo_bps": -0.175,
+    "ci_hi_bps": -0.175,
     "p": 1.0
    },
    "kematangan": {
@@ -726,7 +778,7 @@
      20
     ],
     "hari": [
-     4,
+     5,
      20
     ],
     "bulan": [
@@ -737,8 +789,8 @@
    "alasan": [
     "status SEMENTARA: berjalan untuk transparansi, bisa digantikan bot yang memenuhi kriteria",
     "gerbang v1 (backtest terkunci, `engine/book.py::GATE_V1`): LOLOS_SHADOW",
-    "rekam jejak maju: 4 hari settle, rerata net -0.22 bps/hari, CI 95 % [-0.22, -0.22] bps",
-    "F-D16 (syarat uang nyata / jual): BELUM CUKUP DATA - S1 sinyal maju 4 < 20; hari settle 4 < 20; bulan 1 < 2 (S4 butuh fold untuk dibuang)"
+    "rekam jejak maju: 5 hari settle, rerata net -0.17 bps/hari, CI 95 % [-0.17, -0.17] bps",
+    "F-D16 (syarat uang nyata / jual): BELUM CUKUP DATA - S1 sinyal maju 4 < 20; hari settle 5 < 20; bulan 1 < 2 (S4 butuh fold untuk dibuang)"
    ]
   },
   "B4-LISTING-FADE": {
@@ -757,7 +809,7 @@
    },
    "kematangan": {
     "sinyal": [
-     4,
+     5,
      20
     ],
     "hari": [
@@ -773,7 +825,7 @@
     "status SEMENTARA: berjalan untuk transparansi, bisa digantikan bot yang memenuhi kriteria",
     "gerbang v1 (backtest terkunci, `engine/book.py::GATE_V1`): TIDAK_TERUKUR",
     "rekam jejak maju: 0 hari settle - butuh >= 2 untuk angka apa pun",
-    "F-D16 (syarat uang nyata / jual): BELUM CUKUP DATA - S1 sinyal maju 4 < 20; hari settle 0 < 20; bulan 0 < 2 (S4 butuh fold untuk dibuang)"
+    "F-D16 (syarat uang nyata / jual): BELUM CUKUP DATA - S1 sinyal maju 5 < 20; hari settle 0 < 20; bulan 0 < 2 (S4 butuh fold untuk dibuang)"
    ]
   },
   "B5-CORE-RWA": {
@@ -785,44 +837,9 @@
    "gerbang_v1": "TOLAK",
    "fd16": "BELUM CUKUP DATA",
    "rekam": {
-    "mean_bps": -9.452417808715541,
-    "ci_lo_bps": -9.452417808715541,
-    "ci_hi_bps": -9.452417808715541,
-    "p": 1.0
-   },
-   "kematangan": {
-    "sinyal": [
-     0,
-     20
-    ],
-    "hari": [
-     2,
-     20
-    ],
-    "bulan": [
-     1,
-     2
-    ]
-   },
-   "alasan": [
-    "status SEMENTARA: berjalan untuk transparansi, bisa digantikan bot yang memenuhi kriteria",
-    "gerbang v1 (backtest terkunci, `engine/book.py::GATE_V1`): TOLAK",
-    "rekam jejak maju: 2 hari settle, rerata net -9.45 bps/hari, CI 95 % [-9.45, -9.45] bps",
-    "F-D16 (syarat uang nyata / jual): BELUM CUKUP DATA - S1 sinyal maju 0 < 20; hari settle 2 < 20; bulan 1 < 2 (S4 butuh fold untuk dibuang)"
-   ]
-  },
-  "B6-BOUNCE": {
-   "bot": "B6-BOUNCE",
-   "confidence_pct": 0,
-   "label": "awal - belum bermakna",
-   "dasar": "1 - p bootstrap blok F-D16 (H0: rerata net harian maju <= 0); bukan peluang sinyal hari ini benar",
-   "status": "SEMENTARA",
-   "gerbang_v1": "TOLAK",
-   "fd16": "BELUM CUKUP DATA",
-   "rekam": {
-    "mean_bps": 0.0,
-    "ci_lo_bps": 0.0,
-    "ci_hi_bps": 0.0,
+    "mean_bps": -64.2669692667734,
+    "ci_lo_bps": -64.2669692667734,
+    "ci_hi_bps": -64.2669692667734,
     "p": 1.0
    },
    "kematangan": {
@@ -842,8 +859,43 @@
    "alasan": [
     "status SEMENTARA: berjalan untuk transparansi, bisa digantikan bot yang memenuhi kriteria",
     "gerbang v1 (backtest terkunci, `engine/book.py::GATE_V1`): TOLAK",
-    "rekam jejak maju: 3 hari settle, rerata net +0.00 bps/hari, CI 95 % [+0.00, +0.00] bps",
+    "rekam jejak maju: 3 hari settle, rerata net -64.27 bps/hari, CI 95 % [-64.27, -64.27] bps",
     "F-D16 (syarat uang nyata / jual): BELUM CUKUP DATA - S1 sinyal maju 0 < 20; hari settle 3 < 20; bulan 1 < 2 (S4 butuh fold untuk dibuang)"
+   ]
+  },
+  "B6-BOUNCE": {
+   "bot": "B6-BOUNCE",
+   "confidence_pct": 0,
+   "label": "awal - belum bermakna",
+   "dasar": "1 - p bootstrap blok F-D16 (H0: rerata net harian maju <= 0); bukan peluang sinyal hari ini benar",
+   "status": "SEMENTARA",
+   "gerbang_v1": "TOLAK",
+   "fd16": "BELUM CUKUP DATA",
+   "rekam": {
+    "mean_bps": 0.0,
+    "ci_lo_bps": 0.0,
+    "ci_hi_bps": 0.0,
+    "p": 1.0
+   },
+   "kematangan": {
+    "sinyal": [
+     5,
+     20
+    ],
+    "hari": [
+     3,
+     20
+    ],
+    "bulan": [
+     1,
+     2
+    ]
+   },
+   "alasan": [
+    "status SEMENTARA: berjalan untuk transparansi, bisa digantikan bot yang memenuhi kriteria",
+    "gerbang v1 (backtest terkunci, `engine/book.py::GATE_V1`): TOLAK",
+    "rekam jejak maju: 3 hari settle, rerata net +0.00 bps/hari, CI 95 % [+0.00, +0.00] bps",
+    "F-D16 (syarat uang nyata / jual): BELUM CUKUP DATA - S1 sinyal maju 5 < 20; hari settle 3 < 20; bulan 1 < 2 (S4 butuh fold untuk dibuang)"
    ]
   }
  },
@@ -855,13 +907,13 @@
  },
  "chain": {
   "id": 97,
-  "block": 135379370,
-  "block_utc": "2026-10-07T10:08:01Z",
+  "block": 135560541,
+  "block_utc": "2026-10-08T08:46:52Z",
   "signal_anchor": "0x9B78200beFbbBe836585d31bd5b6dB32587064f3",
   "lock_registry": "0xcF6fBF95fc04DEd8d670512CEc0723a2246Fbb0C",
   "decision_anchor": "0xDD162AFB5F5f92d5092f845A93660e3B38259330",
   "committer": "0xCA9c7322210E9a7F7d0953c862d4Ef60cC0D64A4",
-  "commit_count": 22,
+  "commit_count": 28,
   "lock_count": 13,
   "verdicts": [
    {
@@ -913,6 +965,14 @@
     "lag_s": 36402
    },
    {
+    "bot": "B1-TREND",
+    "bar": "2026-10-07",
+    "verdict": "SAH",
+    "n": 0,
+    "revealed": 0,
+    "lag_s": 31302
+   },
+   {
     "bot": "B2-RS",
     "bar": "2026-10-04",
     "verdict": "SAH",
@@ -935,6 +995,14 @@
     "n": 5,
     "revealed": 5,
     "lag_s": 36405
+   },
+   {
+    "bot": "B2-RS",
+    "bar": "2026-10-07",
+    "verdict": "SAH",
+    "n": 5,
+    "revealed": 5,
+    "lag_s": 31306
    },
    {
     "bot": "B3-CARRY",
@@ -985,6 +1053,14 @@
     "lag_s": 36431
    },
    {
+    "bot": "B3-CARRY",
+    "bar": "2026-10-07",
+    "verdict": "SAH",
+    "n": 0,
+    "revealed": 0,
+    "lag_s": 31330
+   },
+   {
     "bot": "B4-LISTING-FADE",
     "bar": "2026-10-04",
     "verdict": "SAH",
@@ -1007,6 +1083,14 @@
     "n": 3,
     "revealed": 3,
     "lag_s": 31598
+   },
+   {
+    "bot": "B4-LISTING-FADE",
+    "bar": "2026-10-07",
+    "verdict": "SAH",
+    "n": 1,
+    "revealed": 1,
+    "lag_s": 31333
    },
    {
     "bot": "B5-CORE-RWA",
@@ -1033,6 +1117,14 @@
     "lag_s": 31615
    },
    {
+    "bot": "B5-CORE-RWA",
+    "bar": "2026-10-07",
+    "verdict": "SAH",
+    "n": 0,
+    "revealed": 0,
+    "lag_s": 31345
+   },
+   {
     "bot": "B6-BOUNCE",
     "bar": "2026-10-04",
     "verdict": "SAH",
@@ -1055,19 +1147,27 @@
     "n": 0,
     "revealed": 0,
     "lag_s": 36435
+   },
+   {
+    "bot": "B6-BOUNCE",
+    "bar": "2026-10-07",
+    "verdict": "SAH",
+    "n": 5,
+    "revealed": 5,
+    "lag_s": 31348
    }
   ],
   "totals": {
-   "SAH": 22,
+   "SAH": 28,
    "BELUM DIUNGKAP": 0,
    "TIDAK DIUNGKAP": 0,
    "MENUNGGU KOMIT": 0,
    "TIDAK DIKOMIT": 0,
    "SEBELUM KUNCI": 2,
    "ALARM": 0,
-   "komit_resmi": 22,
+   "komit_resmi": 28,
    "komit_alamat_lain_untuk_bot_kita": 0,
-   "komit_total": 22
+   "komit_total": 28
   }
  }
 }
