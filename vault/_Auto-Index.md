@@ -2,7 +2,7 @@
 tags: [generated]
 ---
 
-_Auto-Index — 6 halaman · 2026-10-07T15:48Z · dari `vault/scripts/sync_vault.py`_
+_Auto-Index — 6 halaman · 2026-10-28T13:52Z · dari `vault/scripts/sync_vault.py`_
 
 ### 00-Overview (8)
 - [[00-Overview/00 - Hub Overview]]
@@ -167,24 +167,53 @@ _Auto-Index — 6 halaman · 2026-10-07T15:48Z · dari `vault/scripts/sync_vault
 - [[08-Backlog/12 - Epik Pengajuan Terbuka dan Peninjau LLM]]
 - [[08-Backlog/13 - Langkah Builder Tertunda]]
 
-### 09-Inbox (6)
+### 09-Inbox (7)
 - [[09-Inbox/00 - Hub Inbox]]
 - [[09-Inbox/Session-2026-09-26-27]]
 - [[09-Inbox/Session-2026-09-27-siang]]
 - [[09-Inbox/Session-2026-09-28]]
 - [[09-Inbox/Session-2026-09-29]]
 - [[09-Inbox/Session-2026-10-02]]
+- [[09-Inbox/Session-2026-10-28]]
 
-### 10-Submissions (4)
+### 10-Submissions (6)
 - [[10-Submissions/00 - Hub Submissions]]
 - [[10-Submissions/01 - Claims Cheat Sheet]]
 - [[10-Submissions/02 - Project Detail]]
 - [[10-Submissions/03 - Form Fields]]
+- [[10-Submissions/04 - Demo Day 31 Okt - Materi Pitch]]
+- [[10-Submissions/05 - Estimasi Biaya Mainnet]]
 
 ### 11-Notes (3)
 - [[11-Notes/00 - Hub Notes]]
 - [[11-Notes/Astra-Quant-Agent]]
 - [[11-Notes/Laya-LLM]]
+
+### 12-Competitors (12)
+- [[12-Competitors/00 - Hub Kompetitor]]
+- [[12-Competitors/KP0 - Baseline Fabius dan Konteks Penjurian]]
+- [[12-Competitors/KP1 - Matura]]
+- [[12-Competitors/KP10 - Celah Analisis dan Solusi]]
+- [[12-Competitors/KP2 - Perago]]
+- [[12-Competitors/KP3 - AgentEco]]
+- [[12-Competitors/KP4 - BagiPanen]]
+- [[12-Competitors/KP5 - SAMA]]
+- [[12-Competitors/KP6 - Tagei]]
+- [[12-Competitors/KP7 - Kawal]]
+- [[12-Competitors/KP8 - Kulaya]]
+- [[12-Competitors/KP9 - Ranking dan Skenario Finalis]]
+
+### 14-Deck-Demo-Day (10)
+- [[14-Deck-Demo-Day/00 - Hub Deck Demo Day]]
+- [[14-Deck-Demo-Day/DK0 - Brief Pembuatan Deck]]
+- [[14-Deck-Demo-Day/DK1 - Slide 1 Hook]]
+- [[14-Deck-Demo-Day/DK2 - Slide 2 Problem]]
+- [[14-Deck-Demo-Day/DK3 - Slide 3 Solusi Kunci Segel Periksa]]
+- [[14-Deck-Demo-Day/DK4 - Slide 4 Demo Telegram ke Verify]]
+- [[14-Deck-Demo-Day/DK5 - Slide 5 Coba Patahkan TooLate]]
+- [[14-Deck-Demo-Day/DK6 - Slide 6 Dibangun untuk Diragukan dan Testnet]]
+- [[14-Deck-Demo-Day/DK7 - Slide 7 Posisi Mereka Membatasi Apa Kami Membuktikan Kapan]]
+- [[14-Deck-Demo-Day/DK8 - Slide 8 Penutup]]
 
 ### Concepts (8)
 - [[Concepts/00 - Hub Concepts]]

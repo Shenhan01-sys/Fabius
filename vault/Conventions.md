@@ -82,7 +82,7 @@ ditiru.
 | `D##` (keputusan) | `F-D##` | nomor dipakai bersama antar-proyek di workspace yang sama; tabrakan nomor sudah terjadi |
 
 ID lain: `P#` backlog · `A#` agen · `C#` kontrak · `D#` data · `TL#` perkakas · `E#` ekosistem ·
-`R#` hasil · `T#` testing · `OI-#` open item · lapisan `TradingKnowledge/`: `PL#` tahap · `FD#`
+`R#` hasil · `T#` testing · `OI-#` open item · `KP#` analisis kompetitor (`12-Competitors/`) · `DK#` deck Demo Day (`14-Deck-Demo-Day/`) · lapisan `TradingKnowledge/`: `PL#` tahap · `FD#`
 kaidah · `S# I# V# U# O# M#` sinyal per keluarga · `ST#` setup · `QT#` quant · `EV#` bukti ·
 `GAP#` peta keputusan (peta lengkapnya di [[TradingKnowledge/Aturan Subtree]]).
 **ID yang sudah dipakai tidak diganti**; bikin ID baru tanpa menambah baris ke peta dokumen = cacat.
@@ -102,6 +102,8 @@ kaidah · `S# I# V# U# O# M#` sinyal per keluarga · `ST#` setup · `QT#` quant 
 09-Inbox/      catatan sesi bertanggal (mentah, belum terstruktur)
 10-Submissions/ kalimat klaim, alamat, angka publik
 11-Notes/      catatan pendukung bertopik (mis. kandidat model)
+12-Competitors/ SWOT Fabius terhadap tiap kompetitor hackathon (satu kompetitor = satu catatan KP#)
+14-Deck-Demo-Day/ brief + panduan deck Demo Day (DK0 brief, satu slide = satu catatan DK#)
 TradingKnowledge/ lapisan pengetahuan trading (sendiri punya aturan: lihat halaman itu)
 Concepts/      catatan konsep atomik (#concept)
 Templates/     kerangka halaman
