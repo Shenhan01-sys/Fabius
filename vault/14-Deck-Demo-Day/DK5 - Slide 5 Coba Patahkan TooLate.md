@@ -25,7 +25,7 @@ Latar gelap, blok terminal (JetBrains Mono) dengan baris revert disorot `#FF5A6E
 Nama revert persis: `TooLate(asof, nowTs, maxLag)` dan `LockedAfterBar(lockedAt, asof)` — `contracts/SignalAnchor.sol:69-71`.
 
 ## Aset
-A4: simulasi `cast call` (tanpa broadcast) ke `SignalAnchor 0x9B78200beFbbBe836585d31bd5b6dB32587064f3` chain 97, atau keluaran `forge test` untuk tes `TooLate` (`test/SignalAnchor.t.sol:148`). Tandai di slide bila memakai uji lokal: "local test".
+A4 (tersedia 28 Okt, P178): rekam layar `https://fabius-one.vercel.app/break` -> "Try all four" -> empat kartu "Rejected by the contract" `TooLate` / `LockedAfterBar` / `NotLocked` / `TooManyReveals` (simulasi eth_call ke kontrak sungguhan, label di layar: "Simulation (eth_call) at block #…"). Cadangan: simulasi `cast call` (tanpa broadcast) ke `SignalAnchor 0x9B78200beFbbBe836585d31bd5b6dB32587064f3` chain 97, atau keluaran `forge test` untuk tes `TooLate` (`test/SignalAnchor.t.sol:148`). Tandai di slide bila memakai uji lokal: "local test".
 
 ## Jangan
 Jangan menyebut simulasi sebagai transaksi nyata; bila klip dari `forge test`, labeli "contract test".
