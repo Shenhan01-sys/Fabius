@@ -11,7 +11,6 @@ export const COMMITTER = "0xCA9c7322210E9a7F7d0953c862d4Ef60cC0D64A4" as const;
 export const ANCHOR_DEPLOY_BLOCK = 134442917n;
 const RAW = "https://raw.githubusercontent.com/Shenhan01-sys/Fabius/master";
 const DAY_S = 86_400;
-const CHUNK = 5_000n;
 
 export class ChainReadError extends Error {}
 
@@ -102,26 +101,43 @@ export async function commitCount() {
   return Number(await read("commitCount", () => client.readContract({ address: SIGNAL_ANCHOR, abi: ANCHOR_ABI, functionName: "commitCount" })));
 }
 
-/** Event Revealed untuk satu commitId. Jendela blok ditaksir dari `committedAt`; bila jumlah event < `expected`, pindai penuh sejak deploy (dicacah 5.000 blok). */
+// P180 (28 Okt 2026): publicnode mengembalikan 0 log (BUKAN galat) untuk blok lama dan drpc gratis menolak getLogs di luar ±10k blok terakhir, jadi
+// hari yang punya sinyal jatuh ke "pindai penuh sejak deploy" (±1.000 panggilan) -> 504 sesudah 60 detik. getLogs kini lewat RPC yang menyimpan riwayat log
+// (onfinality, terukur: 4 reveal B2-RS bar 2026-10-05 dalam 0,5 detik; batas 10k blok/panggilan) dengan publicnode sebagai cadangan.
+const logsClient = createPublicClient({
+  chain: bscTestnet,
+  transport: fallback([http("https://bnb-testnet.api.onfinality.io/public"), http("https://bsc-testnet.publicnode.com"), http("https://bsc-testnet-rpc.publicnode.com")]),
+});
+const LOG_SPAN = 9_999n;    // onfinality: rentang > 10k blok ditolak
+const LOG_WINDOWS = 6;      // ungkap terjadi di putaran yang sama dengan komit (REVEAL_DELAY_S = 0); 6 x 10k blok (±7 jam) sudah sangat longgar
+
+/** Blok pertama dengan timestamp >= `ts` (pencarian biner pada getBlock; ±25 panggilan ringan). */
+async function blockAtOrAfter(ts: number, hi: bigint): Promise<bigint> {
+  let lo = ANCHOR_DEPLOY_BLOCK;
+  while (lo < hi) {
+    const mid = (lo + hi) / 2n;
+    const b = await read("getBlock", () => client.getBlock({ blockNumber: mid }));
+    if (Number(b.timestamp) < ts) lo = mid + 1n;
+    else hi = mid;
+  }
+  return lo;
+}
+
+/** Event Revealed untuk satu commitId: mulai dari blok komit (dicari tepat dari `committedAt`), jendela 10k blok, maks LOG_WINDOWS jendela.
+ *  Kurang dari `expected` sesudah itu = ChainReadError (tak terbaca), bukan "tidak ada" dan bukan pindai penuh yang berakhir timeout. */
 export async function getReveals(id: Hex, committedAt: number, expected: number) {
   const latest = await read("blockNumber", () => client.getBlock());
-  const back = latest.number > 100_000n ? latest.number - 100_000n : 0n;
-  const old = await read("getBlock", () => client.getBlock({ blockNumber: back }));
-  const spb = Number(latest.timestamp - old.timestamp) / Number(latest.number - back); // detik per blok, diukur
-  const est = latest.number - BigInt(Math.max(0, Math.floor((Number(latest.timestamp) - committedAt) / Math.max(spb, 0.05))));
+  const start = await blockAtOrAfter(committedAt, latest.number);
   type Row = { args: Record<string, unknown>; transactionHash: Hex | null; blockNumber: bigint | null };
-  const scan = async (from: bigint, to: bigint) => {
-    const out: Row[] = [];
-    for (let a = from; a <= to; a += CHUNK) {
-      const b = a + CHUNK - 1n > to ? to : a + CHUNK - 1n;
-      const got = await read("getLogs", () => client.getLogs({ address: SIGNAL_ANCHOR, event: REVEALED, args: { id }, fromBlock: a, toBlock: b }));
-      out.push(...(got as unknown as Row[]));
-    }
-    return out;
-  };
-  const lo = est > 4_000n ? est - 4_000n : 0n;
-  let logs = await scan(lo < ANCHOR_DEPLOY_BLOCK ? ANCHOR_DEPLOY_BLOCK : lo, est + 6_000n > latest.number ? latest.number : est + 6_000n);
-  if (logs.length < expected) logs = await scan(ANCHOR_DEPLOY_BLOCK, latest.number);
+  const logs: Row[] = [];
+  for (let w = 0, a = start > 50n ? start - 50n : start; w < LOG_WINDOWS && a <= latest.number && logs.length < expected; w++, a += LOG_SPAN + 1n) {
+    const b = a + LOG_SPAN > latest.number ? latest.number : a + LOG_SPAN;
+    const got = await read("getLogs", () => logsClient.getLogs({ address: SIGNAL_ANCHOR, event: REVEALED, args: { id }, fromBlock: a, toBlock: b }));
+    logs.push(...(got as unknown as Row[]));
+  }
+  if (logs.length < expected) {
+    throw new ChainReadError(`getLogs: ${logs.length} dari ${expected} ungkap terbaca dalam ${LOG_WINDOWS} jendela sejak blok ${start} - RPC publik tak lengkap, bukan berarti tidak ada`);
+  }
   return logs.map((l) => ({
     leaf: l.args.leaf as Hex,
     tx: l.transactionHash,

@@ -68,6 +68,70 @@ def all_commits(cv) -> List[Tuple[bytes, dict]]:
     return out
 
 
+# P180 (28 Okt 2026): publicnode mengembalikan 0 log (BUKAN galat) untuk blok lama dan drpc gratis menolak getLogs di luar ±10k blok terakhir, sehingga
+# pindai penuh sejak deploy (±1.000 panggilan) tidak melihat ungkap lama. Ungkap kini dicari PER KOMIT: blok komit dicari tepat dari `committedAt`
+# (pencarian biner eth_getBlockByNumber), lalu eth_getLogs [topic0, id] lewat RPC yang menyimpan riwayat log, jendela 10k blok, maks LOG_WINDOWS.
+LOG_RPCS = ("https://bnb-testnet.api.onfinality.io/public",)   # terukur: 4 ungkap B2-RS bar 2026-10-05 dalam 0,5 s; rentang > 10k blok ditolak
+LOG_SPAN = 9_999
+LOG_WINDOWS = 6                                                # ungkap terjadi di putaran yang sama dengan komit (REVEAL_DELAY_S = 0)
+
+
+def _decode_revealed(lg: dict) -> Tuple[bytes, dict]:
+    from eth_abi import decode
+    vals = decode(list(REVEALED_DATA), bytes.fromhex(lg["data"][2:]))
+    return bytes.fromhex(lg["topics"][1][2:]), {"leaf": bytes.fromhex(lg["topics"][2][2:]), "asset": vals[0], "aksi": vals[1], "bobotLama": vals[2],
+                                                "bobotBaru": vals[3], "hargaRef": vals[4], "dataHash": vals[5], "salt": vals[6],
+                                                "tx": lg.get("transactionHash"), "block": int(lg["blockNumber"], 16)}
+
+
+def block_at_or_after(evm, ts: int, lo: int, hi: int) -> int:
+    """Blok pertama dengan timestamp >= ts di [lo, hi] (pencarian biner; ±23 panggilan ringan)."""
+    while lo < hi:
+        mid = (lo + hi) // 2
+        if int(evm.rpc("eth_getBlockByNumber", [hex(mid), False])["timestamp"], 16) < ts:
+            lo = mid + 1
+        else:
+            hi = mid
+    return lo
+
+
+def revealed_for_commits(evm, logs_evm, anchor: str, commits: Sequence[Tuple[bytes, dict]], lo_block: int, head: int,
+                         sleep=None) -> Dict[bytes, List[dict]]:
+    """Event `Revealed` per komit yang punya ungkap. `logs_evm` = RPC riwayat log; ditolak/terbatas -> mundur 2, 4, 8 s lalu jatuh ke `evm`."""
+    import time
+    from evm import RpcError
+    sleep = time.sleep if sleep is None else sleep
+    topic0 = "0x" + chain.keccak256(REVEALED_SIG.encode()).hex()
+    out: Dict[bytes, List[dict]] = {}
+
+    def get_logs(q: dict) -> list:
+        for wait in (0, 2, 4, 8):
+            if wait:
+                sleep(wait)
+            try:
+                return logs_evm.rpc("eth_getLogs", [q])
+            except (RpcError, RuntimeError):
+                continue
+        return evm.rpc("eth_getLogs", [q])
+
+    for cid, c in commits:
+        need = int(c.get("revealed") or 0)
+        if need == 0:
+            continue
+        start = block_at_or_after(evm, int(c["committedAt"]), lo_block, head)
+        a, got = max(lo_block, start - 50), []
+        for _ in range(LOG_WINDOWS):
+            if a > head or len(got) >= need:
+                break
+            b = min(a + LOG_SPAN, head)
+            got += get_logs({"address": anchor, "fromBlock": hex(a), "toBlock": hex(b), "topics": [topic0, "0x" + bytes(cid).hex()]})
+            a = b + 1
+        for lg in got:
+            k, ev = _decode_revealed(lg)
+            out.setdefault(k, []).append(ev)
+    return out
+
+
 def revealed_events(evm, anchor: str, from_block: int, to_block: int, chunk: int = LOG_CHUNK) -> Dict[bytes, List[dict]]:
     """Semua event `Revealed` kontrak, dikelompokkan per id komit. Rentang dipotong-potong (RPC publik membatasi eth_getLogs); dipotong lebih kecil bila ditolak."""
     from eth_abi import decode
@@ -187,14 +251,20 @@ def run(bots: Sequence[str], ledger_dir: str, bars_dir: str, deployments: str = 
     anchor, registry, official = cs.get("SignalAnchor"), cs.get("LockRegistry"), m3.get("committer")
     if not (anchor and registry and official):
         raise LookupError("deployments/97.json belum memuat SignalAnchor/LockRegistry/m3.committer")
-    if ev is None:
+    own_ev = ev is None                                     # ev dari pemanggil (anvil, tes) = jangan campur RPC publik lain
+    if own_ev:
         ev = evmmod.Evm(sc.rpc_urls(), sc.CHAIN_ID)
         ev.chain_check()
     cv = sc.AnchorView(ev, anchor, registry)
     head = int(ev.rpc("eth_blockNumber", []), 16)
     now_s = ev.block_timestamp()
     commits = all_commits(cv)
-    events = revealed_events(ev, anchor, int((m3.get("deploy_block") or {}).get("SignalAnchor") or 0), head)
+    lo_block = int((m3.get("deploy_block") or {}).get("SignalAnchor") or 0)
+    if os.environ.get("VERIFY_LOGS") == "pindai":          # perilaku lama (pindai penuh lewat `ev`), mis. untuk anvil/fork lokal
+        events = revealed_events(ev, anchor, lo_block, head)
+    else:
+        logs_ev = ev if (not own_ev or os.environ.get("RPC_PIN") == "1") else evmmod.Evm(list(LOG_RPCS) + list(sc.rpc_urls()), sc.CHAIN_ID)
+        events = revealed_for_commits(ev, logs_ev, anchor, commits, lo_block, head)
     rows, st = verify(list(bots), ledger_dir, Views(bars_dir), cv, commits, events, official, now_s)
     return rows, st, {"anchor": anchor, "committer": official, "blok": head, "waktu_blok_s": now_s, "cv": cv, "ev": ev}
 
