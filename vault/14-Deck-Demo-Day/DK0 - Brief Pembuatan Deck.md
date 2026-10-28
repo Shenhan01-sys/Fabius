@@ -78,9 +78,9 @@ Semua angka lain: **jangan**. Bila sebuah angka tidak ada di tabel ini, tanyakan
 |---|---|---|---|
 | A1 | Kartu screenshot profit "+312,4 %" (antagonis) | DK1 | ada di video v1 (frame 0:16) dan sumber Remotion `vault/Video-Workspace/src/`; buat ulang sebagai grafik bila tak bisa diekstrak |
 | A2 | Klip Telegram: `/buy` sinyal B1 → bayar gasless → link verify (±30 d, termasuk halaman verify) | DK4 | ⬜ **builder merekam (LB27)**; cadangan: tangkapan layar dari video v1 (frame 1:28 "Signals sell over x402") |
-| A3 | Tangkapan `/verify` menampilkan commit sebelum penutupan bar + "SAH" | DK4 | ⬜ setelah P173 di-push dan rantai hidup (LB28, LB22); cadangan: video v2 |
-| A4 | Klip revert `TooLate` (±15 d) | DK5 | ⬜ buat dengan simulasi tanpa broadcast: `cast call` fungsi `commit` ke `SignalAnchor` chain 97 dengan `asof` lama → `TooLate(...)`; cadangan: keluaran `forge test --match-test` untuk tes `TooLate` (`test/SignalAnchor.t.sol:148`) |
-| A5 | QR ke `https://fabius-one.vercel.app/verify` | DK8 | buat sendiri |
+| A3 | Tangkapan `/verify` menampilkan commit sebelum penutupan bar + "SAH" | DK4 | ✅ **tersedia 29 Okt**: rekam layar `https://fabius-one.vercel.app/tour` (lima langkah B2-RS 2026-10-05: kunci 2026-10-04 16:37Z → tutup 2026-10-06 00:00Z → segel 08:44Z, 8,7 jam, batas 12 jam → 4 ungkap → SAH) atau `/verify?bot=B2-RS&bar=2026-10-05`; bar baru sesudah rantai hidup lagi (LB22) opsional |
+| A4 | Klip revert `TooLate` (±15 d) | DK5 | ✅ **tersedia 28 Okt (P178)**: rekam layar `https://fabius-one.vercel.app/break` → "Try all four" → `TooLate` / `LockedAfterBar` / `NotLocked` / `TooManyReveals` (simulasi eth_call ke kontrak sungguhan); cadangan: `cast call` atau `forge test` (lihat DK5) |
+| A5 | QR ke `https://fabius-one.vercel.app/verify` (opsi lebih kuat untuk juri: `/tour`, alur 60 detik tanpa login) | DK8 | buat sendiri |
 | A6 | Logo/wordmark FABIUS | DK1, DK8 | dari deck lama / web |
 
 Klip harus **tertanam** di PPTX (tidak bergantung internet). Tautan live hanya bonus.
