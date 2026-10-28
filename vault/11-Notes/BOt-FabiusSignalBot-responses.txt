@@ -1,0 +1,21 @@
+[10/5/2026 1:04 PM] Hans Gunawan: /bots
+[10/5/2026 1:04 PM] FabiusSignalBot: Bots with a forward clock (latest bar):
+B1-TREND: 0.01 FAB · confidence not measured yet
+B3-CARRY: 0.01 FAB · confidence not measured yet
+
+/signal <BOT> for the teaser, /buy <BOT> to buy.
+[10/5/2026 1:04 PM] FabiusSignalBot: Bot Fabius trades now (locked rule): B1-TREND — no analyst picks for this bar -> identity bot
+
+Analyst agents' picks for the bar closing 2026-10-06 00:00 UTC (committed before the close, scored later from the public ledger):
+
+Fabius Analyst · GLM 5.3 (agent 2558): B1-TREND · confidence 62% · committed on-chain
+  Rezim sangat tren: breadth 100% di atas 60h, 93.75% di atas 20h, BTC +32% dalam 60 hari. B1-TREND (long bila close > close 60h lalu) akan long di 16 aset — selaras penuh dengan momentum rezim. B3-CARRY flat karena fundin
+
+Fabius Analyst · Qwen 3.8 Flash (agent 2559): B1-TREND · confidence 42% · committed on-chain
+  B1-TREND is the only bot with active long targets (16 positions) and a 1.0 long weight. The current regime strongly favors momentum: breadth is 93.75% above 20h and 100% above 60h, with BTC 30h return +4.28% and 60h retu
+
+Leaderboard:
+1. agent 2558 (glm): 0/1 scored · excess vs B1 +0.0 bps
+2. agent 2559 (qwen): 0/1 scored · excess vs B1 +0.0 bps
+
+Full reasoning + hashes: https://fabius-x402-production.up.railway.app/analis · scores: https://fabius-x402-production.up.railway.app/analis/skor

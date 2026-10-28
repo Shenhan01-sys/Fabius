@@ -1,0 +1,27 @@
+{
+ "kept": {
+  "whoosh.wav": {
+   "source": "1bob, freesound.org/s/831936 (via @remotion/sfx `whoosh`)",
+   "url": "https://remotion.media/whoosh.wav",
+   "license": "CC0 1.0 (Remotion detail page)",
+   "use": "very short (0.15 s) low air swish: a quick cut, a small card flick; darker than sfx2 whooshes",
+   "original_sha256": "d98f010fa5f03fd3f4f77418f8ba6a962d36e63357265772771c4ac69c1a63a7",
+   "processing": "48 kHz 24-bit, DC high-pass 22 Hz, 2 ms / 12 ms raised-cosine edge fades, peak -1.5 dBFS",
+   "notes": "original flags ['EDGE'] -> after conforming none",
+   "sha256": "ef6ff1f46c0568733a20764db850ee5db87a3bcd260149735e7b043f3d78c818",
+   "duration": 0.154,
+   "anchor": 0.0
+  }
+ },
+ "skipped": {
+  "mouse-click": "screen: HF_HEAVY (100 % of energy > 4 kHz) - thin, sharp double click; sfx2/ui_click_a/b instead",
+  "switch": "screen: HF_HEAVY (71 % > 4 kHz), starts/ends mid-signal - plasticky click; sfx2/ui_click_b instead",
+  "ding": "licence: Remotion says it is 'not explicitly released under a free license' (myinstants) - also 97 % of its energy in 2-6 kHz; sfx2/glass_chime_* instead",
+  "shutter-modern": "screen: NOISY_HF + HARSH_ONSET + CRACKLE - mechanical clatter",
+  "page-turn": "screen: HF_HEAVY (72 % > 4 kHz); the file is actually Kenney 'Draw Knife 1' (blade scrape)",
+  "whip": "briefed out (a whip crack); the file is a racquet swish with a sharp crack transient",
+  "snapchat-notification / mac-quack": "brand / meme sounds - not ours to borrow for a product launch",
+  "vine-boom / bone-crack / record-scratch / windows-xp-error / ...": "meme, impact, crack or error sounds - banned by the client rule (screen: THUMP / CRACKLE / PITCH_DIVE / ABRUPT_END)"
+ },
+ "policy": "Taken only if CC0 / free, screened clean (analysis/check_sfx.py) and in the glassy-soft brief."
+}

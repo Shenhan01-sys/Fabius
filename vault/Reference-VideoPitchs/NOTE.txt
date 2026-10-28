@@ -1,3 +1,19 @@
 Gunakan remotion dengan resource ini, jgn gunakan hyperframes, tapi gunakan remotion :
-"C:\Users\hansg\HansProject\Bnb-Indonesia-Hackathon\app\vault\Video-Workspace\Reference-VideoPitchs\Motion-as-Code-Workflow-Guide.pdf"
-"C:\Users\hansg\HansProject\Bnb-Indonesia-Hackathon\app\vault\Video-Workspace\Reference-VideoPitchs\Motion_as_kit"
+"\vault\Reference-VideoPitchs\Motion_as_kit"
+"\vault\Reference-VideoPitchs\Motion-as-Code-Workflow-Guide.pdf"
+
+ Oke mari kita mulai bikin planning untuk video pitch dengan durasi yg ideal kayaknya di 90 detik, jadi kita perlu menyampaikan semuanya harus clear dan jelas dalam 90 detik itu secara end to end dan
+  komersial untuk semua orang karena ini consumer apps + Agentic AI. Saya ingin video ini berupa motion graphics yg inklusif sekaligus imersif agar user takjub namun tetap menangkap context terkait fabius dengan akurat.
+  Nah saya ingin di videonya juga banyak interaksi langsung dengan website kita sih, jadi kayak immersive frame website fabius di page yg ingin dijelaskan + animasi immersivenya. Untuk resourcesnya ini :
+"\vault\Reference-VideoPitchs\NOTE.txt"
+"\vault\Reference-VideoPitchs\Motion_as_kit"
+"\vault\Reference-VideoPitchs\Motion-as-Code-Workflow-Guide.pdf"
+  https://www.remotion.dev/docs/ --> gudang remotion (penting, wajib explore), disini setau saya ada tools untuk generate voice over juga
+
+  UNtuk referensi seberapa gilanya videonya kurang lebih minimal selevel dengan ini :
+"\vault\Reference-VideoPitchs\From Klickpin.com- 26 Elegant birthday party decor ideas that instantly upgrade your space style or celebration without much effort for anyone who.mp4"
+"\vault\Reference-VideoPitchs\From Klickpin.com- 59 Trending Email Marketing Ideas for 2026-pin-id-600034350373163048.mp4"
+"\vault\Reference-VideoPitchs\From Klickpin.com- Explore Budget-friendly vision board ideas for a polished look people will notice with simple details that elevate the final lo.mp4"
+"\vault\Reference-VideoPitchs\From Klickpin.com- Save Creative bridesmaid dress inspiration for your next Pinterest save with enough variety to inspire your next creative step-.mp4"
+"\vault\Reference-VideoPitchs\SaveClip.App_AQMUeBBm_Uux0sn7hjBHh2uoqPpnO5N0FHWkp_L9p3oOlYZNq_rMlwGq2fYYq2n9qxqJvYSPilswmbmP8lTPfU7vPkLhuMEDYEL1ujs.mp4"
+  Kerjakan disini ya, udh di dlmnya vault : "\vault\Video-Workspace", gunakan workflow vault juga agar km tidak lupa

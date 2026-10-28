@@ -1,90 +1,68 @@
-# Fabius pitch video — Motion as Code, rendered with Remotion
+# Fabius pitch video v2 - Remotion, the live site, the site's own 3D, Motion.so
 
-A 2-minute pitch (1920×1080, 30 fps) for Fabius. Every frame is a pure function of the frame number, written in
-React and rendered by [Remotion](https://www.remotion.dev). Animations are timed by the voiceover's word timings,
-so a new read re-times the whole video.
+A ±94 s pitch (1920x1080, 60 fps) for Fabius: consumer + agentic, built so that every frame is a pure function of the frame number
+(React + [Remotion](https://www.remotion.dev) 4.0.534) and every claim has a file or a command behind it (`SCRIPT.md`).
+Plan, exit criteria and decisions: `PLAN-v2.md` (P172). v1 (2:06, Motion-as-Code style) is in git history (`b37b278d`, `59eace09`).
 
-The workflow and the visual grammar follow the Motion-as-Code kit in `../Reference-VideoPitchs/`
-(`Motion-as-Code-Workflow-Guide.pdf`, `Motion_as_kit/`): voiceover → word alignment → plates (scenes found by
-content, `lineOf` / `wordOf` / `cut`) → preview → render → sound. The kit's engine is three.js; this project ports
-its ideas to Remotion (plotter pen, graph paper, karaoke words, crop-mark HUD, grain) and keeps its fonts (Archivo,
-Cormorant Garamond, IBM Plex Mono, Hershey single-stroke) and its 33 sound effects. Colours are the Fabius web
-palette (`web/src/app/globals.css`, `docs/design/landing.md`): lavender, night indigo, one violet accent, red only
-for a gap.
+- `render/fabius-pitch-v2.mp4` - the video. `render/fabius-pitch-v2.en.srt` / `.en.vtt` - captions; `.id.srt` - Indonesian (USULAN).
+- Captions are also burned in (the video works with the sound off).
 
-- `render/fabius-pitch.mp4` — the video. `render/fabius-pitch.en.srt` / `.vtt` — captions.
-- `SCRIPT.md` — the voiceover line by line, with the file or command behind every claim.
+## What is on screen
+
+| Source | What | Where |
+|---|---|---|
+| live site captures | 60 fps clips recorded with virtual time (smooth regardless of capture speed), real cursor paths, element boxes per frame | `public/web/clips/*.mp4` + `.json`, `scripts/capture-flow.mjs`, `scripts/flows.mjs`, `public/web/README.md` |
+| the site's 3D | hero crystal, desk floor, Live Book pipeline, ported to `@remotion/three` (deterministic, camera as data) | `src/three/` (README there), snapshot `src/three/data/desk-snapshot.json` |
+| Motion.so | the reveal plate (cards dissolve -> crystal assembles -> headline) | `public/motion/reveal-motion-so.mp4` |
+| motion graphics | cameras, worlds, cards lifted out of pages, kinetic type, devices, transitions | `src/cam/`, `src/fx/`, `src/ui/`, `src/scenes/S1Hook.tsx` ... `S10End.tsx`, `src/timeline.ts` |
 
 ## Layout
 
 | Path | Role |
 |---|---|
-| `analysis/script.py` | the script: one line per entry, with its plate, plus spoken forms (x402, ERC-8004, 97 …) |
-| `analysis/tts_kokoro.py` | scratch voiceover: Kokoro TTS (`af_heart`), line by line, word-aligned |
-| `analysis/align_vo.py` | your own voiceover → `public/data/lyrics.json` (pocketsphinx forced alignment, offline) |
-| `analysis/audio_vo.py` | voice envelope → `public/data/audio.json` |
-| `analysis/music_bed.py` | a quiet synthesized pad (chord per plate) → `out/bed.wav` |
-| `analysis/sfx_mix.py` | cue sheet (≈300 cues on the same word times) + ducking + −14 LUFS → `public/audio/mix.mp3` |
-| `analysis/captions.py` | `.srt` / `.vtt` from the word timings |
-| `src/timeline.ts` | which plate plays when; cuts in the pause before a line; transitions (zoom, whip, iris, push, flash) |
-| `src/plates/*.tsx` | the eleven plates (Hook … End) |
-| `src/components/` | kit (karaoke, pen, graph paper, spark), camera (3D moves, parallax, ambient), solid (a real 3D stage in CSS: boxes, thick glass tablets, the web's glass blocks as true cubes, padlocks), devices (browser, phone, Telegram), glass, HUD, transitions |
-| `public/ui/` | captures of the real web app and Telegram signal image (see below) |
-| `scripts/stills.mjs` | render stills at given seconds, with a contact sheet |
-| `scripts/capture-web.mjs`, `scripts/capture-sections.mjs` | capture `web/` pages (desktop + mobile) and the home page's sections |
+| `analysis/vo_v2.py` | the script + neural TTS read, line by line, word timings from the TTS -> `public/audio/voiceover.wav`, `public/data/vo.json` |
+| `analysis/cues_v2.py` | music sections + SFX cue sheet anchored to voiceover words -> `public/data/cues.json` |
+| `analysis/sfx_synth.py`, `music_v2.py`, `mix_v2.py`, `check_sfx.py` | clean SFX library (`public/audio/sfx2/`), original procedural music, the mix (-14 LUFS), the SFX guard |
+| `analysis/captions_v2.py` | `.srt` / `.vtt` from the word timings |
+| `src/lib/` | palette, fonts (Archivo with its width axis, Inter, JetBrains Mono - the site's), easing, voiceover timing lookups |
+| `src/data/captures.ts` | capture metadata (cursor, boxes, marks) for the scenes |
+| `src/timeline.ts` | which scene plays when (cuts sit in the pause before a scene's first line) and the transitions |
 
 ## Run
 
 ```sh
-npm install
-npm run studio                      # live preview with the soundtrack
-node scripts/stills.mjs --t 12.5,40.2 --sheet          # stills while editing (out/wip)
-npm run render                      # out/fabius-pitch.mp4 (h264, CRF 18)
+npm ci
+npm run studio                                    # live preview
+npx remotion still src/index.ts Fabius out/wip/f.png --frame=1800     # one frame (60 fps)
+npx remotion render src/index.ts Fabius out/draft-v2.mp4 --scale=0.5 --concurrency=8   # draft
+npm run render                                    # master -> out/fabius-pitch-v2.mp4
 ```
 
-`render/fabius-pitch.mp4` (≈47 MB) is a two-pass H.264 copy of the master for the web and chat apps:
+WebGL (the 3D) renders on the GPU through ANGLE (`remotion.config.ts`); without a GPU set `REMOTION_GL=swangle` (slow).
+
+## Rebuild the sound
 
 ```sh
-VF="scale=in_range=full:out_range=tv,format=yuv420p"
-ffmpeg -i out/fabius-pitch.mp4 -vf "$VF" -c:v libx264 -preset slow -b:v 2800k -pass 1 -an -f null /dev/null
-ffmpeg -i out/fabius-pitch.mp4 -vf "$VF" -c:v libx264 -preset slow -b:v 2800k -pass 2 -c:a aac -b:a 192k -movflags +faststart render/fabius-pitch.mp4
+python -X utf8 analysis/vo_v2.py              # voiceover (cached per line in out/vo-cache); --samples renders other voices
+python -X utf8 analysis/cues_v2.py            # cue sheet
+python -X utf8 -P analysis/music_v2.py --png  # music bed + stems (out/audio)
+python -X utf8 -P analysis/mix_v2.py --png    # public/audio/mix_v2.mp3 (+ loudness report)
+python -X utf8 -P analysis/check_sfx.py       # guard: whitelist + hashes + no crash / broken sounds
+python -X utf8 analysis/captions_v2.py
 ```
 
-Remotion downloads its own headless Chrome on first render. Without network access to it, point it at any
-Chromium: `REMOTION_BROWSER_EXECUTABLE=/path/to/chrome npm run render`.
+**Rule from the builder:** never a sound that gives the impression of a crash or something broken (impacts, debris, shattering,
+glitch, static, zaps, tape-stops, reverse sucks ...). The old kit's SFX were removed from this workspace on 7-8 Oct and
+`check_sfx.py` refuses any unlisted file or banned name.
 
-## Swap the voiceover
-
-1. Record (or generate with ElevenLabs) the lines of `analysis/script.py`, keeping the words.
-2. Save it as `public/audio/voiceover.wav` (or `.mp3`).
-3. Re-time everything and rebuild the sound:
+## Re-capture the site
 
 ```sh
-python -m uv run --no-project --with pocketsphinx --with numpy python analysis/align_vo.py
-python -m uv run --no-project --with numpy python analysis/audio_vo.py
-python -m uv run --no-project --with numpy --with scipy python analysis/music_bed.py
-python -m uv run --no-project --with numpy python analysis/sfx_mix.py
-python analysis/captions.py
+node scripts/capture-flow.mjs              # all flows (see scripts/flows.mjs); read-only, no login
 ```
-
-The scratch read in this folder is Kokoro TTS (Apache-2.0): `python -m uv run --no-project --with kokoro-onnx
---with soundfile --with pocketsphinx --with numpy python analysis/tts_kokoro.py` (fetches the model, ~340 MB).
-
-## Product captures
-
-```sh
-cd ../../web && npm run build && npx next start -p 3100
-# optional, for pages that read the Railway gate: the real gate, run offline on the repo
-python tools/x402_sinyal.py --local      # :8050 (needs eth-abi, eth-account; see railway/requirements.txt)
-node scripts/capture-web.mjs --gate http://127.0.0.1:8050
-node scripts/capture-sections.mjs
-```
-
-The Telegram chat is drawn from the bot's real reply templates (`tools/x402_sinyal.py`) and its real signal image
-(`tools/sinyal_gambar.py`).
 
 ## Credits
 
-Visual language: the Motion-as-Code kit, built on pdoom-video by mexicat (MIT, `LICENSE.pdoom-engine`). Fonts:
-SIL Open Font License (`public/fonts/OFL.txt`); Hershey fonts per their notice in the SVG files. Sound effects:
-ElevenLabs Sound Effects (from the kit). Scratch voice: Kokoro-82M (Apache-2.0).
+Remotion (free licence for individuals / companies up to 3 people). Fonts: Archivo, Inter, JetBrains Mono (SIL OFL, `public/fonts/OFL.txt`).
+Voice: Microsoft neural TTS via `edge-tts` (USULAN, see PLAN-v2 LB20). Music + SFX: synthesized for this video; `whoosh` from
+`@remotion/sfx` (CC0). Reveal plate: Motion.so (generated for this project). 3D: ports of the Fabius website's own scenes.

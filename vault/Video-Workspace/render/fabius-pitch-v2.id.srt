@@ -1,0 +1,108 @@
+1
+00:00:00,600 --> 00:00:03,051
+Setiap bot trading punya rekam jejak sempurna.
+
+2
+00:00:03,501 --> 00:00:06,880
+Masalahnya? Selalu ditulis setelah pasar bergerak.
+
+3
+00:00:07,730 --> 00:00:09,188
+Jadi kami membuat kebalikannya.
+
+4
+00:00:09,588 --> 00:00:11,000
+Kenalkan Fabius.
+
+5
+00:00:11,020 --> 00:00:15,263
+Setiap sinyal disegel di BNB Chain, sebelum pasar menjawab.
+
+6
+00:00:16,063 --> 00:00:17,381
+Pertama, aturannya.
+
+7
+00:00:17,681 --> 00:00:23,079
+Strategi tiap bot dikunci on-chain, jadi tidak bisa diam-diam diubah setelah hari yang buruk.
+
+8
+00:00:23,779 --> 00:00:26,815
+Setiap hari, candle ditutup, bot mengambil keputusan,
+
+9
+00:00:26,965 --> 00:00:30,565
+dan Fabius menyegelnya dengan cap waktu yang tidak bisa diubah siapa pun.
+
+10
+00:00:30,585 --> 00:00:31,792
+Bahkan kami.
+
+11
+00:00:32,592 --> 00:00:35,998
+Siapa yang memilih botnya? Sebuah meja berisi agen AI.
+
+12
+00:00:36,348 --> 00:00:41,324
+Setiap lima menit, analis dengan identitas on-chain masing-masing menentukan pilihan,
+
+13
+00:00:41,474 --> 00:00:47,035
+lalu rumus yang terkunci mengubahnya menjadi satu portofolio simulasi, disegel sebelum siklus berakhir.
+
+14
+00:00:47,835 --> 00:00:48,930
+Mau sinyal hari ini?
+
+15
+00:00:49,180 --> 00:00:54,392
+Ambil di web, di Telegram, atau biarkan agen AI-mu mengambilnya lewat MCP.
+
+16
+00:00:54,692 --> 00:00:57,229
+Bayar per sinyal dengan x402.
+
+17
+00:00:57,249 --> 00:01:01,099
+Tanpa gas, tanpa langganan, dan sinyal datang bersama buktinya.
+
+18
+00:01:01,899 --> 00:01:03,377
+Lalu periksa sendiri.
+
+19
+00:01:03,627 --> 00:01:05,464
+Pilih bot mana pun, hari mana pun.
+
+20
+00:01:05,484 --> 00:01:09,003
+Fabius menyusun ulang sinyalnya dari data publik dan chain.
+
+21
+00:01:09,303 --> 00:01:11,415
+Tanpa kunci. Tanpa gas.
+
+22
+00:01:12,165 --> 00:01:15,185
+Punya bot atau agen sendiri? Bawa saja.
+
+23
+00:01:15,435 --> 00:01:18,044
+Bot itu melewati gerbang publik yang sama dengan milik kami.
+
+24
+00:01:18,844 --> 00:01:22,600
+Tanpa janji untung. Ini uang simulasi di testnet,
+
+25
+00:01:22,750 --> 00:01:26,060
+dan belum ada satu pun dari enam bot yang lolos uji maju.
+
+26
+00:01:26,510 --> 00:01:27,980
+Fabius menunggu bukti.
+
+27
+00:01:28,530 --> 00:01:30,275
+Jangan percaya. Periksa.
+

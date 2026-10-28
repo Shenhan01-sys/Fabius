@@ -35,6 +35,13 @@ export default function Hero({ s }: { s: Snapshot }) {
   const counts = useMemo(() => crystalCounts(s, 27 - 1), [s]); // 26 blok luar; inti = agen
   const [beat, setBeat] = useState<number | null>(null);
   const [copied, setCopied] = useState(false);
+  const [demo, setDemo] = useState(false);
+  useEffect(() => {
+    if (!demo) return;
+    const onKey = (e: KeyboardEvent) => e.key === "Escape" && setDemo(false);
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [demo]);
   const sec = useRef<HTMLElement>(null);
   const [inView, setInView] = useState(true);
   useEffect(() => {
@@ -92,6 +99,16 @@ export default function Hero({ s }: { s: Snapshot }) {
             {t.hero.sub}
           </motion.p>
           <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 1.15 }} className="pointer-events-auto flex flex-wrap gap-3">
+            <button
+              type="button"
+              onClick={() => setDemo(true)}
+              className="flex items-center gap-2.5 rounded-full bg-ink py-2 pl-2 pr-6 text-sm font-semibold text-white shadow-[0_14px_40px_-12px_rgba(21,18,43,.7)] transition hover:-translate-y-0.5"
+            >
+              <span className="grid h-9 w-9 place-items-center rounded-full bg-violet">
+                <svg viewBox="0 0 12 12" className="ml-0.5 h-3 w-3 fill-white" aria-hidden="true"><path d="M2 1.2 L10.6 6 L2 10.8 Z" /></svg>
+              </span>
+              {t.hero.demo}
+            </button>
             <a href="#proof" className="rounded-full bg-violet px-6 py-3.5 text-sm font-semibold text-white shadow-[0_14px_40px_-12px_rgba(110,75,255,.8)] transition hover:-translate-y-0.5">
               {t.hero.primary} →
             </a>
@@ -140,6 +157,51 @@ export default function Hero({ s }: { s: Snapshot }) {
           )}
         </AnimatePresence>
       </div>
+
+      {/* Demo: video YouTube di kartu kaca (iframe hanya dimuat saat dibuka) */}
+      <AnimatePresence>
+        {demo && (
+          <motion.div
+            key="demo"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.25 }}
+            className="absolute inset-0 z-50 grid place-items-center bg-ink/45 p-4 backdrop-blur-md"
+            onClick={() => setDemo(false)}
+            role="dialog"
+            aria-modal="true"
+            aria-label={t.hero.demo}
+          >
+            <motion.div
+              initial={{ opacity: 0, y: 24, scale: 0.96 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: 12, scale: 0.98 }}
+              transition={{ type: "spring", stiffness: 220, damping: 24 }}
+              onClick={(e) => e.stopPropagation()}
+              className="glass relative w-[min(94%,calc(82svh*16/9))] rounded-[28px] p-2.5 shadow-[0_40px_120px_-30px_rgba(110,75,255,.75)] sm:w-[min(74%,calc(82svh*16/9))] sm:p-3"
+            >
+              <div className="relative aspect-video w-full overflow-hidden rounded-[20px] bg-ink">
+                <iframe
+                  src="https://www.youtube-nocookie.com/embed/BUY2ajcy5qw?autoplay=1&rel=0&modestbranding=1&playsinline=1"
+                  title="Fabius demo"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                  allowFullScreen
+                  className="absolute inset-0 h-full w-full"
+                />
+              </div>
+              <button
+                type="button"
+                onClick={() => setDemo(false)}
+                aria-label="close"
+                className="absolute -right-3 -top-3 grid h-10 w-10 place-items-center rounded-full bg-white text-lg text-ink shadow-[0_10px_30px_-10px_rgba(21,18,43,.5)] transition hover:scale-110 hover:bg-violet hover:text-white"
+              >
+                ✕
+              </button>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       <div className="absolute right-10 top-[52%] z-20 hidden xl:block">
         <RotatingBadge text={copied ? "COPIED · PASTE IN A TERMINAL · " : t.hero.badge} onClick={verify} done={copied} />

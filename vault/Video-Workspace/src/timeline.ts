@@ -1,72 +1,39 @@
-// The edit: which plate plays when. Every cut sits in the pause before a line (the kit's rule), anchored to
-// the aligned script by content, so a new voiceover re-times the whole video.
+// The edit: which scene plays when. Every cut sits in the pause before a scene's first voiceover line (found by
+// content in public/data/vo.json), so a new read re-times the whole video.
 import type React from 'react';
-import type { Tr } from './components/transition';
-import { cut, LY } from './lib/lyrics';
-import Hook from './plates/Hook';
-import Problem from './plates/Problem';
-import Idea from './plates/Idea';
-import Lock from './plates/Lock';
-import Commit from './plates/Commit';
-import Desk from './plates/Desk';
-import Split from './plates/Split';
-import Open from './plates/Open';
-import Bnb from './plates/Bnb';
-import Honest from './plates/Honest';
-import End from './plates/End';
+import type { Tr } from './fx/transition';
+import { cut, DURATION } from './lib/vo';
 
-export interface PlateProps { t: number; start: number; end: number; frame: number; fps: number }
-export interface Src { at: number; text: string }
+export interface SceneProps { t: number; t0: number; t1: number; frame: number; fps: number }
 export interface Entry {
   id: string;
   title: string;
-  start: number;
-  end: number;
-  /** the transition INTO this plate, centred on its start */
+  t0: number;
+  t1: number;
+  /** transition INTO this scene, centred on t0 */
   tr?: Tr;
-  /** light plate: HUD in ink */
-  ink?: (t: number) => boolean;
-  /** source labels for the claims on screen, bottom-right */
-  src?: Src[];
-  Comp: React.FC<PlateProps>;
+  /** dark scene: captions in light-on-dark */
+  dark?: boolean;
+  Comp: React.FC<SceneProps>;
 }
 
-const at = (q: string) => LY.get(q).start;
+export type SceneMap = Record<string, React.FC<SceneProps>>;
 
-export function makeTimeline(): Entry[] {
+export function makeTimeline(S: SceneMap): Entry[] {
   const b = {
-    problem: cut('Most trading bots'),
-    idea: cut('Fabius is a paper-trading'),
-    lock: cut('It starts with the rules'),
-    commit: cut('Every bar, a bot'),
-    desk: cut('On top runs the AI desk'),
-    split: cut('The AI picks the rulebook'),
-    open: cut('And the desk is open'),
-    bnb: cut('Signals sell over'),
-    honest: cut('Because here'),
-    end: cut('So Fabius does what'),
-    stop: LY.duration,
+    reveal: cut('reveal'), rules: cut('rules'), seal: cut('seal'), desk: cut('desk'), use: cut('use'),
+    verify: cut('verify'), open: cut('open'), honest: cut('honest'), end: cut('end'), stop: DURATION,
   };
   return [
-    { id: 'hook', title: 'Cunctator', start: 0, end: b.problem, Comp: Hook,
-      src: [{ at: at('His name was'), text: 'README.md · the name' }] },
-    { id: 'problem', title: 'The screenshot', start: b.problem, end: b.idea, Comp: Problem, tr: { type: 'zoom', d: 0.7, x: 960, y: 640 } },
-    { id: 'idea', title: 'The idea', start: b.idea, end: b.lock, Comp: Idea, ink: () => true, tr: { type: 'iris', d: 0.8 },
-      src: [{ at: at('Fabius is a paper'), text: 'contracts/SignalAnchor.sol · contracts/DeskAnchor.sol' }] },
-    { id: 'lock', title: 'Rules first', start: b.lock, end: b.commit, Comp: Lock, ink: () => true, tr: { type: 'push', d: 0.7 },
-      src: [{ at: at('Each of our six'), text: 'deployments/97.json · m3.locks' }, { at: at('A strategy that'), text: 'contracts/SignalAnchor.sol · LockedAfterBar · snapshot: SEBELUM KUNCI' }] },
-    { id: 'commit', title: 'Commit, reveal', start: b.commit, end: b.desk, Comp: Commit, tr: { type: 'whip', d: 0.6 },
-      src: [{ at: at('Every bar, a bot'), text: 'ledger/paper/B2-RS.jsonl · bar 2026-10-05 · lag 31,458 s' }, { at: at('Late commits'), text: 'deployments/97.json · maxLag_s 43200' }, { at: at('Anyone can rerun'), text: 'python -X utf8 -m engine.cli ledger verify' }] },
-    { id: 'desk', title: 'The AI desk', start: b.desk, end: b.split, Comp: Desk, tr: { type: 'zoom', d: 0.8, x: 1660, y: 420 },
-      src: [{ at: at('Every five minutes'), text: 'deployments/97.json · analis.agents' }, { at: at('A locked formula'), text: 'tools/meja_slot.py · PARAMS2 r4' }, { at: at('And its root must'), text: 'contracts/DeskAnchor.sol · CYCLE = 300' }] },
-    { id: 'split', title: 'Who decides', start: b.split, end: b.open, Comp: Split, tr: { type: 'flash', d: 0.3 },
-      src: [{ at: at('The AI picks'), text: 'vault · F-D112 (direction computed by code)' }] },
-    { id: 'open', title: 'Open desk', start: b.open, end: b.bnb, Comp: Open, tr: { type: 'whip', d: 0.6 },
-      src: [{ at: at('Bring your own'), text: 'engine/rule.py · tools/agen_luar.py' }, { at: at('Every bot runs'), text: 'engine/gates.py · G1–G11' }] },
-    { id: 'bnb', title: 'On BNB Chain', start: b.bnb, end: b.honest, Comp: Bnb, tr: { type: 'zoom', d: 0.7 },
-      src: [{ at: at('Signals sell over'), text: 'tools/x402_sinyal.py · FabiusCredit (FAB)' }, { at: at('All on testnet'), text: 'config/uang_nyata.json · "aktif": false' }] },
-    { id: 'honest', title: 'What we don’t claim', start: b.honest, end: b.end, Comp: Honest, ink: () => true, tr: { type: 'iris', d: 0.8 },
-      src: [{ at: at('To pass, a bot'), text: 'engine/fd16.py · F-D16' }, { at: at('Today, zero of six'), text: 'python -X utf8 -m engine.cli ledger fd16 · 06 Oct 2026' }] },
-    { id: 'end', title: 'Fabius', start: b.end, end: b.stop, Comp: End, tr: { type: 'push', d: 0.7 }, ink: (t) => t >= LY.get('Fabius. Refuse').start - 0.25 },
+    { id: 'hook', title: 'Perfect track records', t0: 0, t1: b.reveal, Comp: S.hook!, dark: true },
+    { id: 'reveal', title: 'Meet Fabius', t0: b.reveal, t1: b.rules, Comp: S.reveal!, tr: { type: 'bloom', d: 0.9 } },
+    { id: 'rules', title: 'Rules first', t0: b.rules, t1: b.seal, Comp: S.rules!, tr: { type: 'whip', d: 0.55 } },
+    { id: 'seal', title: 'Sealed', t0: b.seal, t1: b.desk, Comp: S.seal!, tr: { type: 'zoom', d: 0.7 } },
+    { id: 'desk', title: 'The AI desk', t0: b.desk, t1: b.use, Comp: S.desk!, tr: { type: 'dip', d: 0.8 }, dark: true },
+    { id: 'use', title: 'Get the signal', t0: b.use, t1: b.verify, Comp: S.use!, tr: { type: 'bloom', d: 0.8 } },
+    { id: 'verify', title: 'Check it', t0: b.verify, t1: b.open, Comp: S.verify!, tr: { type: 'portal', d: 0.8 } },
+    { id: 'open', title: 'Bring yours', t0: b.open, t1: b.honest, Comp: S.open!, tr: { type: 'whip', d: 0.55, dir: -1 } },
+    { id: 'honest', title: 'No profit promises', t0: b.honest, t1: b.end, Comp: S.honest!, tr: { type: 'zoom', d: 0.7 } },
+    { id: 'end', title: 'Fabius', t0: b.end, t1: b.stop, Comp: S.end!, tr: { type: 'zoom', d: 0.8 } },
   ];
 }

@@ -1,0 +1,68 @@
+{
+ "accepts": [
+  {
+   "amount": "10000",
+   "asset": "0xc7b6d5cdbdc881daae0dbcc095d4f184b70ec881",
+   "description": "Fabius B1-TREND bar 2026-10-06: niat posisi + bukti komit/validasi (0.01 FAB, harga harga dasar: confidence belum terukur (hanya 'terukur' yang boleh menaikkan harga))",
+   "extra": {
+    "assetTransferMethod": "permit2",
+    "maxAmountRequired": "10000",
+    "name": "Fabius Credit",
+    "version": "1"
+   },
+   "maxTimeoutSeconds": 120,
+   "mimeType": "application/json",
+   "network": "eip155:97",
+   "payTo": "0x10c41a996Bab4042867c2dD388937A1e2743f1b1",
+   "resource": "https://fabius-x402-production.up.railway.app/signal/B1-TREND/2026-10-06",
+   "scheme": "exact"
+  }
+ ],
+ "error": "PAYMENT-SIGNATURE header is required",
+ "harga": {
+  "alasan": "harga dasar: confidence belum terukur (hanya 'terukur' yang boleh menaikkan harga)",
+  "atomic": 10000,
+  "fab": 0.01
+ },
+ "resource": {
+  "description": "Fabius B1-TREND bar 2026-10-06: niat posisi + bukti komit/validasi (0.01 FAB, harga harga dasar: confidence belum terukur (hanya 'terukur' yang boleh menaikkan harga))",
+  "mimeType": "application/json",
+  "url": "https://fabius-x402-production.up.railway.app/signal/B1-TREND/2026-10-06"
+ },
+ "teaser": {
+  "alasan": [
+   "status INTI: bot identitas pilihan builder - peran di buku, bukan bukti bot terbaik",
+   "gerbang v1 (backtest terkunci, `engine/book.py::GATE_V1`): TOLAK",
+   "rekam jejak maju: 0 hari settle - butuh >= 2 untuk angka apa pun",
+   "F-D16 (syarat uang nyata / jual): BELUM CUKUP DATA - S1 sinyal maju 0 < 20; hari settle 0 < 20; bulan 0 < 2 (S4 butuh fold untuk dibuang)"
+  ],
+  "bot": "B1-TREND",
+  "confidence_pct": null,
+  "dasar": "1 - p bootstrap blok F-D16 (H0: rerata net harian maju <= 0); bukan peluang sinyal hari ini benar",
+  "fd16": "BELUM CUKUP DATA",
+  "gerbang_v1": "TOLAK",
+  "kematangan": {
+   "bulan": [
+    0,
+    2
+   ],
+   "hari": [
+    0,
+    20
+   ],
+   "sinyal": [
+    0,
+    20
+   ]
+  },
+  "label": "belum terukur",
+  "rekam": {
+   "ci_hi_bps": null,
+   "ci_lo_bps": null,
+   "mean_bps": null,
+   "p": null
+  },
+  "status": "INTI"
+ },
+ "x402Version": 2
+}

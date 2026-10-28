@@ -1,0 +1,1298 @@
+{
+ "voice": "en-US-AvaMultilingualNeural",
+ "rate": "+0%",
+ "sr": 48000,
+ "duration": 94.475,
+ "lead_in": 0.6,
+ "tail": 4.2,
+ "tts": "edge-tts (Microsoft neural, Edge read-aloud service) - USULAN, builder's call (LB20)",
+ "lines": [
+  {
+   "id": "hook1",
+   "scene": "hook",
+   "text": "Every trading bot has a perfect track record.",
+   "start": 0.6,
+   "end": 3.051,
+   "words": [
+    {
+     "w": "Every",
+     "start": 0.62,
+     "end": 0.87
+    },
+    {
+     "w": "trading",
+     "start": 0.883,
+     "end": 1.308
+    },
+    {
+     "w": "bot",
+     "start": 1.32,
+     "end": 1.57
+    },
+    {
+     "w": "has",
+     "start": 1.583,
+     "end": 1.77
+    },
+    {
+     "w": "a",
+     "start": 1.783,
+     "end": 1.845
+    },
+    {
+     "w": "perfect",
+     "start": 1.858,
+     "end": 2.233
+    },
+    {
+     "w": "track",
+     "start": 2.233,
+     "end": 2.533
+    },
+    {
+     "w": "record",
+     "start": 2.545,
+     "end": 2.933
+    }
+   ]
+  },
+  {
+   "id": "hook2",
+   "scene": "hook",
+   "text": "The catch? It's always written after the market moves.",
+   "start": 3.501,
+   "end": 6.88,
+   "words": [
+    {
+     "w": "The",
+     "start": 3.521,
+     "end": 3.584
+    },
+    {
+     "w": "catch",
+     "start": 3.596,
+     "end": 4.184
+    },
+    {
+     "w": "It's",
+     "start": 4.559,
+     "end": 4.721
+    },
+    {
+     "w": "always",
+     "start": 4.784,
+     "end": 5.184
+    },
+    {
+     "w": "written",
+     "start": 5.196,
+     "end": 5.571
+    },
+    {
+     "w": "after",
+     "start": 5.584,
+     "end": 5.834
+    },
+    {
+     "w": "the",
+     "start": 5.834,
+     "end": 5.896
+    },
+    {
+     "w": "market",
+     "start": 5.896,
+     "end": 6.221
+    },
+    {
+     "w": "moves",
+     "start": 6.234,
+     "end": 6.771
+    }
+   ]
+  },
+  {
+   "id": "rev1",
+   "scene": "reveal",
+   "text": "So we built the opposite.",
+   "start": 7.73,
+   "end": 9.188,
+   "words": [
+    {
+     "w": "So",
+     "start": 7.75,
+     "end": 8.075
+    },
+    {
+     "w": "we",
+     "start": 8.125,
+     "end": 8.263
+    },
+    {
+     "w": "built",
+     "start": 8.263,
+     "end": 8.488
+    },
+    {
+     "w": "the",
+     "start": 8.488,
+     "end": 8.563
+    },
+    {
+     "w": "opposite",
+     "start": 8.575,
+     "end": 9.138
+    }
+   ]
+  },
+  {
+   "id": "rev2",
+   "scene": "reveal",
+   "text": "Meet Fabius. It seals every signal on BNB Chain, before the market answers.",
+   "start": 9.588,
+   "end": 15.263,
+   "words": [
+    {
+     "w": "Meet",
+     "start": 9.608,
+     "end": 9.895
+    },
+    {
+     "w": "Fabius",
+     "start": 9.908,
+     "end": 10.658
+    },
+    {
+     "w": "It",
+     "start": 11.02,
+     "end": 11.145
+    },
+    {
+     "w": "seals",
+     "start": 11.158,
+     "end": 11.595
+    },
+    {
+     "w": "every",
+     "start": 11.67,
+     "end": 11.97
+    },
+    {
+     "w": "signal",
+     "start": 11.983,
+     "end": 12.445
+    },
+    {
+     "w": "on",
+     "start": 12.508,
+     "end": 12.708
+    },
+    {
+     "w": "BNB",
+     "start": 12.72,
+     "end": 13.183
+    },
+    {
+     "w": "Chain",
+     "start": 13.195,
+     "end": 13.583
+    },
+    {
+     "w": "before",
+     "start": 13.795,
+     "end": 14.095
+    },
+    {
+     "w": "the",
+     "start": 14.108,
+     "end": 14.183
+    },
+    {
+     "w": "market",
+     "start": 14.195,
+     "end": 14.545
+    },
+    {
+     "w": "answers",
+     "start": 14.558,
+     "end": 15.145
+    }
+   ]
+  },
+  {
+   "id": "rule1",
+   "scene": "rules",
+   "text": "First, the rules.",
+   "start": 16.063,
+   "end": 17.381,
+   "words": [
+    {
+     "w": "First",
+     "start": 16.083,
+     "end": 16.471
+    },
+    {
+     "w": "the",
+     "start": 16.483,
+     "end": 16.558
+    },
+    {
+     "w": "rules",
+     "start": 16.571,
+     "end": 17.271
+    }
+   ]
+  },
+  {
+   "id": "rule2",
+   "scene": "rules",
+   "text": "Each bot's strategy is locked on-chain, so it can't be quietly rewritten after a bad day.",
+   "start": 17.681,
+   "end": 23.079,
+   "words": [
+    {
+     "w": "Each",
+     "start": 17.701,
+     "end": 17.951
+    },
+    {
+     "w": "bot's",
+     "start": 17.964,
+     "end": 18.214
+    },
+    {
+     "w": "strategy",
+     "start": 18.214,
+     "end": 18.839
+    },
+    {
+     "w": "is",
+     "start": 18.851,
+     "end": 18.976
+    },
+    {
+     "w": "locked",
+     "start": 18.976,
+     "end": 19.289
+    },
+    {
+     "w": "on-chain",
+     "start": 19.301,
+     "end": 19.814
+    },
+    {
+     "w": "so",
+     "start": 20.239,
+     "end": 20.389
+    },
+    {
+     "w": "it",
+     "start": 20.389,
+     "end": 20.476
+    },
+    {
+     "w": "can't",
+     "start": 20.489,
+     "end": 20.726
+    },
+    {
+     "w": "be",
+     "start": 20.726,
+     "end": 20.864
+    },
+    {
+     "w": "quietly",
+     "start": 20.876,
+     "end": 21.476
+    },
+    {
+     "w": "rewritten",
+     "start": 21.489,
+     "end": 21.989
+    },
+    {
+     "w": "after",
+     "start": 22.001,
+     "end": 22.276
+    },
+    {
+     "w": "a",
+     "start": 22.289,
+     "end": 22.339
+    },
+    {
+     "w": "bad",
+     "start": 22.339,
+     "end": 22.601
+    },
+    {
+     "w": "day",
+     "start": 22.601,
+     "end": 22.926
+    }
+   ]
+  },
+  {
+   "id": "seal1",
+   "scene": "seal",
+   "text": "Every day, the candle closes, the bot makes its call,",
+   "start": 23.779,
+   "end": 26.815,
+   "words": [
+    {
+     "w": "Every",
+     "start": 23.799,
+     "end": 24.086
+    },
+    {
+     "w": "day",
+     "start": 24.099,
+     "end": 24.436
+    },
+    {
+     "w": "the",
+     "start": 24.449,
+     "end": 24.536
+    },
+    {
+     "w": "candle",
+     "start": 24.536,
+     "end": 24.886
+    },
+    {
+     "w": "closes",
+     "start": 24.886,
+     "end": 25.486
+    },
+    {
+     "w": "the",
+     "start": 25.511,
+     "end": 25.611
+    },
+    {
+     "w": "bot",
+     "start": 25.611,
+     "end": 25.886
+    },
+    {
+     "w": "makes",
+     "start": 25.899,
+     "end": 26.099
+    },
+    {
+     "w": "its",
+     "start": 26.111,
+     "end": 26.236
+    },
+    {
+     "w": "call",
+     "start": 26.236,
+     "end": 26.686
+    }
+   ]
+  },
+  {
+   "id": "seal2",
+   "scene": "seal",
+   "text": "and Fabius seals it with a timestamp no one can change. Not even us.",
+   "start": 26.965,
+   "end": 31.792,
+   "words": [
+    {
+     "w": "and",
+     "start": 26.985,
+     "end": 27.147
+    },
+    {
+     "w": "Fabius",
+     "start": 27.16,
+     "end": 27.622
+    },
+    {
+     "w": "seals",
+     "start": 27.635,
+     "end": 27.972
+    },
+    {
+     "w": "it",
+     "start": 27.985,
+     "end": 28.085
+    },
+    {
+     "w": "with",
+     "start": 28.085,
+     "end": 28.197
+    },
+    {
+     "w": "a",
+     "start": 28.21,
+     "end": 28.26
+    },
+    {
+     "w": "timestamp",
+     "start": 28.26,
+     "end": 28.997
+    },
+    {
+     "w": "no",
+     "start": 29.11,
+     "end": 29.285
+    },
+    {
+     "w": "one",
+     "start": 29.297,
+     "end": 29.46
+    },
+    {
+     "w": "can",
+     "start": 29.472,
+     "end": 29.635
+    },
+    {
+     "w": "change",
+     "start": 29.647,
+     "end": 30.21
+    },
+    {
+     "w": "Not",
+     "start": 30.585,
+     "end": 30.835
+    },
+    {
+     "w": "even",
+     "start": 30.897,
+     "end": 31.16
+    },
+    {
+     "w": "us",
+     "start": 31.172,
+     "end": 31.672
+    }
+   ]
+  },
+  {
+   "id": "desk1",
+   "scene": "desk",
+   "text": "Who picks the bot? A desk of AI agents.",
+   "start": 32.592,
+   "end": 35.998,
+   "words": [
+    {
+     "w": "Who",
+     "start": 32.612,
+     "end": 32.712
+    },
+    {
+     "w": "picks",
+     "start": 32.724,
+     "end": 33.024
+    },
+    {
+     "w": "the",
+     "start": 33.037,
+     "end": 33.112
+    },
+    {
+     "w": "bot",
+     "start": 33.124,
+     "end": 33.524
+    },
+    {
+     "w": "A",
+     "start": 33.924,
+     "end": 34.024
+    },
+    {
+     "w": "desk",
+     "start": 34.024,
+     "end": 34.462
+    },
+    {
+     "w": "of",
+     "start": 34.512,
+     "end": 34.749
+    },
+    {
+     "w": "AI",
+     "start": 34.849,
+     "end": 35.237
+    },
+    {
+     "w": "agents",
+     "start": 35.249,
+     "end": 35.862
+    }
+   ]
+  },
+  {
+   "id": "desk2",
+   "scene": "desk",
+   "text": "Every five minutes, analysts with their own on-chain identities make their picks,",
+   "start": 36.348,
+   "end": 41.324,
+   "words": [
+    {
+     "w": "Every",
+     "start": 36.368,
+     "end": 36.631
+    },
+    {
+     "w": "five",
+     "start": 36.643,
+     "end": 36.968
+    },
+    {
+     "w": "minutes",
+     "start": 36.981,
+     "end": 37.431
+    },
+    {
+     "w": "analysts",
+     "start": 37.681,
+     "end": 38.156
+    },
+    {
+     "w": "with",
+     "start": 38.168,
+     "end": 38.281
+    },
+    {
+     "w": "their",
+     "start": 38.293,
+     "end": 38.506
+    },
+    {
+     "w": "own",
+     "start": 38.581,
+     "end": 38.931
+    },
+    {
+     "w": "on-chain",
+     "start": 39.006,
+     "end": 39.468
+    },
+    {
+     "w": "identities",
+     "start": 39.481,
+     "end": 40.093
+    },
+    {
+     "w": "make",
+     "start": 40.381,
+     "end": 40.581
+    },
+    {
+     "w": "their",
+     "start": 40.581,
+     "end": 40.731
+    },
+    {
+     "w": "picks",
+     "start": 40.743,
+     "end": 41.193
+    }
+   ]
+  },
+  {
+   "id": "desk3",
+   "scene": "desk",
+   "text": "and a locked formula turns them into one paper portfolio, sealed before the cycle ends.",
+   "start": 41.474,
+   "end": 47.035,
+   "words": [
+    {
+     "w": "and",
+     "start": 41.494,
+     "end": 41.657
+    },
+    {
+     "w": "a",
+     "start": 41.719,
+     "end": 41.769
+    },
+    {
+     "w": "locked",
+     "start": 41.782,
+     "end": 42.169
+    },
+    {
+     "w": "formula",
+     "start": 42.169,
+     "end": 42.632
+    },
+    {
+     "w": "turns",
+     "start": 42.644,
+     "end": 42.957
+    },
+    {
+     "w": "them",
+     "start": 42.957,
+     "end": 43.132
+    },
+    {
+     "w": "into",
+     "start": 43.144,
+     "end": 43.382
+    },
+    {
+     "w": "one",
+     "start": 43.394,
+     "end": 43.694
+    },
+    {
+     "w": "paper",
+     "start": 43.707,
+     "end": 44.057
+    },
+    {
+     "w": "portfolio",
+     "start": 44.057,
+     "end": 44.769
+    },
+    {
+     "w": "sealed",
+     "start": 45.232,
+     "end": 45.669
+    },
+    {
+     "w": "before",
+     "start": 45.682,
+     "end": 45.957
+    },
+    {
+     "w": "the",
+     "start": 45.969,
+     "end": 46.057
+    },
+    {
+     "w": "cycle",
+     "start": 46.057,
+     "end": 46.469
+    },
+    {
+     "w": "ends",
+     "start": 46.482,
+     "end": 46.944
+    }
+   ]
+  },
+  {
+   "id": "use1",
+   "scene": "use",
+   "text": "Want today's signal?",
+   "start": 47.835,
+   "end": 48.93,
+   "words": [
+    {
+     "w": "Want",
+     "start": 47.855,
+     "end": 48.042
+    },
+    {
+     "w": "today's",
+     "start": 48.042,
+     "end": 48.355
+    },
+    {
+     "w": "signal",
+     "start": 48.355,
+     "end": 48.792
+    }
+   ]
+  },
+  {
+   "id": "use2",
+   "scene": "use",
+   "text": "Get it on the web, in Telegram, or let your AI agent fetch it over MCP.",
+   "start": 49.18,
+   "end": 54.392,
+   "words": [
+    {
+     "w": "Get",
+     "start": 49.2,
+     "end": 49.325
+    },
+    {
+     "w": "it",
+     "start": 49.325,
+     "end": 49.412
+    },
+    {
+     "w": "on",
+     "start": 49.425,
+     "end": 49.525
+    },
+    {
+     "w": "the",
+     "start": 49.537,
+     "end": 49.612
+    },
+    {
+     "w": "web",
+     "start": 49.612,
+     "end": 49.95
+    },
+    {
+     "w": "in",
+     "start": 50.162,
+     "end": 50.3
+    },
+    {
+     "w": "Telegram",
+     "start": 50.312,
+     "end": 50.95
+    },
+    {
+     "w": "or",
+     "start": 51.412,
+     "end": 51.575
+    },
+    {
+     "w": "let",
+     "start": 51.587,
+     "end": 51.725
+    },
+    {
+     "w": "your",
+     "start": 51.725,
+     "end": 51.875
+    },
+    {
+     "w": "AI",
+     "start": 51.887,
+     "end": 52.25
+    },
+    {
+     "w": "agent",
+     "start": 52.3,
+     "end": 52.7
+    },
+    {
+     "w": "fetch",
+     "start": 52.7,
+     "end": 52.975
+    },
+    {
+     "w": "it",
+     "start": 52.987,
+     "end": 53.137
+    },
+    {
+     "w": "over",
+     "start": 53.237,
+     "end": 53.587
+    },
+    {
+     "w": "MCP",
+     "start": 53.6,
+     "end": 54.25
+    }
+   ]
+  },
+  {
+   "id": "use3",
+   "scene": "use",
+   "text": "Pay per signal with x402. No gas, no subscription, and it arrives with its proof.",
+   "start": 54.692,
+   "end": 61.099,
+   "words": [
+    {
+     "w": "Pay",
+     "start": 54.712,
+     "end": 55.012
+    },
+    {
+     "w": "per",
+     "start": 55.237,
+     "end": 55.399
+    },
+    {
+     "w": "signal",
+     "start": 55.412,
+     "end": 55.874
+    },
+    {
+     "w": "with",
+     "start": 55.899,
+     "end": 56.074
+    },
+    {
+     "w": "x402",
+     "start": 56.174,
+     "end": 56.862
+    },
+    {
+     "w": "No",
+     "start": 57.249,
+     "end": 57.574
+    },
+    {
+     "w": "gas",
+     "start": 57.574,
+     "end": 58.087
+    },
+    {
+     "w": "no",
+     "start": 58.149,
+     "end": 58.349
+    },
+    {
+     "w": "subscription",
+     "start": 58.362,
+     "end": 59.112
+    },
+    {
+     "w": "and",
+     "start": 59.312,
+     "end": 59.624
+    },
+    {
+     "w": "it",
+     "start": 59.699,
+     "end": 59.774
+    },
+    {
+     "w": "arrives",
+     "start": 59.787,
+     "end": 60.324
+    },
+    {
+     "w": "with",
+     "start": 60.337,
+     "end": 60.449
+    },
+    {
+     "w": "its",
+     "start": 60.449,
+     "end": 60.574
+    },
+    {
+     "w": "proof",
+     "start": 60.574,
+     "end": 61.049
+    }
+   ]
+  },
+  {
+   "id": "ver1",
+   "scene": "verify",
+   "text": "Then check it yourself.",
+   "start": 61.899,
+   "end": 63.377,
+   "words": [
+    {
+     "w": "Then",
+     "start": 61.919,
+     "end": 62.219
+    },
+    {
+     "w": "check",
+     "start": 62.219,
+     "end": 62.507
+    },
+    {
+     "w": "it",
+     "start": 62.519,
+     "end": 62.582
+    },
+    {
+     "w": "yourself",
+     "start": 62.594,
+     "end": 63.232
+    }
+   ]
+  },
+  {
+   "id": "ver2",
+   "scene": "verify",
+   "text": "Pick any bot, any day. Fabius rebuilds the signal from public data and the chain.",
+   "start": 63.627,
+   "end": 69.003,
+   "words": [
+    {
+     "w": "Pick",
+     "start": 63.647,
+     "end": 63.859
+    },
+    {
+     "w": "any",
+     "start": 63.897,
+     "end": 64.072
+    },
+    {
+     "w": "bot",
+     "start": 64.084,
+     "end": 64.422
+    },
+    {
+     "w": "any",
+     "start": 64.472,
+     "end": 64.647
+    },
+    {
+     "w": "day",
+     "start": 64.659,
+     "end": 65.034
+    },
+    {
+     "w": "Fabius",
+     "start": 65.484,
+     "end": 65.972
+    },
+    {
+     "w": "rebuilds",
+     "start": 65.984,
+     "end": 66.472
+    },
+    {
+     "w": "the",
+     "start": 66.484,
+     "end": 66.572
+    },
+    {
+     "w": "signal",
+     "start": 66.584,
+     "end": 67.034
+    },
+    {
+     "w": "from",
+     "start": 67.047,
+     "end": 67.197
+    },
+    {
+     "w": "public",
+     "start": 67.209,
+     "end": 67.534
+    },
+    {
+     "w": "data",
+     "start": 67.547,
+     "end": 67.972
+    },
+    {
+     "w": "and",
+     "start": 68.184,
+     "end": 68.309
+    },
+    {
+     "w": "the",
+     "start": 68.309,
+     "end": 68.384
+    },
+    {
+     "w": "chain",
+     "start": 68.384,
+     "end": 68.859
+    }
+   ]
+  },
+  {
+   "id": "ver3",
+   "scene": "verify",
+   "text": "No key. No gas.",
+   "start": 69.303,
+   "end": 71.415,
+   "words": [
+    {
+     "w": "No",
+     "start": 69.323,
+     "end": 69.623
+    },
+    {
+     "w": "key",
+     "start": 69.636,
+     "end": 70.048
+    },
+    {
+     "w": "No",
+     "start": 70.436,
+     "end": 70.723
+    },
+    {
+     "w": "gas",
+     "start": 70.723,
+     "end": 71.273
+    }
+   ]
+  },
+  {
+   "id": "open1",
+   "scene": "open",
+   "text": "Got your own bot, or your own agent? Bring it.",
+   "start": 72.165,
+   "end": 75.185,
+   "words": [
+    {
+     "w": "Got",
+     "start": 72.185,
+     "end": 72.335
+    },
+    {
+     "w": "your",
+     "start": 72.335,
+     "end": 72.498
+    },
+    {
+     "w": "own",
+     "start": 72.51,
+     "end": 72.723
+    },
+    {
+     "w": "bot",
+     "start": 72.735,
+     "end": 73.06
+    },
+    {
+     "w": "or",
+     "start": 73.185,
+     "end": 73.41
+    },
+    {
+     "w": "your",
+     "start": 73.41,
+     "end": 73.56
+    },
+    {
+     "w": "own",
+     "start": 73.573,
+     "end": 73.748
+    },
+    {
+     "w": "agent",
+     "start": 73.748,
+     "end": 74.273
+    },
+    {
+     "w": "Bring",
+     "start": 74.66,
+     "end": 74.873
+    },
+    {
+     "w": "it",
+     "start": 74.885,
+     "end": 75.135
+    }
+   ]
+  },
+  {
+   "id": "open2",
+   "scene": "open",
+   "text": "It faces the same public gates as ours.",
+   "start": 75.435,
+   "end": 78.044,
+   "words": [
+    {
+     "w": "It",
+     "start": 75.455,
+     "end": 75.568
+    },
+    {
+     "w": "faces",
+     "start": 75.58,
+     "end": 76.055
+    },
+    {
+     "w": "the",
+     "start": 76.068,
+     "end": 76.168
+    },
+    {
+     "w": "same",
+     "start": 76.18,
+     "end": 76.593
+    },
+    {
+     "w": "public",
+     "start": 76.593,
+     "end": 76.918
+    },
+    {
+     "w": "gates",
+     "start": 76.918,
+     "end": 77.243
+    },
+    {
+     "w": "as",
+     "start": 77.255,
+     "end": 77.405
+    },
+    {
+     "w": "ours",
+     "start": 77.418,
+     "end": 77.918
+    }
+   ]
+  },
+  {
+   "id": "end1",
+   "scene": "honest",
+   "text": "No profit promises. It's paper money on testnet,",
+   "start": 78.844,
+   "end": 82.6,
+   "words": [
+    {
+     "w": "No",
+     "start": 78.864,
+     "end": 79.202
+    },
+    {
+     "w": "profit",
+     "start": 79.214,
+     "end": 79.602
+    },
+    {
+     "w": "promises",
+     "start": 79.614,
+     "end": 80.302
+    },
+    {
+     "w": "It's",
+     "start": 80.689,
+     "end": 80.877
+    },
+    {
+     "w": "paper",
+     "start": 80.889,
+     "end": 81.302
+    },
+    {
+     "w": "money",
+     "start": 81.314,
+     "end": 81.677
+    },
+    {
+     "w": "on",
+     "start": 81.689,
+     "end": 81.864
+    },
+    {
+     "w": "testnet",
+     "start": 81.877,
+     "end": 82.539
+    }
+   ]
+  },
+  {
+   "id": "end2",
+   "scene": "honest",
+   "text": "and zero of six bots have passed the forward test yet.",
+   "start": 82.75,
+   "end": 86.06,
+   "words": [
+    {
+     "w": "and",
+     "start": 82.77,
+     "end": 82.97
+    },
+    {
+     "w": "zero",
+     "start": 82.983,
+     "end": 83.433
+    },
+    {
+     "w": "of",
+     "start": 83.445,
+     "end": 83.558
+    },
+    {
+     "w": "six",
+     "start": 83.57,
+     "end": 83.92
+    },
+    {
+     "w": "bots",
+     "start": 83.933,
+     "end": 84.27
+    },
+    {
+     "w": "have",
+     "start": 84.282,
+     "end": 84.47
+    },
+    {
+     "w": "passed",
+     "start": 84.483,
+     "end": 84.92
+    },
+    {
+     "w": "the",
+     "start": 84.92,
+     "end": 84.995
+    },
+    {
+     "w": "forward",
+     "start": 85.008,
+     "end": 85.395
+    },
+    {
+     "w": "test",
+     "start": 85.395,
+     "end": 85.695
+    },
+    {
+     "w": "yet",
+     "start": 85.695,
+     "end": 85.983
+    }
+   ]
+  },
+  {
+   "id": "end3",
+   "scene": "end",
+   "text": "Fabius waits for proof.",
+   "start": 86.51,
+   "end": 87.98,
+   "words": [
+    {
+     "w": "Fabius",
+     "start": 86.53,
+     "end": 86.967
+    },
+    {
+     "w": "waits",
+     "start": 86.967,
+     "end": 87.292
+    },
+    {
+     "w": "for",
+     "start": 87.305,
+     "end": 87.442
+    },
+    {
+     "w": "proof",
+     "start": 87.442,
+     "end": 87.93
+    }
+   ]
+  },
+  {
+   "id": "end4",
+   "scene": "end",
+   "text": "Don't trust. Check it.",
+   "start": 88.53,
+   "end": 90.275,
+   "words": [
+    {
+     "w": "Don't",
+     "start": 88.55,
+     "end": 88.75
+    },
+    {
+     "w": "trust",
+     "start": 88.75,
+     "end": 89.287
+    },
+    {
+     "w": "Check",
+     "start": 89.675,
+     "end": 89.975
+    },
+    {
+     "w": "it",
+     "start": 89.987,
+     "end": 90.225
+    }
+   ]
+  }
+ ]
+}

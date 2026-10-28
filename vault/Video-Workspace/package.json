@@ -1,26 +1,44 @@
 {
   "name": "fabius-pitch-video",
   "private": true,
-  "description": "Fabius pitch video, Motion-as-Code style, rendered with Remotion. Every frame is a pure function of the frame number, timed by the voiceover's word timings.",
+  "description": "Fabius pitch video v2 (P172): Remotion, live-site captures with virtual time, the site's own 3D ported to @remotion/three, a Motion.so plate; every frame a pure function of the frame number.",
   "type": "module",
   "scripts": {
     "studio": "remotion studio src/index.ts",
     "still": "remotion still src/index.ts Fabius",
-    "render": "remotion render src/index.ts Fabius out/fabius-pitch.mp4 --codec h264 --crf 18",
-    "render:draft": "remotion render src/index.ts Fabius out/fabius-pitch-draft.mp4 --codec h264 --crf 26 --scale 0.5",
+    "render": "remotion render src/index.ts Fabius out/fabius-pitch-v2.mp4 --codec h264 --crf 16 --concurrency 8",
+    "render:draft": "remotion render src/index.ts Fabius out/draft-v2.mp4 --codec h264 --crf 23 --scale 0.5 --concurrency 8",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@remotion/cli": "4.0.533",
-    "@remotion/layout-utils": "4.0.533",
-    "@remotion/noise": "4.0.533",
-    "@remotion/paths": "4.0.533",
+    "@react-three/drei": "^10.7.9",
+    "@react-three/fiber": "^9.8.1",
+    "@react-three/postprocessing": "^3.1.3",
+    "@remotion/captions": "^4.0.534",
+    "@remotion/cli": "^4.0.534",
+    "@remotion/effects": "^4.0.534",
+    "@remotion/fonts": "^4.0.534",
+    "@remotion/google-fonts": "^4.0.534",
+    "@remotion/layout-utils": "^4.0.534",
+    "@remotion/media": "^4.0.534",
+    "@remotion/motion-blur": "^4.0.534",
+    "@remotion/noise": "^4.0.534",
+    "@remotion/paths": "^4.0.534",
+    "@remotion/renderer": "^4.0.534",
+    "@remotion/sfx": "^4.0.534",
+    "@remotion/shapes": "^4.0.534",
+    "@remotion/three": "^4.0.534",
+    "@remotion/transitions": "^4.0.534",
+    "postprocessing": "^6.39.5",
     "react": "19.2.8",
     "react-dom": "19.2.8",
-    "remotion": "4.0.533"
+    "remotion": "^4.0.534",
+    "three": "^0.186.1"
   },
   "devDependencies": {
     "@types/react": "19.2.18",
+    "@types/three": "^0.186.0",
+    "playwright-core": "^1.57.0",
     "typescript": "5.9.3"
   }
 }

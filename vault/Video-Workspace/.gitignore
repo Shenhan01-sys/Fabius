@@ -6,3 +6,19 @@ __pycache__/
 # large intermediates: the committed soundtrack is public/audio/mix.mp3
 public/audio/mix.wav
 public/audio/voiceover.wav
+# The repo root ignores lib/ and data/ (Python habits). This project keeps code in src/lib and timings in public/data:
+# without these two lines a clone cannot run (v1 lost both directories this way, found 7 Oct).
+!src/lib/
+!public/data/
+# the 3D ports keep one real desk snapshot next to their code (root rule data/ would drop it)
+!src/three/data/
+# v2 audio intermediates (rebuilt by analysis/vo_v2.py + analysis/mix_v2.py); the video plays public/audio/mix_v2.mp3
+public/audio/mix_v2.wav
+public/audio/voiceover.wav
+# captures not used by the cut (re-capture: node scripts/capture-flow.mjs, see public/web/README.md)
+public/web/stills/*
+!public/web/stills/submit-agent-top.jpg
+public/web/clips/analysts.*
+public/web/clips/home-mobile.*
+public/web/clips/status.*
+public/web/clips/submit-agent.*

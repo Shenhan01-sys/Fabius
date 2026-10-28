@@ -1,0 +1,108 @@
+1
+00:00:00,600 --> 00:00:03,051
+Every trading bot has a perfect track record.
+
+2
+00:00:03,501 --> 00:00:06,880
+The catch? It's always written after the market moves.
+
+3
+00:00:07,730 --> 00:00:09,188
+So we built the opposite.
+
+4
+00:00:09,588 --> 00:00:11,000
+Meet Fabius.
+
+5
+00:00:11,020 --> 00:00:15,263
+It seals every signal on BNB Chain, before the market answers.
+
+6
+00:00:16,063 --> 00:00:17,381
+First, the rules.
+
+7
+00:00:17,681 --> 00:00:23,079
+Each bot's strategy is locked on-chain, so it can't be quietly rewritten after a bad day.
+
+8
+00:00:23,779 --> 00:00:26,815
+Every day, the candle closes, the bot makes its call,
+
+9
+00:00:26,965 --> 00:00:30,565
+and Fabius seals it with a timestamp no one can change.
+
+10
+00:00:30,585 --> 00:00:31,792
+Not even us.
+
+11
+00:00:32,592 --> 00:00:35,998
+Who picks the bot? A desk of AI agents.
+
+12
+00:00:36,348 --> 00:00:41,324
+Every five minutes, analysts with their own on-chain identities make their picks,
+
+13
+00:00:41,474 --> 00:00:47,035
+and a locked formula turns them into one paper portfolio, sealed before the cycle ends.
+
+14
+00:00:47,835 --> 00:00:48,930
+Want today's signal?
+
+15
+00:00:49,180 --> 00:00:54,392
+Get it on the web, in Telegram, or let your AI agent fetch it over MCP.
+
+16
+00:00:54,692 --> 00:00:57,229
+Pay per signal with x402.
+
+17
+00:00:57,249 --> 00:01:01,099
+No gas, no subscription, and it arrives with its proof.
+
+18
+00:01:01,899 --> 00:01:03,377
+Then check it yourself.
+
+19
+00:01:03,627 --> 00:01:05,464
+Pick any bot, any day.
+
+20
+00:01:05,484 --> 00:01:09,003
+Fabius rebuilds the signal from public data and the chain.
+
+21
+00:01:09,303 --> 00:01:11,415
+No key. No gas.
+
+22
+00:01:12,165 --> 00:01:15,185
+Got your own bot, or your own agent? Bring it.
+
+23
+00:01:15,435 --> 00:01:18,044
+It faces the same public gates as ours.
+
+24
+00:01:18,844 --> 00:01:22,600
+No profit promises. It's paper money on testnet,
+
+25
+00:01:22,750 --> 00:01:26,060
+and zero of six bots have passed the forward test yet.
+
+26
+00:01:26,510 --> 00:01:27,980
+Fabius waits for proof.
+
+27
+00:01:28,530 --> 00:01:30,275
+Don't trust. Check it.
+
