@@ -131,7 +131,10 @@ def seed_fut(bars_dir: str, sym: str, t_day1: int, today_ms: int, fetch: Callabl
 
 
 def update(bars_dir: str, today_ms: int, get: Callable[[str], Optional[bytes]] = fb.http_get, fetch: Callable[[str], Optional[bytes]] = fb.http_get,
-           since_days: int = 60, log=print) -> dict:
+           since_days: int = 60, log=print, seen_ms: Optional[int] = None) -> dict:
+    """`seen_ms` (P173) = jam yang SAMA dengan pembuat tick (paper_tick `now_ms`), dibulatkan ke detik dan ditulis ke kolom `seen_ms` baris BARU saja;
+    baris lama tidak diubah. Tick dan verify hanya memakai event dengan `seen_ms` <= saat tick ditulis (`engine/data.py` MarketData.upto)."""
+    seen = (int(time.time() * 1000) if seen_ms is None else int(seen_ms)) // 1000 * 1000
     sp = os.path.join(bars_dir, SYMS_FILE)
     ep = os.path.join(bars_dir, EVENTS_FILE)
     known: Dict[str, str] = {r[0]: r[1] for r in _read(sp)}
@@ -151,9 +154,10 @@ def update(bars_dir: str, today_ms: int, get: Callable[[str], Optional[bytes]] =
         got = day1(s, d, fetch)
         if got is None:
             continue                                                          # zip hari-1 belum terbit: dicoba lagi putaran berikut
-        events[s] = [s, str(got[0]), repr(got[1]), repr(got[2])]
+        events[s] = [s, str(got[0]), repr(got[1]), repr(got[2]), str(seen)]
         added.append(s)
-    _write(ep, ["asset", "day1_open_t", "day1_close", "day1_quote_volume_usd"], sorted(events.values(), key=lambda r: (int(r[1]), r[0])))
+    rows = [(r + [""])[:5] for r in events.values()]                         # baris lama tanpa seen_ms -> kolom kosong (selalu dianggap diketahui)
+    _write(ep, ["asset", "day1_open_t", "day1_close", "day1_quote_volume_usd", "seen_ms"], sorted(rows, key=lambda r: (int(r[1]), r[0])))
     seeded, extended = {}, 0
     for s, r in events.items():
         t1 = int(r[1])

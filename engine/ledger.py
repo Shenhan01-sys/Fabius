@@ -50,6 +50,14 @@ def iso_ms(s: str) -> int:
     return int(dt.datetime.fromisoformat(s.replace("Z", "+00:00")).timestamp() * 1000)
 
 
+def known_at(tick: dict) -> Optional[int]:
+    """Saat tick ditulis (`emitted_utc`, ms) = batas pengetahuan event untuk hitung ulangnya (P173). Tak terbaca = None (tanpa saringan, perilaku lama)."""
+    try:
+        return iso_ms(tick["emitted_utc"])
+    except (KeyError, TypeError, ValueError):
+        return None
+
+
 def date_of(t_ms: int) -> str:
     return utc_iso(t_ms)[:10]
 
@@ -150,13 +158,13 @@ def target_view(spec: BotSpec, md: MarketData) -> MarketData:
                       funding=md.funding if "funding" in use else {}, events=md.events if "events" in use else [])
 
 
-def compute_tick(spec: BotSpec, md: MarketData, t_asof: int) -> dict:
+def compute_tick(spec: BotSpec, md: MarketData, t_asof: int, known_ms: Optional[int] = None) -> dict:
     """Isi tick pada bar `t_asof` dari data sampai bar itu SAJA. Fungsi murni: dipakai pembuat tick DAN pemeriksa ulang.
 
     Data tick dipersempit ke JENIS data yang dipakai TARGET bot itu (`TARGET_INPUTS`): data lain bisa datang belakangan (funding dari zip bulanan, deret spot
     yang ditambahkan saat B3 diaktifkan) dan tidak boleh mengubah `data_hash` sebuah tick yang sudah dikomit. Funding tetap dipakai oleh `settle`.
     Cacat ini tertangkap dua kali sebelum dipakai: funding yang datang belakangan (tes LateDataTests) dan seed spot B3 (gladi 2 Okt)."""
-    pit = target_view(spec, md.upto(t_asof))
+    pit = target_view(spec, md.upto(t_asof, known_ms))       # known_ms: hanya event yang sudah tercatat saat tick ditulis (P173)
     cur = next((x for x in REGISTRY[spec.method](spec, pit) if x.t == t_asof), None)
     if cur is None:
         raise StaleBars(f"{spec.bot_id}: tidak ada target pada bar {date_of(t_asof)} - data basi atau terpotong")
@@ -188,7 +196,7 @@ def make_tick(spec: BotSpec, md: MarketData, now_ms: int, genesis: dict) -> dict
         no_f = sorted(a for a in present_assets(spec, md, t_asof) if t_asof not in md.funding.get(a, {}))
         if no_f:
             raise StaleBars(f"{spec.bot_id}: funding hari {date_of(t_asof)} belum ada untuk {no_f} (estimasi belum terbit?)")
-    body = compute_tick(spec, md, t_asof)
+    body = compute_tick(spec, md, t_asof, now_ms)
     return {"type": "tick", "bot_id": spec.bot_id, "spec_sha": spec.sha(), "asof": t_asof, "asof_date": date_of(t_asof),
             "close_utc": utc_iso(t_asof + DAY_MS), "emitted_utc": utc_iso(now_ms), "lag_s": lag_s, **body}
 
@@ -262,9 +270,15 @@ def compute_settle(spec: BotSpec, md: MarketData, records: Sequence[dict], bar: 
 
 
 def settleable_bars(records: Sequence[dict]) -> List[int]:
-    """Bar yang SUDAH punya tick sehari sebelumnya tetapi belum punya settle, urut naik."""
+    """Bar yang SUDAH punya tick sehari sebelumnya tetapi belum punya settle, urut naik - dan HANYA yang lebih baru dari settle terakhir.
+
+    P173 (28 Okt 2026): `verify_chain` menuntut bar settle naik ketat. Funding B3 bar 2026-10-02/03 terlambat sementara 10-04..10-11 sudah ditutup; begitu
+    funding itu tiba, settle-nya akan ditambahkan MUNDUR dan rantai berhenti merah. Bar yang tertinggal di belakang settle terakhir tetap TAK TERUKUR
+    (sama seperti `gap`: tidak diisi nol, tidak ditambal belakangan)."""
     done = {r["bar"] for r in records if r["type"] == "settle"}
-    return sorted(r["asof"] + DAY_MS for r in records if r["type"] == "tick" and r["asof"] + DAY_MS not in done)
+    last = max(done) if done else None
+    return sorted(r["asof"] + DAY_MS for r in records
+                  if r["type"] == "tick" and r["asof"] + DAY_MS not in done and (last is None or r["asof"] + DAY_MS > last))
 
 
 # ---------------------------------------------------------------- satu putaran harian (murni; pemanggil yang menulis berkas)
@@ -391,7 +405,7 @@ def verify_against_data(spec: BotSpec, records: Sequence[dict], md: MarketData, 
     for i, r in enumerate(records):
         if r["type"] == "tick":
             try:
-                want = compute_tick(spec, md, r["asof"])
+                want = compute_tick(spec, md, r["asof"], known_at(r))
             except StaleBars as e:
                 p.append(f"#{i} tick {r['asof_date']}: tak bisa dihitung ulang dari bar ({e})")
                 continue

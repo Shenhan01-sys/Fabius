@@ -183,7 +183,7 @@ def main() -> int:
         if any(specs[b].method == "B4-LISTING-FADE" for b in bots if b in specs) and not a.dry_run:
             import listing_events
             try:
-                listing_events.update(a.bars, today)
+                listing_events.update(a.bars, today, seen_ms=now_ms)        # P173: jam yang sama dengan tick
             except feed_bars.FeedError as e:
                 print(f"  ! listing: {e} (B4 TUNDA sampai pemindaian sukses hari ini)")
         # P128 (F-D95): emas spot untuk B5-CORE-RWA (kandidat yang berkasnya sudah ditanam `tools/seed_bars.py`; perpanjang saja, tidak menanam)

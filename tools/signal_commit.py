@@ -99,11 +99,11 @@ def rebuild_signals(spec, tick: dict, views) -> Tuple[List[Signal], List[str]]:
     md = views.get("targets" if spec.method == "B3-CARRY" else "actual")
     t = tick["asof"]
     try:
-        body = ledger.compute_tick(spec, md, t)
+        body = ledger.compute_tick(spec, md, t, ledger.known_at(tick))
     except StaleBars as e:
         return [], [f"tick {tick.get('asof_date')} tak bisa dihitung ulang ({e})"]
     problems = [f"{k} beda dari hitung-ulang" for k in ("targets", "data_hash", "signal_ids", "n_aset") if tick.get(k) != body[k]]
-    sigs = signals_at(spec, ledger.target_view(spec, md.upto(t)), t)
+    sigs = signals_at(spec, ledger.target_view(spec, md.upto(t, ledger.known_at(tick))), t)
     if [s.id() for s in sigs] != tick.get("signal_ids"):
         problems.append("id sinyal hitung-ulang beda dari tick")
     return sigs, problems

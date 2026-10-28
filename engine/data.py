@@ -20,6 +20,7 @@ class ListingEvent:
     day1_open_t: int
     day1_close: float
     day1_quote_volume_usd: float
+    seen_t: Optional[int] = None        # P173: kapan baris ini PERTAMA dicatat (ms UTC, dibulatkan ke detik); None = baris lama (selalu dianggap diketahui)
 
 
 @dataclass
@@ -29,13 +30,17 @@ class MarketData:
     funding: Dict[str, Dict[int, float]] = field(default_factory=dict)    # aset -> {awal-hari-UTC ms: jumlah funding 8 j hari itu}
     events: List[ListingEvent] = field(default_factory=list)
 
-    def upto(self, t_ms: int) -> "MarketData":
-        """Potongan point-in-time: hanya bar dengan waktu buka <= t_ms; funding sampai hari itu; event yang sudah terjadi."""
+    def upto(self, t_ms: int, known_ms: Optional[int] = None) -> "MarketData":
+        """Potongan point-in-time: hanya bar dengan waktu buka <= t_ms; funding sampai hari itu; event yang sudah terjadi.
+
+        `known_ms` (P173): event yang baru DICATAT sesudah `known_ms` dibuang walau hari-1-nya <= t_ms. Sumber listing (Binance Vision) bisa menerbitkan
+        simbol berhari-hari sesudah hari-1-nya; tanpa saringan ini, hitung ulang tick lama memakai event yang belum diketahui saat tick ditulis
+        (2026-10-28: MSTUUSDT/RDWUSDT hari-1 2026-10-12 baru terlihat 16 hari kemudian -> `data_hash` tick B4 2026-10-12 beda -> rantai berhenti)."""
         return MarketData(
             perp={a: s.upto(t_ms) for a, s in self.perp.items()},
             spot={a: s.upto(t_ms) for a, s in self.spot.items()},
             funding={a: {d: v for d, v in f.items() if d <= t_ms} for a, f in self.funding.items()},
-            events=[e for e in self.events if e.day1_open_t <= t_ms],
+            events=[e for e in self.events if e.day1_open_t <= t_ms and (known_ms is None or e.seen_t is None or e.seen_t <= known_ms)],
         )
 
 
@@ -135,5 +140,6 @@ def load_events(dirpath: str) -> List[ListingEvent]:
         return []
     with open(p, newline="", encoding="utf-8") as f:
         rows = [r for r in csv.DictReader(f)]
-    return sorted((ListingEvent(r["asset"], int(r["day1_open_t"]), float(r["day1_close"]), float(r["day1_quote_volume_usd"])) for r in rows),
+    return sorted((ListingEvent(r["asset"], int(r["day1_open_t"]), float(r["day1_close"]), float(r["day1_quote_volume_usd"]),
+                                int(r["seen_ms"]) if (r.get("seen_ms") or "").strip() else None) for r in rows),
                   key=lambda e: (e.day1_open_t, e.asset))

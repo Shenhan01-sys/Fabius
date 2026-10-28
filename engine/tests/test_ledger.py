@@ -119,6 +119,22 @@ class LateDataTests(unittest.TestCase):
         probs = ledger.verify_against_data(sp, chain, md_nofund)           # tanpa funding: tick tetap cocok; hanya settle yang butuh funding
         self.assertTrue(probs and all("settle" in p for p in probs), probs)
 
+    def test_funding_for_an_old_bar_arriving_after_newer_settles_never_settles_it_backwards(self):
+        """P173 (28 Okt 2026, B3 bar 2026-10-02/03): bar lama yang tertinggal di belakang settle terakhir tidak ditutup MUNDUR (rantai akan merah).
+        Ia tetap tak terukur, seperti gap."""
+        sp = spec10()
+        md_hole = full_md()
+        for a in md_hole.funding:
+            md_hole.funding[a].pop(bar(101))                               # funding bar 101 terlambat; 102.. sudah ada
+        chain = run(sp, md_hole, range(100, 106))
+        settled = {r["bar"] for r in chain if r["type"] == "settle"}
+        self.assertNotIn(bar(101), settled)
+        self.assertTrue(any(b > bar(101) for b in settled))
+        new, _ = ledger.step(sp, known(full_md(), 106), now_after(106), chain)   # funding bar 101 akhirnya tiba
+        chain.extend(new)
+        self.assertNotIn(bar(101), {r["bar"] for r in chain if r["type"] == "settle"})
+        self.assertEqual(ledger.verify_chain(chain), [])
+
 
 class LateSpotTests(unittest.TestCase):
     def test_spot_series_added_later_do_not_change_old_b1_ticks(self):

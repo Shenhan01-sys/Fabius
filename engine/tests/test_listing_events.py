@@ -111,5 +111,48 @@ class B4FlatTargetTests(unittest.TestCase):
         self.assertEqual((len(none), none[-1].weights), (40, {}))
 
 
+
+class LateListingTests(unittest.TestCase):
+    """P173 (28 Okt 2026): Vision menerbitkan MSTUUSDT/RDWUSDT dengan hari-1 2026-10-12 baru 16 hari kemudian; hitung ulang tick B4 2026-10-12 memakai
+    event yang belum diketahui saat tick ditulis -> `data_hash` beda -> rantai paper-ledger berhenti. Event membawa `seen_ms`; tick + verify menyaringnya."""
+    sp = SPECS["B4-LISTING-FADE"]
+
+    def md(self, events):
+        ts = [T0 + i * DAY_MS for i in range(30)]
+        one = [1.0] * 30
+        return MarketData(perp={a: Series(ts, one, one, one, one, one) for a in self.sp.universe}, events=list(events))
+
+    def test_an_event_recorded_after_the_tick_does_not_change_its_recompute(self):
+        from engine import ledger
+        t = T0 + 12 * DAY_MS
+        emitted = t + DAY_MS + 9 * 3_600_000                                                       # tick ditulis 9 jam sesudah penutupan
+        old = ListingEvent("NEWUSDT", T0 + 5 * DAY_MS, 1.0, 5e6)                                   # baris lama: tanpa seen_ms
+        late = ListingEvent("LATEUSDT", t, 1.0, 5e6, seen_t=emitted + 16 * DAY_MS)                  # hari-1 = bar tick, tercatat 16 hari kemudian
+        then = ledger.compute_tick(self.sp, self.md([old]), t, emitted)
+        now = ledger.compute_tick(self.sp, self.md([old, late]), t, emitted)
+        self.assertEqual(then, now)
+        self.assertNotEqual(ledger.compute_tick(self.sp, self.md([old, late]), t), then)            # tanpa saringan: cacat yang ditutup
+
+    def test_an_event_recorded_in_the_same_run_as_the_tick_is_used(self):
+        from engine import ledger
+        t = T0 + 12 * DAY_MS
+        now_ms = t + DAY_MS + 9 * 3_600_000 + 123                                                  # ms tidak bulat: emitted_utc dibulatkan ke detik
+        same = ListingEvent("NEWUSDT", t, 1.0, 5e6, seen_t=now_ms // 1000 * 1000)
+        made = ledger.compute_tick(self.sp, self.md([same]), t, now_ms)
+        again = ledger.compute_tick(self.sp, self.md([same]), t, ledger.iso_ms(ledger.utc_iso(now_ms)))
+        self.assertEqual(made, again)
+        self.assertIn("NEWUSDT", made["targets"])
+
+    def test_scan_writes_seen_ms_for_new_rows_only_and_loader_reads_it(self):
+        with tempfile.TemporaryDirectory() as bars:
+            ep = os.path.join(bars, le.EVENTS_FILE)
+            with open(ep, "w", encoding="utf-8", newline="\n") as f:
+                f.write("asset,day1_open_t,day1_close,day1_quote_volume_usd\nLEGACYUSDT,%d,1.0,5000000.0\n" % (T0 + DAY_MS))
+            le.update(bars, TODAY, get=FakeVision(), fetch=FakeVision(), log=lambda *_: None, seen_ms=TODAY + 456)
+            ev = {e.asset: e for e in load_events(bars)}
+            self.assertIsNone(ev["LEGACYUSDT"].seen_t)
+            self.assertEqual(ev["NEWUSDT"].seen_t, (TODAY + 456) // 1000 * 1000)
+
+
 if __name__ == "__main__":
     unittest.main()
