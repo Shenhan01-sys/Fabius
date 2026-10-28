@@ -55,7 +55,8 @@ class B1Tests(unittest.TestCase):
             for a in s.universe:
                 if a in ser:
                     held = abs(float(tk["targets"].get(a, 0.0))) > 1e-12
-                    self.assertEqual(r["aset"][a]["sisi"] == "LONG", held, (tk["asof_date"], a))
+                    # aset flat tidak ada di `targets` (B1 long-or-flat), jadi juga tidak ada di r["aset"] - absen = bukan LONG (P186: TRX flat sejak 10-10)
+                    self.assertEqual(r["aset"].get(a, {}).get("sisi") == "LONG", held, (tk["asof_date"], a))
             self.assertIsNone(r["tp"])
             self.assertIsNone(r["sl"])
 

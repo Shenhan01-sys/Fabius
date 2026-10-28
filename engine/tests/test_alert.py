@@ -79,7 +79,7 @@ class MissingTickTests(unittest.TestCase):
     def test_official_tick_missing_twelve_hours_after_close_is_reported(self):
         import operator_loop as ol
         recs = ledger.load(os.path.join(LEDGER, "B1-TREND.jsonl"))
-        last = max(r["asof"] for r in recs if r["type"] == "tick")
+        last = max(r["asof"] for r in recs if r["type"] in ("tick", "gap"))      # P186: catatan terakhir bisa `gap` (tick/gap sama-sama "ada catatan")
         close_next = (last + 2 * 86_400_000) // 1000                              # penutupan bar sesudah tick terakhir
         self.assertEqual(ol.missing_ticks(LEDGER, ["B1-TREND"], close_next + 3600), [])                   # masih dalam tenggang
         got = ol.missing_ticks(LEDGER, ["B1-TREND"], close_next + ol.TICK_GRACE_S + 60)
