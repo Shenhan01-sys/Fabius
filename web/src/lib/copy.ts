@@ -4,7 +4,7 @@ export type Lang = "en" | "id";
 
 export const copy = {
   en: {
-    nav: { journey: "How it works", proof: "Proof feed", book: "Bots", access: "Access", verify: "Verify", status: "Status", analysts: "Analysts", desk: "AI Desk", cta: "Open proof feed", signIn: "Sign in", signedIn: "Signed in", member: "Member", submit: "Submit bot", submitMenu: "Submit", submitAgent: "Submit agent" },
+    nav: { journey: "How it works", proof: "Proof feed", book: "Bots", access: "Access", verify: "Verify", breakIt: "Try to cheat", status: "Status", analysts: "Analysts", desk: "AI Desk", cta: "Open proof feed", signIn: "Sign in", signedIn: "Signed in", member: "Member", submit: "Submit bot", submitMenu: "Submit", submitAgent: "Submit agent" },
     login: {
       welcome: "Welcome to Fabius",
       welcomeSub: "Sign in to watch the AI desk live and read every analyst's reasoning before the bar closes.",
@@ -770,7 +770,7 @@ export const copy = {
     foot: { contracts: "Contracts · BNB Chain testnet (97)", check: "Check it yourself", snapshot: "Snapshot", repo: "Source & ledger" },
   },
   id: {
-    nav: { journey: "Cara kerja", proof: "Umpan bukti", book: "Bot", access: "Akses", verify: "Periksa", status: "Status", analysts: "Analis", desk: "Meja AI", cta: "Buka umpan bukti", signIn: "Login", signedIn: "Sudah login", member: "Anggota", submit: "Ajukan bot", submitMenu: "Ajukan", submitAgent: "Ajukan agent" },
+    nav: { journey: "Cara kerja", proof: "Umpan bukti", book: "Bot", access: "Akses", verify: "Periksa", breakIt: "Coba curangi", status: "Status", analysts: "Analis", desk: "Meja AI", cta: "Buka umpan bukti", signIn: "Login", signedIn: "Sudah login", member: "Anggota", submit: "Ajukan bot", submitMenu: "Ajukan", submitAgent: "Ajukan agent" },
     login: {
       welcome: "Selamat datang di Fabius",
       welcomeSub: "Login untuk melihat meja AI langsung dan membaca alasan tiap analis sebelum bar tutup.",

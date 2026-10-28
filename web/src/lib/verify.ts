@@ -46,7 +46,7 @@ export function forwardBots(s: Snapshot): string[] {
   return s.bots.filter((b) => b.forward).map((b) => b.id);
 }
 
-function specOf(s: Snapshot, bot: string): Hex {
+export function specOf(s: Snapshot, bot: string): Hex {
   const spec = s.bots.find((b) => b.id === bot)?.spec_sha as Hex | undefined;
   if (!spec) throw new Error(`unknown bot ${bot}`);
   return spec;

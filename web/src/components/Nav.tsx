@@ -58,6 +58,7 @@ export default function Nav() {
     ["/#proof", t.nav.proof],
     ["/#book", t.nav.book],
     ["/verify", t.nav.verify],
+    ["/break", t.nav.breakIt],
     ["/status", t.nav.status],
     ["/analysts", t.nav.analysts],
     ["/desk", t.nav.desk],
