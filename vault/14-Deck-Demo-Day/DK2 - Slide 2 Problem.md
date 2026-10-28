@@ -24,7 +24,7 @@ tags: [deck, "DK2"]
 Kiri: angka 22.69M sangat besar (Archivo, `#9D86FF`). Kanan: tiga baris dengan ikon minimal. Sumber kecil di pojok bawah: "Source: OJK via Bisnis.com, Aug 2026".
 
 ## Angka dan sumber
-22,69 juta — ✅ (DK0 §4). **Angka 228 entitas ilegal TIDAK dipasang** kecuali builder sudah memverifikasi (P183). "Andi" = ilustrasi, hanya diucapkan, tidak ditulis di slide.
+22,69 juta — ✅ (DK0 §4). **228** — ✅ terverifikasi (OJK SP 11/STPASTI/VI/2026): boleh sebagai baris kecil opsional di bawah 22.69M: "228 illegal crypto asset traders shut down, Jan–May 2026 (OJK)". Itu pedagang/exchange ilegal, BUKAN grup sinyal — jangan diucapkan sebagai "228 grup sinyal". "Andi" = ilustrasi, hanya diucapkan, tidak ditulis di slide.
 
 ## Aset
 ikon sederhana (tidak perlu aset luar).

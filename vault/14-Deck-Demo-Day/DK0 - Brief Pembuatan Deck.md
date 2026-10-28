@@ -57,7 +57,7 @@ Jangan membaca seluruh vault (±300 halaman); peta di atas cukup.
 | Fakta | Nilai | Sumber | Status untuk slide |
 |---|---|---|---|
 | Investor kripto Indonesia | **22,69 juta** (Juni 2026) | OJK via Bisnis.com (tautan di [[10-Submissions/04 - Demo Day 31 Okt - Materi Pitch]] §11) | ✅ boleh, cantumkan "Sumber: OJK, Juni 2026" |
-| Entitas aset digital ilegal dihentikan Satgas PASTI | 228 (Jan–Mei 2026) | ringkasan pencarian | ⛔ **belum diverifikasi** — jangan dipasang kecuali builder sudah cek siaran pers OJK (P183) |
+| Pedagang aset keuangan digital (exchange/pedagang kripto) **ilegal** yang dihentikan Satgas PASTI | **228** (Januari–Mei 2026) | siaran pers OJK SP 11/STPASTI/VI/2026, 22 Juni 2026: https://www.ojk.go.id/id/berita-dan-kegiatan/info-terkini/Documents/Pages/Satgas-PASTI-Hentikan-27-Gadai-Swasta-Ilegal-dan-228-Pedagang-Aset-Keuangan-Digital-Ilegal/SP%2011%20-%20Satgas%20PASTI%20Hentikan%2027%20Gadai%20Swasta%20Ilegal%20dan%20228%20Pedagang%20Aset%20Keuangan%20Digital%20Ilegal.pdf | ✅ terverifikasi 28 Okt (P183). Tulis persis "228 illegal crypto asset traders shut down (Jan–May 2026, OJK)" — **bukan** "grup sinyal" |
 | Bot lulus uji maju F-D16 | **0 dari 6** | `python -X utf8 -m engine.cli ledger fd16` (6 Okt) | ⚠️ cetak ulang H-1 (P182); sebut "per <tanggal>" |
 | Aturan arah riset fase awal | rugi di **12 dari 12** simbol sesudah ongkos | `vault/06-Results/04 - Negative Results.md`, README | ✅ |
 | Koreksi diri | Sharpe B2-RS **1,29 → 0,85** | [[00-Overview/05 - Corrections]] (2 Okt) | ✅ |

@@ -129,7 +129,7 @@ Desk AI (jailbreak satu analis → formula tetap membatasi) **tidak muat** di 3 
 - 21 juta (April 2026, OJK): https://www.investortrust.id/market/107702/investor-kripto-ri-tembus-21-juta-ojk-fokus-perkuat-literasi-dan-tata-kelola
 - Satgas PASTI, penipuan berkedok trading kripto: https://investortrust.id/financial/95296/satgas-pasti-bongkar-dugaan-penipuan-berkedok-trading-kripto-dan-periklanan-digital
 - OJK SP Satgas PASTI (Appeninc, VID, Sensenowai): https://www.ojk.go.id/id/berita-dan-kegiatan/info-terkini/Documents/Pages/Satgas-PASTI-Hentikan-Kegiatan-Penipuan-Appeninc%2c-VID%2c-dan-Sensenowai/Satgas%20PASTI%20Hentikan%20Kegiatan%20Penipuan%20Appeninc%2c%20VID%2c%20dan%20Sensenowai.pdf
-- Angka 228 entitas PAKD ilegal Jan–Mei 2026: ringkasan hasil pencarian 28 Okt; **cek ulang ke siaran pers OJK sebelum dipasang di slide**.
+- Angka 228 PAKD ilegal Jan–Mei 2026: **terverifikasi 28 Okt** ke siaran pers OJK SP 11/STPASTI/VI/2026 (22 Juni 2026): https://www.ojk.go.id/id/berita-dan-kegiatan/info-terkini/Documents/Pages/Satgas-PASTI-Hentikan-27-Gadai-Swasta-Ilegal-dan-228-Pedagang-Aset-Keuangan-Digital-Ilegal/SP%2011%20-%20Satgas%20PASTI%20Hentikan%2027%20Gadai%20Swasta%20Ilegal%20dan%20228%20Pedagang%20Aset%20Keuangan%20Digital%20Ilegal.pdf — yang dihentikan = pedagang aset keuangan digital ilegal, bukan grup sinyal.
 - Angka registry ERC-8004 (328k, 0,036, 62,8 %): submission Kawal *(workspace)* `../Competitors/07-Kawal/page/page.txt`.
 
 **Terkait:** [[10-Submissions/05 - Estimasi Biaya Mainnet]] · [[12-Competitors/KP9 - Ranking dan Skenario Finalis]] · [[12-Competitors/KP0 - Baseline Fabius dan Konteks Penjurian]] · [[08-Backlog/13 - Langkah Builder Tertunda]]
