@@ -48,5 +48,29 @@ class DeployFilesTests(unittest.TestCase):
             self.assertIn("COPY config/agents.json config/agents.json", f.read())
 
 
+
+class ZombieTests(unittest.TestCase):
+    """P181 (28 Okt 2026): python sebagai PID 1 tidak me-reap anak git yang yatim -> zombie -> "cannot fork()". Init yang me-reap + git tanpa gc terlepas."""
+
+    def test_the_image_runs_under_tini_so_orphans_are_reaped(self):
+        with open(os.path.join(ROOT, "railway", "Dockerfile"), encoding="utf-8") as f:
+            df = f.read()
+        self.assertRegex(df, r"apt-get install[^\n]*\btini\b")
+        self.assertIn('ENTRYPOINT ["/usr/bin/tini", "--"]', df)
+
+    def test_every_git_call_disables_detached_gc_and_maintenance(self):
+        import subprocess
+        import operator_loop as ol
+        seen = []
+        orig = subprocess.run
+        subprocess.run = lambda cmd, **kw: seen.append(cmd) or subprocess.CompletedProcess(cmd, 0, "abc\n", "")
+        try:
+            self.assertEqual(ol.git("rev-parse", "HEAD"), "abc")
+        finally:
+            subprocess.run = orig
+        self.assertEqual(seen[0][:5], ["git", "-c", "gc.auto=0", "-c", "maintenance.auto=false"])
+        self.assertEqual(seen[0][5:], ["rev-parse", "HEAD"])
+
+
 if __name__ == "__main__":
     unittest.main()

@@ -77,8 +77,14 @@ def log(msg: str) -> None:
     print(f"{dt.datetime.now(dt.timezone.utc).strftime('%Y-%m-%dT%H:%M:%SZ')} {msg}", flush=True)
 
 
+# P181 (28 Okt 2026): `gc --auto` / maintenance yang berjalan TERLEPAS (daemonize) menjadi yatim, diadopsi PID 1 (python di container), dan tak pernah
+# di-reap -> zombie menumpuk sampai batas PID -> "cannot fork(): Resource temporarily unavailable" (fabius-engine, fabius-probe) dan BlockingIOError
+# (fabius-x402). Klon sementara tidak butuh gc; matikan di setiap panggilan. Init yang me-reap = tini di railway/Dockerfile.
+GIT_NO_BG = ("-c", "gc.auto=0", "-c", "maintenance.auto=false")
+
+
 def git(*args: str, cwd: str = None, timeout: int = 300) -> str:
-    r = subprocess.run(["git", *args], cwd=cwd, capture_output=True, text=True, timeout=timeout)
+    r = subprocess.run(["git", *GIT_NO_BG, *args], cwd=cwd, capture_output=True, text=True, timeout=timeout)
     if r.returncode != 0:
         raise RuntimeError(f"git {args[0]} gagal ({r.returncode}): {(r.stderr or r.stdout).strip()[:200]}")
     return r.stdout.strip()

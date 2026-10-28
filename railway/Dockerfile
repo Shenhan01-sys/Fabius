@@ -3,7 +3,7 @@
 FROM python:3.12-slim
 
 RUN apt-get update \
- && apt-get install -y --no-install-recommends git ca-certificates \
+ && apt-get install -y --no-install-recommends git ca-certificates tini \
  && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
@@ -18,4 +18,7 @@ ENV PYTHONUTF8=1 PYTHONUNBUFFERED=1 WORKDIR=/tmp/fabius-ledger
 # FABIUS_JOB memilih skrip di tools/ (bawaan: worker `operator_loop`). Service lain di proyek yang sama memakai image ini dengan variabelnya sendiri,
 # mis. `fabius-probe`: FABIUS_JOB=rest_vs_vision FABIUS_ARGS="--from-github --exit-zero" (jalan sekali, tanpa variabel rahasia), atau
 # FABIUS_JOB=shadow_tick (mode bayangan tahap 2+3, jalan terus, tanpa variabel rahasia).
+# P181: tini = PID 1 yang me-reap proses yatim (anak git-remote-https / gc terlepas). Tanpa ini python jadi PID 1, zombie menumpuk sampai batas PID,
+# lalu "cannot fork()" (terukur Okt 2026 di fabius-engine, fabius-probe; BlockingIOError di fabius-x402).
+ENTRYPOINT ["/usr/bin/tini", "--"]
 CMD ["sh", "-c", "exec python -X utf8 tools/${FABIUS_JOB:-operator_loop}.py ${FABIUS_ARGS:-}"]
