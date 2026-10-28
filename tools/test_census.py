@@ -76,6 +76,16 @@ def run_suite(start: str = START, root: str = ROOT) -> Tuple[unittest.TestResult
     return res, time.time() - t0
 
 
+# Alasan skip yang BUKAN celah lingkungan melainkan platform lain: tes `skipUnless(os.name == "nt")` tidak mungkin jalan di runner Linux CI, jadi
+# `--wajib-semua` tidak menghitungnya (tetap dicetak). Alasan lain (anvil, eth-account, kunci belum ter-anchor, ...) tetap menggagalkan. (P186, 28 Okt)
+PLATFORM_SKIP = {"khusus Windows": "nt"}
+
+
+def platform_skip(why: str, os_name: str = os.name) -> bool:
+    """True bila alasan skip = tes khusus platform LAIN dari mesin ini (bukan dependensi/keadaan yang hilang)."""
+    return any(why.startswith(k) and os_name != want for k, want in PLATFORM_SKIP.items())
+
+
 def grouped_skips(res: unittest.TestResult) -> Dict[str, List[str]]:
     g: Dict[str, List[str]] = defaultdict(list)
     for t, why in res.skipped:
@@ -109,9 +119,14 @@ def main() -> int:
     if bad:
         print("VONIS: GAGAL")
         return 1
-    if n_skip and a.wajib_semua:
-        print(f"VONIS: GAGAL - {n_skip} tes dilewati di lingkungan yang seharusnya menjalankan semuanya (--wajib-semua)")
+    n_platform = sum(1 for _, why in res.skipped if platform_skip(why))
+    if n_skip - n_platform and a.wajib_semua:
+        print(f"VONIS: GAGAL - {n_skip - n_platform} tes dilewati di lingkungan yang seharusnya menjalankan semuanya (--wajib-semua)"
+              + (f"; {n_platform} lainnya khusus platform lain, tidak dihitung" if n_platform else ""))
         return 1
+    if n_platform and a.wajib_semua:
+        print(f"VONIS: LULUS - {n_platform} tes dilewati hanya karena khusus platform lain (PLATFORM_SKIP), sisanya semua jalan")
+        return 0
     print("VONIS: " + ("SEMUA JALAN DAN LULUS" if not n_skip else f"LULUS, TETAPI {n_skip} TES TIDAK JALAN di mesin ini (bukan bukti untuk tes itu)"))
     return 0
 
