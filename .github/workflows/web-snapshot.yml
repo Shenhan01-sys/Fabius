@@ -9,7 +9,7 @@ name: web-snapshot
 # Commit hanya bila ISI berubah (cap waktu, HEAD repo, dan nomor blok terkini diabaikan: `tools/web_snapshot.py::decide`). Chain tak terbaca padahal
 # snapshot lama memuat chain = TUNDA: keluar 3, tidak menulis, landing tetap menampilkan vonis lama (gagal baca bukan "tidak ada", T8 SK-P1).
 # Commit TANPA [skip ci]: push yang menyentuh web/ = Vercel membangun ulang landing (push dengan GITHUB_TOKEN tidak memicu workflow lain).
-# Tidak ada kunci, tidak ada transaksi; satu-satunya tulisan = web/public/data/snapshot.json.
+# Tidak ada kunci, tidak ada transaksi; tulisan = web/public/data/snapshot.json + ledger/chain/tx-index.json (P178, tools/tx_index.py).
 
 on:
   workflow_dispatch:
@@ -35,6 +35,9 @@ jobs:
       - name: eth-account + eth-abi (pembaca chain sama dengan verify_signals)
         run: pip install -r railway/requirements.txt
 
+      - name: indeks tx on-chain (P178; petunjuk hash untuk /verify dan /tour, diperiksa ulang lewat struk tx di web) - gagal = peringatan saja
+        run: python -u -X utf8 tools/tx_index.py || echo "::warning::tx_index gagal - web jatuh ke pindai getLogs"
+
       - name: cetak snapshot, commit bila isinya berubah
         run: |
           set +e
@@ -43,6 +46,7 @@ jobs:
           if [ "$RC" = "3" ]; then echo "::warning::chain tak terbaca - snapshot lama dipertahankan (bukan berarti kosong); jalankan lagi nanti"; exit 0; fi
           if [ "$RC" != "0" ]; then echo "::error::web_snapshot rc=$RC"; exit 1; fi
           git add web/public/data/snapshot.json
+          if [ -f ledger/chain/tx-index.json ]; then git add ledger/chain/tx-index.json; fi
           if git diff --cached --quiet; then echo "isi sama - tidak ada commit"; exit 0; fi
           git config user.name "web-snapshot"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"

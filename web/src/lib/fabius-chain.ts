@@ -2,7 +2,7 @@
 // `tools/signal_commit.py`) dan kontrak (`contracts/SignalAnchor.sol`): leaf = keccak256(abi.encode(Signal, salt)), id = keccak256(abi.encode(Signal)),
 // commitId = keccak256(abi.encode(committer, botId, specSha, asof)). Prinsip T8: gagal membaca chain = GALAT (ChainReadError), tidak pernah "tidak ada".
 
-import { createPublicClient, encodeAbiParameters, fallback, hexToString, http, keccak256, pad, parseAbi, parseAbiItem, stringToHex, type Hex } from "viem";
+import { createPublicClient, decodeEventLog, encodeAbiParameters, fallback, hexToString, http, keccak256, pad, parseAbi, parseAbiItem, stringToHex, toEventSelector, type Hex, type Log } from "viem";
 import { bscTestnet } from "viem/chains";
 
 export const SIGNAL_ANCHOR = "0x9B78200beFbbBe836585d31bd5b6dB32587064f3" as const;
@@ -104,40 +104,161 @@ export async function commitCount() {
 // P180 (28 Okt 2026): publicnode mengembalikan 0 log (BUKAN galat) untuk blok lama dan drpc gratis menolak getLogs di luar ±10k blok terakhir, jadi
 // hari yang punya sinyal jatuh ke "pindai penuh sejak deploy" (±1.000 panggilan) -> 504 sesudah 60 detik. getLogs kini lewat RPC yang menyimpan riwayat log
 // (onfinality, terukur: 4 reveal B2-RS bar 2026-10-05 dalam 0,5 detik; batas 10k blok/panggilan) dengan publicnode sebagai cadangan.
-const logsClient = createPublicClient({
-  chain: bscTestnet,
-  transport: fallback([http("https://bnb-testnet.api.onfinality.io/public"), http("https://bsc-testnet.publicnode.com"), http("https://bsc-testnet-rpc.publicnode.com")]),
-});
-const LOG_SPAN = 9_999n;    // onfinality: rentang > 10k blok ditolak
-const LOG_WINDOWS = 6;      // ungkap terjadi di putaran yang sama dengan komit (REVEAL_DELAY_S = 0); 6 x 10k blok (±7 jam) sudah sangat longgar
+// P178 (28 Okt 2026): dari Vercel, onfinality kadang gagal (batas laju) lalu `fallback` diam-diam pindah ke publicnode yang menjawab 0 log -> /verify
+// "0 dari 4 ungkap" di produksi. Sumber log kini daftar eksplisit TANPA publicnode, dicoba berurutan; sumber yang galat ATAU kurang hasil -> sumber berikut.
+// thirdweb terukur menyimpan riwayat log (11 log blok 135176207-135176299 terbaca) dengan batas 1.000 blok/panggilan.
+const LOG_SOURCES = [
+  { name: "onfinality", span: 9_999n, client: createPublicClient({ chain: bscTestnet, transport: http("https://bnb-testnet.api.onfinality.io/public", { retryCount: 0, timeout: 6_000 }) }) },
+  { name: "thirdweb", span: 999n, client: createPublicClient({ chain: bscTestnet, transport: http("https://97.rpc.thirdweb.com", { retryCount: 0, timeout: 8_000 }) }) },
+];
+const LOG_REACH = 60_000n;  // ungkap terjadi di putaran yang sama dengan komit (REVEAL_DELAY_S = 0); 60k blok (±7 jam) sudah sangat longgar
 
-/** Blok pertama dengan timestamp >= `ts` (pencarian biner pada getBlock; ±25 panggilan ringan). */
-async function blockAtOrAfter(ts: number, hi: bigint): Promise<bigint> {
-  let lo = ANCHOR_DEPLOY_BLOCK;
-  while (lo < hi) {
-    const mid = (lo + hi) / 2n;
-    const b = await read("getBlock", () => client.getBlock({ blockNumber: mid }));
-    if (Number(b.timestamp) < ts) lo = mid + 1n;
-    else hi = mid;
-  }
-  return lo;
+// Terukur di Vercel 28 Okt: dua getLogs paralel ke thirdweb -> batas laju, lalu ulang bawaan viem menunggu Retry-After -> fungsi habis 60 s.
+// Maka panggilan log diantre satu per satu dan diulang sendiri (maks 3x, jeda 0,4/0,8 s), tanpa ulang bawaan viem.
+let logQueue: Promise<unknown> = Promise.resolve();
+async function logCall<T>(f: () => Promise<T>): Promise<T> {
+  const run = logQueue.then(async () => {
+    for (let i = 0; ; i++) {
+      try {
+        return await f();
+      } catch (e) {
+        if (i >= 2) throw e;
+        await new Promise((r) => setTimeout(r, 400 * 2 ** i));
+      }
+    }
+  });
+  logQueue = run.catch(() => undefined);
+  return run;
 }
 
-/** Event Revealed untuk satu commitId: mulai dari blok komit (dicari tepat dari `committedAt`), jendela 10k blok, maks LOG_WINDOWS jendela.
+type LogRow = { args: Record<string, unknown>; transactionHash: Hex | null; blockNumber: bigint | null };
+
+/** getLogs dari `start - 50` maju sampai `enough(log)` terpenuhi atau LOG_REACH habis, per sumber berurutan. Tidak cukup di semua sumber = ChainReadError. */
+async function scanLogs(what: string, q: { address: Hex; event: unknown; args: Record<string, Hex> }, start: bigint, latest: bigint, enough: (n: number) => boolean) {
+  const from = start > 50n ? start - 50n : start;
+  const end = from + LOG_REACH > latest ? latest : from + LOG_REACH;
+  const notes: string[] = [];
+  for (const src of LOG_SOURCES) {
+    const logs: LogRow[] = [];
+    try {
+      for (let a = from; a <= end && !enough(logs.length); a += src.span + 1n) {
+        const b = a + src.span > end ? end : a + src.span;
+        logs.push(...((await logCall(() => src.client.getLogs({ ...q, fromBlock: a, toBlock: b } as never))) as unknown as LogRow[]));
+      }
+      if (enough(logs.length)) return logs;
+      notes.push(`${src.name} ${logs.length}`);
+    } catch (e) {
+      notes.push(`${src.name} galat (${e instanceof Error ? e.message.split("\n")[0].slice(0, 80) : String(e)})`);
+    }
+  }
+  throw new ChainReadError(`getLogs ${what}: tak cukup terbaca sejak blok ${start} [${notes.join("; ")}] - RPC publik tak lengkap, bukan berarti tidak ada`);
+}
+
+/** Blok pertama dengan timestamp >= `ts`. Pencarian interpolasi (waktu blok chain 97 hampir rata, ±0,45 s) dengan langkah bagi-dua tiap putaran ke-3
+ *  sebagai pengaman: ±5 getBlock alih-alih ±23 (bagi-dua murni, terukur ±8 s per panggilan dan dipanggil 3-4 kali per tur -> 504 di Vercel). */
+const blockMemo = new Map<number, bigint>();   // ts lampau -> blok; tetap benar selamanya, jadi aman disimpan selama fungsi hangat
+async function blockAtOrAfter(ts: number, hi: bigint): Promise<bigint> {
+  const memo = blockMemo.get(ts);
+  if (memo !== undefined && memo <= hi) return memo;
+  const b = await searchBlock(ts, hi);
+  if (b < hi) blockMemo.set(ts, b);
+  return b;
+}
+
+async function searchBlock(ts: number, hi: bigint): Promise<bigint> {
+  const tsOf = async (n: bigint) => Number((await read("getBlock", () => client.getBlock({ blockNumber: n }))).timestamp);
+  let lo = ANCHOR_DEPLOY_BLOCK;
+  let [loTs, hiTs] = await Promise.all([tsOf(lo), tsOf(hi)]);
+  if (ts <= loTs) return lo;
+  if (ts > hiTs) return hi;
+  for (let i = 0; hi - lo > 1n; i++) {   // invarian: ts(lo) < ts <= ts(hi)
+    let g = i % 3 === 2 || hiTs === loTs ? (lo + hi) / 2n : lo + (BigInt(ts - loTs) * (hi - lo)) / BigInt(hiTs - loTs);
+    if (g <= lo) g = lo + 1n;
+    if (g >= hi) g = hi - 1n;
+    const gTs = await tsOf(g);
+    if (gTs < ts) [lo, loTs] = [g, gTs];
+    else [hi, hiTs] = [g, gTs];
+  }
+  return hi;
+}
+
+// P178 tur juri: tx komit dan tx kunci dibaca dari event-nya sendiri (bukan disalin), supaya tiap langkah tur punya bukti on-chain yang bisa diklik.
+const COMMITTED = parseAbiItem("event Committed(bytes32 indexed id, address indexed committer, bytes32 indexed botId, bytes32 specSha, uint64 asof, bytes32 root, uint32 n)");
+const LOCKED = parseAbiItem("event Locked(bytes32 indexed id, address indexed locker, bytes32 indexed botId, bytes32 specSha, uint64 lockedAt, string uri)");
+
+/** Log pertama `event` sejak blok yang memuat `ts` (maju sampai LOG_REACH). Tidak ketemu = ChainReadError (T8). */
+// ---------------------------------------------------------------- petunjuk tx (ledger/chain/tx-index.json, tools/tx_index.py)
+// Indeks = hash tx saja, BUKAN kebenaran: tiap tx diambil strukturnya dari chain, lalu alamat kontrak + topik event dicocokkan di sini. Petunjuk yang
+// hilang/tak cocok -> jatuh ke pindai getLogs di atas. Struk tx lama dilayani drpc/dataseed/thirdweb (publicnode tidak: terukur 28 Okt).
+const receiptClient = createPublicClient({
+  chain: bscTestnet,
+  transport: fallback([http("https://bsc-testnet.drpc.org", { retryCount: 0, timeout: 6_000 }), http("https://bsc-testnet-dataseed.bnbchain.org", { retryCount: 0, timeout: 6_000 }),
+    http("https://97.rpc.thirdweb.com", { retryCount: 0, timeout: 6_000 })]),
+});
+type TxIndex = { commits: Record<string, { tx?: Hex; block?: number; reveals: { leaf: Hex; tx: Hex; block: number }[] }>; locks: Record<string, { tx: Hex; block: number }> };
+
+async function txIndex(): Promise<TxIndex | null> {
+  try {
+    const r = await fetch(`${RAW}/ledger/chain/tx-index.json`, { next: { revalidate: 300 } });
+    return r.ok ? ((await r.json()) as TxIndex) : null;
+  } catch {
+    return null;
+  }
+}
+
+/** Log `event` milik `address` dari struk tx-tx petunjuk (dibaca dari chain). Struk tak terbaca = tx itu dilewati (bukan "tidak ada"). */
+async function logsFromTxs(txs: Hex[], address: Hex, event: typeof COMMITTED | typeof LOCKED | typeof REVEALED, keep: (topics: Hex[], data: Hex) => boolean) {
+  const sel = toEventSelector(event).toLowerCase();
+  const out: LogRow[] = [];
+  for (const tx of [...new Set(txs)]) {
+    const rc = await receiptClient.getTransactionReceipt({ hash: tx }).catch(() => null);
+    if (!rc || rc.status !== "success") continue;
+    for (const lg of rc.logs as Log[]) {
+      const topics = lg.topics as Hex[];
+      if (lg.address.toLowerCase() !== address.toLowerCase() || topics[0]?.toLowerCase() !== sel || !keep(topics, lg.data)) continue;
+      const { args } = decodeEventLog({ abi: [event], data: lg.data, topics: topics as [Hex, ...Hex[]] });
+      out.push({ args: args as Record<string, unknown>, transactionHash: lg.transactionHash, blockNumber: lg.blockNumber });
+    }
+  }
+  return out;
+}
+
+const same = (a?: string, b?: string) => !!a && !!b && a.toLowerCase() === b.toLowerCase();
+
+async function firstLogAt(what: string, address: Hex, event: typeof COMMITTED | typeof LOCKED, args: Record<string, Hex>, ts: number) {
+  const latest = await read("blockNumber", () => client.getBlock());
+  const start = await blockAtOrAfter(ts, latest.number);
+  const got = await scanLogs(what, { address, event, args }, start, latest.number, (n) => n > 0);
+  return { tx: got[0].transactionHash as Hex, block: Number(got[0].blockNumber) };
+}
+
+export async function commitTxOf(id: Hex, committedAt: number) {
+  const hint = (await txIndex())?.commits[id.toLowerCase()];
+  if (hint?.tx) {
+    const got = await logsFromTxs([hint.tx], SIGNAL_ANCHOR, COMMITTED, (t) => same(t[1], id));
+    if (got.length) return { tx: got[0].transactionHash as Hex, block: Number(got[0].blockNumber) };
+  }
+  return firstLogAt("Committed", SIGNAL_ANCHOR, COMMITTED, { id }, committedAt);
+}
+
+export async function lockTxOf(bot: string, specSha: Hex, lockedAtTs: number, committer: Hex = COMMITTER) {
+  const botId = ascii32(bot);
+  const hint = (await txIndex())?.locks[`${committer}|${botId}|${specSha}`.toLowerCase()];
+  const mine = (t: Hex[], data: Hex) => same(t[2] && `0x${t[2].slice(-40)}`, committer) && same(t[3], botId) && same(data.slice(0, 66), specSha);
+  if (hint?.tx) {
+    const got = await logsFromTxs([hint.tx], LOCK_REGISTRY, LOCKED, mine);
+    if (got.length) return { tx: got[0].transactionHash as Hex, block: Number(got[0].blockNumber) };
+  }
+  return firstLogAt("Locked", LOCK_REGISTRY, LOCKED, { locker: committer, botId }, lockedAtTs);
+}
+
+/** Event Revealed untuk satu commitId: mulai dari blok komit (dicari tepat dari `committedAt`), maju sampai LOG_REACH, per sumber log.
  *  Kurang dari `expected` sesudah itu = ChainReadError (tak terbaca), bukan "tidak ada" dan bukan pindai penuh yang berakhir timeout. */
 export async function getReveals(id: Hex, committedAt: number, expected: number) {
-  const latest = await read("blockNumber", () => client.getBlock());
-  const start = await blockAtOrAfter(committedAt, latest.number);
-  type Row = { args: Record<string, unknown>; transactionHash: Hex | null; blockNumber: bigint | null };
-  const logs: Row[] = [];
-  for (let w = 0, a = start > 50n ? start - 50n : start; w < LOG_WINDOWS && a <= latest.number && logs.length < expected; w++, a += LOG_SPAN + 1n) {
-    const b = a + LOG_SPAN > latest.number ? latest.number : a + LOG_SPAN;
-    const got = await read("getLogs", () => logsClient.getLogs({ address: SIGNAL_ANCHOR, event: REVEALED, args: { id }, fromBlock: a, toBlock: b }));
-    logs.push(...(got as unknown as Row[]));
-  }
-  if (logs.length < expected) {
-    throw new ChainReadError(`getLogs: ${logs.length} dari ${expected} ungkap terbaca dalam ${LOG_WINDOWS} jendela sejak blok ${start} - RPC publik tak lengkap, bukan berarti tidak ada`);
-  }
+  const hint = (await txIndex())?.commits[id.toLowerCase()];
+  let logs: LogRow[] = [];
+  if (hint && hint.reveals.length >= expected) logs = await logsFromTxs(hint.reveals.map((r) => r.tx), SIGNAL_ANCHOR, REVEALED, (t) => same(t[1], id));
+  if (logs.length < expected) logs = await scanRevealed(id, committedAt, expected);
   return logs.map((l) => ({
     leaf: l.args.leaf as Hex,
     tx: l.transactionHash,
@@ -152,6 +273,12 @@ export async function getReveals(id: Hex, committedAt: number, expected: number)
       salt: l.args.salt as Hex,
     } as RevealedArgs,
   }));
+}
+
+async function scanRevealed(id: Hex, committedAt: number, expected: number): Promise<LogRow[]> {
+  const latest = await read("blockNumber", () => client.getBlock());
+  const start = await blockAtOrAfter(committedAt, latest.number);
+  return scanLogs(`Revealed (${expected})`, { address: SIGNAL_ANCHOR, event: REVEALED, args: { id } }, start, latest.number, (n) => n >= expected);
 }
 
 export function describe(ev: RevealedArgs) {

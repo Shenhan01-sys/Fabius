@@ -115,6 +115,9 @@ export default function Hero({ s }: { s: Snapshot }) {
             <a href="#access" className="glass rounded-full px-6 py-3.5 text-sm font-semibold text-ink transition hover:-translate-y-0.5">
               {t.hero.secondary}
             </a>
+            <a href="/tour" className="self-center px-2 font-mono text-xs text-ink/60 underline-offset-4 transition hover:text-violet hover:underline">
+              {t.hero.tour} →
+            </a>
           </motion.div>
         </div>
       </div>
