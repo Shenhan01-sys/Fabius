@@ -10,6 +10,7 @@ Paket serah terima untuk agen pembuat PPT Demo Day 31 Okt 2026 (3 menit presenta
 
 ## Bagian
 
+- [[14-Deck-Demo-Day/DKH - Prompt Serah Terima]] — prompt siap salin untuk agen pembuat PPT (urutan baca + cara kerja + keluaran)
 - [[14-Deck-Demo-Day/DK0 - Brief Pembuatan Deck]] — brief end-to-end; baca pertama
 - [[14-Deck-Demo-Day/DK1 - Slide 1 Kapan Ini Ditulis]] — 0:00–0:30 · screenshot "+312.4%" — *When was this written?* + 22,69 juta investor + 228 pedagang ilegal (OJK)
 - [[14-Deck-Demo-Day/DK2 - Slide 2 Kunci Segel Periksa]] — 0:30–0:55 · Lock → Seal → Check; AI memilih, formula terkunci menghitung
