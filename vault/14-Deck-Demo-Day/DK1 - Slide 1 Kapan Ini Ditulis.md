@@ -38,9 +38,9 @@ Juri baru saja menonton finalis lain; banyak yang membuka dengan persona (petani
 **"Screenshot tanpa jam."** Sebuah klaim profit yang terlihat meyakinkan tetapi tidak punya satu hal yang paling penting: *waktu yang bisa dibuktikan*. Slide ini adalah layar ponsel penjual sinyal yang dibekukan, dengan pertanyaan yang tidak bisa dijawabnya.
 
 ## 6. Ilustrasi + tata letak
-Latar `#0F0B26` dengan vignette lembut.
+Latar halaman `#F6F4FD`; **satu panel night `#0F0B26` penuh** (radius 30 px, tepi 12–16 px) — satu-satunya slide gelap: dunia lama yang keruh (DKV §7). Kartu screenshot memakai gaya `glass-dark`.
 - **Kiri–tengah (60 % lebar):** tumpukan 4–6 **kartu screenshot sinyal** bergaya media sosial, sedikit miring dan berlapis (perspektif 3D ringan, seperti video v2 adegan 1): avatar bulat, nama samaran generik ("AlphaSignals", "MoonCalls", "TrendWizard" — bukan merek nyata), grafik garis hijau naik, angka besar **+312.4%** di kartu terdepan (kartu lain +88 %, +146 % lebih kecil dan buram). Di setiap kartu, cap waktu **disamarkan/buram** — inilah intinya: jamnya tidak bisa dipercaya.
-- **Kanan (40 %):** pertanyaan dalam Archivo besar `#ECE8FA`, dua baris: "When was this" / ***"written?"*** (kata *written?* miring tebal `#9D86FF`).
+- **Kanan (40 %):** pertanyaan dalam Archivo besar putih `#FFFFFF` (weight 300, stretch 112 %), dua baris: "When was this" / ***"written?"*** (Archivo 800 italic stretch 78 %, `#9D86FF`).
 - **Bawah kanan, muncul saat `[KLIK]`:** blok angka kecil-sedang:
   - **22.69M** — "crypto investors in Indonesia" · sumber mono kecil "OJK, Jun 2026"
   - **228** — "illegal crypto asset traders shut down, Jan–May 2026" · "OJK"
@@ -72,7 +72,7 @@ Total ±22 kata (pengecualian yang diizinkan karena dua angka bersumber).
 ## 9. Animasi + transisi
 - Masuk: kartu-kartu sudah ada saat slide tampil (jangan menunggu animasi untuk mulai bicara); paling banyak drift pelan 2–3 px.
 - `[KLIK]`: blok angka OJK fade-in 250 ms dari bawah.
-- Keluar ke DK2: transisi "morph"/fade 300 ms — kartu memudar, kubus kaca DK2 muncul di tempat kartu terdepan (metafora: dari klaim tanpa jam ke segel dengan jam).
+- Keluar ke DK2: panel night **tersapu terang** (wipe/fade 400 ms ke lavender, seperti video v2 "So we built the opposite") — kartu memudar, kubus kaca DK2 muncul di tempat kartu terdepan (metafora: dari gelap tanpa jam ke terang dengan segel).
 
 ## 10. Angka + sumber
 - **+312.4%** = **ilustrasi** (antagonis video v1/v2), bukan data siapa pun — jangan diberi nama grup/aplikasi/orang nyata.
@@ -81,6 +81,7 @@ Total ±22 kata (pengecualian yang diizinkan karena dua angka bersumber).
 - "AI agent ikut menjual sinyal" = pernyataan arah umum (agen dengan dompet x402 + identitas ERC-8004), bukan statistik.
 
 ## 11. Aset
+- Wordmark: `aset/wordmark-fabius.svg` versi putih (ganti fill teks ke `#FFFFFF`).
 - **A1** kartu screenshot: buat ulang sebagai grafik vektor (lebih tajam di proyektor) dengan gaya video v2 adegan 1; atau frame K1 dari video v2 (potongan klip = tugas terakhir, P185).
 - Ikon tidak diperlukan.
 

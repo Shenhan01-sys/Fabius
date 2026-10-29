@@ -36,12 +36,12 @@ Di antara 10 finalis, beberapa memakai narasi "AI proposes, contract decides" at
 **"Apa vs Kapan."** Dua kata dalam tipografi besar, satu pudar (yang sudah dikerjakan orang lain), satu menyala (yang dibuktikan Fabius) — ditutup dengan undangan memeriksa.
 
 ## 6. Ilustrasi + tata letak
-Latar `#0F0B26`, komposisi tenang dan lapang (slide ini akan dilihat ±2 menit selama Q&A).
+Panel **lavender** lapang (slide ini dilihat ±2 menit selama Q&A); opsional `aset/kristal-hero-crop.png` samar di belakang QR. Footer kontrak sebagai pita **night** tipis di bawah (seperti footer FE).
 - **Kiri (60 %):** dua baris besar Archivo:
   - "Others limit ***what*** AI can do." — *what* `#8B86A6` (pudar)
   - "Fabius proves ***when*** it decided." — *when* `#6E4BFF` menyala, sedikit glow
 - Di bawahnya, satu baris Inter 22 pt `#C9BDF2`: "We sell proof, not profit — pay per signal (x402) · MCP for agents"
-- **Kanan (40 %):** **QR besar** (≥ 25 % tinggi slide, putih di atas panel `#ECE8FA` membulat) → `https://fabius-one.vercel.app/tour`; di bawahnya URL pendek mono `fabius-one.vercel.app/tour` dan label kecil "60-second tour · no login".
+- **Kanan (40 %):** **QR besar** (≥ 25 % tinggi slide, hitam di atas kartu putih membulat dengan bayangan kaca) → `https://fabius-one.vercel.app/tour`; di bawahnya URL pendek mono `fabius-one.vercel.app/tour` dan label kecil "60-second tour · no login".
 - **Pita bawah mono kecil `#8B86A6`:** `SignalAnchor 0x9B78…64f3 · BNB Smart Chain testnet (97) · ERC-8004 #2494`
 - **Wordmark FABIUS** + kubus kaca kecil di kiri bawah; slogan kecil di bawahnya: *Refuse the battle. Prove the decision.*
 
@@ -79,7 +79,7 @@ Latar `#0F0B26`, komposisi tenang dan lapang (slide ini akan dilihat ±2 menit s
 | ID | Aset | Status |
 |---|---|---|
 | **A5** | QR → `https://fabius-one.vercel.app/tour` | buat sendiri (ECC level M/Q); uji pindai dari ±5 m di layar proyektor |
-| **A6** | Wordmark FABIUS + kubus | dari deck lama / situs |
+| **A6** | Wordmark FABIUS + kubus | ✅ `aset/wordmark-fabius.svg` |
 
 ## 12. Jangan
 - Jangan menulis nama kompetitor atau "the only one"; lisan boleh "hampir semua".

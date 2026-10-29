@@ -2,7 +2,7 @@
 tags: [generated]
 ---
 
-_Auto-Index — 6 halaman · 2026-10-29T03:39Z · dari `vault/scripts/sync_vault.py`_
+_Auto-Index — 6 halaman · 2026-10-29T03:51Z · dari `vault/scripts/sync_vault.py`_
 
 ### 00-Overview (8)
 - [[00-Overview/00 - Hub Overview]]
@@ -203,7 +203,7 @@ _Auto-Index — 6 halaman · 2026-10-29T03:39Z · dari `vault/scripts/sync_vault
 - [[12-Competitors/KP8 - Kulaya]]
 - [[12-Competitors/KP9 - Ranking dan Skenario Finalis]]
 
-### 14-Deck-Demo-Day (8)
+### 14-Deck-Demo-Day (12)
 - [[14-Deck-Demo-Day/00 - Hub Deck Demo Day]]
 - [[14-Deck-Demo-Day/DK0 - Brief Pembuatan Deck]]
 - [[14-Deck-Demo-Day/DK1 - Slide 1 Kapan Ini Ditulis]]
@@ -212,6 +212,10 @@ _Auto-Index — 6 halaman · 2026-10-29T03:39Z · dari `vault/scripts/sync_vault
 - [[14-Deck-Demo-Day/DK4 - Slide 4 Coba Curangi]]
 - [[14-Deck-Demo-Day/DK5 - Slide 5 Dibangun untuk Diragukan]]
 - [[14-Deck-Demo-Day/DK6 - Slide 6 Apa lawan Kapan]]
+- [[14-Deck-Demo-Day/DKL1 - Lampiran Arsitektur]]
+- [[14-Deck-Demo-Day/DKL2 - Lampiran Kenapa Bukan Atestasi Biasa]]
+- [[14-Deck-Demo-Day/DKL3 - Lampiran Jalan ke Uang Sungguhan]]
+- [[14-Deck-Demo-Day/DKV - Sistem Visual dan Sumber Daya]]
 
 ### Concepts (8)
 - [[Concepts/00 - Hub Concepts]]

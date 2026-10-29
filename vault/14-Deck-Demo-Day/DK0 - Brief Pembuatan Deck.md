@@ -13,6 +13,7 @@ tags: [deck, "DK0"]
 **Poin kunci:**
 - Satu kalimat yang harus diingat juri: ***"Most AI agents limit what AI can do. Fabius proves when it decided."*** — dengan nomor blok.
 - Strategi: **pindah arena** (jangan bersaing di dampak sosial atau mainnet) + **testnet dijadikan tesis** ("Mainnet without proof is Cannae") + **demo yang bisa dicoba juri** (`/tour`, `/break`, `/verify`, semua hidup dan diuji 28–29 Okt).
+- Visual **terang seperti FE** (keputusan builder 29 Okt) — [[14-Deck-Demo-Day/DKV - Sistem Visual dan Sumber Daya]] + aset di `aset/`.
 - 6 slide, 387 kata naskah, ±2,3 kata/detik: Hook+masalah 0:00–0:30 · Solusi 0:30–0:55 · Demo 0:55–1:35 · Coba curangi 1:35–2:05 · Dibangun untuk diragukan 2:05–2:40 · Penutup 2:40–3:00.
 - Track sasaran **AI Agents** (Lencana, proyek builder yang lain, di Consumer). Mainnet **tidak** (keputusan builder 29 Okt, biaya).
 - Dua slide bergantung pada aset/angka yang datang belakangan: DK3 (klip Telegram, LB27) dan DK5 (angka H-1, P182). Buat dengan placeholder bertanda jelas; jangan menunda slide lain.
@@ -132,20 +133,21 @@ Total **387 kata** (naskah Indonesia, dihitung 29 Okt) ≈ 2:48 pada ±2,3 kata/
 
 Busur emosi: **gelisah** (screenshot, "kapan?") → **lega** (ada jawabannya) → **yakin** (melihatnya bekerja) → **terkesan** (kontrak menolak kecurangan) → **percaya** (mereka jujur soal kelemahan) → **ingat** (what vs when + QR).
 
-## 8. Sistem visual
+## 8. Sistem visual — ikuti FE Fabius (terang)
+Keputusan builder 29 Okt: deck **terang seperti landing page Fabius**. Spesifikasi lengkap, token persis, komponen, dan aset siap pakai ada di **[[14-Deck-Demo-Day/DKV - Sistem Visual dan Sumber Daya]]** — baca sebelum mendesain. Ringkasnya:
 
 | Unsur | Nilai |
 |---|---|
-| Latar slide | gelap `#0F0B26` (variasi `#07051A`, `#1A1442`) — warisan deck lama + video v1 |
-| Teks | `#ECE8FA`; sekunder `#8B86A6` |
-| Aksen | `#6E4BFF` (utama), `#9D86FF`, `#C9BDF2`; antagonis/ditolak `#FF5A6E`; hijau "pamer" hanya di kartu screenshot palsu DK1 |
-| Font | **Archivo** (judul; tegak lebar untuk pernyataan, miring tebal untuk kata kunci — gaya hero web "SIGNALS / SEALED"), **Inter** (isi), **JetBrains Mono** (alamat, nama revert, nomor blok) |
-| Motif | kubus kaca (situs: indigo = aturan terkunci, putih = terbukti, bening = kosong); garis rel/stasiun (halaman verify); gembok halus |
-| Tangkapan web | situs berlatar **lavender terang** (`#ECE8FA`); di slide gelap, letakkan dalam bingkai browser/ponsel miring sedikit dengan glow `#6E4BFF` 20–30 % supaya tidak "bolong putih" |
-| Kepadatan | ≤ 20 kata di slide; angka besar > kalimat; satu titik fokus per slide |
-| Gerak | build sederhana (fade/slide 200–300 ms) yang mengikuti naskah; **tanpa** efek suara crash/glitch (larangan builder sejak video v2) |
-| Aksesibilitas | kontras teks ≥ AA; ukuran isi ≥ 24 pt; nomor blok/label mono ≥ 16 pt; tidak menyampaikan informasi dengan warna saja (pakai ✓/✗/label) |
-| Font cadangan | bila laptop presentasi tidak punya Archivo/Inter/JetBrains Mono: embed font, atau ekspor PDF/MP4 sebagai cadangan |
+| Kanvas | 16:9 1920×1080; latar `#F6F4FD`; isi di panel membulat 30 px (seperti FE) |
+| Panel | lavender `#ECE8FA` → putih untuk DK2–DK6; night `#0F0B26` hanya DK1 (masalah) dan blok aksen (Verified, saklar, footer kontrak) |
+| Teks | ink `#15122B`; isi ink 65 %; sekunder mist `#8B86A6` |
+| Aksen | violet `#6E4BFF` satu-satunya; `#9D86FF` di atas night; merah `#FF5A6E` hanya ditolak/bolong |
+| Font | Archivo variable (judul: 300 / 112 % + 800 italic / 78 % violet), Inter (isi), JetBrains Mono (tag uppercase, hash, revert) |
+| Komponen | kartu kaca `.glass`, kubus `IsoCube` (makna = keadaan), rel stasiun bernomor, cap merah, pita marquee violet |
+| Aset | `aset/layar/` 10 tangkapan produksi 3840×2160, `aset/kubus/` 10 SVG, `aset/wordmark-fabius.svg`, `aset/kristal-hero-crop.png` |
+| Kepadatan | ≤ 20 kata di slide; satu titik fokus per slide |
+| Gerak | pegas lembut seperti hero FE; 250 ms fade + naik; tanpa suara/glitch |
+| Aksesibilitas | kontras ≥ AA; isi ≥ 22 pt; mono ≥ 14 pt; tidak menyampaikan arti dengan warna saja (✓/✗/label) |
 
 ## 9. Fakta yang boleh dipakai
 
@@ -173,19 +175,20 @@ Angka lain: **jangan**. Bila butuh angka yang tidak ada di sini, tanyakan builde
 
 | ID | Aset | Slide | Status |
 |---|---|---|---|
+| A0 | Tangkapan produksi, kubus SVG, wordmark, kristal (lihat DKV §5–§6) | semua | ✅ `aset/` 29 Okt |
 | A1 | Kartu screenshot sinyal palsu (+312.4 %, nama samaran, cap waktu buram) | DK1 | buat ulang vektor; referensi video v2 0:00–7,6 (K1) |
 | A2 | Rekaman Telegram: `/start` → `/buy` → bayar x402 → sinyal + link | DK3 | ⬜ builder 29 Okt sore WIB (LB27) |
-| A3 | Rekaman `/tour` atau `/verify` sampai Verified | DK3 | ✅ rekam kapan saja |
-| A4 | Rekaman `/break` "Try all four" | DK4 | ✅ rekam kapan saja (opsional; opsi A = kartu statis) |
+| A3 | Rekaman `/tour` atau `/verify` sampai Verified | DK3 | ✅ rekam kapan saja; tangkapan diam: `aset/layar/03`, `04`, `08` |
+| A4 | Rekaman `/break` "Try all four" | DK4 | ✅ tangkapan diam `aset/layar/06-break-empat-ditolak.png`; rekaman opsional |
 | A5 | QR → `fabius-one.vercel.app/tour` | DK6 | buat sendiri, uji dari ±5 m |
-| A6 | Wordmark FABIUS + kubus kaca | DK1, DK6 | deck lama / situs |
+| A6 | Wordmark FABIUS + kubus kaca | DK1, DK6 | ✅ `aset/wordmark-fabius.svg`, `aset/kubus/` |
 | K1–K5 | Potongan video v2 tanpa suara (hook, segel, meja AI, beli, periksa) | cadangan DK1/DK3 | ⬜ tugas terakhir (P185) |
 
 ## 10. Slide lampiran (tersembunyi, hanya untuk Q&A)
 Taruh **sesudah** DK6, disembunyikan (tidak diputar), dengan tautan cepat dari speaker notes DK6:
-- **L1 Arsitektur** — diagram: ledger publik (GitHub) → `LockRegistry` / `SignalAnchor` / `DeskAnchor` / `SelectionAnchor` (chain 97) → `/verify` · MCP · Telegram · x402. Tanpa angka baru.
-- **L2 Kenapa bukan atestasi biasa (EAS/BAS)** — tabel 3 baris: atestasi mencatat *siapa + apa*; Fabius menegakkan *urutan terhadap hasil* (`TooLate`, `LockedAfterBar`, jumlah sinyal tetap + `markMissed`).
-- **L3 Jalan ke uang sungguhan** — syarat F-D16 (20 sinyal / 20 hari / 2 bulan / CI > 0) + telaah hukum; biaya mainnet ±$0,4 deploy, ±$17/bulan; saklar publik.
+- **L1 Arsitektur** ([[14-Deck-Demo-Day/DKL1 - Lampiran Arsitektur]]) — diagram: ledger publik (GitHub) → `LockRegistry` / `SignalAnchor` / `DeskAnchor` / `SelectionAnchor` (chain 97) → `/verify` · MCP · Telegram · x402. Tanpa angka baru.
+- **L2 Kenapa bukan atestasi biasa (EAS/BAS)** ([[14-Deck-Demo-Day/DKL2 - Lampiran Kenapa Bukan Atestasi Biasa]]) — tabel 3 baris: atestasi mencatat *siapa + apa*; Fabius menegakkan *urutan terhadap hasil* (`TooLate`, `LockedAfterBar`, jumlah sinyal tetap + `markMissed`).
+- **L3 Jalan ke uang sungguhan** ([[14-Deck-Demo-Day/DKL3 - Lampiran Jalan ke Uang Sungguhan]]) — syarat F-D16 (20 sinyal / 20 hari / 2 bulan / CI > 0) + telaah hukum; biaya mainnet ±$0,4 deploy, ±$17/bulan; saklar publik.
 
 ## 11. Larangan (semua slide)
 - Kata: "profitable", "edge", "win rate", "guaranteed", "used by other agents", "trustless", "tamper-proof", "first BNB-native", "the only one in the world", "mainnet" untuk apa pun yang testnet, "real-time signals". Cek setiap teks terhadap [[10-Submissions/01 - Claims Cheat Sheet]].

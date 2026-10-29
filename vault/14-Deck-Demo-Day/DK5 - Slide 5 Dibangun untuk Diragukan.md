@@ -35,13 +35,13 @@ Juri baru saja terkesan oleh DK4. Pada titik ini juri teknis biasanya memikirkan
 **"Built to be doubted."** Tiga angka yang biasanya disembunyikan perusahaan, ditampilkan sebesar angka prestasi. Di bawahnya, saklar yang mati — simbol bahwa menahan diri adalah keputusan yang dikunci, bukan keterpaksaan.
 
 ## 6. Ilustrasi + tata letak
-Latar `#0F0B26`, sedikit lebih gelap dari slide lain (`#07051A`) untuk perubahan nada.
+Panel **lavender** lebih lapang; perubahan nada lewat ruang kosong dan ukuran, bukan latar gelap. **Pita marquee violet** di bawah panel (DKV §4): "PAPER ONLY · NO EDGE CLAIMED · FORWARD TEST NOT YET MET · VERIFY, DON'T TRUST" — persis pita FE (`aset/layar/04-tour-langkah-4-5-verified.png`).
 - **Judul (kiri atas):** "Built to be *doubted.*" (Archivo; *doubted.* miring `#9D86FF`).
-- **Tiga angka besar sejajar** (Archivo 96–120 pt `#ECE8FA`, label Inter 20 pt `#8B86A6`):
+- **Tiga angka besar sejajar** (Archivo 96–120 pt ink `#15122B`, label Inter 20 pt mist `#8B86A6`):
   1. **0 / 6** — "bots passed our own forward test" + mono kecil "as of <tanggal H-1>"
   2. **12 / 12** — "symbols lost after costs — published"
   3. **1.29 → 0.85** — "our own Sharpe, corrected by us"
-- **Tengah bawah:** ilustrasi **saklar/toggle** besar dalam posisi OFF, dengan label mono `config/uang_nyata.json   "aktif": false` dan teks kecil "real money: off — public, by rule".
+- **Tengah bawah:** kartu **night kecil** berisi ilustrasi **saklar/toggle** besar dalam posisi OFF, dengan label mono `config/uang_nyata.json   "aktif": false` dan teks kecil "real money: off — public, by rule".
 - **Kalimat penutup besar (muncul terakhir):** ***"Mainnet without proof is Cannae."*** (Archivo miring tebal, `#9D86FF`), di bawahnya garis tipis.
 - Opsional, sangat halus (opacity 6–8 %): siluet helm Romawi atau garis peta Cannae di latar kanan.
 

@@ -35,9 +35,9 @@ Juri masih memegang pertanyaan "kapan ini ditulis?". Slide ini harus terasa sepe
 **"Tiga stasiun, satu rel."** Satu keputusan berjalan dari kiri ke kanan: dikunci → disegel → diperiksa. Sama dengan metafora stasiun di halaman `/verify` dan `/tour`, supaya juri yang nanti membuka QR mengenali bentuknya.
 
 ## 6. Ilustrasi + tata letak
-Latar `#0F0B26`.
-- **Judul kecil di atas (opsional, 1 baris):** "Fabius answers *when* — with a block number." (Archivo, `#ECE8FA`, *when* `#9D86FF`).
-- **Tengah:** tiga kartu kaca `#1A1442` dengan garis tepi `#6E4BFF` 1,5 px, disambung **rel tipis** horizontal bercahaya; di atas tiap kartu satu **kubus kaca** kecil (motif situs):
+Panel **lavender** (gradasi `#ECE8FA` → putih, radius 30 px) — pertama kali terang: momen jawaban (DKV §7).
+- **Judul kecil di atas (opsional, 1 baris):** "Fabius answers *when* — with a block number." (Archivo 300 / 112 % ink `#15122B`, *when* 800 italic violet `#6E4BFF`).
+- **Tengah:** tiga **kartu kaca `.glass`** (DKV §4) disambung **rel stasiun** bernomor 1–2–3 seperti `/tour` (garis `#C9BDF2`, titik violet); di atas tiap kartu satu **kubus kaca** kecil (motif situs):
   1. kubus **indigo dengan gembok** — **LOCK**
   2. kubus **tersegel** (indigo bercahaya, garis segel) — **SEAL**
   3. kubus **putih bersinar dengan ✓** — **CHECK**
@@ -84,7 +84,7 @@ Pita bawah: **AI analysts (ERC-8004) pick the bot · a locked formula sizes the 
 - ERC-8004: Fabius #2494 — tidak perlu ditulis di slide.
 
 ## 11. Aset
-- Kubus kaca: render ulang dari motif situs (`web/src/components/hero/Crystal.tsx`) atau gambar vektor isometrik sederhana (indigo / tersegel / putih ✓).
+- Kubus: `aset/kubus/kubus-prelock.svg` (LOCK), `kubus-sealed.svg` (SEAL), `kubus-verified-glow.svg` (CHECK); opsional `aset/kristal-hero-crop.png` sebagai latar samar kanan.
 - Ikon analis: siluet voxel sederhana (situs memakai NPC voxel di `/desk`), 3 buah, warna kulit beragam.
 
 ## 12. Jangan

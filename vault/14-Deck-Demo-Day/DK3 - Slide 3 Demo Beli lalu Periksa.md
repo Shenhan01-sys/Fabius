@@ -36,7 +36,7 @@ Sesudah DK2 juri tahu *teorinya*. Sekarang mereka harus *melihatnya*. Banyak fin
 **"Dari chat ke chain dalam 40 detik."** Kiri: ponsel (dunia pembeli). Kanan: halaman verify (dunia bukti). Satu garis cahaya menghubungkan link di chat ke halaman verify — sinyal yang sama, dua sudut.
 
 ## 6. Ilustrasi + tata letak
-Latar `#0F0B26`.
+Panel **lavender**; bingkai ponsel + browser kaca (DKV §6).
 - **Label kecil di atas kiri:** pil `● Live on BNB Smart Chain testnet` (mono, `#9D86FF`).
 - **Klip utama** (±75 % lebar): dua bagian berurutan dalam satu video, atau dua bingkai berdampingan:
   - Bagian A (±15 d): bingkai **ponsel** (mockup sederhana, sudut membulat, sedikit miring ke kanan) berisi rekaman Telegram: `/start` → `/buy` → persetujuan bayar x402 → sinyal + link.
@@ -44,7 +44,7 @@ Latar `#0F0B26`.
   - Transisi A→B: zoom ke link di chat, garis cahaya `#6E4BFF` "menarik" ke bingkai browser.
 - **Sorotan** (lingkaran/garis `#6E4BFF`, muncul pada detik yang ditandai): (1) teks "no gas"/tanpa popup wallet di ponsel; (2) jam segel + nomor blok di halaman verify; (3) vonis Verified.
 - **Caption bawah** (muncul saat Verified): **"Sealed at block #_____ — 8.7 h after close, within the 12 h limit. Verified."** — angka diisi **dari rekaman** (jangan dikarang; lihat §10).
-- Halaman web berlatar lavender terang → beri glow ungu 20–30 % di sekeliling bingkai supaya menyatu dengan latar gelap.
+- Caption Verified dalam **panel night kecil** dengan kubus verified + glow (meniru panel vonis `/verify`, `aset/layar/08-verify-b2rs-stasiun.png`). Cadangan diam: `aset/layar/03-tour-langkah-1-3.png`, `04-tour-langkah-4-5-verified.png`.
 
 ## 7. Teks di slide (Inggris, persis)
 - Pil atas: **Live on BNB Smart Chain testnet**

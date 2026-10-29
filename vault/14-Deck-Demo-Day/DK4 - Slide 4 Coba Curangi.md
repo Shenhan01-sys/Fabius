@@ -35,9 +35,9 @@ Finalis lain banyak yang punya "red-team" atau batas kontrak untuk *aksi* AI. DK
 **"Empat kunci yang dicoba, empat pintu yang tetap tertutup."** Empat kartu kecurangan; masing-masing dicap merah dengan nama revert persis dari kontrak.
 
 ## 6. Ilustrasi + tata letak
-Latar `#0F0B26`.
+Panel **lavender** — meniru halaman `/break` persis (`aset/layar/05-break-atas.png`, `06-break-empat-ditolak.png`) supaya juri mengenalinya saat scan.
 - **Judul (Archivo, 2 baris):** "Try to cheat." / ***"Watch it fail."*** (*Watch it fail.* miring tebal `#9D86FF`) — sama dengan judul halaman `/break` agar juri mengenali saat membuka QR.
-- **Grid 2×2 kartu** `#1A1442` (atau klip rekaman `/break` dalam bingkai browser, glow ungu):
+- **Grid 2×2 kartu kaca `.glass`** dengan nomor tag `01`–`04` dan kubus kecil `kubus-missed.svg` di pojok (atau tangkapan `06-break-empat-ditolak.png` dalam bingkai browser):
   1. "Write yesterday's call after the market moved" → cap **`TooLate`**
   2. "Claim a call from before the strategy existed" → cap **`LockedAfterBar`**
   3. "Quietly tweak the strategy after seeing the data" → cap **`NotLocked`**
@@ -70,7 +70,7 @@ Latar `#0F0B26`.
 ## 9. Animasi + transisi
 - Opsi A (disarankan): kartu statis + cap muncul per `[KLIK]` (scale 1,15 → 1,0 dalam 180 ms, tanpa suara).
 - Opsi B: klip rekaman `/break` (klik "Try all four" → empat kartu "Rejected by the contract") ±12 d diputar otomatis; presenter mengikuti urutan kartu di klip. Lebih "hidup", tetapi sinkronisasi lebih sulit.
-- Keluar ke DK5: cap merah memudar, latar sedikit menggelap (nada turun ke refleksi).
+- Keluar ke DK5: cap merah memudar, kartu turun pelan (nada turun ke refleksi).
 
 ## 10. Angka + sumber
 - Empat revert diuji di produksi 28 Okt 15:16Z (`/api/break`): late → `TooLate` (asof 2026-10-27, maxLag 12 j), prelock → `LockedAfterBar` (lockedAt 2026-10-02T15:49:20Z, asof 2026-10-01), respec → `NotLocked`, extra (B2-RS 2026-10-05, 4/4 sudah dibuka) → `TooManyReveals`. Diuji ulang 29 Okt (4/4). ✅
