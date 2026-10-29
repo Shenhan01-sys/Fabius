@@ -6,19 +6,17 @@ tags: [deck, hub]
 
 **Sumber:** `vault/14-Deck-Demo-Day/` · strategi di [[10-Submissions/04 - Demo Day 31 Okt - Materi Pitch]]
 
-Paket serah terima untuk agen pembuat PPT Demo Day 31 Okt 2026 (3 menit presentasi + 2 menit tanya jawab). Mulai dari **DK0** (brief: untuk apa deck ini, peta baca vault, gaya visual, fakta yang boleh dipakai, aset, larangan, keluaran, kriteria selesai), lalu satu file per slide **DK1–DK8**. Ini bukan klaim produk baru: semua angka sudah disaring di DK0 §4, dan naskah masih USULAN sampai builder menyetujui (LB25).
+Paket serah terima untuk agen pembuat PPT Demo Day 31 Okt 2026 (3 menit presentasi + 2 menit tanya jawab, format bebas). **Versi 29 Okt: 6 slide** (menggantikan 8 slide 28 Okt). Mulai dari **DK0** (Fabius dari setiap sudut pandang, konteks hackathon + juri, tujuan deck, strategi, celah yang sudah ditutup + buktinya, struktur 6 slide, sistem visual, fakta yang boleh dipakai, daftar aset, lampiran Q&A, larangan, contekan Q&A, hal yang sering terlewat, kriteria selesai), lalu satu file per slide **DK1–DK6** (tujuan, konteks, POV juri, POV presenter, konsep, ilustrasi, teks persis, naskah ID + EN dengan `[KLIK]`, animasi, angka + sumber, aset, larangan, risiko + cadangan, cek selesai). Naskah masih USULAN sampai builder menyetujui (LB25).
 
 ## Bagian
 
-- [[14-Deck-Demo-Day/DK0 - Brief Pembuatan Deck]] — brief lengkap end-to-end untuk pembuat PPT; baca pertama
-- [[14-Deck-Demo-Day/DK1 - Slide 1 Hook]] — 0:00–0:15 · "+312.4%" — *When was this written?*
-- [[14-Deck-Demo-Day/DK2 - Slide 2 Problem]] — 0:15–0:43 · 22,69 juta investor (OJK) + track record ditulis sesudah pasar + AI hindsight
-- [[14-Deck-Demo-Day/DK3 - Slide 3 Solusi Kunci Segel Periksa]] — 0:43–1:08 · Lock → Seal → Check (`LockRegistry`, `SignalAnchor`, `/verify`)
-- [[14-Deck-Demo-Day/DK4 - Slide 4 Demo Telegram ke Verify]] — 1:08–1:40 · klip Telegram beli sinyal gasless → verify nomor blok
-- [[14-Deck-Demo-Day/DK5 - Slide 5 Coba Patahkan TooLate]] — 1:40–1:57 · commit terlambat → `revert TooLate`
-- [[14-Deck-Demo-Day/DK6 - Slide 6 Dibangun untuk Diragukan dan Testnet]] — 1:57–2:25 · 0/6, 12/12, Sharpe dikoreksi, saklar `false`, "Mainnet without proof is Cannae"
-- [[14-Deck-Demo-Day/DK7 - Slide 7 Posisi Mereka Membatasi Apa Kami Membuktikan Kapan]] — 2:25–2:50 · *what* vs *when* + bisnis satu baris
-- [[14-Deck-Demo-Day/DK8 - Slide 8 Penutup]] — 2:50–3:00 · "Refuse the battle. Prove the decision." + QR `/verify`; speaker notes = contekan Q&A
+- [[14-Deck-Demo-Day/DK0 - Brief Pembuatan Deck]] — brief end-to-end; baca pertama
+- [[14-Deck-Demo-Day/DK1 - Slide 1 Kapan Ini Ditulis]] — 0:00–0:30 · screenshot "+312.4%" — *When was this written?* + 22,69 juta investor + 228 pedagang ilegal (OJK)
+- [[14-Deck-Demo-Day/DK2 - Slide 2 Kunci Segel Periksa]] — 0:30–0:55 · Lock → Seal → Check; AI memilih, formula terkunci menghitung
+- [[14-Deck-Demo-Day/DK3 - Slide 3 Demo Beli lalu Periksa]] — 0:55–1:35 · klip Telegram beli sinyal tanpa gas → Verified (nomor blok)
+- [[14-Deck-Demo-Day/DK4 - Slide 4 Coba Curangi]] — 1:35–2:05 · empat kecurangan → `TooLate` · `LockedAfterBar` · `NotLocked` · `TooManyReveals`
+- [[14-Deck-Demo-Day/DK5 - Slide 5 Dibangun untuk Diragukan]] — 2:05–2:40 · 0/6 · 12/12 · Sharpe dikoreksi · saklar `false` · "Mainnet without proof is Cannae"
+- [[14-Deck-Demo-Day/DK6 - Slide 6 Apa lawan Kapan]] — 2:40–3:00 · "Others limit *what* AI can do. Fabius proves *when* it decided." + QR `/tour`; tetap tampil selama Q&A
 
 <!-- di atas: append-only oleh scripts/sync_vault.py; gloss tulisan tangan utuh -->
 ```dataview

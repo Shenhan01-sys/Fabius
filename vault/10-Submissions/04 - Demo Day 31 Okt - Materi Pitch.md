@@ -82,7 +82,7 @@ Slide kejujuran (tidak ada finalis lain yang memublikasikan kegagalan sendiri de
 
 ## 7. Naskah 3 menit (180 d) — USULAN
 
-> **28 Okt:** naskah final per slide + jendela waktu yang disesuaikan dengan panjang naskah ada di [[14-Deck-Demo-Day/00 - Hub Deck Demo Day]] (DK1–DK8) dan **menggantikan** tabel di bawah. Tabel ini disimpan sebagai riwayat.
+> **29 Okt:** deck diringkas menjadi **6 slide** (DK1–DK6, 387 kata, ±2:55) dengan panduan per slide di [[14-Deck-Demo-Day/00 - Hub Deck Demo Day]]; itu **menggantikan** tabel di bawah dan kerangka 8 slide di §9 (keduanya disimpan sebagai riwayat). Keputusan builder 29 Okt: tetap testnet (opsi P179 di §4 tidak dipakai), format bebas.
 
 | Waktu | Slide | Isi | Live / rekaman |
 |---|---|---|---|
@@ -111,7 +111,7 @@ Desk AI (jailbreak satu analis → formula tetap membatasi) **tidak muat** di 3 
 | "Legal?" | "Uang nyata dan penjualan berbayar menunggu review hukum (P75/P80) — sengaja, ada di aturan kami." |
 | "Beda dengan Kawal/Perago/…?" | Kalimat pembeda §1. |
 
-## 9. Kerangka deck (8 slide untuk 3 menit)
+## 9. Kerangka deck (8 slide untuk 3 menit) — riwayat, diganti 6 slide 29 Okt
 1. Hook: screenshot profit + "kapan ini ditulis?"
 2. Problem: 22,69 juta · 228 entitas ilegal · AI hindsight
 3. Kunci → Segel → Periksa (diagram 3 langkah, nama kontrak kecil)

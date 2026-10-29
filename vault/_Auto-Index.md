@@ -2,7 +2,7 @@
 tags: [generated]
 ---
 
-_Auto-Index — 6 halaman · 2026-10-29T03:05Z · dari `vault/scripts/sync_vault.py`_
+_Auto-Index — 6 halaman · 2026-10-29T03:39Z · dari `vault/scripts/sync_vault.py`_
 
 ### 00-Overview (8)
 - [[00-Overview/00 - Hub Overview]]
@@ -203,17 +203,15 @@ _Auto-Index — 6 halaman · 2026-10-29T03:05Z · dari `vault/scripts/sync_vault
 - [[12-Competitors/KP8 - Kulaya]]
 - [[12-Competitors/KP9 - Ranking dan Skenario Finalis]]
 
-### 14-Deck-Demo-Day (10)
+### 14-Deck-Demo-Day (8)
 - [[14-Deck-Demo-Day/00 - Hub Deck Demo Day]]
 - [[14-Deck-Demo-Day/DK0 - Brief Pembuatan Deck]]
-- [[14-Deck-Demo-Day/DK1 - Slide 1 Hook]]
-- [[14-Deck-Demo-Day/DK2 - Slide 2 Problem]]
-- [[14-Deck-Demo-Day/DK3 - Slide 3 Solusi Kunci Segel Periksa]]
-- [[14-Deck-Demo-Day/DK4 - Slide 4 Demo Telegram ke Verify]]
-- [[14-Deck-Demo-Day/DK5 - Slide 5 Coba Patahkan TooLate]]
-- [[14-Deck-Demo-Day/DK6 - Slide 6 Dibangun untuk Diragukan dan Testnet]]
-- [[14-Deck-Demo-Day/DK7 - Slide 7 Posisi Mereka Membatasi Apa Kami Membuktikan Kapan]]
-- [[14-Deck-Demo-Day/DK8 - Slide 8 Penutup]]
+- [[14-Deck-Demo-Day/DK1 - Slide 1 Kapan Ini Ditulis]]
+- [[14-Deck-Demo-Day/DK2 - Slide 2 Kunci Segel Periksa]]
+- [[14-Deck-Demo-Day/DK3 - Slide 3 Demo Beli lalu Periksa]]
+- [[14-Deck-Demo-Day/DK4 - Slide 4 Coba Curangi]]
+- [[14-Deck-Demo-Day/DK5 - Slide 5 Dibangun untuk Diragukan]]
+- [[14-Deck-Demo-Day/DK6 - Slide 6 Apa lawan Kapan]]
 
 ### Concepts (8)
 - [[Concepts/00 - Hub Concepts]]
