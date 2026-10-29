@@ -132,6 +132,75 @@ def revealed_for_commits(evm, logs_evm, anchor: str, commits: Sequence[Tuple[byt
     return out
 
 
+# P178 (29 Okt 2026): `revealed_for_commits` jatuh ke `evm` (publicnode) sesudah onfinality menolak, dan publicnode menjawab 0 log untuk blok lama
+# TANPA galat -> "TIDAK DIUNGKAP" palsu di landing (web_snapshot) dan di jawaban validator ERC-8004. Padahal jumlah ungkap tercatat di kontrak
+# (`getCommit().revealed`): event yang terbaca < angka itu SELALU berarti gagal baca, tidak pernah keadaan sungguhan. Jalur ini: petunjuk hash tx dari
+# ledger/chain/tx-index.json (tools/tx_index.py) -> struk tx dari chain (alamat + topik dicocokkan di sini) -> getLogs per komit lewat sumber log
+# eksplisit (onfinality, thirdweb; tanpa publicnode) -> masih kurang = ChainUnreadable (pemanggil: TUNDA / gagal keras, bukan vonis).
+RECEIPT_RPCS = ("https://bsc-testnet.drpc.org", "https://bsc-testnet-dataseed.bnbchain.org", "https://97.rpc.thirdweb.com")
+TX_INDEX = os.path.join(ROOT, "ledger", "chain", "tx-index.json")
+
+
+class ChainUnreadable(RuntimeError):
+    """Event yang wajib ada (dihitung kontrak) tidak terbaca dari RPC publik. Gagal baca != tidak ada (T8)."""
+
+
+def _load_index(path: str) -> dict:
+    try:
+        with open(path, encoding="utf-8") as f:
+            return json.load(f)
+    except (OSError, ValueError):
+        return {}
+
+
+def revealed_robust(evm, anchor: str, commits: Sequence[Tuple[bytes, dict]], lo_block: int, head: int, index_path: str = TX_INDEX,
+                    receipt_ev=None, log_sources=None, sleep=None) -> Dict[bytes, List[dict]]:
+    """Event `Revealed` per komit dengan jumlah PASTI = `revealed` di kontrak; kurang = ChainUnreadable."""
+    import time
+    import evm as evmmod
+    import tx_index as ti
+    sleep = time.sleep if sleep is None else sleep
+    topic0 = "0x" + chain.keccak256(REVEALED_SIG.encode()).hex()
+    receipt_ev = receipt_ev or evmmod.Evm(list(RECEIPT_RPCS), sc.CHAIN_ID, timeout=20.0)
+    if log_sources is None:
+        log_sources = [(evmmod.Evm([u], sc.CHAIN_ID, timeout=20.0), span) for u, span in ti.LOG_SOURCES]
+    hints = _load_index(index_path).get("commits", {})
+    out: Dict[bytes, List[dict]] = {}
+    for cid, c in commits:
+        need = int(c.get("revealed") or 0)
+        if need == 0:
+            continue
+        key = "0x" + bytes(cid).hex()
+        mine = lambda lg: lg["address"].lower() == anchor.lower() and [t.lower() for t in lg["topics"][:2]] == [topic0, key]  # noqa: E731
+        got: Dict[Tuple[str, str], dict] = {}
+        for tx in dict.fromkeys(r["tx"] for r in (hints.get(key) or {}).get("reveals", [])):
+            try:
+                rc = receipt_ev.rpc("eth_getTransactionReceipt", [tx])
+            except (evmmod.RpcError, RuntimeError):
+                continue
+            if rc and rc.get("status") == "0x1":
+                got.update({(lg["transactionHash"].lower(), lg["topics"][2].lower()): lg for lg in rc["logs"] if mine(lg)})
+        if len(got) < need:
+            start = block_at_or_after(evm, int(c["committedAt"]), lo_block, head)
+            a = max(lo_block, start - 50)
+            for _ in range(LOG_WINDOWS):
+                if a > head or len(got) >= need:
+                    break
+                b = min(a + LOG_SPAN, head)
+                try:
+                    logs = ti.get_logs(log_sources, {"address": anchor, "topics": [topic0, key]}, a, b, sleep)
+                except RuntimeError as e:
+                    raise ChainUnreadable(f"ungkap komit {key[:12]}…: {e}") from e
+                got.update({(lg["transactionHash"].lower(), lg["topics"][2].lower()): lg for lg in logs if mine(lg)})
+                a = b + 1
+        if len(got) < need:
+            raise ChainUnreadable(f"ungkap komit {key[:12]}…: {len(got)} dari {need} (angka kontrak) terbaca - RPC publik tak lengkap, bukan berarti tidak diungkap")
+        for lg in got.values():
+            k, ev = _decode_revealed(lg)
+            out.setdefault(k, []).append(ev)
+    return out
+
+
 def revealed_events(evm, anchor: str, from_block: int, to_block: int, chunk: int = LOG_CHUNK) -> Dict[bytes, List[dict]]:
     """Semua event `Revealed` kontrak, dikelompokkan per id komit. Rentang dipotong-potong (RPC publik membatasi eth_getLogs); dipotong lebih kecil bila ditolak."""
     from eth_abi import decode
@@ -262,9 +331,10 @@ def run(bots: Sequence[str], ledger_dir: str, bars_dir: str, deployments: str = 
     lo_block = int((m3.get("deploy_block") or {}).get("SignalAnchor") or 0)
     if os.environ.get("VERIFY_LOGS") == "pindai":          # perilaku lama (pindai penuh lewat `ev`), mis. untuk anvil/fork lokal
         events = revealed_events(ev, anchor, lo_block, head)
+    elif not own_ev or os.environ.get("RPC_PIN") == "1":     # ev dari pemanggil (anvil, tes) = jangan campur RPC publik lain
+        events = revealed_for_commits(ev, ev, anchor, commits, lo_block, head)
     else:
-        logs_ev = ev if (not own_ev or os.environ.get("RPC_PIN") == "1") else evmmod.Evm(list(LOG_RPCS) + list(sc.rpc_urls()), sc.CHAIN_ID)
-        events = revealed_for_commits(ev, logs_ev, anchor, commits, lo_block, head)
+        events = revealed_robust(ev, anchor, commits, lo_block, head)
     rows, st = verify(list(bots), ledger_dir, Views(bars_dir), cv, commits, events, official, now_s)
     return rows, st, {"anchor": anchor, "committer": official, "blok": head, "waktu_blok_s": now_s, "cv": cv, "ev": ev}
 

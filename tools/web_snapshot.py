@@ -136,7 +136,8 @@ def chain_block() -> dict:
     head = int(ev.rpc("eth_blockNumber", []), 16)
     now_s = ev.block_timestamp()
     commits = vs.all_commits(cv)
-    events = vs.revealed_events(ev, cs["SignalAnchor"], int((m3.get("deploy_block") or {}).get("SignalAnchor") or 0), head)
+    # P178: bukan pindai penuh lewat publicnode (0 log blok lama, tanpa galat -> "TIDAK DIUNGKAP" palsu); jumlah pasti per kontrak, kurang = galat -> TUNDA
+    events = vs.revealed_robust(ev, cs["SignalAnchor"], commits, int((m3.get("deploy_block") or {}).get("SignalAnchor") or 0), head)
     rows, st = vs.verify(list(sc.BOTS_DEFAULT), LEDGER_DIR, Views(os.path.join(ROOT, "ledger", "bars")), cv, commits, events, m3["committer"], now_s)
     lock_count = ev.call_decode(cs["LockRegistry"], "lockCount()", (), (), ("uint256",))[0]
     return {"id": 97, "block": head, "block_utc": ledger.utc_iso(now_s * 1000), "signal_anchor": cs["SignalAnchor"], "lock_registry": cs["LockRegistry"],

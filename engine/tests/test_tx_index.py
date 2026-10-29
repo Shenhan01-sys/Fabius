@@ -4,6 +4,7 @@ import sys
 import unittest
 
 ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+sys.path.insert(0, ROOT)
 sys.path.insert(0, os.path.join(ROOT, "tools"))
 import tx_index as ti                                               # noqa: E402
 
@@ -78,6 +79,66 @@ class ApplyLogsTests(unittest.TestCase):
         ti.get_logs([(bad, 9_999), (good, 999)], {}, 0, 2_500, lambda s: None)
         self.assertEqual(len(bad.calls), 5)                                 # 1 + 4 ulang, lalu menyerah ke sumber berikut
         self.assertEqual(good.calls, [("0x0", "0x3e7"), ("0x3e8", "0x7cf"), ("0x7d0", "0x9c4")])
+
+
+class RevealedRobustTests(unittest.TestCase):
+    """verify_signals.revealed_robust: jumlah ungkap PASTI menurut kontrak; kurang = ChainUnreadable, tidak pernah vonis "TIDAK DIUNGKAP"."""
+
+    def setUp(self):
+        import json
+        import tempfile
+        import verify_signals as vs
+        from eth_abi import encode
+        self.vs = vs
+        self.t0 = "0x" + vs.chain.keccak256(vs.REVEALED_SIG.encode()).hex()
+        self.cid = bytes.fromhex("11" * 32)
+        data = "0x" + encode(list(vs.REVEALED_DATA), [b"B" * 32, 1, 0, 10, 5, b"\x01" * 32, b"\x02" * 32]).hex()
+        self.lg = lambda addr, leaf, tx: {"address": addr, "topics": [self.t0, CID, leaf], "data": data, "transactionHash": tx, "blockNumber": hex(105)}
+        self.commits = [(self.cid, {"revealed": 2, "committedAt": 1000})]
+        self.dir = tempfile.mkdtemp()
+        self.ix = os.path.join(self.dir, "tx-index.json")
+        with open(self.ix, "w") as f:
+            json.dump({"commits": {CID: {"tx": "0xc", "block": 100, "reveals": [{"leaf": "0x" + "01" * 32, "tx": "0xa1", "block": 105},
+                                                                               {"leaf": "0x" + "02" * 32, "tx": "0xa2", "block": 106}]}}}, f)
+
+    class Rpc:
+        def __init__(self, answers, fail=False):
+            self.answers, self.fail, self.calls = answers, fail, []
+
+        def rpc(self, method, params):
+            self.calls.append(method)
+            if self.fail:
+                raise ti.evmmod.RpcError("limit exceeded")
+            return self.answers(method, params)
+
+    def chain(self):
+        return self.Rpc(lambda m, p: {"timestamp": hex(int(p[0], 16))})       # timestamp = nomor blok
+
+    def test_hints_verified_by_receipt_need_no_getlogs(self):
+        rc = self.Rpc(lambda m, p: {"status": "0x1", "logs": [self.lg(ANCHOR, "0x" + ("01" if p[0] == "0xa1" else "02") * 32, p[0])]})
+        logs = self.Rpc(lambda m, p: [], fail=True)
+        out = self.vs.revealed_robust(self.chain(), ANCHOR, self.commits, 0, 5000, self.ix, rc, [(logs, 999)], lambda s: None)
+        self.assertEqual(len(out[self.cid]), 2)
+        self.assertEqual(logs.calls, [])
+
+    def test_unreadable_logs_raise_not_verdict(self):
+        rc = self.Rpc(lambda m, p: None)                                    # struk tak ada
+        logs = self.Rpc(lambda m, p: [], fail=True)
+        with self.assertRaises(self.vs.ChainUnreadable):
+            self.vs.revealed_robust(self.chain(), ANCHOR, self.commits, 0, 5000, self.ix, rc, [(logs, 999)], lambda s: None)
+
+    def test_empty_answer_is_still_unreadable(self):
+        rc = self.Rpc(lambda m, p: None)
+        silent = self.Rpc(lambda m, p: [])                                  # pola publicnode: 0 log tanpa galat
+        with self.assertRaises(self.vs.ChainUnreadable):
+            self.vs.revealed_robust(self.chain(), ANCHOR, self.commits, 0, 5000, self.ix, rc, [(silent, 9_999)], lambda s: None)
+
+    def test_receipt_from_other_contract_ignored(self):
+        other = "0x" + "77" * 20
+        rc = self.Rpc(lambda m, p: {"status": "0x1", "logs": [self.lg(other, "0x" + "01" * 32, p[0])]})
+        good = self.Rpc(lambda m, p: [self.lg(ANCHOR, "0x" + "01" * 32, "0xa1"), self.lg(ANCHOR, "0x" + "02" * 32, "0xa2")])
+        out = self.vs.revealed_robust(self.chain(), ANCHOR, self.commits, 0, 5000, self.ix, rc, [(good, 9_999)], lambda s: None)
+        self.assertEqual(sorted(e["tx"] for e in out[self.cid]), ["0xa1", "0xa2"])
 
 
 if __name__ == "__main__":
