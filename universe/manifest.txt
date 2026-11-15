@@ -1,5 +1,5 @@
-# manifest dibuat ulang 2026-11-14T21:24:37Z — dihasilkan oleh universe/write_universe_manifest.py, jangan disunting manual
-# dataset sumber: bsc-universe.jsonl (280 snapshot)
+# manifest dibuat ulang 2026-11-15T01:49:49Z — dihasilkan oleh universe/write_universe_manifest.py, jangan disunting manual
+# dataset sumber: bsc-universe.jsonl (281 snapshot)
 # kolom sha256 = hash kanonik snapshot pada saat pengambilan, bukan hash baris ini
 # kolom gap_since_prev_h = jam sejak snapshot SEBELUMNYA di file; >1,5 berarti rekaman berhenti
 snapshot_utc	schema	universe	lolos	dinilai_penuh	pool_berharga	gap_since_prev_h	gdelt_lines	sha256_snapshot
@@ -283,3 +283,4 @@ snapshot_utc	schema	universe	lolos	dinilai_penuh	pool_berharga	gap_since_prev_h	
 2026-11-14T10:16:19Z	4	140	18	1	40	7.15	587	0x2fc2205998132a6dcbcb00687fefb338fc5e5b3e2ffe9bc0572c09d5692311ac
 2026-11-14T17:00:24Z	4	140	18	1	40	6.73	598	0x93aa3010a0a2b55fee385358ae25de0fe42e9043b0b57958115cc0fa406ff515
 2026-11-14T21:24:36Z	4	140	18	2	40	4.40	551	0xc8e4beb24ac9a859f24d1968cb4d03abe8cd1c9f30bf024cfe7e266658a42eb8
+2026-11-15T01:49:48Z	4	140	17	0	40	4.42	403	0x2d67c5050df6a00b9d3df0559b31cc73e190f7f8f89723a0f5b614a1c6bba747
