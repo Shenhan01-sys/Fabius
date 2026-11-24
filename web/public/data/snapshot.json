@@ -1,7 +1,7 @@
 {
  "v": 1,
- "generated_utc": "2026-10-11T09:11:46Z",
- "repo_head": "b3cc03ad08e275200f9a3aa3a1002de11eee6242",
+ "generated_utc": "2026-11-24T09:22:25Z",
+ "repo_head": "f8841ecdb4880dffe942e9edb0093b540faa7027",
  "bots": [
   {
    "id": "B1-TREND",
@@ -259,16 +259,296 @@
      "held": 15,
      "lag_s": 31243,
      "emitted_utc": "2026-10-11T08:40:43Z"
+    },
+    {
+     "date": "2026-11-10",
+     "signals": 0,
+     "held": 3,
+     "lag_s": 32318,
+     "emitted_utc": "2026-11-11T08:58:38Z"
+    },
+    {
+     "date": "2026-11-12",
+     "signals": 0,
+     "held": 3,
+     "lag_s": 31257,
+     "emitted_utc": "2026-11-13T08:40:57Z"
+    },
+    {
+     "date": "2026-11-14",
+     "signals": 1,
+     "held": 1,
+     "lag_s": 31219,
+     "emitted_utc": "2026-11-15T08:40:19Z"
+    },
+    {
+     "date": "2026-11-18",
+     "signals": 0,
+     "held": 0,
+     "lag_s": 31229,
+     "emitted_utc": "2026-11-19T08:40:29Z"
+    },
+    {
+     "date": "2026-11-19",
+     "signals": 0,
+     "held": 0,
+     "lag_s": 31411,
+     "emitted_utc": "2026-11-20T08:43:31Z"
+    },
+    {
+     "date": "2026-11-20",
+     "signals": 0,
+     "held": 0,
+     "lag_s": 33160,
+     "emitted_utc": "2026-11-21T09:12:40Z"
+    },
+    {
+     "date": "2026-11-21",
+     "signals": 0,
+     "held": 0,
+     "lag_s": 33406,
+     "emitted_utc": "2026-11-22T09:16:46Z"
+    },
+    {
+     "date": "2026-11-22",
+     "signals": 0,
+     "held": 0,
+     "lag_s": 31359,
+     "emitted_utc": "2026-11-23T08:42:39Z"
+    },
+    {
+     "date": "2026-11-23",
+     "signals": 0,
+     "held": 0,
+     "lag_s": 31336,
+     "emitted_utc": "2026-11-24T08:42:16Z"
     }
    ],
-   "settles": [],
-   "gaps": [],
-   "n_signals": 1,
-   "n_settled_days": 0,
-   "n_months": 0,
-   "head": "0x264e2f110ba37e352da89b03d33fc653db4ce09d3bc7a42b177b7bed742ffdf5",
-   "days_live": 10,
-   "last_closed": "2026-10-10"
+   "settles": [
+    {
+     "date": "2026-10-02",
+     "net_bps": -103.51,
+     "held": 16
+    },
+    {
+     "date": "2026-10-03",
+     "net_bps": 141.53,
+     "held": 16
+    },
+    {
+     "date": "2026-10-04",
+     "net_bps": 168.17,
+     "held": 16
+    },
+    {
+     "date": "2026-10-05",
+     "net_bps": 51.27,
+     "held": 16
+    },
+    {
+     "date": "2026-10-06",
+     "net_bps": -87.7,
+     "held": 16
+    },
+    {
+     "date": "2026-10-07",
+     "net_bps": -322.88,
+     "held": 16
+    },
+    {
+     "date": "2026-10-08",
+     "net_bps": -529.46,
+     "held": 16
+    },
+    {
+     "date": "2026-10-09",
+     "net_bps": 370.62,
+     "held": 16
+    },
+    {
+     "date": "2026-10-10",
+     "net_bps": 96.6,
+     "held": 16
+    },
+    {
+     "date": "2026-10-11",
+     "net_bps": 179.63,
+     "held": 15
+    },
+    {
+     "date": "2026-11-20",
+     "net_bps": 0.0,
+     "held": 0
+    },
+    {
+     "date": "2026-11-21",
+     "net_bps": 0.0,
+     "held": 0
+    },
+    {
+     "date": "2026-11-22",
+     "net_bps": 0.0,
+     "held": 0
+    },
+    {
+     "date": "2026-11-23",
+     "net_bps": 0.0,
+     "held": 0
+    },
+    {
+     "date": "2026-11-24",
+     "net_bps": 0.0,
+     "held": 0
+    }
+   ],
+   "gaps": [
+    {
+     "date": "2026-10-11",
+     "reason": "tidak ada tick sebelum batas 12 jam"
+    },
+    {
+     "date": "2026-10-12",
+     "reason": "tidak ada tick sebelum batas 12 jam"
+    },
+    {
+     "date": "2026-10-13",
+     "reason": "tidak ada tick sebelum batas 12 jam"
+    },
+    {
+     "date": "2026-10-14",
+     "reason": "tidak ada tick sebelum batas 12 jam"
+    },
+    {
+     "date": "2026-10-15",
+     "reason": "tidak ada tick sebelum batas 12 jam"
+    },
+    {
+     "date": "2026-10-16",
+     "reason": "tidak ada tick sebelum batas 12 jam"
+    },
+    {
+     "date": "2026-10-17",
+     "reason": "tidak ada tick sebelum batas 12 jam"
+    },
+    {
+     "date": "2026-10-18",
+     "reason": "tidak ada tick sebelum batas 12 jam"
+    },
+    {
+     "date": "2026-10-19",
+     "reason": "tidak ada tick sebelum batas 12 jam"
+    },
+    {
+     "date": "2026-10-20",
+     "reason": "tidak ada tick sebelum batas 12 jam"
+    },
+    {
+     "date": "2026-10-21",
+     "reason": "tidak ada tick sebelum batas 12 jam"
+    },
+    {
+     "date": "2026-10-22",
+     "reason": "tidak ada tick sebelum batas 12 jam"
+    },
+    {
+     "date": "2026-10-23",
+     "reason": "tidak ada tick sebelum batas 12 jam"
+    },
+    {
+     "date": "2026-10-24",
+     "reason": "tidak ada tick sebelum batas 12 jam"
+    },
+    {
+     "date": "2026-10-25",
+     "reason": "tidak ada tick sebelum batas 12 jam"
+    },
+    {
+     "date": "2026-10-26",
+     "reason": "tidak ada tick sebelum batas 12 jam"
+    },
+    {
+     "date": "2026-10-27",
+     "reason": "tidak ada tick sebelum batas 12 jam"
+    },
+    {
+     "date": "2026-10-28",
+     "reason": "tidak ada tick sebelum batas 12 jam"
+    },
+    {
+     "date": "2026-10-29",
+     "reason": "tidak ada tick sebelum batas 12 jam"
+    },
+    {
+     "date": "2026-10-30",
+     "reason": "tidak ada tick sebelum batas 12 jam"
+    },
+    {
+     "date": "2026-10-31",
+     "reason": "tidak ada tick sebelum batas 12 jam"
+    },
+    {
+     "date": "2026-11-01",
+     "reason": "tidak ada tick sebelum batas 12 jam"
+    },
+    {
+     "date": "2026-11-02",
+     "reason": "tidak ada tick sebelum batas 12 jam"
+    },
+    {
+     "date": "2026-11-03",
+     "reason": "tidak ada tick sebelum batas 12 jam"
+    },
+    {
+     "date": "2026-11-04",
+     "reason": "tidak ada tick sebelum batas 12 jam"
+    },
+    {
+     "date": "2026-11-05",
+     "reason": "tidak ada tick sebelum batas 12 jam"
+    },
+    {
+     "date": "2026-11-06",
+     "reason": "tidak ada tick sebelum batas 12 jam"
+    },
+    {
+     "date": "2026-11-07",
+     "reason": "tidak ada tick sebelum batas 12 jam"
+    },
+    {
+     "date": "2026-11-08",
+     "reason": "tidak ada tick sebelum batas 12 jam"
+    },
+    {
+     "date": "2026-11-09",
+     "reason": "tidak ada tick sebelum batas 12 jam"
+    },
+    {
+     "date": "2026-11-11",
+     "reason": "tidak ada tick sebelum batas 12 jam"
+    },
+    {
+     "date": "2026-11-13",
+     "reason": "tidak ada tick sebelum batas 12 jam"
+    },
+    {
+     "date": "2026-11-15",
+     "reason": "tidak ada tick sebelum batas 12 jam"
+    },
+    {
+     "date": "2026-11-16",
+     "reason": "tidak ada tick sebelum batas 12 jam"
+    },
+    {
+     "date": "2026-11-17",
+     "reason": "tidak ada tick sebelum batas 12 jam"
+    }
+   ],
+   "n_signals": 2,
+   "n_settled_days": 15,
+   "n_months": 2,
+   "head": "0xb9db13b37a9c66f83b20b973fbf93626b56ccce307f8b40f8d3ef1f380784eea",
+   "days_live": 54,
+   "last_closed": "2026-11-23"
   },
   "B2-RS": {
    "genesis": "2026-10-04",
@@ -322,16 +602,256 @@
      "held": 10,
      "lag_s": 31243,
      "emitted_utc": "2026-10-11T08:40:43Z"
+    },
+    {
+     "date": "2026-11-10",
+     "signals": 2,
+     "held": 10,
+     "lag_s": 32318,
+     "emitted_utc": "2026-11-11T08:58:38Z"
+    },
+    {
+     "date": "2026-11-12",
+     "signals": 6,
+     "held": 8,
+     "lag_s": 31257,
+     "emitted_utc": "2026-11-13T08:40:57Z"
+    },
+    {
+     "date": "2026-11-14",
+     "signals": 2,
+     "held": 7,
+     "lag_s": 31219,
+     "emitted_utc": "2026-11-15T08:40:19Z"
+    },
+    {
+     "date": "2026-11-18",
+     "signals": 0,
+     "held": 7,
+     "lag_s": 31229,
+     "emitted_utc": "2026-11-19T08:40:29Z"
+    },
+    {
+     "date": "2026-11-19",
+     "signals": 4,
+     "held": 8,
+     "lag_s": 31411,
+     "emitted_utc": "2026-11-20T08:43:31Z"
+    },
+    {
+     "date": "2026-11-20",
+     "signals": 2,
+     "held": 8,
+     "lag_s": 33160,
+     "emitted_utc": "2026-11-21T09:12:40Z"
+    },
+    {
+     "date": "2026-11-21",
+     "signals": 2,
+     "held": 8,
+     "lag_s": 33406,
+     "emitted_utc": "2026-11-22T09:16:46Z"
+    },
+    {
+     "date": "2026-11-22",
+     "signals": 2,
+     "held": 9,
+     "lag_s": 31359,
+     "emitted_utc": "2026-11-23T08:42:39Z"
+    },
+    {
+     "date": "2026-11-23",
+     "signals": 6,
+     "held": 11,
+     "lag_s": 31336,
+     "emitted_utc": "2026-11-24T08:42:16Z"
     }
    ],
-   "settles": [],
-   "gaps": [],
-   "n_signals": 35,
-   "n_settled_days": 0,
-   "n_months": 0,
-   "head": "0xbef99ff1a889628937da824f34fc57e9dbc81dc783d9f2114b9800fe435e5009",
-   "days_live": 7,
-   "last_closed": "2026-10-10"
+   "settles": [
+    {
+     "date": "2026-10-05",
+     "net_bps": 328.24,
+     "held": 9
+    },
+    {
+     "date": "2026-10-06",
+     "net_bps": -11.73,
+     "held": 9
+    },
+    {
+     "date": "2026-10-07",
+     "net_bps": 96.99,
+     "held": 10
+    },
+    {
+     "date": "2026-10-08",
+     "net_bps": -768.41,
+     "held": 9
+    },
+    {
+     "date": "2026-10-09",
+     "net_bps": -1.8,
+     "held": 10
+    },
+    {
+     "date": "2026-10-10",
+     "net_bps": 322.28,
+     "held": 9
+    },
+    {
+     "date": "2026-10-11",
+     "net_bps": 590.78,
+     "held": 10
+    }
+   ],
+   "gaps": [
+    {
+     "date": "2026-10-11",
+     "reason": "tidak ada tick sebelum batas 12 jam"
+    },
+    {
+     "date": "2026-10-12",
+     "reason": "tidak ada tick sebelum batas 12 jam"
+    },
+    {
+     "date": "2026-10-13",
+     "reason": "tidak ada tick sebelum batas 12 jam"
+    },
+    {
+     "date": "2026-10-14",
+     "reason": "tidak ada tick sebelum batas 12 jam"
+    },
+    {
+     "date": "2026-10-15",
+     "reason": "tidak ada tick sebelum batas 12 jam"
+    },
+    {
+     "date": "2026-10-16",
+     "reason": "tidak ada tick sebelum batas 12 jam"
+    },
+    {
+     "date": "2026-10-17",
+     "reason": "tidak ada tick sebelum batas 12 jam"
+    },
+    {
+     "date": "2026-10-18",
+     "reason": "tidak ada tick sebelum batas 12 jam"
+    },
+    {
+     "date": "2026-10-19",
+     "reason": "tidak ada tick sebelum batas 12 jam"
+    },
+    {
+     "date": "2026-10-20",
+     "reason": "tidak ada tick sebelum batas 12 jam"
+    },
+    {
+     "date": "2026-10-21",
+     "reason": "tidak ada tick sebelum batas 12 jam"
+    },
+    {
+     "date": "2026-10-22",
+     "reason": "tidak ada tick sebelum batas 12 jam"
+    },
+    {
+     "date": "2026-10-23",
+     "reason": "tidak ada tick sebelum batas 12 jam"
+    },
+    {
+     "date": "2026-10-24",
+     "reason": "tidak ada tick sebelum batas 12 jam"
+    },
+    {
+     "date": "2026-10-25",
+     "reason": "tidak ada tick sebelum batas 12 jam"
+    },
+    {
+     "date": "2026-10-26",
+     "reason": "tidak ada tick sebelum batas 12 jam"
+    },
+    {
+     "date": "2026-10-27",
+     "reason": "tidak ada tick sebelum batas 12 jam"
+    },
+    {
+     "date": "2026-10-28",
+     "reason": "tidak ada tick sebelum batas 12 jam"
+    },
+    {
+     "date": "2026-10-29",
+     "reason": "tidak ada tick sebelum batas 12 jam"
+    },
+    {
+     "date": "2026-10-30",
+     "reason": "tidak ada tick sebelum batas 12 jam"
+    },
+    {
+     "date": "2026-10-31",
+     "reason": "tidak ada tick sebelum batas 12 jam"
+    },
+    {
+     "date": "2026-11-01",
+     "reason": "tidak ada tick sebelum batas 12 jam"
+    },
+    {
+     "date": "2026-11-02",
+     "reason": "tidak ada tick sebelum batas 12 jam"
+    },
+    {
+     "date": "2026-11-03",
+     "reason": "tidak ada tick sebelum batas 12 jam"
+    },
+    {
+     "date": "2026-11-04",
+     "reason": "tidak ada tick sebelum batas 12 jam"
+    },
+    {
+     "date": "2026-11-05",
+     "reason": "tidak ada tick sebelum batas 12 jam"
+    },
+    {
+     "date": "2026-11-06",
+     "reason": "tidak ada tick sebelum batas 12 jam"
+    },
+    {
+     "date": "2026-11-07",
+     "reason": "tidak ada tick sebelum batas 12 jam"
+    },
+    {
+     "date": "2026-11-08",
+     "reason": "tidak ada tick sebelum batas 12 jam"
+    },
+    {
+     "date": "2026-11-09",
+     "reason": "tidak ada tick sebelum batas 12 jam"
+    },
+    {
+     "date": "2026-11-11",
+     "reason": "tidak ada tick sebelum batas 12 jam"
+    },
+    {
+     "date": "2026-11-13",
+     "reason": "tidak ada tick sebelum batas 12 jam"
+    },
+    {
+     "date": "2026-11-15",
+     "reason": "tidak ada tick sebelum batas 12 jam"
+    },
+    {
+     "date": "2026-11-16",
+     "reason": "tidak ada tick sebelum batas 12 jam"
+    },
+    {
+     "date": "2026-11-17",
+     "reason": "tidak ada tick sebelum batas 12 jam"
+    }
+   ],
+   "n_signals": 61,
+   "n_settled_days": 7,
+   "n_months": 1,
+   "head": "0x8b0054e6ffae097efbd8941110221e265b0836cb9ddfe3e327a749e3ce47ea62",
+   "days_live": 51,
+   "last_closed": "2026-11-23"
   },
   "B3-CARRY": {
    "genesis": "2026-10-01",
@@ -406,6 +926,69 @@
      "held": 0,
      "lag_s": 31243,
      "emitted_utc": "2026-10-11T08:40:43Z"
+    },
+    {
+     "date": "2026-11-10",
+     "signals": 0,
+     "held": 0,
+     "lag_s": 32643,
+     "emitted_utc": "2026-11-11T09:04:03Z"
+    },
+    {
+     "date": "2026-11-12",
+     "signals": 0,
+     "held": 0,
+     "lag_s": 31257,
+     "emitted_utc": "2026-11-13T08:40:57Z"
+    },
+    {
+     "date": "2026-11-14",
+     "signals": 0,
+     "held": 0,
+     "lag_s": 31219,
+     "emitted_utc": "2026-11-15T08:40:19Z"
+    },
+    {
+     "date": "2026-11-18",
+     "signals": 0,
+     "held": 0,
+     "lag_s": 31229,
+     "emitted_utc": "2026-11-19T08:40:29Z"
+    },
+    {
+     "date": "2026-11-19",
+     "signals": 0,
+     "held": 0,
+     "lag_s": 31411,
+     "emitted_utc": "2026-11-20T08:43:31Z"
+    },
+    {
+     "date": "2026-11-20",
+     "signals": 0,
+     "held": 0,
+     "lag_s": 33160,
+     "emitted_utc": "2026-11-21T09:12:40Z"
+    },
+    {
+     "date": "2026-11-21",
+     "signals": 0,
+     "held": 0,
+     "lag_s": 33406,
+     "emitted_utc": "2026-11-22T09:16:46Z"
+    },
+    {
+     "date": "2026-11-22",
+     "signals": 0,
+     "held": 0,
+     "lag_s": 32351,
+     "emitted_utc": "2026-11-23T08:59:11Z"
+    },
+    {
+     "date": "2026-11-23",
+     "signals": 0,
+     "held": 0,
+     "lag_s": 31336,
+     "emitted_utc": "2026-11-24T08:42:16Z"
     }
    ],
    "settles": [
@@ -448,15 +1031,181 @@
      "date": "2026-10-11",
      "net_bps": 0.0,
      "held": 0
+    },
+    {
+     "date": "2026-11-20",
+     "net_bps": 0.0,
+     "held": 0
+    },
+    {
+     "date": "2026-11-21",
+     "net_bps": 0.0,
+     "held": 0
+    },
+    {
+     "date": "2026-11-22",
+     "net_bps": 0.0,
+     "held": 0
+    },
+    {
+     "date": "2026-11-23",
+     "net_bps": 0.0,
+     "held": 0
+    },
+    {
+     "date": "2026-11-24",
+     "net_bps": 0.0,
+     "held": 0
     }
    ],
-   "gaps": [],
+   "gaps": [
+    {
+     "date": "2026-10-11",
+     "reason": "tidak ada tick sebelum batas 12 jam"
+    },
+    {
+     "date": "2026-10-12",
+     "reason": "tidak ada tick sebelum batas 12 jam"
+    },
+    {
+     "date": "2026-10-13",
+     "reason": "tidak ada tick sebelum batas 12 jam"
+    },
+    {
+     "date": "2026-10-14",
+     "reason": "tidak ada tick sebelum batas 12 jam"
+    },
+    {
+     "date": "2026-10-15",
+     "reason": "tidak ada tick sebelum batas 12 jam"
+    },
+    {
+     "date": "2026-10-16",
+     "reason": "tidak ada tick sebelum batas 12 jam"
+    },
+    {
+     "date": "2026-10-17",
+     "reason": "tidak ada tick sebelum batas 12 jam"
+    },
+    {
+     "date": "2026-10-18",
+     "reason": "tidak ada tick sebelum batas 12 jam"
+    },
+    {
+     "date": "2026-10-19",
+     "reason": "tidak ada tick sebelum batas 12 jam"
+    },
+    {
+     "date": "2026-10-20",
+     "reason": "tidak ada tick sebelum batas 12 jam"
+    },
+    {
+     "date": "2026-10-21",
+     "reason": "tidak ada tick sebelum batas 12 jam"
+    },
+    {
+     "date": "2026-10-22",
+     "reason": "tidak ada tick sebelum batas 12 jam"
+    },
+    {
+     "date": "2026-10-23",
+     "reason": "tidak ada tick sebelum batas 12 jam"
+    },
+    {
+     "date": "2026-10-24",
+     "reason": "tidak ada tick sebelum batas 12 jam"
+    },
+    {
+     "date": "2026-10-25",
+     "reason": "tidak ada tick sebelum batas 12 jam"
+    },
+    {
+     "date": "2026-10-26",
+     "reason": "tidak ada tick sebelum batas 12 jam"
+    },
+    {
+     "date": "2026-10-27",
+     "reason": "tidak ada tick sebelum batas 12 jam"
+    },
+    {
+     "date": "2026-10-28",
+     "reason": "tidak ada tick sebelum batas 12 jam"
+    },
+    {
+     "date": "2026-10-29",
+     "reason": "tidak ada tick sebelum batas 12 jam"
+    },
+    {
+     "date": "2026-10-30",
+     "reason": "tidak ada tick sebelum batas 12 jam"
+    },
+    {
+     "date": "2026-10-31",
+     "reason": "tidak ada tick sebelum batas 12 jam"
+    },
+    {
+     "date": "2026-11-01",
+     "reason": "tidak ada tick sebelum batas 12 jam"
+    },
+    {
+     "date": "2026-11-02",
+     "reason": "tidak ada tick sebelum batas 12 jam"
+    },
+    {
+     "date": "2026-11-03",
+     "reason": "tidak ada tick sebelum batas 12 jam"
+    },
+    {
+     "date": "2026-11-04",
+     "reason": "tidak ada tick sebelum batas 12 jam"
+    },
+    {
+     "date": "2026-11-05",
+     "reason": "tidak ada tick sebelum batas 12 jam"
+    },
+    {
+     "date": "2026-11-06",
+     "reason": "tidak ada tick sebelum batas 12 jam"
+    },
+    {
+     "date": "2026-11-07",
+     "reason": "tidak ada tick sebelum batas 12 jam"
+    },
+    {
+     "date": "2026-11-08",
+     "reason": "tidak ada tick sebelum batas 12 jam"
+    },
+    {
+     "date": "2026-11-09",
+     "reason": "tidak ada tick sebelum batas 12 jam"
+    },
+    {
+     "date": "2026-11-11",
+     "reason": "tidak ada tick sebelum batas 12 jam"
+    },
+    {
+     "date": "2026-11-13",
+     "reason": "tidak ada tick sebelum batas 12 jam"
+    },
+    {
+     "date": "2026-11-15",
+     "reason": "tidak ada tick sebelum batas 12 jam"
+    },
+    {
+     "date": "2026-11-16",
+     "reason": "tidak ada tick sebelum batas 12 jam"
+    },
+    {
+     "date": "2026-11-17",
+     "reason": "tidak ada tick sebelum batas 12 jam"
+    }
+   ],
    "n_signals": 4,
-   "n_settled_days": 8,
-   "n_months": 1,
-   "head": "0x6dd97985f0558009c38c74a12e72c7532320ec87b9f84775178e44be5ef7bb30",
-   "days_live": 10,
-   "last_closed": "2026-10-10"
+   "n_settled_days": 13,
+   "n_months": 2,
+   "head": "0xbc89fb5b5d0faf4532e4d90ea7f0195144370fc17d73ace2fbeaba7c2da320f0",
+   "days_live": 54,
+   "last_closed": "2026-11-23"
   },
   "B4-LISTING-FADE": {
    "genesis": "2026-10-04",
@@ -510,16 +1259,229 @@
      "held": 4,
      "lag_s": 31243,
      "emitted_utc": "2026-10-11T08:40:43Z"
+    },
+    {
+     "date": "2026-10-11",
+     "signals": 0,
+     "held": 4,
+     "lag_s": 31547,
+     "emitted_utc": "2026-10-12T08:45:47Z"
+    },
+    {
+     "date": "2026-10-12",
+     "signals": 1,
+     "held": 3,
+     "lag_s": 31486,
+     "emitted_utc": "2026-10-13T08:44:46Z"
+    },
+    {
+     "date": "2026-11-10",
+     "signals": 0,
+     "held": 0,
+     "lag_s": 31345,
+     "emitted_utc": "2026-11-11T08:42:25Z"
+    },
+    {
+     "date": "2026-11-12",
+     "signals": 0,
+     "held": 0,
+     "lag_s": 31257,
+     "emitted_utc": "2026-11-13T08:40:57Z"
+    },
+    {
+     "date": "2026-11-14",
+     "signals": 0,
+     "held": 0,
+     "lag_s": 31219,
+     "emitted_utc": "2026-11-15T08:40:19Z"
+    },
+    {
+     "date": "2026-11-16",
+     "signals": 0,
+     "held": 0,
+     "lag_s": 31347,
+     "emitted_utc": "2026-11-17T08:42:27Z"
+    },
+    {
+     "date": "2026-11-18",
+     "signals": 1,
+     "held": 1,
+     "lag_s": 31229,
+     "emitted_utc": "2026-11-19T08:40:29Z"
+    },
+    {
+     "date": "2026-11-19",
+     "signals": 0,
+     "held": 1,
+     "lag_s": 31411,
+     "emitted_utc": "2026-11-20T08:43:31Z"
+    },
+    {
+     "date": "2026-11-20",
+     "signals": 1,
+     "held": 2,
+     "lag_s": 31244,
+     "emitted_utc": "2026-11-21T08:40:44Z"
+    },
+    {
+     "date": "2026-11-21",
+     "signals": 0,
+     "held": 2,
+     "lag_s": 31406,
+     "emitted_utc": "2026-11-22T08:43:26Z"
+    },
+    {
+     "date": "2026-11-22",
+     "signals": 0,
+     "held": 2,
+     "lag_s": 31359,
+     "emitted_utc": "2026-11-23T08:42:39Z"
+    },
+    {
+     "date": "2026-11-23",
+     "signals": 0,
+     "held": 2,
+     "lag_s": 31336,
+     "emitted_utc": "2026-11-24T08:42:16Z"
     }
    ],
    "settles": [],
-   "gaps": [],
-   "n_signals": 5,
+   "gaps": [
+    {
+     "date": "2026-10-13",
+     "reason": "tidak ada tick sebelum batas 12 jam"
+    },
+    {
+     "date": "2026-10-14",
+     "reason": "tidak ada tick sebelum batas 12 jam"
+    },
+    {
+     "date": "2026-10-15",
+     "reason": "tidak ada tick sebelum batas 12 jam"
+    },
+    {
+     "date": "2026-10-16",
+     "reason": "tidak ada tick sebelum batas 12 jam"
+    },
+    {
+     "date": "2026-10-17",
+     "reason": "tidak ada tick sebelum batas 12 jam"
+    },
+    {
+     "date": "2026-10-18",
+     "reason": "tidak ada tick sebelum batas 12 jam"
+    },
+    {
+     "date": "2026-10-19",
+     "reason": "tidak ada tick sebelum batas 12 jam"
+    },
+    {
+     "date": "2026-10-20",
+     "reason": "tidak ada tick sebelum batas 12 jam"
+    },
+    {
+     "date": "2026-10-21",
+     "reason": "tidak ada tick sebelum batas 12 jam"
+    },
+    {
+     "date": "2026-10-22",
+     "reason": "tidak ada tick sebelum batas 12 jam"
+    },
+    {
+     "date": "2026-10-23",
+     "reason": "tidak ada tick sebelum batas 12 jam"
+    },
+    {
+     "date": "2026-10-24",
+     "reason": "tidak ada tick sebelum batas 12 jam"
+    },
+    {
+     "date": "2026-10-25",
+     "reason": "tidak ada tick sebelum batas 12 jam"
+    },
+    {
+     "date": "2026-10-26",
+     "reason": "tidak ada tick sebelum batas 12 jam"
+    },
+    {
+     "date": "2026-10-27",
+     "reason": "tidak ada tick sebelum batas 12 jam"
+    },
+    {
+     "date": "2026-10-28",
+     "reason": "tidak ada tick sebelum batas 12 jam"
+    },
+    {
+     "date": "2026-10-29",
+     "reason": "tidak ada tick sebelum batas 12 jam"
+    },
+    {
+     "date": "2026-10-30",
+     "reason": "tidak ada tick sebelum batas 12 jam"
+    },
+    {
+     "date": "2026-10-31",
+     "reason": "tidak ada tick sebelum batas 12 jam"
+    },
+    {
+     "date": "2026-11-01",
+     "reason": "tidak ada tick sebelum batas 12 jam"
+    },
+    {
+     "date": "2026-11-02",
+     "reason": "tidak ada tick sebelum batas 12 jam"
+    },
+    {
+     "date": "2026-11-03",
+     "reason": "tidak ada tick sebelum batas 12 jam"
+    },
+    {
+     "date": "2026-11-04",
+     "reason": "tidak ada tick sebelum batas 12 jam"
+    },
+    {
+     "date": "2026-11-05",
+     "reason": "tidak ada tick sebelum batas 12 jam"
+    },
+    {
+     "date": "2026-11-06",
+     "reason": "tidak ada tick sebelum batas 12 jam"
+    },
+    {
+     "date": "2026-11-07",
+     "reason": "tidak ada tick sebelum batas 12 jam"
+    },
+    {
+     "date": "2026-11-08",
+     "reason": "tidak ada tick sebelum batas 12 jam"
+    },
+    {
+     "date": "2026-11-09",
+     "reason": "tidak ada tick sebelum batas 12 jam"
+    },
+    {
+     "date": "2026-11-11",
+     "reason": "tidak ada tick sebelum batas 12 jam"
+    },
+    {
+     "date": "2026-11-13",
+     "reason": "tidak ada tick sebelum batas 12 jam"
+    },
+    {
+     "date": "2026-11-15",
+     "reason": "tidak ada tick sebelum batas 12 jam"
+    },
+    {
+     "date": "2026-11-17",
+     "reason": "tidak ada tick sebelum batas 12 jam"
+    }
+   ],
+   "n_signals": 8,
    "n_settled_days": 0,
    "n_months": 0,
-   "head": "0xc0048f98fcce79c1d6cc331a0048117fb44115e71184d3304b3bea67bcf7ae27",
-   "days_live": 7,
-   "last_closed": "2026-10-10"
+   "head": "0xda12e6e0ee0d622a80c298b228235e966eb461b7b5a45e5655f7aa1114daa7aa",
+   "days_live": 51,
+   "last_closed": "2026-11-23"
   },
   "B5-CORE-RWA": {
    "genesis": "2026-10-04",
@@ -573,6 +1535,188 @@
      "held": 2,
      "lag_s": 31243,
      "emitted_utc": "2026-10-11T08:40:43Z"
+    },
+    {
+     "date": "2026-10-11",
+     "signals": 0,
+     "held": 2,
+     "lag_s": 31224,
+     "emitted_utc": "2026-10-12T08:40:24Z"
+    },
+    {
+     "date": "2026-10-12",
+     "signals": 0,
+     "held": 2,
+     "lag_s": 31486,
+     "emitted_utc": "2026-10-13T08:44:46Z"
+    },
+    {
+     "date": "2026-10-28",
+     "signals": 0,
+     "held": 2,
+     "lag_s": 31380,
+     "emitted_utc": "2026-10-29T08:43:00Z"
+    },
+    {
+     "date": "2026-10-29",
+     "signals": 0,
+     "held": 2,
+     "lag_s": 31294,
+     "emitted_utc": "2026-10-30T08:41:34Z"
+    },
+    {
+     "date": "2026-10-30",
+     "signals": 0,
+     "held": 2,
+     "lag_s": 31414,
+     "emitted_utc": "2026-10-31T08:43:34Z"
+    },
+    {
+     "date": "2026-10-31",
+     "signals": 0,
+     "held": 2,
+     "lag_s": 31450,
+     "emitted_utc": "2026-11-01T08:44:10Z"
+    },
+    {
+     "date": "2026-11-01",
+     "signals": 2,
+     "held": 2,
+     "lag_s": 31489,
+     "emitted_utc": "2026-11-02T08:44:49Z"
+    },
+    {
+     "date": "2026-11-02",
+     "signals": 0,
+     "held": 2,
+     "lag_s": 31437,
+     "emitted_utc": "2026-11-03T08:43:57Z"
+    },
+    {
+     "date": "2026-11-03",
+     "signals": 0,
+     "held": 2,
+     "lag_s": 31489,
+     "emitted_utc": "2026-11-04T08:44:49Z"
+    },
+    {
+     "date": "2026-11-04",
+     "signals": 0,
+     "held": 2,
+     "lag_s": 31243,
+     "emitted_utc": "2026-11-05T08:40:43Z"
+    },
+    {
+     "date": "2026-11-05",
+     "signals": 0,
+     "held": 2,
+     "lag_s": 31205,
+     "emitted_utc": "2026-11-06T08:40:05Z"
+    },
+    {
+     "date": "2026-11-06",
+     "signals": 0,
+     "held": 2,
+     "lag_s": 31271,
+     "emitted_utc": "2026-11-07T08:41:11Z"
+    },
+    {
+     "date": "2026-11-07",
+     "signals": 0,
+     "held": 2,
+     "lag_s": 31235,
+     "emitted_utc": "2026-11-08T08:40:35Z"
+    },
+    {
+     "date": "2026-11-08",
+     "signals": 0,
+     "held": 2,
+     "lag_s": 31376,
+     "emitted_utc": "2026-11-09T08:42:56Z"
+    },
+    {
+     "date": "2026-11-09",
+     "signals": 0,
+     "held": 2,
+     "lag_s": 31276,
+     "emitted_utc": "2026-11-10T08:41:16Z"
+    },
+    {
+     "date": "2026-11-10",
+     "signals": 0,
+     "held": 2,
+     "lag_s": 31345,
+     "emitted_utc": "2026-11-11T08:42:25Z"
+    },
+    {
+     "date": "2026-11-11",
+     "signals": 0,
+     "held": 2,
+     "lag_s": 31324,
+     "emitted_utc": "2026-11-12T08:42:04Z"
+    },
+    {
+     "date": "2026-11-12",
+     "signals": 0,
+     "held": 2,
+     "lag_s": 31257,
+     "emitted_utc": "2026-11-13T08:40:57Z"
+    },
+    {
+     "date": "2026-11-14",
+     "signals": 0,
+     "held": 2,
+     "lag_s": 31219,
+     "emitted_utc": "2026-11-15T08:40:19Z"
+    },
+    {
+     "date": "2026-11-16",
+     "signals": 0,
+     "held": 2,
+     "lag_s": 31347,
+     "emitted_utc": "2026-11-17T08:42:27Z"
+    },
+    {
+     "date": "2026-11-18",
+     "signals": 0,
+     "held": 2,
+     "lag_s": 31229,
+     "emitted_utc": "2026-11-19T08:40:29Z"
+    },
+    {
+     "date": "2026-11-19",
+     "signals": 0,
+     "held": 2,
+     "lag_s": 31411,
+     "emitted_utc": "2026-11-20T08:43:31Z"
+    },
+    {
+     "date": "2026-11-20",
+     "signals": 0,
+     "held": 2,
+     "lag_s": 31244,
+     "emitted_utc": "2026-11-21T08:40:44Z"
+    },
+    {
+     "date": "2026-11-21",
+     "signals": 0,
+     "held": 2,
+     "lag_s": 31406,
+     "emitted_utc": "2026-11-22T08:43:26Z"
+    },
+    {
+     "date": "2026-11-22",
+     "signals": 0,
+     "held": 2,
+     "lag_s": 31359,
+     "emitted_utc": "2026-11-23T08:42:39Z"
+    },
+    {
+     "date": "2026-11-23",
+     "signals": 0,
+     "held": 2,
+     "lag_s": 31336,
+     "emitted_utc": "2026-11-24T08:42:16Z"
     }
    ],
    "settles": [
@@ -605,15 +1749,198 @@
      "date": "2026-10-10",
      "net_bps": 14.42,
      "held": 2
+    },
+    {
+     "date": "2026-10-11",
+     "net_bps": 40.53,
+     "held": 2
+    },
+    {
+     "date": "2026-10-12",
+     "net_bps": -111.45,
+     "held": 2
+    },
+    {
+     "date": "2026-10-13",
+     "net_bps": 42.05,
+     "held": 2
+    },
+    {
+     "date": "2026-10-30",
+     "net_bps": -204.61,
+     "held": 2
+    },
+    {
+     "date": "2026-10-31",
+     "net_bps": 6.55,
+     "held": 2
+    },
+    {
+     "date": "2026-11-01",
+     "net_bps": 56.23,
+     "held": 2
+    },
+    {
+     "date": "2026-11-02",
+     "net_bps": -6.58,
+     "held": 2
+    },
+    {
+     "date": "2026-11-03",
+     "net_bps": 20.99,
+     "held": 2
+    },
+    {
+     "date": "2026-11-04",
+     "net_bps": 329.84,
+     "held": 2
+    },
+    {
+     "date": "2026-11-05",
+     "net_bps": -172.33,
+     "held": 2
+    },
+    {
+     "date": "2026-11-06",
+     "net_bps": -44.34,
+     "held": 2
+    },
+    {
+     "date": "2026-11-07",
+     "net_bps": 5.83,
+     "held": 2
+    },
+    {
+     "date": "2026-11-08",
+     "net_bps": -70.74,
+     "held": 2
+    },
+    {
+     "date": "2026-11-09",
+     "net_bps": 139.96,
+     "held": 2
+    },
+    {
+     "date": "2026-11-10",
+     "net_bps": -216.87,
+     "held": 2
+    },
+    {
+     "date": "2026-11-11",
+     "net_bps": -80.24,
+     "held": 2
+    },
+    {
+     "date": "2026-11-12",
+     "net_bps": -274.38,
+     "held": 2
+    },
+    {
+     "date": "2026-11-13",
+     "net_bps": -171.71,
+     "held": 2
+    },
+    {
+     "date": "2026-11-20",
+     "net_bps": -288.89,
+     "held": 2
+    },
+    {
+     "date": "2026-11-21",
+     "net_bps": 107.19,
+     "held": 2
+    },
+    {
+     "date": "2026-11-22",
+     "net_bps": 107.75,
+     "held": 2
+    },
+    {
+     "date": "2026-11-23",
+     "net_bps": 82.85,
+     "held": 2
     }
    ],
-   "gaps": [],
-   "n_signals": 0,
-   "n_settled_days": 6,
-   "n_months": 1,
-   "head": "0x3a46ee52a06c4d197490a86710f1f6cb47fdad98c0e954f5c79e0bc9edb1185b",
-   "days_live": 7,
-   "last_closed": "2026-10-10"
+   "gaps": [
+    {
+     "date": "2026-10-13",
+     "reason": "tidak ada tick sebelum batas 12 jam"
+    },
+    {
+     "date": "2026-10-14",
+     "reason": "tidak ada tick sebelum batas 12 jam"
+    },
+    {
+     "date": "2026-10-15",
+     "reason": "tidak ada tick sebelum batas 12 jam"
+    },
+    {
+     "date": "2026-10-16",
+     "reason": "tidak ada tick sebelum batas 12 jam"
+    },
+    {
+     "date": "2026-10-17",
+     "reason": "tidak ada tick sebelum batas 12 jam"
+    },
+    {
+     "date": "2026-10-18",
+     "reason": "tidak ada tick sebelum batas 12 jam"
+    },
+    {
+     "date": "2026-10-19",
+     "reason": "tidak ada tick sebelum batas 12 jam"
+    },
+    {
+     "date": "2026-10-20",
+     "reason": "tidak ada tick sebelum batas 12 jam"
+    },
+    {
+     "date": "2026-10-21",
+     "reason": "tidak ada tick sebelum batas 12 jam"
+    },
+    {
+     "date": "2026-10-22",
+     "reason": "tidak ada tick sebelum batas 12 jam"
+    },
+    {
+     "date": "2026-10-23",
+     "reason": "tidak ada tick sebelum batas 12 jam"
+    },
+    {
+     "date": "2026-10-24",
+     "reason": "tidak ada tick sebelum batas 12 jam"
+    },
+    {
+     "date": "2026-10-25",
+     "reason": "tidak ada tick sebelum batas 12 jam"
+    },
+    {
+     "date": "2026-10-26",
+     "reason": "tidak ada tick sebelum batas 12 jam"
+    },
+    {
+     "date": "2026-10-27",
+     "reason": "tidak ada tick sebelum batas 12 jam"
+    },
+    {
+     "date": "2026-11-13",
+     "reason": "tidak ada tick sebelum batas 12 jam"
+    },
+    {
+     "date": "2026-11-15",
+     "reason": "tidak ada tick sebelum batas 12 jam"
+    },
+    {
+     "date": "2026-11-17",
+     "reason": "tidak ada tick sebelum batas 12 jam"
+    }
+   ],
+   "n_signals": 2,
+   "n_settled_days": 28,
+   "n_months": 2,
+   "head": "0x160e895f6adda78be9d7abbaa17d6b6e2820471541a16ce7acbdfa73833bd93a",
+   "days_live": 51,
+   "last_closed": "2026-11-23"
   },
   "B6-BOUNCE": {
    "genesis": "2026-10-04",
@@ -667,6 +1994,69 @@
      "held": 11,
      "lag_s": 31243,
      "emitted_utc": "2026-10-11T08:40:43Z"
+    },
+    {
+     "date": "2026-11-10",
+     "signals": 1,
+     "held": 3,
+     "lag_s": 32318,
+     "emitted_utc": "2026-11-11T08:58:38Z"
+    },
+    {
+     "date": "2026-11-12",
+     "signals": 1,
+     "held": 4,
+     "lag_s": 31257,
+     "emitted_utc": "2026-11-13T08:40:57Z"
+    },
+    {
+     "date": "2026-11-14",
+     "signals": 10,
+     "held": 15,
+     "lag_s": 31219,
+     "emitted_utc": "2026-11-15T08:40:19Z"
+    },
+    {
+     "date": "2026-11-18",
+     "signals": 0,
+     "held": 15,
+     "lag_s": 31229,
+     "emitted_utc": "2026-11-19T08:40:29Z"
+    },
+    {
+     "date": "2026-11-19",
+     "signals": 0,
+     "held": 15,
+     "lag_s": 31411,
+     "emitted_utc": "2026-11-20T08:43:31Z"
+    },
+    {
+     "date": "2026-11-20",
+     "signals": 0,
+     "held": 15,
+     "lag_s": 33160,
+     "emitted_utc": "2026-11-21T09:12:40Z"
+    },
+    {
+     "date": "2026-11-21",
+     "signals": 0,
+     "held": 15,
+     "lag_s": 33406,
+     "emitted_utc": "2026-11-22T09:16:46Z"
+    },
+    {
+     "date": "2026-11-22",
+     "signals": 0,
+     "held": 15,
+     "lag_s": 31359,
+     "emitted_utc": "2026-11-23T08:42:39Z"
+    },
+    {
+     "date": "2026-11-23",
+     "signals": 5,
+     "held": 10,
+     "lag_s": 31336,
+     "emitted_utc": "2026-11-24T08:42:16Z"
     }
    ],
    "settles": [
@@ -684,20 +2074,181 @@
      "date": "2026-10-07",
      "net_bps": 0.0,
      "held": 0
+    },
+    {
+     "date": "2026-10-08",
+     "net_bps": -126.75,
+     "held": 5
+    },
+    {
+     "date": "2026-10-09",
+     "net_bps": 164.75,
+     "held": 12
+    },
+    {
+     "date": "2026-10-10",
+     "net_bps": 48.9,
+     "held": 11
+    },
+    {
+     "date": "2026-10-11",
+     "net_bps": 106.97,
+     "held": 11
     }
    ],
-   "gaps": [],
-   "n_signals": 13,
-   "n_settled_days": 3,
+   "gaps": [
+    {
+     "date": "2026-10-11",
+     "reason": "tidak ada tick sebelum batas 12 jam"
+    },
+    {
+     "date": "2026-10-12",
+     "reason": "tidak ada tick sebelum batas 12 jam"
+    },
+    {
+     "date": "2026-10-13",
+     "reason": "tidak ada tick sebelum batas 12 jam"
+    },
+    {
+     "date": "2026-10-14",
+     "reason": "tidak ada tick sebelum batas 12 jam"
+    },
+    {
+     "date": "2026-10-15",
+     "reason": "tidak ada tick sebelum batas 12 jam"
+    },
+    {
+     "date": "2026-10-16",
+     "reason": "tidak ada tick sebelum batas 12 jam"
+    },
+    {
+     "date": "2026-10-17",
+     "reason": "tidak ada tick sebelum batas 12 jam"
+    },
+    {
+     "date": "2026-10-18",
+     "reason": "tidak ada tick sebelum batas 12 jam"
+    },
+    {
+     "date": "2026-10-19",
+     "reason": "tidak ada tick sebelum batas 12 jam"
+    },
+    {
+     "date": "2026-10-20",
+     "reason": "tidak ada tick sebelum batas 12 jam"
+    },
+    {
+     "date": "2026-10-21",
+     "reason": "tidak ada tick sebelum batas 12 jam"
+    },
+    {
+     "date": "2026-10-22",
+     "reason": "tidak ada tick sebelum batas 12 jam"
+    },
+    {
+     "date": "2026-10-23",
+     "reason": "tidak ada tick sebelum batas 12 jam"
+    },
+    {
+     "date": "2026-10-24",
+     "reason": "tidak ada tick sebelum batas 12 jam"
+    },
+    {
+     "date": "2026-10-25",
+     "reason": "tidak ada tick sebelum batas 12 jam"
+    },
+    {
+     "date": "2026-10-26",
+     "reason": "tidak ada tick sebelum batas 12 jam"
+    },
+    {
+     "date": "2026-10-27",
+     "reason": "tidak ada tick sebelum batas 12 jam"
+    },
+    {
+     "date": "2026-10-28",
+     "reason": "tidak ada tick sebelum batas 12 jam"
+    },
+    {
+     "date": "2026-10-29",
+     "reason": "tidak ada tick sebelum batas 12 jam"
+    },
+    {
+     "date": "2026-10-30",
+     "reason": "tidak ada tick sebelum batas 12 jam"
+    },
+    {
+     "date": "2026-10-31",
+     "reason": "tidak ada tick sebelum batas 12 jam"
+    },
+    {
+     "date": "2026-11-01",
+     "reason": "tidak ada tick sebelum batas 12 jam"
+    },
+    {
+     "date": "2026-11-02",
+     "reason": "tidak ada tick sebelum batas 12 jam"
+    },
+    {
+     "date": "2026-11-03",
+     "reason": "tidak ada tick sebelum batas 12 jam"
+    },
+    {
+     "date": "2026-11-04",
+     "reason": "tidak ada tick sebelum batas 12 jam"
+    },
+    {
+     "date": "2026-11-05",
+     "reason": "tidak ada tick sebelum batas 12 jam"
+    },
+    {
+     "date": "2026-11-06",
+     "reason": "tidak ada tick sebelum batas 12 jam"
+    },
+    {
+     "date": "2026-11-07",
+     "reason": "tidak ada tick sebelum batas 12 jam"
+    },
+    {
+     "date": "2026-11-08",
+     "reason": "tidak ada tick sebelum batas 12 jam"
+    },
+    {
+     "date": "2026-11-09",
+     "reason": "tidak ada tick sebelum batas 12 jam"
+    },
+    {
+     "date": "2026-11-11",
+     "reason": "tidak ada tick sebelum batas 12 jam"
+    },
+    {
+     "date": "2026-11-13",
+     "reason": "tidak ada tick sebelum batas 12 jam"
+    },
+    {
+     "date": "2026-11-15",
+     "reason": "tidak ada tick sebelum batas 12 jam"
+    },
+    {
+     "date": "2026-11-16",
+     "reason": "tidak ada tick sebelum batas 12 jam"
+    },
+    {
+     "date": "2026-11-17",
+     "reason": "tidak ada tick sebelum batas 12 jam"
+    }
+   ],
+   "n_signals": 30,
+   "n_settled_days": 7,
    "n_months": 1,
-   "head": "0x2caebd61f17d7f8a3c2e2ccfa4e0eb6e5a16228c893c4760121828911a60f86d",
-   "days_live": 7,
-   "last_closed": "2026-10-10"
+   "head": "0x64e5d366d614ee43d08d14b64cc777aa3e460f38494d580a155c980cd4587954",
+   "days_live": 51,
+   "last_closed": "2026-11-23"
   }
  },
  "book": {
-  "epoch": 691,
-  "recorded_utc": "2026-10-04T08:44:19Z",
+  "epoch": 692,
+  "recorded_utc": "2026-11-11T09:04:23Z",
   "capacity": 10,
   "book_sha": "0xfe37d7595644fd7e23fc5cd2c9aa659db1b66e316069c7414dd478e231f6e05c",
   "occupants": [
@@ -710,14 +2261,14 @@
    {
     "id": "B3-CARRY",
     "gate": "LOLOS_SHADOW",
-    "shadow_days": 3
+    "shadow_days": 40
    }
   ],
   "decisions": [
    {
     "id": "B3-CARRY",
     "action": "REJECT",
-    "reason": "shadow maju baru 3 hari < 60"
+    "reason": "shadow maju baru 40 hari < 60"
    }
   ],
   "killers": {
@@ -811,33 +2362,33 @@
   },
   "bots": {
    "B1-TREND": {
-    "signals": 1,
-    "days": 0,
-    "months": 0
+    "signals": 2,
+    "days": 15,
+    "months": 2
    },
    "B2-RS": {
-    "signals": 35,
-    "days": 0,
-    "months": 0
+    "signals": 61,
+    "days": 7,
+    "months": 1
    },
    "B3-CARRY": {
     "signals": 4,
-    "days": 8,
-    "months": 1
+    "days": 13,
+    "months": 2
    },
    "B4-LISTING-FADE": {
-    "signals": 5,
+    "signals": 8,
     "days": 0,
     "months": 0
    },
    "B5-CORE-RWA": {
-    "signals": 0,
-    "days": 6,
-    "months": 1
+    "signals": 2,
+    "days": 28,
+    "months": 2
    },
    "B6-BOUNCE": {
-    "signals": 13,
-    "days": 3,
+    "signals": 30,
+    "days": 7,
     "months": 1
    }
   },
@@ -846,87 +2397,87 @@
  "confidence": {
   "B1-TREND": {
    "bot": "B1-TREND",
-   "confidence_pct": null,
-   "label": "belum terukur",
+   "confidence_pct": 45,
+   "label": "awal - belum bermakna",
    "dasar": "1 - p bootstrap blok F-D16 (H0: rerata net harian maju <= 0); bukan peluang sinyal hari ini benar",
    "status": "INTI",
    "gerbang_v1": "TOLAK",
    "fd16": "BELUM CUKUP DATA",
    "rekam": {
-    "mean_bps": null,
-    "ci_lo_bps": null,
-    "ci_hi_bps": null,
-    "p": null
+    "mean_bps": -2.3818058828196333,
+    "ci_lo_bps": -82.78621105004619,
+    "ci_hi_bps": 70.61552426644559,
+    "p": 0.545045495450455
    },
    "kematangan": {
     "sinyal": [
-     1,
+     2,
      20
     ],
     "hari": [
-     0,
+     15,
      20
     ],
     "bulan": [
-     0,
+     2,
      2
     ]
    },
    "alasan": [
     "status INTI: bot identitas pilihan builder - peran di buku, bukan bukti bot terbaik",
     "gerbang v1 (backtest terkunci, `engine/book.py::GATE_V1`): TOLAK",
-    "rekam jejak maju: 0 hari settle - butuh >= 2 untuk angka apa pun",
-    "F-D16 (syarat uang nyata / jual): BELUM CUKUP DATA - S1 sinyal maju 1 < 20; hari settle 0 < 20; bulan 0 < 2 (S4 butuh fold untuk dibuang)"
+    "rekam jejak maju: 15 hari settle, rerata net -2.38 bps/hari, CI 95 % [-82.79, +70.62] bps",
+    "F-D16 (syarat uang nyata / jual): BELUM CUKUP DATA - S1 sinyal maju 2 < 20; hari settle 15 < 20; S2 rerata -2.38 bps/hari <= 0"
    ]
   },
   "B2-RS": {
    "bot": "B2-RS",
-   "confidence_pct": null,
-   "label": "belum terukur",
+   "confidence_pct": 67,
+   "label": "awal - belum bermakna",
    "dasar": "1 - p bootstrap blok F-D16 (H0: rerata net harian maju <= 0); bukan peluang sinyal hari ini benar",
    "status": "SEMENTARA",
    "gerbang_v1": "TOLAK",
    "fd16": "BELUM CUKUP DATA",
    "rekam": {
-    "mean_bps": null,
-    "ci_lo_bps": null,
-    "ci_hi_bps": null,
-    "p": null
+    "mean_bps": 79.47900038949608,
+    "ci_lo_bps": -160.9869529878165,
+    "ci_hi_bps": 319.9449537668086,
+    "p": 0.32556744325567444
    },
    "kematangan": {
     "sinyal": [
-     35,
+     61,
      20
     ],
     "hari": [
-     0,
+     7,
      20
     ],
     "bulan": [
-     0,
+     1,
      2
     ]
    },
    "alasan": [
     "status SEMENTARA: berjalan untuk transparansi, bisa digantikan bot yang memenuhi kriteria",
     "gerbang v1 (backtest terkunci, `engine/book.py::GATE_V1`): TOLAK",
-    "rekam jejak maju: 0 hari settle - butuh >= 2 untuk angka apa pun",
-    "F-D16 (syarat uang nyata / jual): BELUM CUKUP DATA - hari settle 0 < 20; bulan 0 < 2 (S4 butuh fold untuk dibuang)"
+    "rekam jejak maju: 7 hari settle, rerata net +79.48 bps/hari, CI 95 % [-160.99, +319.94] bps",
+    "F-D16 (syarat uang nyata / jual): BELUM CUKUP DATA - hari settle 7 < 20; bulan 1 < 2 (S4 butuh fold untuk dibuang); S3 batas bawah CI -160.99 bps <= 0"
    ]
   },
   "B3-CARRY": {
    "bot": "B3-CARRY",
-   "confidence_pct": 0,
+   "confidence_pct": 3,
    "label": "awal - belum bermakna",
    "dasar": "1 - p bootstrap blok F-D16 (H0: rerata net harian maju <= 0); bukan peluang sinyal hari ini benar",
    "status": "SEMENTARA",
    "gerbang_v1": "LOLOS_SHADOW",
    "fd16": "BELUM CUKUP DATA",
    "rekam": {
-    "mean_bps": -0.109375,
-    "ci_lo_bps": -0.21875,
+    "mean_bps": -0.0673076923076923,
+    "ci_lo_bps": -0.2019230769230769,
     "ci_hi_bps": 0.0,
-    "p": 1.0
+    "p": 0.9653034696530347
    },
    "kematangan": {
     "sinyal": [
@@ -934,19 +2485,19 @@
      20
     ],
     "hari": [
-     8,
+     13,
      20
     ],
     "bulan": [
-     1,
+     2,
      2
     ]
    },
    "alasan": [
     "status SEMENTARA: berjalan untuk transparansi, bisa digantikan bot yang memenuhi kriteria",
     "gerbang v1 (backtest terkunci, `engine/book.py::GATE_V1`): LOLOS_SHADOW",
-    "rekam jejak maju: 8 hari settle, rerata net -0.11 bps/hari, CI 95 % [-0.22, +0.00] bps",
-    "F-D16 (syarat uang nyata / jual): BELUM CUKUP DATA - S1 sinyal maju 4 < 20; hari settle 8 < 20; bulan 1 < 2 (S4 butuh fold untuk dibuang)"
+    "rekam jejak maju: 13 hari settle, rerata net -0.07 bps/hari, CI 95 % [-0.20, +0.00] bps",
+    "F-D16 (syarat uang nyata / jual): BELUM CUKUP DATA - S1 sinyal maju 4 < 20; hari settle 13 < 20; S2 rerata -0.07 bps/hari <= 0"
    ]
   },
   "B4-LISTING-FADE": {
@@ -965,7 +2516,7 @@
    },
    "kematangan": {
     "sinyal": [
-     5,
+     8,
      20
     ],
     "hari": [
@@ -981,65 +2532,65 @@
     "status SEMENTARA: berjalan untuk transparansi, bisa digantikan bot yang memenuhi kriteria",
     "gerbang v1 (backtest terkunci, `engine/book.py::GATE_V1`): TIDAK_TERUKUR",
     "rekam jejak maju: 0 hari settle - butuh >= 2 untuk angka apa pun",
-    "F-D16 (syarat uang nyata / jual): BELUM CUKUP DATA - S1 sinyal maju 5 < 20; hari settle 0 < 20; bulan 0 < 2 (S4 butuh fold untuk dibuang)"
+    "F-D16 (syarat uang nyata / jual): BELUM CUKUP DATA - S1 sinyal maju 8 < 20; hari settle 0 < 20; bulan 0 < 2 (S4 butuh fold untuk dibuang)"
    ]
   },
   "B5-CORE-RWA": {
    "bot": "B5-CORE-RWA",
-   "confidence_pct": 19,
+   "confidence_pct": 13,
    "label": "awal - belum bermakna",
    "dasar": "1 - p bootstrap blok F-D16 (H0: rerata net harian maju <= 0); bukan peluang sinyal hari ini benar",
    "status": "SEMENTARA",
    "gerbang_v1": "TOLAK",
    "fd16": "BELUM CUKUP DATA",
    "rekam": {
-    "mean_bps": -18.035655698985302,
-    "ci_lo_bps": -63.342134056054014,
-    "ci_hi_bps": 27.270822658083397,
-    "p": 0.8061193880611939
+    "mean_bps": -28.948867553328984,
+    "ci_lo_bps": -83.15374497738857,
+    "ci_hi_bps": 16.124098231350533,
+    "p": 0.8696130386961304
    },
    "kematangan": {
     "sinyal": [
-     0,
+     2,
      20
     ],
     "hari": [
-     6,
+     28,
      20
     ],
     "bulan": [
-     1,
+     2,
      2
     ]
    },
    "alasan": [
     "status SEMENTARA: berjalan untuk transparansi, bisa digantikan bot yang memenuhi kriteria",
     "gerbang v1 (backtest terkunci, `engine/book.py::GATE_V1`): TOLAK",
-    "rekam jejak maju: 6 hari settle, rerata net -18.04 bps/hari, CI 95 % [-63.34, +27.27] bps",
-    "F-D16 (syarat uang nyata / jual): BELUM CUKUP DATA - S1 sinyal maju 0 < 20; hari settle 6 < 20; bulan 1 < 2 (S4 butuh fold untuk dibuang)"
+    "rekam jejak maju: 28 hari settle, rerata net -28.95 bps/hari, CI 95 % [-83.15, +16.12] bps",
+    "F-D16 (syarat uang nyata / jual): BELUM CUKUP DATA - S1 sinyal maju 2 < 20; S2 rerata -28.95 bps/hari <= 0; S3 batas bawah CI -83.15 bps <= 0"
    ]
   },
   "B6-BOUNCE": {
    "bot": "B6-BOUNCE",
-   "confidence_pct": 0,
+   "confidence_pct": 90,
    "label": "awal - belum bermakna",
    "dasar": "1 - p bootstrap blok F-D16 (H0: rerata net harian maju <= 0); bukan peluang sinyal hari ini benar",
    "status": "SEMENTARA",
    "gerbang_v1": "TOLAK",
    "fd16": "BELUM CUKUP DATA",
    "rekam": {
-    "mean_bps": 0.0,
-    "ci_lo_bps": 0.0,
-    "ci_hi_bps": 0.0,
-    "p": 1.0
+    "mean_bps": 27.694892701993027,
+    "ci_lo_bps": -12.678845176300603,
+    "ci_hi_bps": 68.06863058028664,
+    "p": 0.09759024097590241
    },
    "kematangan": {
     "sinyal": [
-     13,
+     30,
      20
     ],
     "hari": [
-     3,
+     7,
      20
     ],
     "bulan": [
@@ -1050,8 +2601,8 @@
    "alasan": [
     "status SEMENTARA: berjalan untuk transparansi, bisa digantikan bot yang memenuhi kriteria",
     "gerbang v1 (backtest terkunci, `engine/book.py::GATE_V1`): TOLAK",
-    "rekam jejak maju: 3 hari settle, rerata net +0.00 bps/hari, CI 95 % [+0.00, +0.00] bps",
-    "F-D16 (syarat uang nyata / jual): BELUM CUKUP DATA - S1 sinyal maju 13 < 20; hari settle 3 < 20; bulan 1 < 2 (S4 butuh fold untuk dibuang)"
+    "rekam jejak maju: 7 hari settle, rerata net +27.69 bps/hari, CI 95 % [-12.68, +68.07] bps",
+    "F-D16 (syarat uang nyata / jual): BELUM CUKUP DATA - hari settle 7 < 20; bulan 1 < 2 (S4 butuh fold untuk dibuang); S3 batas bawah CI -12.68 bps <= 0"
    ]
   }
  },
@@ -1063,13 +2614,13 @@
  },
  "chain": {
   "id": 97,
-  "block": 136139841,
-  "block_utc": "2026-10-11T09:11:46Z",
+  "block": 144571723,
+  "block_utc": "2026-11-24T09:22:25Z",
   "signal_anchor": "0x9B78200beFbbBe836585d31bd5b6dB32587064f3",
   "lock_registry": "0xcF6fBF95fc04DEd8d670512CEc0723a2246Fbb0C",
   "decision_anchor": "0xDD162AFB5F5f92d5092f845A93660e3B38259330",
   "committer": "0xCA9c7322210E9a7F7d0953c862d4Ef60cC0D64A4",
-  "commit_count": 34,
+  "commit_count": 40,
   "lock_count": 13,
   "verdicts": [
    {
@@ -1147,6 +2698,78 @@
    {
     "bot": "B1-TREND",
     "bar": "2026-10-10",
+    "verdict": "TIDAK DIKOMIT",
+    "n": null,
+    "revealed": null,
+    "lag_s": null
+   },
+   {
+    "bot": "B1-TREND",
+    "bar": "2026-11-10",
+    "verdict": "TIDAK DIKOMIT",
+    "n": null,
+    "revealed": null,
+    "lag_s": null
+   },
+   {
+    "bot": "B1-TREND",
+    "bar": "2026-11-12",
+    "verdict": "TIDAK DIKOMIT",
+    "n": null,
+    "revealed": null,
+    "lag_s": null
+   },
+   {
+    "bot": "B1-TREND",
+    "bar": "2026-11-14",
+    "verdict": "TIDAK DIKOMIT",
+    "n": null,
+    "revealed": null,
+    "lag_s": null
+   },
+   {
+    "bot": "B1-TREND",
+    "bar": "2026-11-18",
+    "verdict": "TIDAK DIKOMIT",
+    "n": null,
+    "revealed": null,
+    "lag_s": null
+   },
+   {
+    "bot": "B1-TREND",
+    "bar": "2026-11-19",
+    "verdict": "TIDAK DIKOMIT",
+    "n": null,
+    "revealed": null,
+    "lag_s": null
+   },
+   {
+    "bot": "B1-TREND",
+    "bar": "2026-11-20",
+    "verdict": "TIDAK DIKOMIT",
+    "n": null,
+    "revealed": null,
+    "lag_s": null
+   },
+   {
+    "bot": "B1-TREND",
+    "bar": "2026-11-21",
+    "verdict": "TIDAK DIKOMIT",
+    "n": null,
+    "revealed": null,
+    "lag_s": null
+   },
+   {
+    "bot": "B1-TREND",
+    "bar": "2026-11-22",
+    "verdict": "TIDAK DIKOMIT",
+    "n": null,
+    "revealed": null,
+    "lag_s": null
+   },
+   {
+    "bot": "B1-TREND",
+    "bar": "2026-11-23",
     "verdict": "MENUNGGU KOMIT",
     "n": null,
     "revealed": null,
@@ -1203,6 +2826,78 @@
    {
     "bot": "B2-RS",
     "bar": "2026-10-10",
+    "verdict": "TIDAK DIKOMIT",
+    "n": null,
+    "revealed": null,
+    "lag_s": null
+   },
+   {
+    "bot": "B2-RS",
+    "bar": "2026-11-10",
+    "verdict": "TIDAK DIKOMIT",
+    "n": null,
+    "revealed": null,
+    "lag_s": null
+   },
+   {
+    "bot": "B2-RS",
+    "bar": "2026-11-12",
+    "verdict": "TIDAK DIKOMIT",
+    "n": null,
+    "revealed": null,
+    "lag_s": null
+   },
+   {
+    "bot": "B2-RS",
+    "bar": "2026-11-14",
+    "verdict": "TIDAK DIKOMIT",
+    "n": null,
+    "revealed": null,
+    "lag_s": null
+   },
+   {
+    "bot": "B2-RS",
+    "bar": "2026-11-18",
+    "verdict": "TIDAK DIKOMIT",
+    "n": null,
+    "revealed": null,
+    "lag_s": null
+   },
+   {
+    "bot": "B2-RS",
+    "bar": "2026-11-19",
+    "verdict": "TIDAK DIKOMIT",
+    "n": null,
+    "revealed": null,
+    "lag_s": null
+   },
+   {
+    "bot": "B2-RS",
+    "bar": "2026-11-20",
+    "verdict": "TIDAK DIKOMIT",
+    "n": null,
+    "revealed": null,
+    "lag_s": null
+   },
+   {
+    "bot": "B2-RS",
+    "bar": "2026-11-21",
+    "verdict": "TIDAK DIKOMIT",
+    "n": null,
+    "revealed": null,
+    "lag_s": null
+   },
+   {
+    "bot": "B2-RS",
+    "bar": "2026-11-22",
+    "verdict": "TIDAK DIKOMIT",
+    "n": null,
+    "revealed": null,
+    "lag_s": null
+   },
+   {
+    "bot": "B2-RS",
+    "bar": "2026-11-23",
     "verdict": "MENUNGGU KOMIT",
     "n": null,
     "revealed": null,
@@ -1283,6 +2978,78 @@
    {
     "bot": "B3-CARRY",
     "bar": "2026-10-10",
+    "verdict": "TIDAK DIKOMIT",
+    "n": null,
+    "revealed": null,
+    "lag_s": null
+   },
+   {
+    "bot": "B3-CARRY",
+    "bar": "2026-11-10",
+    "verdict": "TIDAK DIKOMIT",
+    "n": null,
+    "revealed": null,
+    "lag_s": null
+   },
+   {
+    "bot": "B3-CARRY",
+    "bar": "2026-11-12",
+    "verdict": "TIDAK DIKOMIT",
+    "n": null,
+    "revealed": null,
+    "lag_s": null
+   },
+   {
+    "bot": "B3-CARRY",
+    "bar": "2026-11-14",
+    "verdict": "TIDAK DIKOMIT",
+    "n": null,
+    "revealed": null,
+    "lag_s": null
+   },
+   {
+    "bot": "B3-CARRY",
+    "bar": "2026-11-18",
+    "verdict": "TIDAK DIKOMIT",
+    "n": null,
+    "revealed": null,
+    "lag_s": null
+   },
+   {
+    "bot": "B3-CARRY",
+    "bar": "2026-11-19",
+    "verdict": "TIDAK DIKOMIT",
+    "n": null,
+    "revealed": null,
+    "lag_s": null
+   },
+   {
+    "bot": "B3-CARRY",
+    "bar": "2026-11-20",
+    "verdict": "TIDAK DIKOMIT",
+    "n": null,
+    "revealed": null,
+    "lag_s": null
+   },
+   {
+    "bot": "B3-CARRY",
+    "bar": "2026-11-21",
+    "verdict": "TIDAK DIKOMIT",
+    "n": null,
+    "revealed": null,
+    "lag_s": null
+   },
+   {
+    "bot": "B3-CARRY",
+    "bar": "2026-11-22",
+    "verdict": "TIDAK DIKOMIT",
+    "n": null,
+    "revealed": null,
+    "lag_s": null
+   },
+   {
+    "bot": "B3-CARRY",
+    "bar": "2026-11-23",
     "verdict": "MENUNGGU KOMIT",
     "n": null,
     "revealed": null,
@@ -1339,6 +3106,102 @@
    {
     "bot": "B4-LISTING-FADE",
     "bar": "2026-10-10",
+    "verdict": "TIDAK DIKOMIT",
+    "n": null,
+    "revealed": null,
+    "lag_s": null
+   },
+   {
+    "bot": "B4-LISTING-FADE",
+    "bar": "2026-10-11",
+    "verdict": "TIDAK DIKOMIT",
+    "n": null,
+    "revealed": null,
+    "lag_s": null
+   },
+   {
+    "bot": "B4-LISTING-FADE",
+    "bar": "2026-10-12",
+    "verdict": "TIDAK DIKOMIT",
+    "n": null,
+    "revealed": null,
+    "lag_s": null
+   },
+   {
+    "bot": "B4-LISTING-FADE",
+    "bar": "2026-11-10",
+    "verdict": "TIDAK DIKOMIT",
+    "n": null,
+    "revealed": null,
+    "lag_s": null
+   },
+   {
+    "bot": "B4-LISTING-FADE",
+    "bar": "2026-11-12",
+    "verdict": "TIDAK DIKOMIT",
+    "n": null,
+    "revealed": null,
+    "lag_s": null
+   },
+   {
+    "bot": "B4-LISTING-FADE",
+    "bar": "2026-11-14",
+    "verdict": "TIDAK DIKOMIT",
+    "n": null,
+    "revealed": null,
+    "lag_s": null
+   },
+   {
+    "bot": "B4-LISTING-FADE",
+    "bar": "2026-11-16",
+    "verdict": "TIDAK DIKOMIT",
+    "n": null,
+    "revealed": null,
+    "lag_s": null
+   },
+   {
+    "bot": "B4-LISTING-FADE",
+    "bar": "2026-11-18",
+    "verdict": "TIDAK DIKOMIT",
+    "n": null,
+    "revealed": null,
+    "lag_s": null
+   },
+   {
+    "bot": "B4-LISTING-FADE",
+    "bar": "2026-11-19",
+    "verdict": "TIDAK DIKOMIT",
+    "n": null,
+    "revealed": null,
+    "lag_s": null
+   },
+   {
+    "bot": "B4-LISTING-FADE",
+    "bar": "2026-11-20",
+    "verdict": "TIDAK DIKOMIT",
+    "n": null,
+    "revealed": null,
+    "lag_s": null
+   },
+   {
+    "bot": "B4-LISTING-FADE",
+    "bar": "2026-11-21",
+    "verdict": "TIDAK DIKOMIT",
+    "n": null,
+    "revealed": null,
+    "lag_s": null
+   },
+   {
+    "bot": "B4-LISTING-FADE",
+    "bar": "2026-11-22",
+    "verdict": "TIDAK DIKOMIT",
+    "n": null,
+    "revealed": null,
+    "lag_s": null
+   },
+   {
+    "bot": "B4-LISTING-FADE",
+    "bar": "2026-11-23",
     "verdict": "MENUNGGU KOMIT",
     "n": null,
     "revealed": null,
@@ -1395,6 +3258,214 @@
    {
     "bot": "B5-CORE-RWA",
     "bar": "2026-10-10",
+    "verdict": "TIDAK DIKOMIT",
+    "n": null,
+    "revealed": null,
+    "lag_s": null
+   },
+   {
+    "bot": "B5-CORE-RWA",
+    "bar": "2026-10-11",
+    "verdict": "TIDAK DIKOMIT",
+    "n": null,
+    "revealed": null,
+    "lag_s": null
+   },
+   {
+    "bot": "B5-CORE-RWA",
+    "bar": "2026-10-12",
+    "verdict": "TIDAK DIKOMIT",
+    "n": null,
+    "revealed": null,
+    "lag_s": null
+   },
+   {
+    "bot": "B5-CORE-RWA",
+    "bar": "2026-10-28",
+    "verdict": "SAH",
+    "n": 0,
+    "revealed": 0,
+    "lag_s": 31537
+   },
+   {
+    "bot": "B5-CORE-RWA",
+    "bar": "2026-10-29",
+    "verdict": "SAH",
+    "n": 0,
+    "revealed": 0,
+    "lag_s": 31537
+   },
+   {
+    "bot": "B5-CORE-RWA",
+    "bar": "2026-10-30",
+    "verdict": "SAH",
+    "n": 0,
+    "revealed": 0,
+    "lag_s": 31537
+   },
+   {
+    "bot": "B5-CORE-RWA",
+    "bar": "2026-10-31",
+    "verdict": "SAH",
+    "n": 0,
+    "revealed": 0,
+    "lag_s": 31538
+   },
+   {
+    "bot": "B5-CORE-RWA",
+    "bar": "2026-11-01",
+    "verdict": "SAH",
+    "n": 2,
+    "revealed": 2,
+    "lag_s": 31540
+   },
+   {
+    "bot": "B5-CORE-RWA",
+    "bar": "2026-11-02",
+    "verdict": "SAH",
+    "n": 0,
+    "revealed": 0,
+    "lag_s": 31538
+   },
+   {
+    "bot": "B5-CORE-RWA",
+    "bar": "2026-11-03",
+    "verdict": "TIDAK DIKOMIT",
+    "n": null,
+    "revealed": null,
+    "lag_s": null
+   },
+   {
+    "bot": "B5-CORE-RWA",
+    "bar": "2026-11-04",
+    "verdict": "TIDAK DIKOMIT",
+    "n": null,
+    "revealed": null,
+    "lag_s": null
+   },
+   {
+    "bot": "B5-CORE-RWA",
+    "bar": "2026-11-05",
+    "verdict": "TIDAK DIKOMIT",
+    "n": null,
+    "revealed": null,
+    "lag_s": null
+   },
+   {
+    "bot": "B5-CORE-RWA",
+    "bar": "2026-11-06",
+    "verdict": "TIDAK DIKOMIT",
+    "n": null,
+    "revealed": null,
+    "lag_s": null
+   },
+   {
+    "bot": "B5-CORE-RWA",
+    "bar": "2026-11-07",
+    "verdict": "TIDAK DIKOMIT",
+    "n": null,
+    "revealed": null,
+    "lag_s": null
+   },
+   {
+    "bot": "B5-CORE-RWA",
+    "bar": "2026-11-08",
+    "verdict": "TIDAK DIKOMIT",
+    "n": null,
+    "revealed": null,
+    "lag_s": null
+   },
+   {
+    "bot": "B5-CORE-RWA",
+    "bar": "2026-11-09",
+    "verdict": "TIDAK DIKOMIT",
+    "n": null,
+    "revealed": null,
+    "lag_s": null
+   },
+   {
+    "bot": "B5-CORE-RWA",
+    "bar": "2026-11-10",
+    "verdict": "TIDAK DIKOMIT",
+    "n": null,
+    "revealed": null,
+    "lag_s": null
+   },
+   {
+    "bot": "B5-CORE-RWA",
+    "bar": "2026-11-11",
+    "verdict": "TIDAK DIKOMIT",
+    "n": null,
+    "revealed": null,
+    "lag_s": null
+   },
+   {
+    "bot": "B5-CORE-RWA",
+    "bar": "2026-11-12",
+    "verdict": "TIDAK DIKOMIT",
+    "n": null,
+    "revealed": null,
+    "lag_s": null
+   },
+   {
+    "bot": "B5-CORE-RWA",
+    "bar": "2026-11-14",
+    "verdict": "TIDAK DIKOMIT",
+    "n": null,
+    "revealed": null,
+    "lag_s": null
+   },
+   {
+    "bot": "B5-CORE-RWA",
+    "bar": "2026-11-16",
+    "verdict": "TIDAK DIKOMIT",
+    "n": null,
+    "revealed": null,
+    "lag_s": null
+   },
+   {
+    "bot": "B5-CORE-RWA",
+    "bar": "2026-11-18",
+    "verdict": "TIDAK DIKOMIT",
+    "n": null,
+    "revealed": null,
+    "lag_s": null
+   },
+   {
+    "bot": "B5-CORE-RWA",
+    "bar": "2026-11-19",
+    "verdict": "TIDAK DIKOMIT",
+    "n": null,
+    "revealed": null,
+    "lag_s": null
+   },
+   {
+    "bot": "B5-CORE-RWA",
+    "bar": "2026-11-20",
+    "verdict": "TIDAK DIKOMIT",
+    "n": null,
+    "revealed": null,
+    "lag_s": null
+   },
+   {
+    "bot": "B5-CORE-RWA",
+    "bar": "2026-11-21",
+    "verdict": "TIDAK DIKOMIT",
+    "n": null,
+    "revealed": null,
+    "lag_s": null
+   },
+   {
+    "bot": "B5-CORE-RWA",
+    "bar": "2026-11-22",
+    "verdict": "TIDAK DIKOMIT",
+    "n": null,
+    "revealed": null,
+    "lag_s": null
+   },
+   {
+    "bot": "B5-CORE-RWA",
+    "bar": "2026-11-23",
     "verdict": "MENUNGGU KOMIT",
     "n": null,
     "revealed": null,
@@ -1451,6 +3522,78 @@
    {
     "bot": "B6-BOUNCE",
     "bar": "2026-10-10",
+    "verdict": "TIDAK DIKOMIT",
+    "n": null,
+    "revealed": null,
+    "lag_s": null
+   },
+   {
+    "bot": "B6-BOUNCE",
+    "bar": "2026-11-10",
+    "verdict": "TIDAK DIKOMIT",
+    "n": null,
+    "revealed": null,
+    "lag_s": null
+   },
+   {
+    "bot": "B6-BOUNCE",
+    "bar": "2026-11-12",
+    "verdict": "TIDAK DIKOMIT",
+    "n": null,
+    "revealed": null,
+    "lag_s": null
+   },
+   {
+    "bot": "B6-BOUNCE",
+    "bar": "2026-11-14",
+    "verdict": "TIDAK DIKOMIT",
+    "n": null,
+    "revealed": null,
+    "lag_s": null
+   },
+   {
+    "bot": "B6-BOUNCE",
+    "bar": "2026-11-18",
+    "verdict": "TIDAK DIKOMIT",
+    "n": null,
+    "revealed": null,
+    "lag_s": null
+   },
+   {
+    "bot": "B6-BOUNCE",
+    "bar": "2026-11-19",
+    "verdict": "TIDAK DIKOMIT",
+    "n": null,
+    "revealed": null,
+    "lag_s": null
+   },
+   {
+    "bot": "B6-BOUNCE",
+    "bar": "2026-11-20",
+    "verdict": "TIDAK DIKOMIT",
+    "n": null,
+    "revealed": null,
+    "lag_s": null
+   },
+   {
+    "bot": "B6-BOUNCE",
+    "bar": "2026-11-21",
+    "verdict": "TIDAK DIKOMIT",
+    "n": null,
+    "revealed": null,
+    "lag_s": null
+   },
+   {
+    "bot": "B6-BOUNCE",
+    "bar": "2026-11-22",
+    "verdict": "TIDAK DIKOMIT",
+    "n": null,
+    "revealed": null,
+    "lag_s": null
+   },
+   {
+    "bot": "B6-BOUNCE",
+    "bar": "2026-11-23",
     "verdict": "MENUNGGU KOMIT",
     "n": null,
     "revealed": null,
@@ -1458,16 +3601,16 @@
    }
   ],
   "totals": {
-   "SAH": 34,
+   "SAH": 40,
    "BELUM DIUNGKAP": 0,
    "TIDAK DIUNGKAP": 0,
    "MENUNGGU KOMIT": 6,
-   "TIDAK DIKOMIT": 6,
+   "TIDAK DIKOMIT": 74,
    "SEBELUM KUNCI": 2,
    "ALARM": 0,
-   "komit_resmi": 34,
+   "komit_resmi": 40,
    "komit_alamat_lain_untuk_bot_kita": 0,
-   "komit_total": 34
+   "komit_total": 40
   }
  }
 }

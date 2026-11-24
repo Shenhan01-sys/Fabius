@@ -18,6 +18,11 @@
    ],
    "tx": "0xe26a8d6e2c26a7e9cbe9573e2dc4f54f8693e8d076fc07bb9f6c9e91fdd0cfac"
   },
+  "0x096fbb0bfb657605b295ee943df5e3ace63a787d5848db4168e36cddf380483e": {
+   "block": 139583858,
+   "reveals": [],
+   "tx": "0x8442198861c9fcdeea2514b28079d1ef58d016b7b696634da63856f754778151"
+  },
   "0x144a8e12cf6b15ac4db7bbdf5181c110d8cecae55824ad6f72f9dac79f4ec39a": {
    "block": 135002207,
    "reveals": [
@@ -68,6 +73,22 @@
    "block": 134984864,
    "reveals": [],
    "tx": "0xc402dfc6d558eea78a924db4542569a32f84acf85732c037cd2d490357a5e89e"
+  },
+  "0x2c69343a118b14d9f3f157804aba1d07328c1184e527bd6765bf7e947acd3c5b": {
+   "block": 140351832,
+   "reveals": [
+    {
+     "block": 140351848,
+     "leaf": "0x769f3999147956849a1a953815a82ee3583ed0125b0611b78ef13ed0394672cf",
+     "tx": "0x4418220568d2084e74c88f8e28e38e0390d23800666365f09fdf071cf3e08d04"
+    },
+    {
+     "block": 140351851,
+     "leaf": "0xcd96bb647175a7ac4148fa7ef61d42ce9cc9d943c14566098b8704ee5fa24c26",
+     "tx": "0x1b1f1c009b559d5154c93b66d79137123cdbc74d0035689d62302e1a7342afe0"
+    }
+   ],
+   "tx": "0xe7d0ffeb8d9095a896916cf9b68bc40dabded50e68cf4a3c68b04927718501cb"
   },
   "0x33cda4c4ee7e3a17a08dad0ad88e83cf69934954e9c32e3f8f90f5f10ee5bc6a": {
    "block": 135176214,
@@ -203,6 +224,11 @@
    "reveals": [],
    "tx": "0xedeae7c94f451a7f216afda3afe57017a97b005b169341d12859024402bd6cb7"
   },
+  "0x5ddfd39a51a101574fd94604cc34ccf81e5b7c5670409bad0b276041e5fd634b": {
+   "block": 139775833,
+   "reveals": [],
+   "tx": "0x30b2ce1e87d495194ddcb12b44b1f5058ba3aca1a3585d3a6c22731f892343dc"
+  },
   "0x62177d47ae1ffdf874b11f1ed5bae5b17e14bdc17003bbe41cf55af82e02b03f": {
    "block": 135559914,
    "reveals": [],
@@ -238,6 +264,11 @@
    "block": 135176292,
    "reveals": [],
    "tx": "0x1bdfcae91ddbc8d7bd5a5782bdb41245ad976f4c7f1b35fa13a1c95ee644e31f"
+  },
+  "0x7a964142340b53c25db275d476978c9184f95d3bbd1a0cef8ad5920685f49b25": {
+   "block": 139967832,
+   "reveals": [],
+   "tx": "0xa0e98bfc66e3640f43d8a84262159eadc2f1d1da594770597ed3a50d3f0b14dc"
   },
   "0x7dbf6160440a99a58e29015750a3fb1f4e25fb366dacb709ef9923e7c96ff5b8": {
    "block": 135751915,
@@ -333,6 +364,11 @@
    ],
    "tx": "0x91004a757240c1d2530d6e849a4305ce5c5ed3d7e59eb3ba9fbe12511bfa287f"
   },
+  "0xb5bd6b161b66c5604133eded3a7ac40a359468aa22bf79acddcda8c99dd40086": {
+   "block": 140543828,
+   "reveals": [],
+   "tx": "0xb6e7055d021dae814ad4bad5c60f15b688c3c47b450709cf6bb5b6a536e5a056"
+  },
   "0xba919e020d2cbf165ad50c6be88e414985b5dc54c9aea1423eb626010d607d9f": {
    "block": 134600162,
    "reveals": [],
@@ -393,6 +429,11 @@
     }
    ],
    "tx": "0x30fdf29598b93d1418c4bce728cec926578364075b8d7116ae72db714ea0a5cf"
+  },
+  "0xd9f81e6c3e1b80aa6c20e90bee9cf78c33fd2a68780381db0fd77484474eafdb": {
+   "block": 140159831,
+   "reveals": [],
+   "tx": "0x8e92fb3e7278a10befa960a3b49f65ec710d3fe37334ebe851ad296da489bcdb"
   },
   "0xf057e9dd49aba05d27059aa5181bc3e456a5c93da56ed170508e292858314da7": {
    "block": 135559853,
@@ -461,6 +502,6 @@
  },
  "note": "petunjuk hash tx saja; web memeriksa tiap tx lewat strukturnya di chain sebelum dipakai (tools/tx_index.py)",
  "registry": "0xcf6fbf95fc04ded8d670512cec0723a2246fbb0c",
- "scanned_to": 139450354,
+ "scanned_to": 141900354,
  "v": 1
 }
