@@ -502,6 +502,6 @@
  },
  "note": "petunjuk hash tx saja; web memeriksa tiap tx lewat strukturnya di chain sebelum dipakai (tools/tx_index.py)",
  "registry": "0xcf6fbf95fc04ded8d670512cec0723a2246fbb0c",
- "scanned_to": 141900354,
+ "scanned_to": 144600354,
  "v": 1
 }
